@@ -1,4 +1,5 @@
 from modules.citta import Citta
+from modules.ffdu import Ffdu
 import time
 class TasksetAssignment:
 	def __init__(self, _assignment_algorithm, _number_of_cores):
@@ -10,8 +11,11 @@ class TasksetAssignment:
 			assigned_cores, successfully_assigned = self.citta_assignment(taskset, self.number_of_cores, sorting_criterion)
 		elif  self.assignment_algorithm.lower() == "wmin":
 			assigned_cores, successfully_assigned = self.wmin_assignment(taskset, self.number_of_cores, sorting_criterion)
+		elif self.assignment_algorithm.lower() == "ffdu":
+			assigned_cores, successfully_assigned = self.ffdu_assignment(taskset, self.number_of_cores, sorting_criterion)
 		elif self.assignment_algorithm.lower() == "custom":
 			assigned_cores, successfully_assigned = [[0,1],[2,3]], 1
+
 
 		task_assignment_list = [[] for core in range(self.number_of_cores)]
 		if successfully_assigned:
@@ -30,6 +34,11 @@ class TasksetAssignment:
 	def citta_assignment(self, taskset, num_cores, sort_crit):
 		citta_instance = Citta(taskset, num_cores, sort_crit) 
 		assigned_cores, tra ,successfully_assigned = citta_instance.assign()
+		return assigned_cores, successfully_assigned
+
+	def ffdu_assignment(self, taskset, num_cores, sort_crit):
+		ffdu_instance = Ffdu(taskset, num_cores, sort_crit) 
+		assigned_cores, tra ,successfully_assigned = ffdu_instance.assign()
 		return assigned_cores, successfully_assigned
 
 	def wmin_assignment(self, taskset):

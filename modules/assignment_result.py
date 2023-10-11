@@ -1,6 +1,8 @@
 class AssignmentResult:
 	def __init__(self):
 		self.assignment = []
+
+
 	def add_result(self, taskset_assignment_success, taskset_assignment, taskset):
 		res = {"taskset_assignment_success":taskset_assignment_success, "taskset_assignment":taskset_assignment, "taskset":taskset}
 		self.assignment.append(res)
@@ -22,3 +24,5 @@ class AssignmentResult:
 
 	def __getitem__(self, i):
 		return self.assignment[i]
+
+

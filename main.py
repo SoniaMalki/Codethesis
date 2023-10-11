@@ -47,6 +47,7 @@ def main(experience_parameter_index="0"):
             print("*****")
             print(f"Launching assignment with method {assignment_algorithm}")
             assignment_result = launch_assignment_experience(assignment_algorithm, experience, assignment_result)
+            print(assignment_result[0]['taskset_assignment'])
             write_result(assignment_result, "assignment", assignment_name)
     elif assignment_option=="open":
         print("*****")
@@ -82,7 +83,8 @@ def load_parameter(parameter_name, parameter_index):
     if int(parameter_index) >= 0 and int(parameter_index) < len(parameter):
         return parameter[parameter_index]
     else:
-        return parameter[0]
+        print("Parameter not specified or not in the range; defaulting to option 0")
+        return parameter["0"]
 
 def experience_generation(generation_parameter):
     experience_generation = ExperienceGeneration(**generation_parameter)

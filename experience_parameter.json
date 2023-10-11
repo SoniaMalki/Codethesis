@@ -67,6 +67,18 @@
       "schedule_name": "schedule_custom",
       "list_of_assignment_algorithm": ["Custom"],
       "list_of_scheduling_algorithm": ["Mixed"]
+    },
+
+    "6":
+    {
+      "taskset_option": "open",
+      "assignment_option": "generate",
+      "schedule_option": "none",
+      "taskset_name": "taskset_2",
+      "assignment_name": "assignment_ffdu",
+      "schedule_name": "schedule_custom",
+      "list_of_assignment_algorithm": ["Citta"],
+      "list_of_scheduling_algorithm": ["Mixed"]
     }
   
 }

@@ -3,7 +3,7 @@ import math
 from pulp import *
 import time
 
-class Ffdu:
+class Wfdu:
     def __init__(self, _taskset ,_number_of_cores, _sorting_criterion):
         self.m = _number_of_cores
         self.taskset =_taskset
@@ -13,7 +13,6 @@ class Ffdu:
 
     def assign(self):
         taskset = self.sort_task(self.period, self.wcet)
-        print(taskset)
         taskset_na = taskset[:]
         taskAssigned = 1 #flag qui est a true tant que l'algo a réussi a assigner au moins une tâche a un core, une fois qu'il arrive pas ça sera 0
         taskincore = [[] for _ in range(self.m)]
@@ -33,18 +32,20 @@ class Ffdu:
         per = numpy.array(p, dtype='f')
         ec = numpy.array(c, dtype='f')
         ratio = ec / per
+        print(ratio)
         taskset = sorted(list(range(len(ratio))), key=lambda k: ratio[k], reverse=True)
-
+        print(taskset)
+        time.sleep(10)
         return taskset
 
     def task_partition(self, taskset_na, m, taskincore):
         taskAssigned = 0
 
         # PuLP variables and model
-        prob = LpProblem("FFDU_Task_Partitioning", LpMaximize)
+        prob = LpProblem("WFDU_Task_Partitioning", LpMaximize)
         task_vars = LpVariable.dicts("Task", taskset_na, 0, 1, LpBinary)
 
-        # Objective: Maximize the first-fit core utilization
+        # Objective: Maximize the worst-fit core utilization
         prob += lpSum([task_vars[i] for i in taskset_na])
 
         # Constraints

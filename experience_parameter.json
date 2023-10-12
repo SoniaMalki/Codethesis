@@ -71,14 +71,39 @@
 
     "6":
     {
+      "taskset_option": "generate",
+      "generation_parameter_index": "4",
+      "assignment_option": "none",
+      "schedule_option": "none",
+      "taskset_name": "taskset_fdu",
+      "assignment_name": "assignment_fdu",
+      "schedule_name": "schedule_fdu",
+      "list_of_assignment_algorithm": ["Custom"],
+      "list_of_scheduling_algorithm": ["Mixed"]
+    },
+
+    "7":
+    {
       "taskset_option": "open",
       "assignment_option": "generate",
       "schedule_option": "none",
-      "taskset_name": "taskset_2",
+      "taskset_name": "taskset_fdu",
+      "assignment_name": "assignment_wfdu",
+      "schedule_name": "schedule_wfdu_edf",
+      "list_of_assignment_algorithm": ["Wfdu"],
+      "list_of_scheduling_algorithm": ["EDF"]
+    },
+
+    "8":
+    {
+      "taskset_option": "open",
+      "assignment_option": "generate",
+      "schedule_option": "none",
+      "taskset_name": "taskset_fdu",
       "assignment_name": "assignment_ffdu",
-      "schedule_name": "schedule_custom",
-      "list_of_assignment_algorithm": ["Citta"],
-      "list_of_scheduling_algorithm": ["Mixed"]
+      "schedule_name": "schedule_ffdu_edf",
+      "list_of_assignment_algorithm": ["Ffdu"],
+      "list_of_scheduling_algorithm": ["EDF"]
     }
   
 }

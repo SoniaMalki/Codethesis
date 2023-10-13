@@ -19,6 +19,27 @@ from modules.scheduling_result import SchedulingResult
 current_path = Path(__file__).parent
 
 
+def format_assignment_results(assignment_results):
+    formatted_results = []
+
+    # Itérer à travers chaque cœur dans les résultats d'assignation
+    for core_index, tasks in enumerate(assignment_results):
+        core_summary = f"Core {core_index + 1}:\n"
+        total_utilization = 0.0
+
+        # Itérer à travers chaque tâche assignée à ce cœur
+        for task in tasks:
+            task_description = f"    Task {task.task_number} - WCET: {task.wcet}, Deadline: {task.deadline}, Period: {task.period}, Utilization: {task.utilization}\n"
+            core_summary += task_description
+            total_utilization += task.utilization  # Ajouter l'utilisation de la tâche à l'utilisation totale du cœur
+
+        core_summary += f"Total Utilization: {total_utilization:.2f}\n"  # Formater l'utilisation totale à 2 décimales
+        formatted_results.append(core_summary)
+
+    return "\n".join(formatted_results)  # Joindre chaque résumé de cœur avec une ligne vide entre eux
+
+
+
 def main(experience_parameter_index="0"):
     experience_parameter = load_parameter("experience", experience_parameter_index)
     taskset_option = experience_parameter["taskset_option"]
@@ -47,7 +68,7 @@ def main(experience_parameter_index="0"):
             print("*****")
             print(f"Launching assignment with method {assignment_algorithm}")
             assignment_result = launch_assignment_experience(assignment_algorithm, experience, assignment_result)
-            print(assignment_result[0]['taskset_assignment'])
+            print(format_assignment_results(assignment_result[0]['taskset_assignment']))
             write_result(assignment_result, "assignment", assignment_name)
     elif assignment_option=="open":
         print("*****")

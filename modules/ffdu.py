@@ -1,6 +1,5 @@
 import numpy
 import math
-from pulp import *
 import time
 
 class Ffdu:
@@ -13,7 +12,6 @@ class Ffdu:
 
     def assign(self):
         taskset = self.sort_task(self.period, self.wcet)
-        print(taskset)
         taskset_na = taskset[:]
         taskAssigned = 1 #flag qui est a true tant que l'algo a réussi a assigner au moins une tâche a un core, une fois qu'il arrive pas ça sera 0
         taskincore = [[] for _ in range(self.m)]
@@ -40,31 +38,31 @@ class Ffdu:
     def task_partition(self, taskset_na, m, taskincore):
         taskAssigned = 0
 
-        # PuLP variables and model
-        prob = LpProblem("FFDU_Task_Partitioning", LpMaximize)
-        task_vars = LpVariable.dicts("Task", taskset_na, 0, 1, LpBinary)
+        core_utilization = [sum([self.wcet[task] / self.period[task] for task in core]) for core in taskincore]
 
-        # Objective: Maximize the first-fit core utilization
-        prob += lpSum([task_vars[i] for i in taskset_na])
+        # Parcourir les tâches dans l'ordre spécifié
+        for task in taskset_na:
+            task_util = self.wcet[task] / self.period[task]
 
-        # Constraints
-        for i in range(m):
-            prob += lpSum([self.wcet[j] * task_vars[j] for j in taskset_na]) <= self.period[i]
+            # Trouver le premier cœur qui peut accueillir la tâche
+            assigned_core_index = None
 
-        # Solve the problem
-        prob.solve()
+            for i, util in enumerate(core_utilization):
+                if util + task_util <= 1:  # 1 représente 100% d'utilisation
+                    assigned_core_index = i
+                    break  # Sortir de la boucle dès qu'un cœur est trouvé
 
-        # Assign tasks to cores based on the solution
-        for i in taskset_na:
-            if task_vars[i].varValue == 1:
-                for core_index, core in enumerate(taskincore):
-                    if sum(self.wcet[j] for j in core) + self.wcet[i] <= self.period[core_index]:
-                        core.append(i)
-                        taskAssigned = 1
-                        break
+            # Si un cœur a été trouvé pour la tâche, assignez la tâche à ce cœur
+            if assigned_core_index is not None:
+                taskincore[assigned_core_index].append(task)
+                core_utilization[assigned_core_index] += task_util  # Mettre à jour l'utilisation du cœur
+                taskAssigned = 1  # Une tâche a été assignée
+            else:
+                break  # Si aucune tâche ne peut être assignée, sortir de la boucle
 
-        # Remove assigned tasks from taskset_na
-        taskset_na = [i for i in taskset_na if i not in sum(taskincore, [])]
+        # Mettre à jour taskset_na pour supprimer les tâches qui ont été assignées
+        tasks_assigned = [task for core in taskincore for task in core]
+        taskset_na = [task for task in taskset_na if task not in tasks_assigned]
 
         return taskset_na, taskAssigned, taskincore
 

@@ -1,8 +1,8 @@
 from modules.experience import Experience
 from modules.taskset_set_generation import TasksetSetGeneration
-
+import time
 class ExperienceGeneration:
-	def __init__(self, _number_of_cores, _list_of_max_utilization, _number_of_taskset, _period_min, _period_max, _granularity, _list_of_sorting_criterion, _list_of_number_of_task_in_taskset, 
+	def __init__(self, _matrixW, _number_of_cores, _list_of_max_utilization, _number_of_taskset, _period_min, _period_max, _granularity, _list_of_sorting_criterion, _list_of_number_of_task_in_taskset, 
 				_list_of_interference_factor, _list_of_probability_factor,
 				_list_of_method_of_period_generation, _random_generation):
 		#parameters that stay the same
@@ -19,6 +19,8 @@ class ExperienceGeneration:
 		self.list_of_probability_factor = _list_of_probability_factor
 		self.list_of_method_of_period_generation = _list_of_method_of_period_generation
 		self.random_generation = _random_generation
+
+		self.matrixW = _matrixW
 
 
 		#parameters that are generated 
@@ -59,7 +61,7 @@ class ExperienceGeneration:
 						for max_utilization in self.list_of_max_utilization:
 							if output_bool:
 								print(f"Generating taskset set {taskset_set_number+1} of {experience_lenght}")
-							experience_generated.append(TasksetSetGeneration(_taskset_set_number=taskset_set_number, _number_of_taskset=self.number_of_taskset, 
+							experience_generated.append(TasksetSetGeneration(_matrixW = self.matrixW, _taskset_set_number=taskset_set_number, _number_of_taskset=self.number_of_taskset, 
 																			_period_min=self.period_min, _period_max=self.period_max, _granularity=self.granularity, 
 																			_number_of_task_in_taskset=number_task_in_taskset, _interference_factor=interference_factor, 
 																			_probability_factor=probability_factor, _method_of_period_generation=method_of_period_generation,
@@ -73,4 +75,6 @@ class ExperienceGeneration:
 						_list_of_probability_factor=self.list_of_probability_factor, _list_of_method_of_period_generation=self.list_of_method_of_period_generation,  
 						_list_of_max_utilization=self.list_of_max_utilization, 
 						_experience_lenght=experience_lenght, _taskset_set_list=experience_generated)
+
+
 		return res

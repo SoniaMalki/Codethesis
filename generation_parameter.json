@@ -77,5 +77,37 @@
     "_list_of_method_of_period_generation": [[10,10,10,10,10,10,10]],
     "_random_generation": false,
     "_granularity": 1
+  },
+
+  "5":
+  {
+    "_number_of_cores": 4,
+    "_list_of_max_utilization": [[[0.8, 0.7, 0.6, 0.5, 0.4, 0.2,0.1]]],
+    "_list_of_number_of_task_in_taskset": [7],
+    "_number_of_taskset": 1,
+    "_list_of_interference_factor": [[[0,0,0,0,0,0,0]]],
+    "_list_of_probability_factor": [1],
+    "_list_of_sorting_criterion": ["et"],
+    "_period_min": 1,
+    "_period_max": 200,
+    "_list_of_method_of_period_generation": ["constrained_periods"],
+    "_random_generation": false,
+    "_granularity": 1
+  },
+
+  "6":
+  {
+    "_number_of_cores": 4,
+    "_list_of_max_utilization": [],
+    "_list_of_number_of_task_in_taskset": [10, 20],
+    "_number_of_taskset": 10,
+    "_list_of_interference_factor": [0.2, 0.8],
+    "_list_of_probability_factor": [0.1, 0.4],
+    "_list_of_sorting_criterion": ["et", "pd", "ra", "sl"],
+    "_period_min": 100,
+    "_period_max": 200,
+    "_list_of_method_of_period_generation": ["constrained_periods"],
+    "_random_generation": true,
+    "_granularity": 1
   }
 }

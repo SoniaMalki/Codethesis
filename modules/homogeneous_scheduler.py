@@ -54,14 +54,14 @@ class HomogeneousScheduler:
                 if running_task_list[k] != None:
                     if running_task_list[k] != current_task_list[k] and current_time % running_task_list[k].period == 0 : #if there is a context switch (running task is not the same as current_task) & activation time (because %period ==0)
                         for s in range(len(self.taskset_assignment)): #we will explore the other tasks on other core it this is the case
-                            if s != k and running_task_list[k].interference > 0 : #if the core is another one and the inteference of the job is 1 (it will receive inteference), we will check which task broadcast this interference
+                            if s != k and sum(running_task_list[k].interference) > 0 : #if the core is another one and the inteference of the job is 1 (it will receive inteference), we will check which task broadcast this interference
                                 if running_task_list[s] != None:
                                     w_matrix[s][k] = 1 #set the matrix to 1
                                     running_task_list[k].remaining_execution_time += running_task_list[s].interference #augment their wcet, by the interference of the task 
                                     total_interference += 1
                     else: #for other case other than activation or context switch, we will refer to the W matrix
                         for s in range(len(self.taskset_assignment)):
-                            if s != k and running_task_list[k].interference > 0:
+                            if s != k and sum(running_task_list[k].interference) > 0:
                                 if running_task_list[s] != None:
                                     if w_matrix[s][k] == 0:
                                         w_matrix[s][k] = 1
@@ -84,7 +84,7 @@ class HomogeneousScheduler:
         if current_time == self.end_time:
             for core_index, core in enumerate(schedule_plan):
                 schedule_plan_total.add_core_scheduling(core_index, core, self.scheduling_algorithm_name)
-
+            print(schedule_plan_total)
             return schedule_plan_total, 1, total_interference
     
 

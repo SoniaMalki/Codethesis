@@ -9,7 +9,7 @@ from modules.taskset_set import TasksetSet
 from modules.taskset import Taskset
 
 class TasksetSetGeneration:
-	def __init__(self, _taskset_set_number, _number_of_taskset, _period_min, _period_max, _granularity, 
+	def __init__(self, _matrixW, _taskset_set_number, _number_of_taskset, _period_min, _period_max, _granularity, 
 				_number_of_task_in_taskset, _interference_factor, _probability_factor, _method_of_period_generation, _random_generation,
 				_max_utilization):
 				
@@ -24,6 +24,8 @@ class TasksetSetGeneration:
 		self.method_of_period_generation = _method_of_period_generation
 		self.random_generation = _random_generation
 		self.max_utilization = _max_utilization
+
+		self.matrixW = _matrixW
 
 		self.max_lcm = 1000
 
@@ -43,6 +45,10 @@ class TasksetSetGeneration:
 			f"_max_utilization={self.max_utilization}"
 			")"
 		)
+
+
+	def setMatrix(self, _M):
+		self.M = _M
 
 
 	def init_taskset_set(self):
@@ -142,13 +148,19 @@ class TasksetSetGeneration:
 				periods = self.method_of_period_generation
 			periods = numpy.array(periods) #transforme en array numpy
 			periods.shape = (1, self.number_of_task_in_taskset) #met sous forme de dimension mxn là où m est censé etre 1
+
+		elif self.method_of_period_generation == "constrained_periods":
+			print("SKSKSKSK\nSKSKSKSKSK\n")
+			periods = self.generate_constrained_periods(self.matrixW)
+			periods = numpy.array(periods)
+
 		elif self.method_of_period_generation == "random_max_lcm":
 			periods = self.gen_random_list_with_max_lcm() 
 			periods = numpy.array(periods)
 		else:
 			return None
 		periods = numpy.floor(periods / self.granularity) * self.granularity #retourne le chiffre le plus petit qui se divise par gran pour chaque elem de periods
-		time.sleep(5)
+		
 		return periods
 
 	def lcm_list(self, list_number):
@@ -221,3 +233,31 @@ class TasksetSetGeneration:
 						_interference=interference , _utilization=utilization, _taskset_list=taskset_set_generated)
 
 		return res
+
+
+	def generate_constrained_periods(self, M):
+
+		def generate_single_period(M):
+		    period = 1
+		    for i in M:
+		        p = round(random.uniform(1, len(i)))
+		        period *= i[p-1]  # -1 because list index starts from 0
+		    return period
+
+		periods = []
+		for num_taskset in range(self.number_of_taskset):
+			periods.append([])
+			for num_task_in_taskset in range(self.number_of_task_in_taskset):
+			    period = generate_single_period(M)
+			    periods[-1].append(period)
+		print("exmeple")
+		print(periods)
+
+		return periods
+
+	
+
+
+
+
+

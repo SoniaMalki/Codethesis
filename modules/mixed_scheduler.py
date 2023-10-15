@@ -23,10 +23,12 @@ class MixedScheduler:
     def schedule(self):
         busy_period_list = self.compute_busy_period()
         scheduler = Combined()
+
         combined_schedule_plan, successfully_scheduled = scheduler.schedule(busy_period_list, self.number_of_cores, self.assignment)
-        busy_period_list = self.compute_busy_period(combined_schedule_plan, successfully_scheduled)
-        scheduler = Rhma()
-        rhma_schedule_plan, rhma_successfully_scheduled = scheduler.schedule(busy_period_list, self.number_of_cores, self.assignment, self.hyperperiod)
+        print(combined_schedule_plan)
+        #busy_period_list = self.compute_busy_period(combined_schedule_plan, successfully_scheduled)
+        #scheduler = Rhma()
+        #rhma_schedule_plan, rhma_successfully_scheduled = scheduler.schedule(busy_period_list, self.number_of_cores, self.assignment, self.hyperperiod)
         return combined_schedule_plan, successfully_scheduled
 
 

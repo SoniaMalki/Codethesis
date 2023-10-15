@@ -12,6 +12,7 @@ class Combined:
         self.algorithm_list = ["EDF", "EDFV1", "DM", "DMV1"]
 
     def schedule(self, busy_period_list, number_of_cores, assignment):
+
         combined_schedule_plan = SchedulePlan(number_of_cores)
         for busy_period in busy_period_list: #ca serait bien d'avoir un genre de liste avec des sous liste de début et de fin
             start_time = busy_period[0] #ex 25

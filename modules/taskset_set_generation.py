@@ -7,10 +7,11 @@ from math import gcd
 
 from modules.taskset_set import TasksetSet
 from modules.taskset import Taskset
+from modules.matrix_m import MatrixM
 
 class TasksetSetGeneration:
-	def __init__(self, _matrixW, _taskset_set_number, _number_of_taskset, _period_min, _period_max, _granularity, 
-				_number_of_task_in_taskset, _interference_factor, _probability_factor, _method_of_period_generation, _random_generation,
+	def __init__(self, _taskset_set_number, _number_of_taskset, _period_min, _period_max, _granularity, 
+				_number_of_task_in_taskset, _interference_factor, _probability_factor, _method_of_period_generation, 
 				_max_utilization):
 				
 		self.taskset_set_number = _taskset_set_number
@@ -22,12 +23,10 @@ class TasksetSetGeneration:
 		self.interference_factor = _interference_factor
 		self.probability_factor = _probability_factor #TODO a quoi ça sert?
 		self.method_of_period_generation = _method_of_period_generation
-		self.random_generation = _random_generation
 		self.max_utilization = _max_utilization
 
-		self.matrixW = _matrixW
-
-		self.max_lcm = 1000
+		self.matrixM_obj= MatrixM(hyperperiod_limit=100000, max_prime=20, generation_limit_exponent=2) #TODO adapter ça
+		self.matrixM = self.matrixM_obj.matrix
 
 
 	def __repr__(self):
@@ -41,23 +40,14 @@ class TasksetSetGeneration:
 			f"_interference_factor={self.interference_factor}, "
 			f"_probability_factor={self.probability_factor}, "
 			f"_method_of_period_generation={self.method_of_period_generation}, "
-			f"_random_generation={self.random_generation}"
 			f"_max_utilization={self.max_utilization}"
 			")"
 		)
 
 
-	def setMatrix(self, _M):
-		self.M = _M
-
-
 	def init_taskset_set(self):
-		if self.random_generation:
-			utilizations = self.StaffordRandFixedSum() #génère une matrice de taille nombresets*nombredetasks par sets qui contient des 
+		utilizations = self.StaffordRandFixedSum() #génère une matrice de taille nombresets*nombredetasks par sets qui contient des 
 												#self.max_utilization random dont le total arrive au u_total qu'on a donné en paramètre
-		else:
-			utilizations = self.max_utilization
-			utilizations = numpy.array(utilizations)
 
 		periods = self.gen_periods()
 		wcets = numpy.zeros((self.number_of_taskset, self.number_of_task_in_taskset)) 
@@ -65,13 +55,10 @@ class TasksetSetGeneration:
 			for task_index in range(0, self.number_of_task_in_taskset):
 				wcets[set_index][task_index] = max(1, math.floor(periods[set_index][task_index] * utilizations[set_index][task_index])) #wcet qui vient de la period * utilisation
 		
-		if self.random_generation:
-			interferences = numpy.zeros((self.number_of_taskset, self.number_of_task_in_taskset, self.number_of_task_in_taskset)) #set d'interference de taille set*tasks*tasks 
-			for _set in range(self.number_of_taskset):
-				interferences[_set] = self.gen_interference(wcets[_set])
-		else:
-			interferences = self.interference_factor
-			interferences = numpy.array(interferences)
+		interferences = numpy.zeros((self.number_of_taskset, self.number_of_task_in_taskset, self.number_of_task_in_taskset)) #set d'interference de taille set*tasks*tasks 
+		for _set in range(self.number_of_taskset):
+			interferences[_set] = self.gen_interference(wcets[_set])
+		
 		deadline = periods[:] #TO DO Implémenter deadline
 		return [periods, deadline, utilizations, wcets, interferences]
 
@@ -149,61 +136,38 @@ class TasksetSetGeneration:
 			periods = numpy.array(periods) #transforme en array numpy
 			periods.shape = (1, self.number_of_task_in_taskset) #met sous forme de dimension mxn là où m est censé etre 1
 
-		elif self.method_of_period_generation == "constrained_periods":
-			print("SKSKSKSK\nSKSKSKSKSK\n")
-			periods = self.generate_constrained_periods(self.matrixW)
+		elif self.method_of_period_generation == "matrixM":
+			periods = self.generate_periods()
 			periods = numpy.array(periods)
 
-		elif self.method_of_period_generation == "random_max_lcm":
-			periods = self.gen_random_list_with_max_lcm() 
-			periods = numpy.array(periods)
 		else:
 			return None
 		periods = numpy.floor(periods / self.granularity) * self.granularity #retourne le chiffre le plus petit qui se divise par gran pour chaque elem de periods
 		
 		return periods
 
-	def lcm_list(self, list_number):
-	    lcm = 1
-	    for i in list_number:
-	        lcm = lcm*i//gcd(lcm, i)
-	    return lcm
 
 	def lcm(self, a, b):
-	    return a * b // gcd(a, b)
+		return a * b // gcd(a, b)
 
-	def gen_random_list_with_max_lcm(self):
-		periods = []
-		periods_before_distribution = []
-		while len(periods_before_distribution) == 0:
-			periods_before_distribution = self.generate_random_list_with_constraints()
-		for i in range(0, len(periods_before_distribution), self.number_of_task_in_taskset):
-			periods.append(periods_before_distribution[i:i+self.number_of_task_in_taskset])
-		return periods
+	def calculate_hyperperiod(self, periods):
+		return reduce(lcm, periods)
 
-	def generate_random_list_with_constraints(self):
-	    random_list = []
-	    current_lcm = 1
-	    loop = 0
-	    
-	    while len(random_list) < self.number_of_task_in_taskset*self.number_of_taskset and current_lcm <= self.max_lcm:
-	        if loop == 10000: #if instance takes too much time, stop and retry
-	            return []
-	        number = random.randint(self.period_min, self.period_max)
-	        if number not in random_list:
-	            new_lcm = self.lcm(current_lcm, number)
-	            
-	            if new_lcm <= self.max_lcm:
-	                random_list.append(number)
-	                current_lcm = new_lcm
-	            else:
-	                if random_list:
-	                    random_list.pop()  # Remove the last added number
-	                    current_lcm = self.lcm_list(random_list)
-	                else:
-	                    break  # No more numbers to remove, exit the loop
-	        loop += 1
-	    return random_list
+	def generate_single_period(self):
+		period = 1
+		for line in self.matrixM:
+			j = random.randint(0, len(line) - 1)
+			period *= line[j]
+		return period
+
+	def generate_periods(self):
+		periods_array = []
+		for _ in range(self.number_of_taskset):
+			periods = [self.generate_single_period() for _ in range(self.number_of_task_in_taskset)]
+			periods_array.append(periods)
+		return periods_array
+	
+
 
 	def gen_interference(self,wcet):
 		cache_interference = numpy.zeros((self.number_of_task_in_taskset, self.number_of_task_in_taskset)) #une matrice de taille nxn qui représente si une tâche a une interference sur une autre tache
@@ -235,27 +199,6 @@ class TasksetSetGeneration:
 		return res
 
 
-	def generate_constrained_periods(self, M):
-
-		def generate_single_period(M):
-		    period = 1
-		    for i in M:
-		        p = round(random.uniform(1, len(i)))
-		        period *= i[p-1]  # -1 because list index starts from 0
-		    return period
-
-		periods = []
-		for num_taskset in range(self.number_of_taskset):
-			periods.append([])
-			for num_task_in_taskset in range(self.number_of_task_in_taskset):
-			    period = generate_single_period(M)
-			    periods[-1].append(period)
-		print("exmeple")
-		print(periods)
-
-		return periods
-
-	
 
 
 

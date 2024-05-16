@@ -44,26 +44,26 @@ def format_assignment_results(assignment_results):
 def main(experience_parameter_index="0"):
     experience_parameter = load_parameter("experience", experience_parameter_index)
 
-    matrix_option = experience_parameter["matrix_option"]
+    #matrix_option = experience_parameter["matrix_option"]
     taskset_option = experience_parameter["taskset_option"]
     assignment_option = experience_parameter["assignment_option"]
     schedule_option = experience_parameter["schedule_option"]
-    matrix = []
+    #matrix = []
   
-    if matrix_option != "none":
-        matrix_name = experience_parameter["matrix_name"]
-        if matrix_option=="generate":
-            print("*****")
-            print(f"Generating matrix")
-            matrix_parameter_index = experience_parameter["matrix_parameter_index"]
-            matrix_parameter = load_parameter("matrix", matrix_parameter_index)
-            matrix = matrix_generation(matrix_parameter)
-            write_result(matrix, "matrix", matrix_name)
-        elif matrix_option=="open":
-            print("*****")
-            print(f"Opening matrix")
-            matrix = open_generated("matrix", matrix_name)
-            print(matrix)
+    # if matrix_option != "none":
+    #     matrix_name = experience_parameter["matrix_name"]
+    #     if matrix_option=="generate":
+    #         print("*****")
+    #         print(f"Generating matrix")
+    #         matrix_parameter_index = experience_parameter["matrix_parameter_index"]
+    #         matrix_parameter = load_parameter("matrix", matrix_parameter_index)
+    #         matrix = matrix_generation(matrix_parameter)
+    #         write_result(matrix, "matrix", matrix_name)
+    #     elif matrix_option=="open":
+    #         print("*****")
+    #         print(f"Opening matrix")
+    #         matrix = open_generated("matrix", matrix_name)
+    #         print(matrix)
 
 
     if taskset_option != "none":
@@ -74,7 +74,8 @@ def main(experience_parameter_index="0"):
             print(f"Generating taskset")
             generation_parameter_index = experience_parameter["generation_parameter_index"]
             generation_parameter = load_parameter("generation", generation_parameter_index)
-            experience = experience_generation(generation_parameter, matrix)
+            experience = experience_generation(generation_parameter)
+            print(experience)
             write_result(experience, "taskset", taskset_name)
         elif taskset_option=="open":
             print("*****")
@@ -137,8 +138,8 @@ def load_parameter(parameter_name, parameter_index):
         print("Parameter not specified or not in the range; defaulting to option 0")
         return parameter["0"]
 
-def experience_generation(generation_parameter, M):
-    experience_generation = ExperienceGeneration(M, **generation_parameter)
+def experience_generation(generation_parameter):
+    experience_generation = ExperienceGeneration(**generation_parameter)
     experience = experience_generation.generate_experience()
     return experience
 

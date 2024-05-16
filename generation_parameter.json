@@ -42,7 +42,7 @@
     "_list_of_sorting_criterion": ["et"],
     "_period_min": 1,
     "_period_max": 200,
-    "_list_of_method_of_period_generation": ["random_max_lcm"],
+    "_list_of_method_of_period_generation": ["matrixM"],
     "_random_generation": true,
     "_granularity": 1
   },

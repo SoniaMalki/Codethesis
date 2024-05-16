@@ -1,6 +1,6 @@
-from modules.citta import Citta
-from modules.wfdu import Wfdu
-from modules.ffdu import Ffdu
+from modules.assignment_generation.citta import Citta
+from modules.assignment_generation.wfdu import Wfdu
+from modules.assignment_generation.ffdu import Ffdu
 
 import time
 class TasksetAssignment:

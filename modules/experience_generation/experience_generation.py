@@ -1,6 +1,8 @@
-from modules.experience import Experience
-from modules.taskset_set_generation import TasksetSetGeneration
+from modules.experience_generation.experience import Experience
+from modules.experience_generation.taskset_set_generation import TasksetSetGeneration
 import time
+
+
 class ExperienceGeneration:
 	def __init__(self, _number_of_cores, _list_of_max_utilization, _number_of_taskset, _period_min, _period_max, _granularity, _list_of_sorting_criterion, _list_of_number_of_task_in_taskset, 
 				_list_of_interference_factor, _list_of_probability_factor,

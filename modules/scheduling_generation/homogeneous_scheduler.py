@@ -2,11 +2,11 @@ import math
 import logging
 import numpy 
 import time
-from modules.earliest_deadline_first import EarliestDeadlineFirst
-from modules.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
-from modules.deadline_monotonic import DeadlineMonotonic
-from modules.deadline_monotonic_variant1 import DeadlineMonotonicVariant1
-from modules.schedule_plan import SchedulePlan
+from modules.scheduling_generation.earliest_deadline_first import EarliestDeadlineFirst
+from modules.scheduling_generation.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
+from modules.scheduling_generation.deadline_monotonic import DeadlineMonotonic
+from modules.scheduling_generation.deadline_monotonic_variant1 import DeadlineMonotonicVariant1
+from modules.scheduling_generation.schedule_plan import SchedulePlan
 from itertools import chain
 
 class HomogeneousScheduler:

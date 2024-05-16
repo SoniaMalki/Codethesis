@@ -1,5 +1,5 @@
-from modules.homogeneous_scheduler import HomogeneousScheduler
-from modules.mixed_scheduler import MixedScheduler
+from modules.scheduling_generation.homogeneous_scheduler import HomogeneousScheduler
+from modules.scheduling_generation.mixed_scheduler import MixedScheduler
 class Scheduler:
 	def __init__(self, _assignment, _scheduling_algorithm_name, _number_of_cores, _current_time=0):
 		self.assignment = _assignment

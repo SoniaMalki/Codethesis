@@ -15,17 +15,15 @@ class PeriodGeneration:
 
     def gen_periods(self):
         if self.method_of_period_generation == "logunif":
-            periods = numpy.exp(numpy.random.uniform(low=numpy.log(self.period_min), high=numpy.log(self.period_max + self.granularity), size=(self.number_of_taskset, self.number_of_task_in_taskset)))
+            periods = numpy.exp(numpy.random.uniform(low=numpy.log(self.period_min), high=numpy.log(self.period_max * self.granularity), size=(self.number_of_taskset, self.number_of_task_in_taskset)))
         elif self.method_of_period_generation == "unif":
             periods = numpy.random.uniform(low=self.period_min, high=(self.period_max + self.granularity), size=(self.number_of_taskset, self.number_of_task_in_taskset))
         elif type(self.method_of_period_generation) == list:
-            if self.random_generation:
-                assert self.number_of_taskset == 1
-                periods = [random.choice(self.method_of_period_generation) for _ in range(self.number_of_task_in_taskset)]
-            else:
-                periods = self.method_of_period_generation
+            assert self.number_of_taskset == 1
+            periods = [random.choice(self.method_of_period_generation) for _ in range(self.number_of_task_in_taskset)]
             periods = numpy.array(periods)
             periods.shape = (1, self.number_of_task_in_taskset)
+            
         elif self.method_of_period_generation == "matrixM":
             periods = self.generate_periods()
             periods = numpy.array(periods)

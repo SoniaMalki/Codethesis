@@ -29,15 +29,13 @@ class TasksetSetGeneration:
         self.utilization_generation = UtilizationGeneration(self.number_of_taskset, self.number_of_task_in_taskset, self.max_utilization)
         self.period_generation = PeriodGeneration(self.number_of_taskset, self.number_of_task_in_taskset, self.period_min, self.period_max, self.granularity, self.method_of_period_generation, self.matrixM)
         self.wcet_calculation = WCETCalculation(self.number_of_taskset, self.number_of_task_in_taskset)
-        self.interference_generation = InterferenceGeneration(self.number_of_task_in_taskset, self.interference_factor, self.probability_factor)
+        self.interference_generation = InterferenceGeneration(self.number_of_taskset, self.number_of_task_in_taskset, self.interference_factor, self.probability_factor)
 
     def init_taskset_set(self):
         utilizations = self.utilization_generation.StaffordRandFixedSum()
         periods = self.period_generation.gen_periods()
         wcets = self.wcet_calculation.calculate_wcets(periods, utilizations)
-        interferences = numpy.zeros((self.number_of_taskset, self.number_of_task_in_taskset, self.number_of_task_in_taskset))
-        for _set in range(self.number_of_taskset):
-            interferences[_set] = self.interference_generation.gen_interference(wcets[_set])
+        interferences = self.interference_generation.gen_interference(wcets)
         deadline = periods[:]  # TO DO: Implement deadline properly
         return [periods, deadline, utilizations, wcets, interferences]
 
@@ -45,7 +43,6 @@ class TasksetSetGeneration:
         period, deadline, utilization, wcet, interference = self.init_taskset_set()
         taskset_set_generated = []
         for i in range(len(period)):
-            print(interference[i])
             taskset_set_generated.append(Taskset(_taskset_number=i, _wcet=wcet[i], _deadline=deadline[i], _period=period[i], _interference=interference[i], _utilization=utilization[i]))
         res = TasksetSet(_taskset_set_number=self.taskset_set_number, _wcet=wcet, _deadline=deadline, _period=period, _interference=interference, _utilization=utilization, _taskset_list=taskset_set_generated)
         return res

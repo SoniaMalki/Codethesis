@@ -2,7 +2,6 @@ from modules.taskset import Taskset
 
 class TasksetSet:
     def __init__(self, _taskset_set_number, _wcet, _deadline, _period , _interference, _utilization, _taskset_list):
-        #Task(C,D,T,I)
         self.taskset_set_number = _taskset_set_number
         self.wcet = _wcet
         self.deadline = _deadline

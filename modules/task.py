@@ -40,12 +40,13 @@ class Task:
             f"Period: {self.period}\n"
             f"Interference: {self.interference}\n"
             f"Utilization: {self.utilization}\n"
-            f"Jobs of the Task: "
             )
+        job_str = "Jobs of the Task: "
         for elem in self.job_list:
-            res = res + "\n" + str(elem)
+            job_str = job_str + "\n" + str(elem)
         if len(self.job_list) == 0:
-            res = res + "[]"
+            job_str = job_str + "[]"
+        res = res + job_str
         return res
 
     def create_jobs(self, start_time, finish_time): #task est statique, job dynamique, donc pas dans l'init, on les crée a part qu'a l'utilisation

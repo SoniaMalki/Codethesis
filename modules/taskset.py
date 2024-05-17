@@ -10,7 +10,6 @@ class Taskset:
         self.utilization = _utilization
         
         self.task_list = []
-        # self.busy_periods = []
         for i in range(len(self.period)):
             self.task_list.append(Task(_task_number=i, _wcet=self.wcet[i], _deadline=self.deadline[i], 
                                 _period=self.period[i], _interference=self.interference[i], _utilization=self.utilization[i]
@@ -45,29 +44,13 @@ class Taskset:
             f"Period: {self.period}\n"
             f"Interference: {self.interference}\n"
             f"Utilization: {self.utilization}\n"
-            f"Task in the taskset:"
             )
+        task_str = "Task in the taskset:"
         for elem in self.task_list:
-            res = res + "\n" + str(elem)
+            task_str = task_str + "\n" + str(elem)
         if len(self.task_list) == 0:
-            res = res + "[]"
+            task_str = task_str + "[]"
+        #res = res + task_str
         return res
 
-    # def nice_output(self):
-    #     res = "Taskset n:{}\n".format(self.taskset_number)
-    #     res += "Periods of tasks \n{} \n".format(self.period)
-    #     res += "Utilization of tasks \n{} \n".format(self.utilization)
-    #     res += "WCET of tasks : \n{} \n".format(self.wcet)
-    #     res += "Interference factor of tasks : \n{} \n".format(self.interference)
-    #     res += "\n\nSolution : {}\n".format('found' if self.successfully_assigned else 'not found')
-    #     if self.successfully_assigned:
-    #         res += "Core assignment : {}\n".format(self.core_assignment)
-    #     res += "----------------------------\n"
-    #     for task in self.taskset:
-    #         res += task.nice_output()
-    #     return res
-
-    # def defineUnderTaskset(self, indexes_list):
-    #     temp = [self.taskset[i] for i in range(len(self.taskset)) if i in indexes_list]
-    #     self.taskset = temp
 

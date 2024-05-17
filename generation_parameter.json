@@ -26,7 +26,7 @@
     "_list_of_sorting_criterion": ["et"],
     "_period_min": 100,
     "_period_max": 200,
-    "_list_of_method_of_period_generation": ["unif"],
+    "_list_of_method_of_period_generation": ["logunif"],
     "_random_generation": true,
     "_granularity": 1
   },
@@ -38,7 +38,7 @@
     "_list_of_number_of_task_in_taskset": [3],
     "_number_of_taskset": 2,
     "_list_of_interference_factor": [0.2],
-    "_list_of_probability_factor": [0.1],
+    "_list_of_probability_factor": [1],
     "_list_of_sorting_criterion": ["et"],
     "_period_min": 1,
     "_period_max": 200,

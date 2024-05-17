@@ -6,11 +6,9 @@ import json
 from pathlib import Path
 import time
 
-# Corrected imports based on your directory structure
-from modules.experience_generation.experience_generation import ExperienceGeneration
+from modules.experience_generation.experience_generator import ExperienceGenerator
 from modules.experience_generation.experience import Experience
-from modules.experience_generation.task_model.matrix_m import MatrixM
-from modules.experience_generation.taskset_set_generation import TasksetSetGeneration
+from modules.experience_generation.taskset_set_generator import TasksetSetGenerator
 from modules.taskset import Taskset
 from modules.assignment_generation.citta import Citta
 from modules.assignment_generation.taskset_assignment import TasksetAssignment
@@ -19,7 +17,6 @@ from modules.assignment_generation.assignment_result import AssignmentResult
 from modules.scheduling_generation.scheduling_result import SchedulingResult
 
 current_path = Path(__file__).parent
-
 
 def format_assignment_results(assignment_results):
     formatted_results = []
@@ -37,7 +34,6 @@ def format_assignment_results(assignment_results):
         formatted_results.append(core_summary)
 
     return "\n".join(formatted_results)
-
 
 def main(experience_parameter_index="0"):
     experience_parameter = load_parameter("experience", experience_parameter_index)
@@ -96,7 +92,6 @@ def main(experience_parameter_index="0"):
             print(f"Opening schedule")
             scheduling_result = open_generated("schedule", schedule_name)
 
-
 def load_parameter(parameter_name, parameter_index):
     with open(f'{current_path}/{parameter_name}_parameter.json', 'r') as json_file:
         parameter = json.load(json_file)
@@ -108,25 +103,20 @@ def load_parameter(parameter_name, parameter_index):
         return parameter["0"]
 
 def experience_generation(generation_parameter):
-    experience_generation = ExperienceGeneration(**generation_parameter)
-    experience = experience_generation.generate_experience()
+    experience_generator = ExperienceGenerator(**generation_parameter)
+    experience = experience_generator.generate_experience()
     return experience
 
-def matrix_generation(matrix_parameter):
-    matrix_generation = MatrixGeneration(**matrix_parameter)
-    matrix = matrix_generation.generate_matrix()
-    return matrix
-
 def launch_assignment_experience(assignment_algorithm, experience, assignment_result):
-    list_of_sorting_criterion = experience.list_of_sorting_criterion
+    list_of_sorting_criteria = experience.list_of_sorting_criteria
     number_of_cores = experience.number_of_cores
-    assignment_running_length = len(experience) * len(experience.taskset_set_list[0]) * len(list_of_sorting_criterion)
+    assignment_running_length = len(experience) * len(experience.taskset_set_list[0]) * len(list_of_sorting_criteria)
     taskset_assignment = TasksetAssignment(assignment_algorithm, number_of_cores)
     experience_assignment = []
     i = 0
     for taskset_set in experience:
         for taskset in taskset_set:
-            for sorting_criterion in list_of_sorting_criterion:
+            for sorting_criterion in list_of_sorting_criteria:
                 print(f"Launching taskset assignment {i+1} of {assignment_running_length}")
                 task_assignment_list, successfully_assigned = taskset_assignment.assign(taskset=taskset, sorting_criterion=sorting_criterion)
                 assignment_result.add_result(successfully_assigned, task_assignment_list, taskset)

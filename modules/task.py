@@ -1,24 +1,25 @@
 import math
 from .job import Job
+
 class Task:
-    def __init__(self, _task_number, _wcet, _deadline, _period, _interference, _utilization):
-        self.task_number = _task_number
-        self.wcet = _wcet
-        self.deadline = _deadline
-        self.period = _period
-        self.interference = _interference
-        self.utilization = _utilization
+    def __init__(self, task_number, wcet, deadline, period, interference, utilization):
+        self.task_number = task_number
+        self.wcet = wcet
+        self.deadline = deadline
+        self.period = period
+        self.interference = interference
+        self.utilization = utilization
         self.job_list = []
 
     def __repr__(self):
         return ("Task("
-            f"_task_number={self.task_number} ,"
-            f"_wcet={self.wcet}, "
-            f"_deadline={self.deadline}, "
-            f"_period={self.period}, "
-            f"_interference={self.interference}, "
-            f"_utilization={self.utilization}"
-            ")"
+                f"task_number={self.task_number}, "
+                f"wcet={self.wcet}, "
+                f"deadline={self.deadline}, "
+                f"period={self.period}, "
+                f"interference={self.interference}, "
+                f"utilization={self.utilization}"
+                ")"
         )
 
     def __len__(self):
@@ -35,12 +36,11 @@ class Task:
 
     def __str__(self):
         res = (f"Task number: {self.task_number}\n"
-            f"WCET: {self.wcet}\n"
-            f"Deadline: {self.deadline}\n"
-            f"Period: {self.period}\n"
-            f"Interference: {self.interference}\n"
-            f"Utilization: {self.utilization}\n"
-            )
+               f"WCET: {self.wcet}\n"
+               f"Deadline: {self.deadline}\n"
+               f"Period: {self.period}\n"
+               f"Interference: {self.interference}\n"
+               f"Utilization: {self.utilization}\n")
         job_str = "Jobs of the Task: "
         for elem in self.job_list:
             job_str = job_str + "\n" + str(elem)
@@ -49,13 +49,10 @@ class Task:
         res = res + job_str
         return res
 
-    def create_jobs(self, start_time, finish_time): #task est statique, job dynamique, donc pas dans l'init, on les crée a part qu'a l'utilisation
+    def create_jobs(self, start_time, finish_time):
         self.job_list = []
-        number_of_jobs = math.ceil((finish_time-start_time)/self.period)
-        number_of_jobs_already_created = math.ceil(start_time/self.period)
-        for i in range(number_of_jobs):            
-            new_job = Job(_task_number=self.task_number, _job_identifier=i+number_of_jobs_already_created,_job_number=i, _execution_time=self.wcet, _relative_deadline=self.deadline, _period=self.period, _interference=self.interference)
+        number_of_jobs = math.ceil((finish_time - start_time) / self.period)
+        number_of_jobs_already_created = math.ceil(start_time / self.period)
+        for i in range(number_of_jobs):
+            new_job = Job(task_number=self.task_number, job_identifier=i + number_of_jobs_already_created, job_number=i, execution_time=self.wcet, relative_deadline=self.deadline, period=self.period, interference=self.interference)
             self.job_list.append(new_job)
-
-
-    

@@ -1,42 +1,45 @@
 class Experience:       
-    def __init__(self, _number_of_cores, _number_of_taskset, _period_min, _period_max, _granularity, _list_of_sorting_criterion,
-                        _list_of_number_of_task_in_taskset, _list_of_interference_factor, _list_of_probability_factor, _list_of_method_of_period_generation, _list_of_max_utilization, 
-                        _experience_lenght, _taskset_set_list):
-        #parameters that stay the same
-        self.number_of_cores= _number_of_cores
-        self.number_of_taskset = _number_of_taskset
-        self.period_min = _period_min
-        self.period_max = _period_max
-        self.granularity = _granularity
-        self.list_of_sorting_criterion = _list_of_sorting_criterion
+    def __init__(self, number_of_cores, taskset_count, list_of_tasks_per_taskset, 
+                 list_of_interference_factors, list_of_probability_factors, 
+                 min_period, max_period, granularity, list_of_period_generation_methods, 
+                 list_of_sorting_criteria, list_of_max_utilization, 
+                 experience_length, taskset_set_list):
+        # Parameters that stay the same
+        self.number_of_cores = number_of_cores
+        self.taskset_count = taskset_count
+        self.min_period = min_period
+        self.max_period = max_period
+        self.granularity = granularity
+        self.list_of_sorting_criteria = list_of_sorting_criteria
 
-        #parameters that varies
-        self.list_of_number_of_task_in_taskset = _list_of_number_of_task_in_taskset
-        self.list_of_interference_factor = _list_of_interference_factor
-        self.list_of_probability_factor = _list_of_probability_factor
-        self.list_of_max_utilization = _list_of_max_utilization
-        self.list_of_method_of_period_generation = _list_of_method_of_period_generation
-        self.experience_lenght = _experience_lenght
-        self.taskset_set_list = _taskset_set_list
+        # Parameters that vary
+        self.list_of_tasks_per_taskset = list_of_tasks_per_taskset
+        self.list_of_interference_factors = list_of_interference_factors
+        self.list_of_probability_factors = list_of_probability_factors
+        self.list_of_period_generation_methods = list_of_period_generation_methods
+        self.list_of_max_utilization = list_of_max_utilization
+
+        # Other parameters
+        self.experience_length = experience_length
+        self.taskset_set_list = taskset_set_list
 
     def __repr__(self):
         return ("Experience("
-            f"_number_of_cores={self.number_of_cores}, "
-            f"_number_of_taskset={self.number_of_taskset}, "
-            f"_period_min={self.period_min}, "
-            f"_period_max={self.period_max}, "
-            f"_granularity={self.granularity}, "
-            f"_list_of_sorting_criterion={self.list_of_sorting_criterion}, "
-            f"_list_of_number_of_task_in_taskset={self.list_of_number_of_task_in_taskset}, "
-            f"_list_of_interference_factor={self.list_of_interference_factor}, "
-            f"_list_of_probability_factor={self.list_of_probability_factor}, "
-            f"_list_of_method_of_period_generation={self.list_of_method_of_period_generation}, "
-            f"_list_of_max_utilization={self.list_of_max_utilization}, "
-            f"_experience_lenght={self.experience_lenght}, "
-            f"_taskset_set_list={repr(self.taskset_set_list)}"
-            ")"
+                f"number_of_cores={self.number_of_cores}, "
+                f"taskset_count={self.taskset_count}, "
+                f"min_period={self.min_period}, "
+                f"max_period={self.max_period}, "
+                f"granularity={self.granularity}, "
+                f"list_of_sorting_criteria={self.list_of_sorting_criteria}, "
+                f"list_of_tasks_per_taskset={self.list_of_tasks_per_taskset}, "
+                f"list_of_interference_factors={self.list_of_interference_factors}, "
+                f"list_of_probability_factors={self.list_of_probability_factors}, "
+                f"list_of_period_generation_methods={self.list_of_period_generation_methods}, "
+                f"list_of_max_utilization={self.list_of_max_utilization}, "
+                f"experience_length={self.experience_length}, "
+                f"taskset_set_list={repr(self.taskset_set_list)}"
+                ")"
         )
-    
 
     def __len__(self):
         return len(self.taskset_set_list)
@@ -51,41 +54,21 @@ class Experience:
         return self.taskset_set_list[i]
 
     def __str__(self):
-        res= (f"Experience with parameters:\n"
-            f"Number of cores: {self.number_of_cores}\n"
-            f"Number of taskset: {self.number_of_taskset}\n"
-            f"Minimum/Maximum values for periods: {self.period_min}/{self.period_max}\n"
-            f"Granularity used for period generation: {self.granularity}\n"
-            f"List of sorting criterion: {self.list_of_sorting_criterion}\n"
-            f"List of number of tasks in taskset: {self.list_of_number_of_task_in_taskset}\n"
-            f"List of interference factor for generation of interference: {self.list_of_interference_factor}\n"
-            f"List of probability of two tasks interfering with each other: {self.list_of_probability_factor}\n"
-            f"List of methods used for period generation: {self.list_of_method_of_period_generation}\n"
-            f"List of maximum utilization used for wcet generation: {self.list_of_max_utilization}\n"
-            f"Lenght of the experience (how much set of taskset created?): {self.experience_lenght}\n"
-            f"List of generated set of taskset:"
-            )
+        res = (f"Experience with parameters:\n"
+               f"Number of cores: {self.number_of_cores}\n"
+               f"Number of taskset: {self.taskset_count}\n"
+               f"Minimum/Maximum values for periods: {self.min_period}/{self.max_period}\n"
+               f"Granularity used for period generation: {self.granularity}\n"
+               f"List of sorting criteria: {self.list_of_sorting_criteria}\n"
+               f"List of number of tasks in taskset: {self.list_of_tasks_per_taskset}\n"
+               f"List of interference factors for generation of interference: {self.list_of_interference_factors}\n"
+               f"List of probability of two tasks interfering with each other: {self.list_of_probability_factors}\n"
+               f"List of methods used for period generation: {self.list_of_period_generation_methods}\n"
+               f"List of maximum utilization used for WCET generation: {self.list_of_max_utilization}\n"
+               f"Length of the experience (how many sets of tasksets created?): {self.experience_length}\n"
+               f"List of generated sets of tasksets:")
         for elem in self.taskset_set_list:
-            res = res + "\n" + str(elem)
+            res += "\n" + str(elem)
         if len(self.taskset_set_list) == 0:
-            res = res + "[]"
+            res += "[]"
         return res
-
-
-
-    # def __str__(self):
-    #     res = ""
-    #     res += (
-    #         f"Experience n{self.experience_number} generated with parameters:\n"
-    #         f"Number of taskset generated: {self.number_of_taskset}\n"
-    #         f"How many tasks per taskset: {self.number_of_tasks}\n"
-    #         f"Maximum utilization factor per taskset: {self.u_max}\n"
-    #         f"Minimum period for the tasks, maximum period for the tasks: min={self.period_min}/max={self.period_max}\n"
-    #         f"Interference factor used for interference generation: {self.list_of_interference_factor}\n"
-    #         f"Probability factor of two tasks generating interference for interference generation: {self.list_of_probability_factor*100} %\n"
-    #         f"Method used for generating periods: {self.period_generation_method}\n"
-    #         f"\nGenerated taskset in the experience \n"
-    #         )
-    #     # for taskset_set in self.taskset_set_list:
-    #     #     res += taskset_set.nice_output()
-    #     return res

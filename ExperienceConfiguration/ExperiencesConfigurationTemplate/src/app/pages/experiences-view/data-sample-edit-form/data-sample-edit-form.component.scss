@@ -1,0 +1,44 @@
+
+
+nb-card {
+  width: 1200px;
+  transition: width 0.4s ease;
+}
+
+.expanded {
+  width: 1750px;
+}
+
+.label {
+	font-size: 13px;
+}
+
+.buttons-right {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    width: 100%;
+    padding-top: 40px;
+}
+.button-spacing {
+    margin-left: 5px;
+}
+
+textarea {
+  overflow: hidden;
+  resize: none; /* Prevents resizing of the textarea */
+}
+
+/* Optional: Customize the scrollbar appearance */
+::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar in WebKit-based browsers */
+}
+
+textarea::-webkit-scrollbar {
+  display: none;
+}
+
+textarea::-moz-scrollbar {
+  display: none;
+}
+

@@ -1,0 +1,10 @@
+<div class="visitors-statistics">
+  <div class="statistics-chart">
+    <div echarts
+         [options]="option"
+         class="echart"
+         (chartInit)="onChartInit($event)">
+    </div>
+  </div>
+  <ngx-legend-chart class="visitors-statistics-legend" [legendItems]="chartLegend"></ngx-legend-chart>
+</div>

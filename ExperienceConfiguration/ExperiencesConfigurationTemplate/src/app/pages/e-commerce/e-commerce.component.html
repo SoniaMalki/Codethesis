@@ -1,0 +1,167 @@
+
+
+<!--
+<div class="row">
+  <div class="col-xxl-12">
+    <nb-card>
+      
+      <nb-card-body style="height:300px; padding-top:40px; padding-top:40px;">
+        <nb-progress-bar [value]="30" status="primary" [displayValue]="true"></nb-progress-bar>
+      </nb-card-body>
+    </nb-card>
+  </div>
+</div>
+--><style>
+  .col-fifth {
+    width: 20%;
+    box-sizing: border-box;  /* Include padding and border in the width calculation */
+    padding: 12px;
+    padding-top: 0;
+    margin: 0;
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .ngx-container {
+    width: 100%;
+  }
+</style>
+<div style="transform: translateY(-10px);">
+  <div class="row">
+    
+
+
+    <div class="col-fifth">
+      <div class="ngx-container">
+        <ngx-solar 
+          [cardColor]="'#36b7ff'" 
+          [title]="'TOTAL TOKENS OBJECTIVE'" 
+          [labelText]="totalTokenFrench + ' tokens'"
+          [secondaryText]="'out of ' + objectiveToken" 
+          [percentage]="percentageTokenFrench" 
+          [current]="totalTokenFrench" 
+          [total]="objectiveToken"></ngx-solar>
+      </div>
+    </div>
+
+    
+
+    <div class="col-fifth">
+      <div class="ngx-container">
+        <ngx-solar 
+          [cardColor]="'#faae00'" 
+          [title]="'TOTAL DATASAMPLES OBJECTIVE'" 
+          [labelText]="totalSamples + ' samples'" 
+          [secondaryText]="'out of ' + totalDataSampleObjective" 
+          [percentage]="percentageDataSample" 
+          [current]="totalSamples" 
+          [total]="totalDataSampleObjective"></ngx-solar>
+      </div>
+    </div>
+
+      <div class="col-fifth">
+      <div class="ngx-container">
+        <ngx-solar 
+          [cardColor]="'#ffa6c0'"  
+          [title]="'TOTAL DATA PROCESSED'" 
+          [labelText]="totalProcessed + ' processed'" 
+          [secondaryText]="'out of ' + totalDataSampleObjective + ' samples'" 
+          [percentage]="percentageProcessed" 
+          [current]="totalProcessed" 
+          [total]="totalDataSampleObjective"></ngx-solar>
+      </div>
+    </div>
+
+
+    <div class="col-fifth">
+      <div class="ngx-container">
+        <ngx-solar 
+          [cardColor]="'#5ddb8a'" 
+          [title]="'AVERAGE QUALITY'" 
+          [labelText]="'total score'" 
+          [secondaryText]="'out of ' + totalSamples + ' samples'" 
+          [percentage]="averageQuality" 
+          [current]="totalSamples" 
+          [total]="totalDataSampleObjective"
+          [centerText]="formatNumber(averageQuality/10)"
+        ></ngx-solar>
+      </div>
+    </div>
+
+      <div class="col-fifth">
+      <div class="ngx-container">
+        <ngx-solar 
+          [cardColor]="'#b4a0ef'" 
+          [title]="'AVERAGE POSITIVITY'" 
+          [labelText]="'total score'" 
+          [secondaryText]="'out of ' + totalSamples + ' samples'" 
+          [percentage]="averagePositivity" 
+          [current]="totalProcessed" 
+          [total]="totalSamples"
+          [centerText]="formatNumber(averagePositivity/10)"
+        ></ngx-solar>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="row" style="transform: translateY(-20px);">
+    <div class="col-xxl-3">
+      <ngx-country-orders [title]="'Tags'" [caption]="'Total sample by tag'" [inputData]="dashboardStatistics.tagStatistics" [horizontal]="true"></ngx-country-orders>
+    </div>
+
+    <div class="col-xxl-6">
+      <ngx-ecommerce-charts [processedData]="dashboardStatistics.last14DaysProcessedSamples"></ngx-ecommerce-charts>
+    </div>
+
+    <div class="col-xxl-3">
+      <div class="row">
+        <div class="col-md-12 d-flex flex-column">
+          <nb-card size="medium" style="height:339px;">
+            <nb-tabset fullWidth>
+              <nb-tab tabTitle="Sources">
+                <ngx-ecommerce-visitors-analytics [title]="'Sources'" [pieChartValue]="sourcesPercentages"></ngx-ecommerce-visitors-analytics>
+              </nb-tab>
+              <nb-tab tabTitle="References">
+                <ngx-ecommerce-visitors-analytics [title]="'Sources'" [pieChartValue]="referencesPercentages"></ngx-ecommerce-visitors-analytics>
+              </nb-tab>
+            </nb-tabset>
+
+          </nb-card>
+        </div>
+        <!--<div class="col-md-12 d-flex flex-column">
+          <ngx-country-orders [title]="'Sources'" [caption]="'Total sample by source'" [inputData]="dashboardStatistics.sourceStatistics"></ngx-country-orders>
+        </div>
+      -->
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="row" style="transform: translateY(-30px);">
+    <div class="col-xxl-4">
+      <ngx-progress-section [progressInfoData]="estimationRemainingInfoData"></ngx-progress-section>
+    </div>
+    <div class="col-xxl-4">
+      <ngx-progress-section [progressInfoData]="weeklyObjectiveInfoData"></ngx-progress-section>
+    </div>
+    <div class="col-xxl-4">
+      <nb-card >
+      <nb-tabset fullWidth style="padding:0; height:282px;" >
+      <nb-tab tabTitle="Quality" style="padding:0; height:262px; overflow:hidden">
+        <ngx-country-orders [title]="'Sources'"  [inputData]="qualityDistribution" [horizontal]="false" [applyStyling]="true"></ngx-country-orders>
+      </nb-tab>
+      <nb-tab tabTitle="Positivity" style="padding:0; height:262px; overflow:hidden">
+        <ngx-country-orders [title]="'Sources'" [caption]="'Total sample by source'" [inputData]="positivityDistribution" [horizontal]="false" [applyStyling]="true"></ngx-country-orders>
+      </nb-tab>
+      </nb-tabset>
+    </nb-card>
+    </div>  
+
+  </div>
+</div>

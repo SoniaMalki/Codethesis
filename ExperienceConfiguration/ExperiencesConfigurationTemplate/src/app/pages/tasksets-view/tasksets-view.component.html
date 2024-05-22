@@ -1,0 +1,86 @@
+<nb-card>
+  <nb-card-header>Filter & Sorts</nb-card-header>
+  <nb-card-body>
+
+    <div class="filter-sort-container" style="display:flex; padding-bottom: 10px;">
+      <div class="filters-container" style="padding-left: 12px; padding-right: 483px;">
+        <h6 style="font-size: 14px;">Filters</h6>
+        
+        <div class="filters-container-flex" style="display: flex; flex-wrap: wrap">
+          <!-- Source Filter Dropdown with Checkboxes -->
+          <div style="margin-right: 24px;">
+            <label class="label" for="tagsSelect" style="display: block;">Source</label>
+            <nb-select id="sourceSelect" multiple [(ngModel)]="selectedSources" (selectedChange)="onFieldChanged()" style="min-width: 132px; max-width: 132px;">
+              <nb-option *ngFor="let source of sources" [value]="source" style="min-width: 132px; max-width: 132px;">
+                <nb-checkbox>{{ source }}</nb-checkbox>
+              </nb-option>
+            </nb-select>
+          </div>
+
+          <!-- Reference Filter Dropdown with Checkboxes -->
+          <div style="margin-right: 24px;">
+            <label class="label" for="tagsSelect" style="display: block;">Reference</label>
+            <nb-select id="referenceSelect" multiple [(ngModel)]="selectedReferences" (selectedChange)="onFieldChanged()" style="min-width: 148px; max-width: 148px;">
+              <nb-option *ngFor="let reference of references" [value]="reference" style="min-width: 148px; max-width: 148px;">
+                <nb-checkbox>{{ reference }}</nb-checkbox>
+              </nb-option>
+            </nb-select>
+          </div>
+
+          <!-- Tags Filter Dropdown -->
+          <div style="margin-right: 24px;">
+            <label class="label" for="tagsSelect" style="display: block;">Tags</label>
+            <nb-select id="tagsSelect" multiple [(ngModel)]="selectedTags" (selectedChange)="onFieldChanged()" style="min-width: 170px; max-width: 170px;">
+              <nb-option *ngFor="let tag of tags" [value]="tag" style="min-width: 170px; max-width: 170px;">{{ tag }}</nb-option>
+            </nb-select>
+          </div>
+
+
+          <!-- Processed Filter Dropdown -->
+          <div style="margin-right: 24px;">
+            <label class="label" for="tagsSelect" style="display: block;">Processed</label>
+            <nb-select id="processedSelect" [(ngModel)]="selectedProcessedValue" (selectedChange)="onFieldChanged()">
+              <nb-option [value]="false">No</nb-option>
+              <nb-option [value]="true">Yes</nb-option>
+            </nb-select>
+          </div>
+
+          <!-- Deleted Filter Dropdown -->
+          <div style="margin-right: 24px;">
+            <label class="label" for="tagsSelect" style="display: block;">Deleted</label>
+            <nb-select id="deletedSelect" [(ngModel)]="selectedDeletedValue" (selectedChange)="onFieldChanged()">
+              <nb-option [value]="false">No</nb-option>
+              <nb-option [value]="true">Yes</nb-option>
+            </nb-select>
+          </div>
+
+        </div>
+      </div>
+
+
+      <div class="sort-container">
+        <h6 style="font-size: 14px;">Sorts</h6>
+        <div class="filters-container-flex" style="display: flex; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 130px; max-width: 130px;  margin-right: 20px; margin-bottom: 10px; margin-right: 40px;">
+            <label class="label" for="tagsSelect" style="display: block;">Sort by</label>
+            <nb-select [(ngModel)]="sortBy" (selectedChange)="onFieldChanged()">
+              <nb-option *ngFor="let option of sortByOptions" [value]="option">{{ option }}</nb-option>
+            </nb-select>
+          </div>
+
+          <div style="flex: 1; min-width: 90px; max-width: 90px;  margin-right: 0px; margin-bottom: 10px;">
+            <label class="label" for="tagsSelect" style="display: block;">Sort order</label>
+            <nb-select [(ngModel)]="sortOrder" (selectedChange)="onFieldChanged()">
+              <nb-option *ngFor="let order of sortOrderOptions" [value]="order">{{ order | uppercase }}</nb-option>
+            </nb-select>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <button nbButton size="small" status="primary" style="display:flex; margin-left:94.3%; padding-top:10px; margin-bottom: 9px;" (click)="openCreateModal()">Create</button>
+    
+  </nb-card-body>
+</nb-card>
+<ngx-smart-table [data]="dataList" (onDelete)="onDeleteButtonClicked($event)" (onEdit)="onEditButtonClicked($event)" (onCreate)="openCreateModal()"></ngx-smart-table>

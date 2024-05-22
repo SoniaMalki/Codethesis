@@ -1,0 +1,31 @@
+<nb-card size="small" style="padding: 20px;">
+  <div class="chart-container">
+    <ngx-chart-panel-summary [summary]="chartPanelSummary"></ngx-chart-panel-summary>
+    <ngx-chart-panel-header [type]="period"
+                            (periodChange)="setPeriodAndGetChartData($event)">
+    </ngx-chart-panel-header>
+    <ngx-orders-chart #ordersChart [ordersChartData]="ordersChartData"></ngx-orders-chart>
+  </div>
+  <!--
+  <nb-tabset fullWidth (changeTab)="changeTab($event)">
+    <nb-tab tabTitle="Activity (Graph)">
+      <div class="chart-container">
+        <ngx-chart-panel-summary [summary]="chartPanelSummary"></ngx-chart-panel-summary>
+        <ngx-chart-panel-header [type]="period"
+                                (periodChange)="setPeriodAndGetChartData($event)">
+        </ngx-chart-panel-header>
+        <ngx-orders-chart #ordersChart [ordersChartData]="ordersChartData"></ngx-orders-chart>
+      </div>
+    </nb-tab> 
+    <nb-tab tabTitle="Activity" [lazyLoad]="true">
+      <div class="chart-container">
+        <ngx-chart-panel-summary [summary]="chartPanelSummary"></ngx-chart-panel-summary>
+        <ngx-chart-panel-header [type]="period"
+                                (periodChange)="setPeriodAndGetChartData($event)">
+        </ngx-chart-panel-header>
+        <ngx-profit-chart #profitChart [profitChartData]="profitChartData"></ngx-profit-chart>
+      </div>
+    </nb-tab>
+  </nb-tabset>
+-->
+</nb-card>

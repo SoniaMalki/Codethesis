@@ -1,0 +1,112 @@
+@import '../../../@theme/styles/themes';
+
+@include nb-install-component() {
+  nb-card {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+ng2-smart-table table tr th, ng2-smart-table table tr td {
+    position: relative;
+    padding: var(--smart-table-padding);
+    border: 0px solid var(--smart-table-separator);
+    vertical-align: middle;
+}
+
+
+.my-component ng2-smart-table .ng2-smart-actions {
+  width: 120px !important;;
+}
+
+
+
+ngx-smart-table .ng2-smart-actions {
+  width: 120px !important;;  /* Adjust the width as needed */
+}
+
+:host ::ng-deep ng2-smart-table .ng2-smart-actions {
+  width: 120px; /* Ensure this is applied */
+}
+:host ::ng-deep ng2-smart-table .ng2-smart-actions a {
+  display: inline-block;
+  margin: auto;
+}
+
+
+ng2-smart-table .ng2-smart-actions a {
+  display: inline-block;
+  margin: auto;
+}
+
+
+
+:host ::ng-deep ng2-smart-table .urlIcon-cell {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:host ::ng-deep ng2-st-tbody-edit-delete {
+  display: none !important;
+}
+
+:host ::ng-deep ng2-smart-table tbody tr.selected {
+  background-color: #FFFFFF !important; /* Set to white */
+}
+
+
+:host ::ng-deep ng2-smart-table thead tr.ng2-smart-filters {
+  display: none;
+}
+
+
+
+:host ::ng-deep ng2-smart-table {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  border-radius: 38px;
+  overflow: hidden;
+
+
+
+  
+  a {
+    font-size: 12px;
+    color: black;
+    font-weight:bold;
+  }
+
+  table {
+   
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 38px;
+
+    thead {
+      tr {
+        th {
+          border: none; 
+          background-color: #f7f7f7; 
+          padding: 14px;
+        }
+      }
+    }
+
+    tbody {
+      tr {
+        background-color: #fff; 
+        td {
+          border: none;
+          border-bottom: 1px grey;
+          height: 45px;
+          min-height: 45px;  
+          font-size: 14px;
+          
+        }
+      }
+    }
+  }
+}

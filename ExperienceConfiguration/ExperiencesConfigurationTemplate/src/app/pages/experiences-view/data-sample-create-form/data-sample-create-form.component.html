@@ -1,0 +1,181 @@
+<nb-card>
+    <nb-card-header>Form Details</nb-card-header>
+    <nb-card-body style="padding: 40px; padding-top: 20px; padding-bottom: 20px;">
+        <div style="display: flex; flex-wrap: wrap;">
+           <!-- Source Dropdown -->
+          <div style="flex: 1; max-width: 116px; margin-right: 20px; margin-bottom: 10px;">
+            <label class="label" for="sourceSelect" style="display: block;">Source:</label>
+            <nb-select id="sourceSelect" placeholder="Select Source" [(ngModel)]="rowData.source">
+              <nb-option *ngFor="let source of sources" [value]="source">{{ source }}</nb-option>
+            </nb-select>
+          </div>
+  
+          <!-- Reference Dropdown -->
+          <div style="flex: 1; max-width: 132px; margin-right: 30px; margin-bottom: 10px;">
+            <label class="label" for="referenceSelect" style="display: block;">Reference:</label>
+            <nb-select id="referenceSelect" placeholder="Select Ref.." [(ngModel)]="rowData.reference">
+              <nb-option *ngFor="let ref of references" [value]="ref">{{ ref }}</nb-option>
+            </nb-select>
+          </div>
+  
+          <!-- Quality Dropdown -->
+          <div style="flex: 1; max-width: 107px; margin-right: 20px; margin-bottom: 10px;">
+            <label class="label" for="qualitySelect" style="display: block;">Quality:</label>
+            <nb-select id="qualitySelect" placeholder="Select" [(ngModel)]="quality">
+              <nb-option *ngFor="let q of qualities" [value]="q">{{ q }}</nb-option>
+            </nb-select>
+          </div>
+  
+          <!-- Positivity Rating Dropdown -->
+          <div style="flex: 1; max-width: 107px; margin-right: 20px; margin-bottom: 10px;">
+            <label class="label" for="positivityRatingSelect" style="display: block;">Positivity:</label>
+            <nb-select id="positivityRatingSelect" placeholder="Select" [(ngModel)]="positivityRating">
+              <nb-option *ngFor="let pr of positivityRatings" [value]="pr">{{ pr }}</nb-option>
+            </nb-select>
+          </div>
+  
+          <!-- Processed Radio Buttons -->
+          <div style="flex: 1; max-width: 112px; margin-right: 20px; margin-bottom: 10px;">
+            <label class="label" style="display: block;">Processed:</label>
+            <nb-select id="processedSelect" placeholder="Select Processed" [(ngModel)]="processed">
+              <nb-option *ngFor="let pr of processedValues" [value]="pr">{{ pr }}</nb-option>
+            </nb-select>
+          </div>
+            
+            <!-- Tags Dropdown -->
+          <div style="flex: 1; min-width: 460px; max-width: 460px;  margin-right: 20px; margin-bottom: 10px;">
+            <label class="label" for="tagsSelect" style="display: block;">Tags:</label>
+            <nb-select id="tagsSelect" placeholder="Select Tags" multiple [(ngModel)]="rowData.tags" style="min-width: 460px; max-width: 460px;">
+              <nb-option *ngFor="let tag of tags" [value]="tag" style="min-width: 460px; max-width: 460px;">{{ tag }}</nb-option>
+            </nb-select>
+          </div>
+        </div>
+  
+        
+  
+      <div class="row" style="padding-top: 51px; display:flex;">
+              <!-- Input Fields for English -->
+              <div
+                  class="language-section"
+                  style="padding-right: 50px; border-right: 1px solid #ccc; width: 565px; padding-left: 15px;">
+                  <h6>English</h6>
+                  <div class="form-group" style="padding-top: 20px;">
+                      <label class="label">Instruction</label>
+                      <textarea type="text" nbInput fullWidth placeholder="Instruction" [(ngModel)]="rowData.instruction"></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label class="label">Input</label>
+                      <textarea type="text" nbInput fullWidth placeholder="Input" [(ngModel)]="rowData.input"></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label class="label">Output</label>
+                      <textarea type="text" nbInput fullWidth placeholder="Output" [(ngModel)]="rowData.output" style="min-height: 100px;"></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label class="label">Additional Info</label>
+                      <textarea type="text" nbInput fullWidth placeholder="Additional informations that may be added to the output for training" [(ngModel)]="rowData.additionalInfo" style="min-height: 120px;"></textarea>
+                  </div>
+              </div>
+          
+              <!-- Input Fields for French -->
+              <div
+                  class="language-section"
+                  [ngStyle]="{ 'padding-right': isExpanded ? '48px' : '0px', 'padding-left': '45px', 'width': '565px' }">
+                  <h6>French</h6>
+                  <div class="form-group" style="padding-top: 20px;">
+                      <label class="label">Instruction</label>
+                      <textarea type="text" nbInput fullWidth placeholder="Instruction" [(ngModel)]="rowData.fr_instruction"></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label class="label">Input</label>
+                      <textarea type="text" nbInput fullWidth placeholder="Input" [(ngModel)]="rowData.fr_input"></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label class="label">Output</label>
+                      <textarea type="text" nbInput fullWidth placeholder="Output" [(ngModel)]="rowData.fr_output" style="min-height: 100px;"></textarea>
+                  </div>
+                  <div class="form-group">
+                      <label class="label">Additional Info</label>
+                      <textarea type="text" nbInput fullWidth placeholder="Additional informations that may be added to the output for training" [(ngModel)]="rowData.fr_additionalInfo" style="min-height: 120px;"></textarea>
+                  </div>
+              </div>
+          
+              <!-- Input Fields for DeepL -->
+              <div
+                  *ngIf="showDeepL"
+                  style="padding-left: 45px; border-left: 1px solid #ccc; width: auto; display:flex; padding-right: 20px; flex-direction: column; flex-grow: 1; padding-top:5px;">
+                  <h6>DeepL</h6>
+                  <div class="form-group" style="padding-top: 20px;">
+                      <div style="display: flex; justify-content: space-between;">
+                          <label class="label">Instruction</label>
+                          <div style="transform: translateX(8px) translateY(-6px) scale(0.87);">
+                              <button size="tiny" class="button-save button-spacing" tabindex="-1" (click)="translateInstructionToFrench()" nbButton shape="rectangle" status="primary">
+                                  Translate
+                              </button>
+                              <!--
+                              <button size="tiny" class="button-save button-spacing" tabindex="-1" (click)="translateToFrench()" nbButton shape="rectangle" status="primary">
+                                  Add
+                              </button>
+                              <button size="tiny" class="button-save button-spacing" tabindex="-1" (click)="translateToFrench()" nbButton shape="rectangle" status="primary">
+                                  Replace
+                              </button>
+                              -->
+                          </div>
+                          
+                      </div>
+                      <textarea nbInput fullWidth placeholder="" [(ngModel)]="translationResultInstruction"></textarea>
+                  </div>
+                  <div class="form-group" style="padding-top:2px;">
+                      <div style="display: flex; justify-content: space-between;">
+                          <label class="label">Input</label>
+                          <div style="transform: translateX(8px) translateY(-4px) scale(0.87);">
+                              <button size="tiny" class="button-save button-spacing" tabindex="-1" (click)="translateInputToFrench()" nbButton shape="rectangle" status="primary">
+                                  Translate
+                              </button>
+                          </div>
+                      </div>
+                      <textarea nbInput fullWidth placeholder="" [(ngModel)]="translationResultInput"></textarea>
+                  </div>
+                  <div class="form-group" style="padding-top:1px;">
+                      <div style="display: flex; justify-content: space-between;">
+                          <label class="label">Output</label>
+                          <div style="transform: translateX(8px) translateY(-4px) scale(0.87);">
+                              <button size="tiny" class="button-save button-spacing" tabindex="-1" (click)="translateOutputToFrench()" nbButton shape="rectangle" status="primary">
+                                  Translate
+                              </button>
+                          </div>
+                      </div>
+                      <textarea nbInput fullWidth placeholder="" [(ngModel)]="translationResultOutput" style="min-height: 100px;"></textarea>
+                  </div>
+                  <div class="form-group" style="padding-top:2px;">
+                      <div style="display: flex; justify-content: space-between;">
+                          <label class="label">Additional Info</label>
+                          <div style="transform: translateX(8px) translateY(-4px) scale(0.87);">
+                              <button size="tiny" class="button-save button-spacing" tabindex="-1" (click)="translateAdditionalInfoToFrench()" nbButton shape="rectangle" status="primary">
+                                  Translate
+                              </button>
+                          </div>
+                      </div>
+                      <textarea nbInput fullWidth placeholder="" style="min-height: 120px;" [(ngModel)]="translationResultAdditionalInfo"></textarea>
+                  </div>
+              </div>
+          </div>
+  
+  
+      
+      
+  
+      <div class="buttons-container buttons-right">
+              <button class="button-save button-spacing" tabindex="-1" (click)="saveItem()" nbButton shape="rectangle" status="primary">
+                  Save
+              </button>
+  
+              <button  class="button-save button-spacing" tabindex="-1" (click)="cancel()" nbButton shape="rectangle">
+                  Cancel
+              </button>
+          </div>
+  
+    </nb-card-body>
+  </nb-card>
+  
+  

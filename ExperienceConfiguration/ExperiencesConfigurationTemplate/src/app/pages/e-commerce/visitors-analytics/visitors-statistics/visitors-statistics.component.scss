@@ -1,0 +1,50 @@
+@import '../../../../@theme/styles/themes';
+
+@include nb-install-component() {
+
+  .visitors-statistics {
+    width: 100%;
+  }
+
+  .visitors-title {
+    margin-top: 1rem;
+  }
+
+  .statistics-chart {
+    margin: 1.5rem 0;
+    width: 100%;
+
+    .echart {
+      display: block;
+      transform: translateY(-40px);
+      height: 11.75rem;
+      width: 100%;
+    }
+  }
+
+  .chart-values {
+    display: flex;
+  }
+
+  .chart-value {
+    flex: 1;
+  }
+
+  .visitors-statistics-legend ::ng-deep {
+    transform: translateY(-48px) scale(0.8);
+
+
+    .legends {
+      padding: 0;
+      margin-left: 0;
+      font-size: 14px;
+    }
+
+    .legend {
+      flex: 1;
+      margin-left: 0;
+      justify-content: flex-start;
+      font-size: 14px;
+    }
+  }
+}

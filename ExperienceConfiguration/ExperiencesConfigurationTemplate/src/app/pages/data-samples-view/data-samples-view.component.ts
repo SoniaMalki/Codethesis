@@ -166,11 +166,9 @@ export class DataSamplesViewComponent  {
     this.dataSampleService.executeScriptWithNumber(number).subscribe({
       next: (response) => {
         console.log('Execution success:', response);
-        this.showToast('success', 'Successfully sent command to execute script', '');
       },
       error: (err) => {
         console.error('Error during script execution:', err);
-        this.showToast('danger', 'Error while trying to execute script', '');
       }
     });
 }

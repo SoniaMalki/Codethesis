@@ -257,48 +257,116 @@ export class DataSampleCreateFormComponent {
   saveItem() {
     console.log()
 
+    var canBeSaved = true
+
     if (this.rowData.taskset.action == "open" && this.selectedTasksetId == undefined) {
       window.alert("L'action pour le taskset est 'Open' mais tu n'a pas séléctionné de taskset dans la liste")
+      canBeSaved = false
     } else if (this.rowData.assignment.action == "open" && this.selectedAssignmentId == undefined) {
-      window.alert("L'action pour l'assignmnet est 'Open' mais tu n'a pas séléctionné d'assignment dans la liste")
+      window.alert("L'action pour l'assignment est 'Open' mais tu n'a pas séléctionné d'assignment dans la liste")
+      canBeSaved = false
     } else if (this.rowData.scheduling.action == "open" && this.selectedSchedulingId == undefined) {
-      window.alert("L'action pour l'assignmnet est 'Open' mais tu n'a pas séléctionné de scheduling dans la liste")
+      window.alert("L'action pour le scheduling est 'Open' mais tu n'a pas séléctionné de scheduling dans la liste")
+      canBeSaved = false
     }
 
-
-
-
-  	else if (window.confirm("Are you sure you want to save this item?")) {
-  	  /*this.rowData.quality = this.quality/10
-  	  this.rowData.positivityRating = this.positivityRating/10
-  	  this.rowData.processed = this.processed == 'Yes' ? true : false  */
-
-      if (this.rowData.taskset.action == "open" && this.selectedTasksetId != undefined) {
-        this.rowData.taskset.tasksetId = this.selectedTasksetId
+    else if (this.rowData.taskset.action == "generate" ) {
+      if (this.rowData.taskset.parameters.minPeriod < 50 || this.rowData.taskset.parameters.minPeriod > 1000) {
+        window.alert("La valeur de minPeriod doit être comprise entre 50 et 1000")
+        canBeSaved = false
       }
-
-      if (this.rowData.assignment.action == "open" && this.selectedAssignmentId != undefined) {
-        this.rowData.assignment.assignmentId = this.selectedAssignmentId
-        this.rowData.assignment.tasksetId = this.selectedTasksetId
-      }
-
-      if (this.rowData.scheduling.action == "open" && this.selectedSchedulingId != undefined) {
-        this.rowData.scheduling.schedulingId = this.selectedSchedulingId
-        this.rowData.scheduling.assignmentId = this.selectedAssignmentId
-        this.rowData.scheduling.tasksetId = this.selectedTasksetId
-      }
-
-      if (this.rowData.scheduling.action == "generate" ) {
-        this.rowData.taskset.parameters.listOfMaxUtilization.sort((a, b) => a - b);
-        this.rowData.taskset.parameters.listOfProbabilityFactors.sort((a, b) => a - b);
-        this.rowData.taskset.parameters.listOfInterferenceFactors.sort((a, b) => a - b);
-        this.rowData.taskset.parameters.listOfPeriodGenerationMethods.sort((a, b) => a - b);
-        this.rowData.taskset.parameters.granularity.sort((a, b) => a - b);
+      else if (this.rowData.taskset.parameters.maxPeriod < 50 || this.rowData.taskset.parameters.maxPeriod > 1000) {
+        window.alert("La valeur de maxPeriod doit être comprise entre 50 et 1000")
+        canBeSaved = false
       }
       
+      else if (this.rowData.taskset.parameters.listOfMaxUtilization.length == 0) {
+        window.alert("Selectionner au moins une valeur pour 'List Of Max Utilization'")
+        canBeSaved = false
+      }
 
-      this.onSave.emit();
-      this.onCancel.emit();
+      else if (this.rowData.taskset.parameters.listOfInterferenceFactors.length == 0) {
+        window.alert("Selectionner au moins une valeur pour 'List Of Interference Factors'")
+        canBeSaved = false
+      }
+
+      else if (this.rowData.taskset.parameters.listOfProbabilityFactors.length == 0) {
+        window.alert("Selectionner au moins une valeur pour 'List Of Probability Factors'")
+        canBeSaved = false
+      }
+
+      else if (this.rowData.taskset.parameters.listOfPeriodGenerationMethods.length == 0) {
+        window.alert("Selectionner au moins une valeur pour 'List Of Period Generation Methods'")
+        canBeSaved = false
+      }
+
+      else if (this.rowData.taskset.parameters.granularity.length == 0) {
+        window.alert("Selectionner au moins une valeur pour 'Granularity'")
+        canBeSaved = false
+      } 
+    }
+
+    if (!canBeSaved) {
+      return
+    }
+
+    if (this.rowData.assignment.action == "generate" ) {
+      if (this.rowData.assignment.parameters.assignmentMethod == "") {
+        window.alert("Selectionner une méthode d'assignation")
+        canBeSaved = false
+      } else if (this.rowData.assignment.parameters.assignmentMethod == "citta" && this.rowData.assignment.parameters.cittaCriteria.length == 0) {
+        window.alert("Selectionner au moins un critère Citta")
+        canBeSaved = false
+      }
+    }
+
+    if (!canBeSaved) {
+      return
+    }
+
+    if (this.rowData.scheduling.action == "generate" ) {
+      if (this.rowData.scheduling.parameters.schedulingAlgorithms.length == 0) {
+        window.alert("Selectionner au moins un algorithme de scheduling")
+        canBeSaved = false
+      }
+    }
+
+    if (!canBeSaved) {
+      return
+    }
+
+    if (canBeSaved) {
+      if (window.confirm("Are you sure you want to save this item?")) {
+        /*this.rowData.quality = this.quality/10
+        this.rowData.positivityRating = this.positivityRating/10
+        this.rowData.processed = this.processed == 'Yes' ? true : false  */
+  
+        if (this.rowData.taskset.action == "open" && this.selectedTasksetId != undefined) {
+          this.rowData.taskset.tasksetId = this.selectedTasksetId
+        }
+  
+        if (this.rowData.assignment.action == "open" && this.selectedAssignmentId != undefined) {
+          this.rowData.assignment.assignmentId = this.selectedAssignmentId
+          this.rowData.assignment.tasksetId = this.selectedTasksetId
+        }
+  
+        if (this.rowData.scheduling.action == "open" && this.selectedSchedulingId != undefined) {
+          this.rowData.scheduling.schedulingId = this.selectedSchedulingId
+          this.rowData.scheduling.assignmentId = this.selectedAssignmentId
+          this.rowData.scheduling.tasksetId = this.selectedTasksetId
+        }
+  
+        if (this.rowData.taskset.action == "generate" ) {
+          this.rowData.taskset.parameters.listOfMaxUtilization.sort((a, b) => a - b);
+          this.rowData.taskset.parameters.listOfProbabilityFactors.sort((a, b) => a - b);
+          this.rowData.taskset.parameters.listOfInterferenceFactors.sort((a, b) => a - b);
+          this.rowData.taskset.parameters.listOfPeriodGenerationMethods.sort((a, b) => a - b);
+          this.rowData.taskset.parameters.granularity.sort((a, b) => a - b);
+        }
+  
+        this.onSave.emit();
+        this.onCancel.emit();
+      }
     }
   }
 

@@ -18,10 +18,10 @@
           <p ><strong>Period Generation Methods:</strong> {{ rowData.taskset.parametersRetrieved.listOfPeriodGenerationMethods.join(', ') || 'None' }}</p>
           <p ><strong>Granularity:</strong> {{ rowData.taskset.parametersRetrieved.granularity.join(', ') || 'None' }}</p>
           <br/>
-          <p ><strong>Assignment Method: </strong> {{ rowData.assignment.parametersRetrieved.assignmentMethod }}</p>
-          <p ><strong>Citta Criteria: </strong> [{{ rowData.assignment.parametersRetrieved.cittaCriteria }}]</p>
+          <p ><strong>Assignment Method: </strong> {{ rowData.assignment.parametersRetrieved ? rowData.assignment.parametersRetrieved.assignmentMethod : 'None' }}</p>
+          <p ><strong>Citta Criteria: </strong> [{{ rowData.assignment.parametersRetrieved ? rowData.assignment.parametersRetrieved.cittaCriteria : 'None'}}]</p>
           <br/>
-          <p ><strong>Scheduling Algorithm: </strong> [{{ rowData.scheduling.parametersRetrieved.schedulingAlgorithms }}]</p>
+          <p ><strong>Scheduling Algorithm: </strong> [{{ rowData.scheduling.parametersRetrieved ? rowData.scheduling.parametersRetrieved.schedulingAlgorithms : 'None'}}]</p>
         
       </div>
     </nb-tab>

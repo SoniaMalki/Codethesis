@@ -102,9 +102,6 @@
               <i class="fas" [class.fa-chevron-down]="!showDetailsTaskset[taskset.id]" [class.fa-chevron-up]="showDetailsTaskset[taskset.id]" style="font-size: 19px; "></i>
             </button>
             <div *ngIf="showDetailsTaskset[taskset.id]">
-              <p ><strong>Taskset Count:</strong> {{ taskset.tasksetCount }}</p>
-              <p ><strong>Min Period:</strong> {{ taskset.minPeriod }}</p>
-              <p ><strong>Max Period:</strong> {{ taskset.maxPeriod }}</p>
               <p ><strong>Max Utilization:</strong> {{ taskset.listOfMaxUtilization.join(', ') || 'None' }}</p>
               <p ><strong>Interference Factors:</strong> {{ taskset.listOfInterferenceFactors.join(', ') || 'None' }}</p>
               <p ><strong>Probability Factors:</strong> {{ taskset.listOfProbabilityFactors.join(', ') || 'None' }}</p>

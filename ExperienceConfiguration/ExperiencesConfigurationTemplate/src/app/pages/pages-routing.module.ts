@@ -12,20 +12,8 @@ const routes: Routes = [{
   component: PagesComponent,
   children: [
     {
-      path: 'experiences-parameters',
-      component: DataSamplesViewComponent,
-    },
-    {
-      path: 'tasksets',
-      component: DataSamplesViewComponent,
-    },
-    {
-      path: 'assignments',
-      component: DashboardComponent,
-    },
-    {
       path: 'experiences',
-      component: DashboardComponent,
+      component: DataSamplesViewComponent,
     },
     {
       path: 'layout',
@@ -48,39 +36,9 @@ const routes: Routes = [{
         .then(m => m.ModalOverlaysModule),
     },
     {
-      path: 'extra-components',
-      loadChildren: () => import('./extra-components/extra-components.module')
-        .then(m => m.ExtraComponentsModule),
-    },
-    {
-      path: 'maps',
-      loadChildren: () => import('./maps/maps.module')
-        .then(m => m.MapsModule),
-    },
-    {
-      path: 'charts',
-      loadChildren: () => import('./charts/charts.module')
-        .then(m => m.ChartsModule),
-    },
-    {
-      path: 'editors',
-      loadChildren: () => import('./editors/editors.module')
-        .then(m => m.EditorsModule),
-    },
-    {
       path: 'tables',
       loadChildren: () => import('./tables/tables.module')
         .then(m => m.TablesModule),
-    },
-    {
-      path: 'miscellaneous',
-      loadChildren: () => import('./miscellaneous/miscellaneous.module')
-        .then(m => m.MiscellaneousModule),
-    },
-    {
-      path: '',
-      redirectTo: 'dashboard',
-      pathMatch: 'full',
     },
     {
       path: '**',

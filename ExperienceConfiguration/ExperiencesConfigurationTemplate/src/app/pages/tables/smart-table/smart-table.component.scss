@@ -33,6 +33,7 @@ ngx-smart-table .ng2-smart-actions {
 }
 
 
+
 ng2-smart-table .ng2-smart-actions a {
   display: inline-block;
   margin: auto;
@@ -51,8 +52,15 @@ ng2-smart-table .ng2-smart-actions a {
   display: none !important;
 }
 
+
+:host ::ng-deep ng2-smart-table thead tr.ng2-smart-filters {
+  display: none;
+}
+
+
+/*
 :host ::ng-deep ng2-smart-table tbody tr.selected {
-  background-color: #FFFFFF !important; /* Set to white */
+  background-color: #FFFFFF !important; 
 }
 
 
@@ -109,4 +117,6 @@ ng2-smart-table .ng2-smart-actions a {
       }
     }
   }
+  
 }
+*/

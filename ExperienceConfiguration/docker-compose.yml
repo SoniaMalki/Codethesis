@@ -25,7 +25,7 @@ services:
       - "8080:8080"
     volumes:
       - ./ExperiencesConfigurationBackend:/home/springuser/app
-      - ../config_files_host:/home/springuser/config_files_container
+      - ../config_files:/home/springuser/config_files
       - ~/.m2:/home/springuser/.m2
 
   angular-frontend:

@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   postgres:
     image: postgres:16
@@ -15,13 +16,17 @@ services:
     build:
       context: ./ExperiencesConfigurationBackend
       dockerfile: Dockerfile
+      args:
+        UID: ${UID:-1000}  # Defaults to 1000 if not set in environment
+        GID: ${GID:-1000}  # Defaults to 1000 if not set in environment
     depends_on:
       - postgres
     ports:
       - "8080:8080"
     volumes:
-      - ./ExperiencesConfigurationBackend:/home/app
-      - ~/.m2:/root/.m2  # To cache Maven dependencies
+      - ./ExperiencesConfigurationBackend:/home/springuser/app
+      - ../config_files_host:/home/springuser/config_files_container
+      - ~/.m2:/home/springuser/.m2
 
   angular-frontend:
     build:

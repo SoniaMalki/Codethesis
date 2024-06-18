@@ -8,21 +8,18 @@ RUN apt-get update && \
 ARG UID=1000
 ARG GID=1000
 
-
-
 # Creating a user and group with specified UID/GID
-RUN groupadd -g ${GID} springuser && \
-    useradd -u ${UID} -g springuser -m springuser
+RUN if ! getent group ${GID}; then groupadd -g ${GID} user; fi && \
+    if ! id -u ${UID}; then useradd -u ${UID} -g ${GID} -m user; fi
 
-# Install sudo and add springuser to sudoers
+# Install sudo and add user to sudoers
 RUN apt-get install -y sudo && \
-    echo "springuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-
+    echo "user ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Set the working directory
-WORKDIR /home/springuser/app
+WORKDIR /home/user/app
 
 # Switch to the new user after setting file permissions
-USER springuser
+USER user
 
-ENTRYPOINT ["/home/springuser/app/entrypoint.sh"]
+ENTRYPOINT ["/home/user/app/entrypoint.sh"]

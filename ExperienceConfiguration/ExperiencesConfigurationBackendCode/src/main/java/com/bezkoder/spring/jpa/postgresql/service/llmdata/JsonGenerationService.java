@@ -58,7 +58,7 @@ public class JsonGenerationService {
       ));
 
     // Serialize the map to JSON
-    File file = new File("/home/springuser/config_files/experiences.json");
+    File file = new File("/home/user/config_files/experiences.json");
     mapper.writeValue(file, experiencesJsonMap);
   }
 

@@ -14,7 +14,7 @@ services:
 
   springboot-app:
     build:
-      context: ./ExperiencesConfigurationBackend
+      context: ./ExperiencesConfigurationBackendImage
       dockerfile: Dockerfile
       args:
         UID: ${UID:-1000}  # Defaults to 1000 if not set in environment
@@ -24,21 +24,23 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./ExperiencesConfigurationBackend:/home/springuser/app
-      - ../config_files:/home/springuser/config_files
-      - ~/.m2:/home/springuser/.m2
+      - ./ExperiencesConfigurationBackendCode:/home/user/app
+      - ../config_files:/home/user/config_files
+      - ~/.m2:/home/user/.m2
 
   angular-frontend:
     build:
-      context: ./ExperiencesConfigurationTemplate
+      context: ./ExperiencesConfigurationTemplateImage
       dockerfile: Dockerfile
+      args:
+        UID: ${UID:-1010}
+        GID: ${GID:-1010}
     ports:
       - "4200:4200"
     depends_on:
       - springboot-app
     volumes:
-      - ./ExperiencesConfigurationTemplate:/app
-      - /app/node_modules  # Ensure node_modules is correctly handled
+      - ./ExperiencesConfigurationTemplateCode:/home/node/app
 
 volumes:
   postgres-data:

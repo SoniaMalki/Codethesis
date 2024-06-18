@@ -1,28 +1,18 @@
-
-
 <ng-template #tabs>
   <nb-tabset>
     <nb-tab tabTitle="Info data">
       <div class="div-data">
-          <p ><strong>Number of Cores:</strong> {{ rowData.taskset.parametersRetrieved.numberOfCores }}</p>
-          <p ><strong>Tasks per Taskset:</strong> {{ rowData.taskset.parametersRetrieved.listOfTasksPerTaskset }}</p>
-          <p ><strong>Taskset Count:</strong> {{ rowData.taskset.parametersRetrieved.tasksetCount }}</p>
-          <p ><strong>Min Period:</strong> {{ rowData.taskset.parametersRetrieved.minPeriod }}</p>
-          <p ><strong>Max Period:</strong> {{ rowData.taskset.parametersRetrieved.maxPeriod }}</p>
-          <p ><strong>Taskset Count:</strong> {{ rowData.taskset.parametersRetrieved.tasksetCount }}</p>
-          <p ><strong>Min Period:</strong> {{ rowData.taskset.parametersRetrieved.minPeriod }}</p>
-          <p ><strong>Max Period:</strong> {{ rowData.taskset.parametersRetrieved.maxPeriod }}</p>
-          <p ><strong>Max Utilization:</strong> {{ rowData.taskset.parametersRetrieved.listOfMaxUtilization.join(', ') || 'None' }}</p>
-          <p ><strong>Interference Factors:</strong> {{ rowData.taskset.parametersRetrieved.listOfInterferenceFactors.join(', ') || 'None' }}</p>
-          <p ><strong>Probability Factors:</strong> {{ rowData.taskset.parametersRetrieved.listOfProbabilityFactors.join(', ') || 'None' }}</p>
-          <p ><strong>Period Generation Methods:</strong> {{ rowData.taskset.parametersRetrieved.listOfPeriodGenerationMethods.join(', ') || 'None' }}</p>
-          <p ><strong>Granularity:</strong> {{ rowData.taskset.parametersRetrieved.granularity.join(', ') || 'None' }}</p>
+          <p><strong>Number of Cores:</strong> {{ rowData.taskset.parametersRetrieved.numberOfCores }}</p>
+          <p><strong>Tasks per Taskset:</strong> {{ rowData.taskset.parametersRetrieved.listOfTasksPerTaskset }}</p>
+          <p><strong>Taskset Count:</strong> {{ rowData.taskset.parametersRetrieved.tasksetCount }}</p>
+          <p><strong>Max Utilization:</strong> {{ rowData.taskset.parametersRetrieved.listOfMaxUtilization.join(', ') || 'None' }}</p>
+          <p><strong>Interference Factors:</strong> {{ rowData.taskset.parametersRetrieved.listOfInterferenceFactors.join(', ') || 'None' }}</p>
+          <p><strong>Probability Factors:</strong> {{ rowData.taskset.parametersRetrieved.listOfProbabilityFactors.join(', ') || 'None' }}</p>
           <br/>
-          <p ><strong>Assignment Method: </strong> {{ rowData.assignment.parametersRetrieved ? rowData.assignment.parametersRetrieved.assignmentMethod : 'None' }}</p>
-          <p ><strong>Citta Criteria: </strong> [{{ rowData.assignment.parametersRetrieved ? rowData.assignment.parametersRetrieved.cittaCriteria : 'None'}}]</p>
+          <p><strong>Assignment Method:</strong> {{ rowData.assignment.parametersRetrieved ? rowData.assignment.parametersRetrieved.assignmentMethod : 'None' }}</p>
+          <p><strong>Citta Criteria:</strong> [{{ rowData.assignment.parametersRetrieved ? rowData.assignment.parametersRetrieved.cittaCriteria : 'None' }}]</p>
           <br/>
-          <p ><strong>Scheduling Algorithm: </strong> [{{ rowData.scheduling.parametersRetrieved ? rowData.scheduling.parametersRetrieved.schedulingAlgorithms : 'None'}}]</p>
-        
+          <p><strong>Scheduling Algorithm:</strong> [{{ rowData.scheduling.parametersRetrieved ? rowData.scheduling.parametersRetrieved.schedulingAlgorithms : 'None' }}]</p>
       </div>
     </nb-tab>
     <nb-tab tabTitle="Json data (Db entity)">
@@ -34,7 +24,5 @@
 </ng-template>
 
 <div class="icon-wrapper">
-  <i class="fas fa-file" (click)="onEditClick()"  [nbPopover]="tabs" nbPopoverPlacement="right"></i>
+  <i class="fas fa-file" (click)="onEditClick()" [nbPopover]="tabs" nbPopoverPlacement="right"></i>
 </div>
-
-

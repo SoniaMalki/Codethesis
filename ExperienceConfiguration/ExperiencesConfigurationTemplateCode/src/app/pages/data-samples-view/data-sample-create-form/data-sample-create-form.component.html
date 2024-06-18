@@ -1,201 +1,149 @@
 <nb-card style="min-width: 1200px; min-height: 900px;">
-    <nb-card-header>Form Details</nb-card-header>
-    <nb-card-body style="padding: 40px; padding-top: 20px; padding-bottom: 20px; ">
+  <nb-card-header>Form Details</nb-card-header>
+  <nb-card-body style="padding: 40px; padding-top: 20px; padding-bottom: 20px;">
+    <div class="row" style="padding-top: 12px; display:flex;">
+      <div class="language-section" style="padding-right: 50px; border-right: 1px solid #ccc; width: 565px; padding-left: 15px;">
+        <h6>Taskset</h6>
+        
+        <div style="flex: 1; min-width: 145px; max-width: 145px; margin-top: 20px; margin-right: 20px; margin-bottom: 17px;">
+          <label class="label" for="actionSelect" style="display: block;">Action</label>
+          <nb-select id="actionSelect" placeholder="Select" [(ngModel)]="rowData.taskset.action" (ngModelChange)="onTasksetActionChange($event)" style="min-width: 145px; max-width: 145px;">
+            <nb-option *ngFor="let action of tasksetActions" [value]="action" style="min-width: 145px; max-width: 145px;">{{ capitalizeFirstLetter(action) }}</nb-option>
+          </nb-select>
+        </div>
 
-      <div class="row" style="padding-top: 12px; display:flex;">
-        <div class="language-section" style="padding-right: 50px; border-right: 1px solid #ccc; width: 565px; padding-left: 15px;">
-          <h6>Taskset</h6>
-          
-          <div style="flex: 1; min-width: 145px; max-width: 145px; margin-top: 20px; margin-right: 20px; margin-bottom: 17px;">
-            <label class="label" for="actionSelect" style="display: block;">Action</label>
-            <nb-select id="actionSelect" placeholder="Select" [(ngModel)]="rowData.taskset.action" (ngModelChange)="onTasksetActionChange($event)" style="min-width: 145px; max-width: 145px;">
-                <nb-option *ngFor="let action of tasksetActions" [value]="action" style="min-width: 145px; max-width: 145px;">{{ capitalizeFirstLetter(action) }}</nb-option>
+        <div *ngIf="rowData.taskset.action == actionGenerate">
+          <div style="display: flex; flex-direction: row;">
+            <div class="form-field" style="flex: 1; width: 120px; margin-right: 20px; margin-bottom: 10px;">
+              <label class="label" for="numberOfCoresSelect" style="display: block;">Nbr of cores</label>
+              <nb-select id="numberOfCoresSelect" placeholder="Select" [(ngModel)]="rowData.taskset.parameters.numberOfCores" style="width: 120px;">
+                <nb-option *ngFor="let number of numberOfCores" [value]="number" style="width: 120px;">{{ number }}</nb-option>
               </nb-select>
+            </div>
+            
+            <div class="form-field" style="flex: 1; min-width: 120px; max-width: 120px;  margin-right: 20px; margin-bottom: 10px;">
+              <label class="label" for="countSelect" style="display: block;">Taskset count</label>
+              <nb-select id="countSelect" placeholder="Select" [(ngModel)]="rowData.taskset.parameters.tasksetCount" style="min-width: 120px; max-width: 120px;">
+                <nb-option *ngFor="let count of tasksetCount" [value]="count" style="min-width: 120px; max-width: 120px;">{{ count }}</nb-option>
+              </nb-select>
+            </div>
+
+            <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px;  margin-right: 20px; margin-bottom: 10px;">
+              <label class="label" for="listOfTaskPerTasksetSelect" style="display: block;">Task per taskset</label>
+              <nb-select id="listOfTaskPerTasksetSelect" placeholder="Select" [(ngModel)]="rowData.taskset.parameters.listOfTasksPerTaskset" style="min-width: 190px; max-width: 190px;">
+                <nb-option *ngFor="let taskPerTaskset of listOfTaskPerTaskset" [value]="taskPerTaskset" style="min-width: 190px; max-width: 190px;">{{ taskPerTaskset }}</nb-option>
+              </nb-select>
+            </div>
           </div>
 
-          <div *ngIf="rowData.taskset.action == actionGenerate">
+          <div class="form-field" style="flex: 1; min-width: 170px; max-width: 170px;  margin-right: 20px; margin-bottom: 10px;">
+            <label class="label" for="maxUtilizationSelect" style="display: block;">Max utilizations</label>
+            <nb-select id="maxUtilizationSelect" placeholder="Select" multiple [(ngModel)]="rowData.taskset.parameters.listOfMaxUtilization" style="min-width: 170px; max-width: 170px;">
+              <nb-option *ngFor="let maxUtilization of listOfMaxUtilizations" [value]="maxUtilization" style="min-width: 170px; max-width: 170px;">{{ maxUtilization }}</nb-option>
+            </nb-select>
+          </div>
 
-            <div style="display: flex; flex-direction: row;">
-              <div class="form-field" style="flex: 1; width: 120px; margin-right: 20px; margin-bottom: 10px;">
-                <label class="label" for="numberOfCoresSelect" style="display: block;">Nbr of cores</label>
-                <nb-select id="numberOfCoresSelect" placeholder="Select" [(ngModel)]="rowData.taskset.parameters.numberOfCores" style="width: 120px;">
-                  <nb-option *ngFor="let number of numberOfCores" [value]="number" style="width: 120px;">{{ number }}</nb-option>
-                </nb-select>
-              </div>
-              
-              <div class="form-field" class="form-field" style="flex: 1; min-width: 120px; max-width: 120px;  margin-right: 20px; margin-bottom: 10px;">
-                <label class="label" for="countSelect" style="display: block;">Taskset count</label>
-                <nb-select id="countSelect" placeholder="Select" [(ngModel)]="rowData.taskset.parameters.tasksetCount" style="min-width: 120px; max-width: 120px;">
-                    <nb-option *ngFor="let count of tasksetCount" [value]="count" style="min-width: 120px; max-width: 120px;">{{ count }}</nb-option>
-                  </nb-select>
-              </div>
-
-              <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px;  margin-right: 20px; margin-bottom: 10px;">
-                <label class="label" for="listOfTaskPerTasksetSelect" style="display: block;">Task per taskset</label>
-                <nb-select id="listOfTaskPerTasksetSelect" placeholder="Select" [(ngModel)]="rowData.taskset.parameters.listOfTasksPerTaskset" style="min-width: 190px; max-width: 190px;">
-                  <nb-option *ngFor="let taskPerTaskset of listOfTaskPerTaskset" [value]="taskPerTaskset" style="min-width: 190px; max-width: 190px;">{{ taskPerTaskset }}</nb-option>
-                </nb-select>
-              </div>
-            </div>
-  
-            <div class="form-field" style="flex: 1; min-width: 170px; max-width: 170px;  margin-right: 20px; margin-bottom: 10px;">
-              <label class="label" for="maxUtilizationSelect" style="display: block;">Max utilizations</label>
-              <nb-select id="maxUtilizationSelect" placeholder="Select" multiple [(ngModel)]="rowData.taskset.parameters.listOfMaxUtilization" style="min-width: 170px; max-width: 170px;">
-                <nb-option *ngFor="let maxUtilization of listOfMaxUtilizations" [value]="maxUtilization" style="min-width: 170px; max-width: 170px;">{{ maxUtilization }}</nb-option>
-              </nb-select>
-            </div>
-
-            <div style="display: flex; flex-direction: row;">
-              <div class="form-field" style="flex: 1; margin-bottom: 10px; max-width: 219px;">
-                <label class="label" for="interferenceFactorSelect" style="display: block;">Interference factors</label>
-                <nb-select id="interferenceFactorSelect" placeholder="Select" multiple [(ngModel)]="rowData.taskset.parameters.listOfInterferenceFactors" style="min-width: 190px; max-width: 190px;">
-                  <nb-option *ngFor="let interferenceFactor of listOfInterferenceFactors" [value]="interferenceFactor" style="min-width: 190px; max-width: 190px;">{{ interferenceFactor }}</nb-option>
-                </nb-select>
-              </div>
-    
-              <div class="form-field" style="flex: 1; margin-bottom: 10px;">
-                <label class="label" for="probabilityFactorSelect" style="display: block;">Probability factors</label>
-                <nb-select id="probabilityFactorSelect" placeholder="Select" multiple [(ngModel)]="rowData.taskset.parameters.listOfProbabilityFactors" style="min-width: 190px; max-width: 190px;">
-                  <nb-option *ngFor="let probabilityFactor of listOfInterferenceFactors" [value]="probabilityFactor" style="min-width: 190px; max-width: 190px;">{{ probabilityFactor }}</nb-option>
-                </nb-select>
-              </div>
-            </div>
-            
-            <div class="form-field"  style="display: flex; flex-direction: row;">
-              <div class="form-group" style="width: 208px; margin-right: 10px;">
-                <label class="label">Min period</label>
-                <input type="text" nbInput fieldSize="small" [(ngModel)]="rowData.taskset.parameters.minPeriod">
-              </div>
-    
-              <div class="form-group" style="width: 208px; margin-right: 10px;">
-                <label class="label">Max period</label>
-                <input type="text" nbInput fieldSize="small" [(ngModel)]="rowData.taskset.parameters.maxPeriod">
-              </div>
-           </div>
-            
-            <div class="form-field" style="flex: 1; min-width: 230px; max-width: 230px;  margin-right: 20px; margin-bottom: 10px;">
-              <label class="label" for="methodSelect" style="display: block;">Period generation methods</label>
-              <nb-select id="methodSelect" placeholder="Select" multiple [(ngModel)]="rowData.taskset.parameters.listOfPeriodGenerationMethods" style="min-width: 230px; max-width: 230px;">
-                <nb-option *ngFor="let method of listOfPeriodGenerationMethods" [value]="method" style="min-width: 230px; max-width: 230px;">{{ method }}</nb-option>
+          <div style="display: flex; flex-direction: row;">
+            <div class="form-field" style="flex: 1; margin-bottom: 10px; max-width: 219px;">
+              <label class="label" for="interferenceFactorSelect" style="display: block;">Interference factors</label>
+              <nb-select id="interferenceFactorSelect" placeholder="Select" multiple [(ngModel)]="rowData.taskset.parameters.listOfInterferenceFactors" style="min-width: 190px; max-width: 190px;">
+                <nb-option *ngFor="let interferenceFactor of listOfInterferenceFactors" [value]="interferenceFactor" style="min-width: 190px; max-width: 190px;">{{ interferenceFactor }}</nb-option>
               </nb-select>
             </div>
   
-  
-            <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px;  margin-right: 20px; margin-bottom: 10px;">
-              <label class="label" for="granularitySelect" style="display: block;">Granularity</label>
-              <nb-select id="granularitySelect" placeholder="Select" multiple [(ngModel)]="rowData.taskset.parameters.granularity" style="min-width: 190px; max-width: 190px;">
-                <nb-option *ngFor="let granularity of listOfInterferenceFactors" [value]="granularity" style="min-width: 190px; max-width: 190px;">{{ granularity }}</nb-option>
+            <div class="form-field" style="flex: 1; margin-bottom: 10px;">
+              <label class="label" for="probabilityFactorSelect" style="display: block;">Probability factors</label>
+              <nb-select id="probabilityFactorSelect" placeholder="Select" multiple [(ngModel)]="rowData.taskset.parameters.listOfProbabilityFactors" style="min-width: 190px; max-width: 190px;">
+                <nb-option *ngFor="let probabilityFactor of listOfProbabilityFactors" [value]="probabilityFactor" style="min-width: 190px; max-width: 190px;">{{ probabilityFactor }}</nb-option>
               </nb-select>
             </div>
-        </div>     
-
+          </div>
+        </div>
 
         <div *ngIf="rowData.taskset.action == actionOpen" style="max-height: 200px; overflow-y: scroll; margin-top: 20px; padding-right: 12px; min-height: 600px;">
           <div *ngFor="let taskset of tasksets" class="info" [class.selected-info]="selectedTasksetId == taskset.id" (click)="selectTaskset(taskset.id)">
-            <p ><strong>ID:</strong> {{ taskset.id }}</p>
-            <p ><strong>Number of Cores:</strong> {{ taskset.numberOfCores }}</p>
-            <p ><strong>Tasks per Taskset:</strong> {{ taskset.listOfTasksPerTaskset }}</p>
-            <p ><strong>Taskset Count:</strong> {{ taskset.tasksetCount }}</p>
-            <p ><strong>Min Period:</strong> {{ taskset.minPeriod }}</p>
-            <p ><strong>Max Period:</strong> {{ taskset.maxPeriod }}</p>
+            <p><strong>ID:</strong> {{ taskset.id }}</p>
+            <p><strong>Number of Cores:</strong> {{ taskset.numberOfCores }}</p>
+            <p><strong>Tasks per Taskset:</strong> {{ taskset.listOfTasksPerTaskset }}</p>
+            <p><strong>Taskset Count:</strong> {{ taskset.tasksetCount }}</p>
             <button (click)="toggleDetailsTaskset(taskset.id, $event)" style="position: absolute; top: 7px; right: 7px; border: none; background: none; width: 30px; height: 30px;">
-              <i class="fas" [class.fa-chevron-down]="!showDetailsTaskset[taskset.id]" [class.fa-chevron-up]="showDetailsTaskset[taskset.id]" style="font-size: 19px; "></i>
+              <i class="fas" [class.fa-chevron-down]="!showDetailsTaskset[taskset.id]" [class.fa-chevron-up]="showDetailsTaskset[taskset.id]" style="font-size: 19px;"></i>
             </button>
             <div *ngIf="showDetailsTaskset[taskset.id]">
-              <p ><strong>Max Utilization:</strong> {{ taskset.listOfMaxUtilization.join(', ') || 'None' }}</p>
-              <p ><strong>Interference Factors:</strong> {{ taskset.listOfInterferenceFactors.join(', ') || 'None' }}</p>
-              <p ><strong>Probability Factors:</strong> {{ taskset.listOfProbabilityFactors.join(', ') || 'None' }}</p>
-              <p ><strong>Period Generation Methods:</strong> {{ taskset.listOfPeriodGenerationMethods.join(', ') || 'None' }}</p>
-              <p ><strong>Granularity:</strong> {{ taskset.granularity.join(', ') || 'None' }}</p>
+              <p><strong>Max Utilization:</strong> {{ taskset.listOfMaxUtilization.join(', ') || 'None' }}</p>
+              <p><strong>Interference Factors:</strong> {{ taskset.listOfInterferenceFactors.join(', ') || 'None' }}</p>
+              <p><strong>Probability Factors:</strong> {{ taskset.listOfProbabilityFactors.join(', ') || 'None' }}</p>
             </div>
           </div>
         </div>
-
       </div>
-    
-        <div
-            class="language-section"
-            style="padding-right: 50px; border-right: 1px solid #ccc; width: 417px; padding-left: 45px;">
-            <h6>Assignment</h6>
-
-            <div style="flex: 1; min-width: 145px; max-width: 145px; margin-top: 20px; margin-right: 20px; margin-bottom: 17px;">
-              <label class="label" for="actionSelect" style="display: block;">Action</label>
-              <nb-select id="actionSelect" placeholder="Select" [(ngModel)]="rowData.assignment.action" (ngModelChange)="onAssignmentActionChange($event)" style="min-width: 145px; max-width: 145px;">
-                  <nb-option *ngFor="let action of assignmentActions" [value]="action" style="min-width: 145px; max-width: 145px;">{{ capitalizeFirstLetter(action) }}</nb-option>
-                </nb-select>
-            </div>
-
-            
-
-            <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px;  margin-right: 20px; margin-bottom: 10px;" *ngIf="rowData.assignment.action == actionGenerate">
-              <label class="label" for="methodSelect" style="display: block;">Assignment method</label>
-              <nb-select id="methodSelect" placeholder="Select" [(ngModel)]="rowData.assignment.parameters.assignmentMethod" style="min-width: 190px; max-width: 190px;">
-                <nb-option *ngFor="let method of assignmentMethods" [value]="method" style="min-width: 190px; max-width: 190px; height: 41px;">{{ method.toUpperCase() }}</nb-option>
-              </nb-select>
-            </div>
-
-            <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px;  margin-right: 20px; margin-bottom: 10px;" *ngIf="rowData.assignment.action == actionGenerate && rowData.assignment.parameters.assignmentMethod == 'citta'">
-              <label class="label" for="methodSelect" style="display: block;">Citta criteria</label>
-              <nb-select id="methodSelect" placeholder="Select" multiple [(ngModel)]="rowData.assignment.parameters.cittaCriteria" style="min-width: 190px; max-width: 190px;">
-                <nb-option *ngFor="let method of cittaCriterias" [value]="method" style="min-width: 190px; max-width: 190px; height: 41px;">{{ method.toUpperCase() }}</nb-option>
-              </nb-select>
-            </div>
-
-            <div *ngIf="rowData.assignment.action == actionOpen" style="max-height: 200px; overflow-y: scroll; margin-top: 20px; padding-right: 12px; min-height: 600px;">
-              <div *ngFor="let assignment of assignments" class="info" [class.selected-info]="selectedAssignmentId == assignment.id" (click)="selectAssignment(assignment.id)">
-                <p ><strong>ID:</strong> {{ assignment.id }}</p>
-                <p ><strong>Assignment Method: </strong> {{ assignment.assignmentMethod }}</p>
-                <p ><strong>Citta Criteria: </strong> [{{ assignment.cittaCriteria }}]</p>
-              
-              </div>
-            </div>
-        </div>
-
-        <div
-            class="language-section"
-            style="width: 417px; padding-left: 45px; padding-right: 24px;">
-            <h6>Scheduling</h6>
-
-            <div style="flex: 1; min-width: 145px; max-width: 145px; margin-top: 20px; margin-right: 20px; padding-right: 12px; margin-bottom: 17px;">
-              <label class="label" for="actionSelect" style="display: block;">Action</label>
-              <nb-select id="actionSelect" placeholder="Select" [(ngModel)]="rowData.scheduling.action" (ngModelChange)="onSchedulingActionChange($event)" style="min-width: 145px; max-width: 145px;">
-                  <nb-option *ngFor="let action of schedulingActions" [value]="action" style="min-width: 145px; max-width: 145px;">{{ capitalizeFirstLetter(action) }}</nb-option>
-                </nb-select>
-            </div>
-
-            <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px;  margin-right: 20px; margin-bottom: 10px;" *ngIf="rowData.scheduling.action == actionGenerate">
-              <label class="label" for="methodSelect" style="display: block;">Scheduling algorithm</label>
-              <nb-select id="methodSelect" placeholder="Select" multiple [(ngModel)]="rowData.scheduling.parameters.schedulingAlgorithms" style="min-width: 190px; max-width: 190px;">
-                <nb-option *ngFor="let algorithm of schedulingAlgorithms" [value]="algorithm" style="min-width: 190px; max-width: 190px; height: 41px;">{{ algorithm.toUpperCase() }}</nb-option>
-              </nb-select>
-            </div>
-
-            <div *ngIf="rowData.scheduling.action == actionOpen" style="max-height: 200px; overflow-y: scroll; margin-top: 20px; min-height: 600px;">
-              <div *ngFor="let scheduling of schedulings" class="info" [class.selected-info]="selectedSchedulingId == scheduling.id" (click)="selectScheduling(scheduling.id)">
-                <p ><strong>ID: </strong> {{ scheduling.id }}</p>
-                <p ><strong>Scheduling Algorithm: </strong> [{{ scheduling.schedulingAlgorithms }}]</p>
-              
-              </div>
-            </div>
-
-        </div>
-
-      </div>
-
-
-      
-    
-      <div class="buttons-container buttons-right">
-              <button class="button-save button-spacing" tabindex="-1" (click)="saveItem()" nbButton shape="rectangle" status="primary">
-                  Save
-              </button>
   
-              <button  class="button-save button-spacing" tabindex="-1" (click)="cancel()" nbButton shape="rectangle">
-                  Cancel
-              </button>
+      <div class="language-section" style="padding-right: 50px; border-right: 1px solid #ccc; width: 417px; padding-left: 45px;">
+        <h6>Assignment</h6>
+
+        <div style="flex: 1; min-width: 145px; max-width: 145px; margin-top: 20px; margin-right: 20px; margin-bottom: 17px;">
+          <label class="label" for="actionSelect" style="display: block;">Action</label>
+          <nb-select id="actionSelect" placeholder="Select" [(ngModel)]="rowData.assignment.action" (ngModelChange)="onAssignmentActionChange($event)" style="min-width: 145px; max-width: 145px;">
+            <nb-option *ngFor="let action of assignmentActions" [value]="action" style="min-width: 145px; max-width: 145px;">{{ capitalizeFirstLetter(action) }}</nb-option>
+          </nb-select>
+        </div>
+
+        <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px; margin-right: 20px; margin-bottom: 10px;" *ngIf="rowData.assignment.action == actionGenerate">
+          <label class="label" for="methodSelect" style="display: block;">Assignment method</label>
+          <nb-select id="methodSelect" placeholder="Select" [(ngModel)]="rowData.assignment.parameters.assignmentMethod" style="min-width: 190px; max-width: 190px;">
+            <nb-option *ngFor="let method of assignmentMethods" [value]="method" style="min-width: 190px; max-width: 190px; height: 41px;">{{ method.toUpperCase() }}</nb-option>
+          </nb-select>
+        </div>
+
+        <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px; margin-right: 20px; margin-bottom: 10px;" *ngIf="rowData.assignment.action == actionGenerate && rowData.assignment.parameters.assignmentMethod == 'CITTA'">
+          <label class="label" for="methodSelect" style="display: block;">CITTA criteria</label>
+          <nb-select id="methodSelect" placeholder="Select" multiple [(ngModel)]="rowData.assignment.parameters.cittaCriteria" style="min-width: 190px; max-width: 190px;">
+            <nb-option *ngFor="let method of cittaCriterias" [value]="method" style="min-width: 190px; max-width: 190px; height: 41px;">{{ method.toUpperCase() }}</nb-option>
+          </nb-select>
+        </div>
+
+        <div *ngIf="rowData.assignment.action == actionOpen" style="max-height: 200px; overflow-y: scroll; margin-top: 20px; padding-right: 12px; min-height: 600px;">
+          <div *ngFor="let assignment of assignments" class="info" [class.selected-info]="selectedAssignmentId == assignment.id" (click)="selectAssignment(assignment.id)">
+            <p><strong>ID:</strong> {{ assignment.id }}</p>
+            <p><strong>Assignment Method:</strong> {{ assignment.assignmentMethod }}</p>
+            <p><strong>CITTA Criteria:</strong> [{{ assignment.cittaCriteria }}]</p>
           </div>
-  
-    </nb-card-body>
-  </nb-card>
-  
-  
+        </div>
+      </div>
+
+      <div class="language-section" style="width: 417px; padding-left: 45px; padding-right: 24px;">
+        <h6>Scheduling</h6>
+
+        <div style="flex: 1; min-width: 145px; max-width: 145px; margin-top: 20px; margin-right: 20px; padding-right: 12px; margin-bottom: 17px;">
+          <label class="label" for="actionSelect" style="display: block;">Action</label>
+          <nb-select id="actionSelect" placeholder="Select" [(ngModel)]="rowData.scheduling.action" (ngModelChange)="onSchedulingActionChange($event)" style="min-width: 145px; max-width: 145px;">
+            <nb-option *ngFor="let action of schedulingActions" [value]="action" style="min-width: 145px; max-width: 145px;">{{ capitalizeFirstLetter(action) }}</nb-option>
+          </nb-select>
+        </div>
+
+        <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px; margin-right: 20px; margin-bottom: 10px;" *ngIf="rowData.scheduling.action == actionGenerate">
+          <label class="label" for="methodSelect" style="display: block;">Scheduling algorithm</label>
+          <nb-select id="methodSelect" placeholder="Select" multiple [(ngModel)]="rowData.scheduling.parameters.schedulingAlgorithms" style="min-width: 190px; max-width: 190px;">
+            <nb-option *ngFor="let algorithm of schedulingAlgorithms" [value]="algorithm" style="min-width: 190px; max-width: 190px; height: 41px;">{{ algorithm.toUpperCase() }}</nb-option>
+          </nb-select>
+        </div>
+
+        <div *ngIf="rowData.scheduling.action == actionOpen" style="max-height: 200px; overflow-y: scroll; margin-top: 20px; min-height: 600px;">
+          <div *ngFor="let scheduling of schedulings" class="info" [class.selected-info]="selectedSchedulingId == scheduling.id" (click)="selectScheduling(scheduling.id)">
+            <p><strong>ID:</strong> {{ scheduling.id }}</p>
+            <p><strong>Scheduling Algorithm:</strong> [{{ scheduling.schedulingAlgorithms }}]</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="buttons-container buttons-right">
+      <button class="button-save button-spacing" tabindex="-1" (click)="saveItem()" nbButton shape="rectangle" status="primary">
+        Save
+      </button>
+      <button class="button-save button-spacing" tabindex="-1" (click)="cancel()" nbButton shape="rectangle">
+        Cancel
+      </button>
+    </div>
+  </nb-card-body>
+</nb-card>

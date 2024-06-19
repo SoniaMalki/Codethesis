@@ -1,11 +1,11 @@
 import numpy
-from modules.experience_generation.task_model.utilization_generator import UtilizationGenerator
-from modules.experience_generation.task_model.period_generator import PeriodGenerator
-from modules.experience_generation.task_model.wcet_calculator import WCETCalculator
-from modules.experience_generation.task_model.interference_generator import InterferenceGenerator
-from modules.experience_generation.taskset_set import TasksetSet
-from modules.taskset import Taskset
-from modules.experience_generation.task_model.prime_matrix_generator import PrimeMatrixGenerator
+from modules.taskset.task_parameters_generator.utilization_generator import UtilizationGenerator
+from modules.taskset.task_parameters_generator.period_generator import PeriodGenerator
+from modules.taskset.task_parameters_generator.wcet_calculator import WCETCalculator
+from modules.taskset.task_parameters_generator.interference_generator import InterferenceGenerator
+from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
+from modules.taskset.taskset_set import TasksetSet
+from modules.taskset.task import Task
 
 
 
@@ -45,6 +45,6 @@ class TasksetSetGenerator:
         periods, deadlines, utilizations, wcets, interferences = self.init_taskset_set()
         taskset_set_generated = []
         for i in range(len(periods)):
-            taskset_set_generated.append(Taskset(taskset_number=i, wcet=wcets[i], deadline=deadlines[i], period=periods[i], interference=interferences[i], utilization=utilizations[i]))
+            taskset_set_generated.append(Taskset(task_number=i, wcet=wcets[i], deadline=deadlines[i], period=periods[i], interference=interferences[i], utilization=utilizations[i]))
         res = TasksetSet(taskset_set_number=self.taskset_set_number, wcet=wcets, deadline=deadlines, period=periods, interference=interferences, utilization=utilizations, taskset_list=taskset_set_generated)
         return res

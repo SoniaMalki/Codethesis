@@ -1,4 +1,4 @@
-from modules.taskset import Taskset
+from modules.taskset.task import Task
 
 class TasksetSet:
     def __init__(self, taskset_set_number, wcet, deadline, period, interference, utilization, taskset_list):

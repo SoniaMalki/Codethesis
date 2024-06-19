@@ -1,5 +1,5 @@
 import math
-from .job import Job
+from modules.taskset.job import Job
 
 class Task:
     def __init__(self, task_number, wcet, deadline, period, interference, utilization):

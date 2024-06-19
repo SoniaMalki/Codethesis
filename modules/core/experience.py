@@ -2,90 +2,100 @@ import json
 import os
 from pathlib import Path
 
+from modules.taskset.taskset_set_generator import TasksetSetGenerator
+
 class Experience:
-    def __init__(self, **kwargs):
+    def __init__(self, taskset_parameters, assignment_parameters, scheduling_parameters):
         """
         Initializes an Experience object.
 
         Args:
-            **kwargs: A dictionary containing parameters to generate tasksets, assignments, and schedulings.
+            taskset_parameters (dict): A dictionary containing taskset configuration.
+            assignment_parameters (dict): A dictionary containing assignment configuration.
+            scheduling_parameters (dict): A dictionary containing scheduling configuration.
         """
-        self.taskset_set = None
-        self.assignment = None
-        self.scheduling = None
-        self.parameters = kwargs
+        self.taskset_parameters = taskset_parameters
+        self.assignment_parameters = assignment_parameters
+        self.scheduling_parameters = scheduling_parameters
+        
+        self.taskset_set_obj = None
+        self.assignment_obj = None  # Use assignment_obj to avoid confusion with assignment (dict)
+        self.scheduling_obj = None  # Use scheduling_obj to avoid confusion with scheduling (dict)
 
     def process(self):
         """Processes the experience, generating tasksets, assignments, and schedulings as needed."""
         print("Processing Experience")
-        print(self.parameters.keys())
+        #self._process_taskset()
+        #self._process_assignment()
+        #self._process_scheduling()
 
-        taskset_parameters = self.parameters.get('taskset')
-        print(taskset_parameters)
-        # Taskset handling
-        if taskset_parameters.get('action') == 'generate':
+    def _process_taskset(self):
+        """Handles the generation or opening of the taskset."""
+        if self.taskset["action"] == 'generate':
             print("*****")
             print(f"Generating taskset")
-            taskset_generator = TasksetSetGenerator(**self.parameters['taskset_parameters'])
+            taskset_generator = TasksetSetGenerator(**self.taskset["parameters"])
             self.taskset_set = taskset_generator.generate_taskset_set()
-            self.parameters['taskset_id'] = self.taskset_set.taskset_set_number
+            self.taskset["taskset_id"] = self.taskset_set.taskset_set_number
 
-        elif taskset_parameters.get('action') == 'open':
+        elif self.taskset["action"] == 'open':
             print("*****")
             print(f"Opening taskset")
             taskset_loader = TasksetSetLoader()
-            self.taskset_set = taskset_loader.load(self.parameters['taskset_id'])
+            self.taskset_set = taskset_loader.load(self.taskset["taskset_id"])
         else:
-            print(f"Invalid taskset action: {taskset_parameters.get('action')}")
+            print(f"Invalid taskset action: {self.taskset['action']}")
             return
 
-        # Assignment handling
-        if self.parameters.get('assignment_action') == 'generate':
+    def _process_assignment(self):
+        """Handles the generation or opening of the assignment."""
+        if self.assignment["action"] == 'generate':
             print("*****")
-            print(f"Launching assignment with method {self.parameters['assignment_parameters']['assignment_method']}")
+            print(f"Launching assignment with method {self.assignment['parameters']['assignment_method']}")
             if self.taskset_set is None:
                 print("Cannot generate assignment without a valid taskset.")
                 return
 
             assignment_generator = AssignmentGenerator()
-            self.assignment = assignment_generator.generate_assignment(
+            self.assignment_obj = assignment_generator.generate_assignment(
                 self.taskset_set,
-                self.parameters['assignment_parameters']['assignment_method'],
-                self.parameters['assignment_parameters']['citta_criteria']
+                self.assignment['parameters']['assignment_method'],
+                self.assignment['parameters']['citta_criteria']
             )
-            self.parameters['assignment_id'] = self.assignment.assignment_id
+            self.assignment["assignment_id"] = self.assignment_obj.assignment_id
 
-        elif self.parameters.get('assignment_action') == 'open':
+        elif self.assignment["action"] == 'open':
             print("*****")
             print(f"Opening assignment")
             assignment_loader = AssignmentLoader()
-            self.assignment = assignment_loader.load(self.parameters['assignment_id'])
+            self.assignment_obj = assignment_loader.load(self.assignment["assignment_id"])
         else:
-            self.assignment = None  # No assignment needed
+            self.assignment_obj = None  # No assignment needed
 
-        # Scheduling handling
-        if self.parameters.get('scheduling_action') == 'generate':
+    def _process_scheduling(self):
+        """Handles the generation or opening of the scheduling."""
+        if self.scheduling["action"] == 'generate':
             print("*****")
-            print(f"Launching scheduling with method {self.parameters['scheduling_parameters']['scheduling_algorithms']}")
-            if self.taskset_set is None or self.assignment is None:
+            print(f"Launching scheduling with method {self.scheduling['parameters']['scheduling_algorithms']}")
+            if self.taskset_set is None or self.assignment_obj is None:
                 print("Cannot generate scheduling without a valid taskset and assignment.")
                 return
 
-            self.scheduling = SchedulingGenerator(
+            self.scheduling_obj = SchedulingGenerator(
                 self.taskset_set,
-                self.assignment,
-                self.parameters['scheduling_parameters']['scheduling_algorithms']
+                self.assignment_obj,
+                self.scheduling['parameters']['scheduling_algorithms']
             ).generate_scheduling()
-            self.parameters['scheduling_id'] = self.scheduling.scheduling_id
-            print(f"Scheduling completed. Schedule ID: {self.scheduling.scheduling_id}")
+            self.scheduling["scheduling_id"] = self.scheduling_obj.scheduling_id
+            print(f"Scheduling completed. Schedule ID: {self.scheduling_obj.scheduling_id}")
 
-        elif self.parameters.get('scheduling_action') == 'open':
+        elif self.scheduling["action"] == 'open':
             print("*****")
             print(f"Opening schedule")
             scheduling_loader = SchedulingLoader()
-            self.scheduling = scheduling_loader.load(self.parameters['scheduling_id'])
+            self.scheduling_obj = scheduling_loader.load(self.scheduling["scheduling_id"])
         else:
-            self.scheduling = None  # No scheduling needed
+            self.scheduling_obj = None  # No scheduling needed
 
     def save(self, filename):
         """Saves the experience data to a JSON file."""

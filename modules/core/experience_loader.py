@@ -24,10 +24,20 @@ class ExperienceLoader:
             experience_data = json.load(f)
 
         # Validate the experience_parameter_index
-        if int(experience_parameter_index) >= 0 and int(experience_parameter_index) < len(experience_data):
+        if experience_parameter_index in experience_data:
             experience_parameters = experience_data[experience_parameter_index]
         else:
             print(f"Invalid experience parameter index: {experience_parameter_index}. Defaulting to index 1.")
-            experience_parameters = experience_data["1"]  # Default to index 0 if invalid
+            experience_parameter_index = "1"  # Default to index 1 if invalid
 
-        return Experience(**experience_parameters)
+        # Get the experience data based on the index
+        taskset_data = experience_data[experience_parameter_index]["taskset"]
+        assignment_data = experience_data[experience_parameter_index]["assignment"]
+        scheduling_data = experience_data[experience_parameter_index]["scheduling"]
+
+        # Create the Experience object
+        return Experience(
+            taskset_parameters=taskset_data,
+            assignment_parameters=assignment_data,
+            scheduling_parameters=scheduling_data,
+        )

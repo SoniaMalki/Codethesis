@@ -25,26 +25,28 @@ class Experience:
     def process(self):
         """Processes the experience, generating tasksets, assignments, and schedulings as needed."""
         print("Processing Experience")
-        #self._process_taskset()
+        self._process_taskset()
         #self._process_assignment()
         #self._process_scheduling()
 
     def _process_taskset(self):
         """Handles the generation or opening of the taskset."""
-        if self.taskset["action"] == 'generate':
+        if self.taskset_parameters["action"] == 'generate':
             print("*****")
             print(f"Generating taskset")
-            taskset_generator = TasksetSetGenerator(**self.taskset["parameters"])
+            print(self.taskset_parameters["parameters"])
+            taskset_generator = TasksetSetGenerator(**self.taskset_parameters["parameters"])
             self.taskset_set = taskset_generator.generate_taskset_set()
             self.taskset["taskset_id"] = self.taskset_set.taskset_set_number
 
-        elif self.taskset["action"] == 'open':
+        #TODO todo test this after generate is corrected
+        elif self.taskset_parameters["action"] == 'open':
             print("*****")
             print(f"Opening taskset")
             taskset_loader = TasksetSetLoader()
-            self.taskset_set = taskset_loader.load(self.taskset["taskset_id"])
+            self.taskset_set = taskset_loader.load(self.taskset_parameters["taskset_id"])
         else:
-            print(f"Invalid taskset action: {self.taskset['action']}")
+            print(f"Invalid taskset action: {self.taskset_parameters['action']}")
             return
 
     def _process_assignment(self):

@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Service
 public class JsonGenerationService {
 
-
   @Autowired
   private TasksetRepository tasksetRepository;
 
@@ -90,10 +89,6 @@ public class JsonGenerationService {
     map.put("taskset_count", params.getTasksetCount());
     map.put("list_of_interference_factors", params.getListOfInterferenceFactors());
     map.put("list_of_probability_factors", params.getListOfProbabilityFactors());
-    map.put("min_period", params.getMinPeriod());
-    map.put("max_period", params.getMaxPeriod());
-    map.put("list_of_period_generation_methods", params.getListOfPeriodGenerationMethods());
-    map.put("granularity", params.getGranularity());
     return map;
   }
 

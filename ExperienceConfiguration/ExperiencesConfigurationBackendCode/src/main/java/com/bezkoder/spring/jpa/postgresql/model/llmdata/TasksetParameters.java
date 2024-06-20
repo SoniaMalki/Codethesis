@@ -29,12 +29,6 @@ public class TasksetParameters {
   @ElementCollection
   private List<Double> listOfProbabilityFactors;
 
-  private Integer minPeriod;
-
-  private Integer maxPeriod;
-
-  @ElementCollection
-  private List<String> listOfPeriodGenerationMethods;
 
   @ElementCollection
   private List<Double> granularity;

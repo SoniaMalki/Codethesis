@@ -13,9 +13,9 @@ public class AssignmentParameters {
   @SequenceGenerator(name = "assignmentparameters_generator", sequenceName = "assignmentparameters_seq", allocationSize = 1)
   private Long id;
 
-  private String assignmentMethod;
+  @ElementCollection
+  private List<String> assignmentMethod;
 
   @ElementCollection
   private List<String> cittaCriteria;
-
 }

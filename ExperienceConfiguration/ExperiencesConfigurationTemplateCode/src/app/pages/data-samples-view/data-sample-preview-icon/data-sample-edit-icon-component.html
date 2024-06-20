@@ -2,17 +2,32 @@
   <nb-tabset>
     <nb-tab tabTitle="Info data">
       <div class="div-data">
-          <p><strong>Number of Cores:</strong> {{ rowData.taskset.parametersRetrieved.numberOfCores }}</p>
-          <p><strong>Tasks per Taskset:</strong> {{ rowData.taskset.parametersRetrieved.listOfTasksPerTaskset }}</p>
-          <p><strong>Taskset Count:</strong> {{ rowData.taskset.parametersRetrieved.tasksetCount }}</p>
-          <p><strong>Max Utilization:</strong> {{ rowData.taskset.parametersRetrieved.listOfMaxUtilization.join(', ') || 'None' }}</p>
-          <p><strong>Interference Factors:</strong> {{ rowData.taskset.parametersRetrieved.listOfInterferenceFactors.join(', ') || 'None' }}</p>
-          <p><strong>Probability Factors:</strong> {{ rowData.taskset.parametersRetrieved.listOfProbabilityFactors.join(', ') || 'None' }}</p>
-          <br/>
-          <p><strong>Assignment Method:</strong> {{ rowData.assignment.parametersRetrieved ? rowData.assignment.parametersRetrieved.assignmentMethod : 'None' }}</p>
-          <p><strong>Citta Criteria:</strong> [{{ rowData.assignment.parametersRetrieved ? rowData.assignment.parametersRetrieved.cittaCriteria : 'None' }}]</p>
-          <br/>
-          <p><strong>Scheduling Algorithm:</strong> [{{ rowData.scheduling.parametersRetrieved ? rowData.scheduling.parametersRetrieved.schedulingAlgorithms : 'None' }}]</p>
+        <p><strong>Number of Cores:</strong> {{ rowData.taskset.parametersRetrieved.numberOfCores }}</p>
+        <p><strong>Tasks per Taskset:</strong> {{ rowData.taskset.parametersRetrieved.listOfTasksPerTaskset }}</p>
+        <p><strong>Taskset Count:</strong> {{ rowData.taskset.parametersRetrieved.tasksetCount }}</p>
+        <p><strong>Max Utilization:</strong> {{ rowData.taskset.parametersRetrieved.listOfMaxUtilization.join(', ') || 'None' }}</p>
+        <p><strong>Interference Factors:</strong> {{ rowData.taskset.parametersRetrieved.listOfInterferenceFactors.join(', ') || 'None' }}</p>
+        <p><strong>Probability Factors:</strong> {{ rowData.taskset.parametersRetrieved.listOfProbabilityFactors.join(', ') || 'None' }}</p>
+        <br/>
+        <p><strong>Assignment Method:</strong> 
+          {{ rowData.assignment.parametersRetrieved && rowData.assignment.parametersRetrieved.assignmentMethod.length > 0 
+            ? rowData.assignment.parametersRetrieved.assignmentMethod.join(', ') 
+            : 'None' 
+          }}
+        </p>
+        <p><strong>Citta Criteria:</strong> 
+          {{ rowData.assignment.parametersRetrieved && rowData.assignment.parametersRetrieved.cittaCriteria.length > 0 
+            ? rowData.assignment.parametersRetrieved.cittaCriteria.join(', ') 
+            : 'None' 
+          }}
+        </p>
+        <br/>
+        <p><strong>Scheduling Algorithm:</strong> 
+          {{ rowData.scheduling.parametersRetrieved && rowData.scheduling.parametersRetrieved.schedulingAlgorithms.length > 0 
+            ? rowData.scheduling.parametersRetrieved.schedulingAlgorithms.join(', ') 
+            : 'None' 
+          }}
+        </p>
       </div>
     </nb-tab>
     <nb-tab tabTitle="Json data (Db entity)">

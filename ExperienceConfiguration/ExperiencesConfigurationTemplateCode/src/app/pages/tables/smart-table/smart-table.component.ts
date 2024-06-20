@@ -111,17 +111,10 @@ export class SmartTableComponent {
         width: '80px',
         valuePrepareFunction: (cell, row) => {
           if (row.assignment && row.assignment.parametersRetrieved && row.assignment.parametersRetrieved.assignmentMethod) {
-            if (row.assignment.parametersRetrieved.assignmentMethod == 'CITTA') {
-              const paramsArray = row.assignment.parametersRetrieved.cittaCriteria;
-          
-              if (paramsArray.length === 0) {
-                return row.assignment.parametersRetrieved.assignmentMethod.toUpperCase();
-              } else {
-                const joinedString = paramsArray.map(element => element.toUpperCase()).join(', ');
-                return row.assignment.parametersRetrieved.assignmentMethod.toUpperCase() + " (" + (joinedString.length > 14 ? joinedString.substring(0, 14) + '..' : joinedString) + ')';
-              }
-            } else {
-              return row.assignment.parametersRetrieved.assignmentMethod.toUpperCase();
+            const paramsArray = row.assignment.parametersRetrieved.assignmentMethod;
+            if (paramsArray && Array.isArray(paramsArray)) {
+              const joinedString = paramsArray.map(element => element.toUpperCase()).join(', ');
+              return joinedString.length > 14 ? joinedString.substring(0, 14) + '..' : joinedString;
             }
           } else {
             return "N/A";

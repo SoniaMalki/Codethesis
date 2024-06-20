@@ -90,12 +90,12 @@
 
         <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px; margin-right: 20px; margin-bottom: 10px;" *ngIf="rowData.assignment.action == actionGenerate">
           <label class="label" for="methodSelect" style="display: block;">Assignment method</label>
-          <nb-select id="methodSelect" placeholder="Select" [(ngModel)]="rowData.assignment.parameters.assignmentMethod" style="min-width: 190px; max-width: 190px;">
+          <nb-select id="methodSelect" placeholder="Select" multiple [(ngModel)]="rowData.assignment.parameters.assignmentMethod" style="min-width: 190px; max-width: 190px;">
             <nb-option *ngFor="let method of assignmentMethods" [value]="method" style="min-width: 190px; max-width: 190px; height: 41px;">{{ method.toUpperCase() }}</nb-option>
           </nb-select>
         </div>
 
-        <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px; margin-right: 20px; margin-bottom: 10px;" *ngIf="rowData.assignment.action == actionGenerate && rowData.assignment.parameters.assignmentMethod == 'CITTA'">
+        <div class="form-field" style="flex: 1; min-width: 190px; max-width: 190px; margin-right: 20px; margin-bottom: 10px;" *ngIf="rowData.assignment.action == actionGenerate && rowData.assignment.parameters.assignmentMethod.includes('CITTA')">
           <label class="label" for="methodSelect" style="display: block;">CITTA criteria</label>
           <nb-select id="methodSelect" placeholder="Select" multiple [(ngModel)]="rowData.assignment.parameters.cittaCriteria" style="min-width: 190px; max-width: 190px;">
             <nb-option *ngFor="let method of cittaCriterias" [value]="method" style="min-width: 190px; max-width: 190px; height: 41px;">{{ method.toUpperCase() }}</nb-option>
@@ -105,8 +105,8 @@
         <div *ngIf="rowData.assignment.action == actionOpen" style="max-height: 200px; overflow-y: scroll; margin-top: 20px; padding-right: 12px; min-height: 600px;">
           <div *ngFor="let assignment of assignments" class="info" [class.selected-info]="selectedAssignmentId == assignment.id" (click)="selectAssignment(assignment.id)">
             <p><strong>ID:</strong> {{ assignment.id }}</p>
-            <p><strong>Assignment Method:</strong> {{ assignment.assignmentMethod }}</p>
-            <p><strong>CITTA Criteria:</strong> [{{ assignment.cittaCriteria }}]</p>
+            <p><strong>Assignment Method:</strong> {{ assignment.assignmentMethod.join(', ') }}</p>
+            <p><strong>CITTA Criteria:</strong> [{{ assignment.cittaCriteria.join(', ') }}]</p>
           </div>
         </div>
       </div>
@@ -131,7 +131,7 @@
         <div *ngIf="rowData.scheduling.action == actionOpen" style="max-height: 200px; overflow-y: scroll; margin-top: 20px; min-height: 600px;">
           <div *ngFor="let scheduling of schedulings" class="info" [class.selected-info]="selectedSchedulingId == scheduling.id" (click)="selectScheduling(scheduling.id)">
             <p><strong>ID:</strong> {{ scheduling.id }}</p>
-            <p><strong>Scheduling Algorithm:</strong> [{{ scheduling.schedulingAlgorithms }}]</p>
+            <p><strong>Scheduling Algorithm:</strong> [{{ scheduling.schedulingAlgorithms.join(', ') }}]</p>
           </div>
         </div>
       </div>

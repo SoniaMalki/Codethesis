@@ -14,46 +14,37 @@ export class PopoversComponent {
   cardComponent = NgxPopoverCardComponent;
   formComponent = NgxPopoverFormComponent;
   example = JSON.stringify({
-    "id": 54,
-    "taskset": {
-        "id": 104,
+    "4": {
+      "taskset": {
+        "taskset_id": "taskset_3",
         "action": "generate",
         "parameters": {
-            "id": 54,
-            "numberOfCores": 4,
-            "listOfMaxUtilization": [],
-            "listOfTasksPerTaskset": null,
-            "tasksetCount": 3,
-            "listOfInterferenceFactors": [],
-            "listOfProbabilityFactors": [],
-            "minPeriod": 50,
-            "maxPeriod": 1000,
-            "listOfPeriodGenerationMethods": [],
-            "granularity": []
-        },
-        "tasksetId": null
-    },
-    "assignment": {
-        "id": 54,
-        "action": "generate",
+          "list_of_probability_factors": [0.4],
+          "list_of_max_utilization": [0.2],
+          "taskset_count": 2,
+          "number_of_cores": 4,
+          "list_of_tasks_per_taskset": 20,
+          "list_of_interference_factors": [0.8]
+        }
+      },
+      "assignment": {
+        "assignment_id": "assignment_",
+        "taskset_id": "taskset_",
+        "action": "none",
         "parameters": {
-            "id": 4,
-            "assignmentMethod": "",
-            "cittaCriteria": []
-        },
-        "tasksetId": null,
-        "assignmentId": null
-    },
-    "scheduling": {
-        "id": 54,
-        "action": "generate",
+          "citta_criteria": [],
+          "assignment_method": []
+        }
+      },
+      "scheduling": {
+        "assignment_id": "assignment_",
+        "taskset_id": "taskset_",
+        "scheduling_id": "scheduling_",
+        "action": "none",
         "parameters": {
-            "id": 4,
-            "schedulingAlgorithms": []
-        },
-        "tasksetId": null,
-        "assignmentId": null,
-        "schedulingId": null
+          "scheduling_algorithms": []
+        }
+      }
     }
-})
+  });
 }

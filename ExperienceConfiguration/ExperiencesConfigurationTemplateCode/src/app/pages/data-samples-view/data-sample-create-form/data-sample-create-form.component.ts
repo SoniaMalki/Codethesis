@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit, TemplateRef  } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, TemplateRef } from '@angular/core';
 import { NbDialogService } from '@nebular/theme';
 import { Observable } from 'rxjs';
 import { DataSampleService } from '../../../services/datasample.service';
@@ -8,7 +8,7 @@ import { DataSampleService } from '../../../services/datasample.service';
   templateUrl: './data-sample-create-form.component.html',
   styleUrls: ['./data-sample-create-form.component.scss']
 })
-export class DataSampleCreateFormComponent {
+export class DataSampleCreateFormComponent implements OnInit {
   @Output() onSave = new EventEmitter<void>();
   @Output() onCancel = new EventEmitter<void>();
 
@@ -63,13 +63,6 @@ export class DataSampleCreateFormComponent {
   selectedSchedulingId: number;
 
   ngOnInit() {
-    // Initialize model from rowData on input change
-    console.log(this.rowData);
-    console.log(this.tasksets);
-    console.log(this.assignments);
-    console.log(this.schedulings);
-    console.log(this.selectedTasksetId);
-
     this.tasksets = this.allTasksets;
     this.assignments = this.allAssignments;
     this.schedulings = this.allSchedulings;
@@ -81,20 +74,15 @@ export class DataSampleCreateFormComponent {
 
     if (this.rowData) {
       if (this.rowData.taskset && this.rowData.taskset.action == 'open') {
-        console.log('example taskset');
         this.selectedTasksetId = this.rowData.taskset.tasksetId;
       }
       if (this.rowData.assignment && this.rowData.assignment.action == 'open') {
-        console.log('example assignment');
         this.selectedAssignmentId = this.rowData.assignment.assignmentId;
       }
       if (this.rowData.scheduling && this.rowData.scheduling.action == 'open') {
-        console.log('example scheduling');
         this.selectedSchedulingId = this.rowData.scheduling.schedulingId;
       }
     }
-
-    console.log(this.selectedTasksetId, this.selectedAssignmentId, this.selectedSchedulingId);
   }
 
   initializeForm() {
@@ -113,7 +101,6 @@ export class DataSampleCreateFormComponent {
   private filterByTasksetId(tasksetId: number): void {
     this.dataSampleService.filterByTasksetId(tasksetId).subscribe(
       (data: any) => {
-        console.log(data);
         this.assignments = data.assignmentParameters;
         this.schedulings = data.schedulingParameters;
 
@@ -136,7 +123,6 @@ export class DataSampleCreateFormComponent {
   private filterByAssignmentId(assignmentId: number): void {
     this.dataSampleService.filterByAssignmentId(assignmentId).subscribe(
       (data: any) => {
-        console.log(data);
         this.schedulings = data;
         const schedulingIds = this.schedulings.map((s) => s.id);
         if (!schedulingIds.includes(this.selectedSchedulingId)) {
@@ -154,12 +140,9 @@ export class DataSampleCreateFormComponent {
       this.selectedTasksetId = undefined;
       this.assignments = this.allAssignments;
       this.schedulings = this.allSchedulings;
-      console.log('Unselect Taskset ID: ', this.selectedTasksetId);
     } else {
       this.selectedTasksetId = tasksetId;
       this.filterByTasksetId(tasksetId);
-
-      console.log('Selected Taskset ID: ', this.selectedTasksetId);
     }
   }
 
@@ -167,21 +150,17 @@ export class DataSampleCreateFormComponent {
     if (this.selectedAssignmentId == assignmentId) {
       this.selectedAssignmentId = undefined;
       this.schedulings = this.allSchedulings;
-      console.log('Unselect Assignment ID: ', this.selectedAssignmentId);
     } else {
       this.selectedAssignmentId = assignmentId;
       this.filterByAssignmentId(assignmentId);
-      console.log('Selected Assignment ID: ', this.selectedAssignmentId);
     }
   }
 
   selectScheduling(schedulingId: number): void {
     if (this.selectedSchedulingId == schedulingId) {
       this.selectedSchedulingId = undefined;
-      console.log('Unselect Scheduling ID: ', this.selectedSchedulingId);
     } else {
       this.selectedSchedulingId = schedulingId;
-      console.log('Selected Scheduling ID: ', this.selectedSchedulingId);
     }
   }
 
@@ -212,7 +191,6 @@ export class DataSampleCreateFormComponent {
   toggleDetailsTaskset(index: number, event: MouseEvent): void {
     event.stopPropagation();
     this.showDetailsTaskset[index] = !this.showDetailsTaskset[index];
-    console.log(this.showDetailsTaskset);
   }
 
   toggleDetailsAssignment(index: number): void {
@@ -233,11 +211,11 @@ export class DataSampleCreateFormComponent {
       }
     } else if (newAction == this.actionOpen) {
       this.schedulingActions = [this.actionGenerate, this.actionOpen, this.actionNone];
-      this.rowData.assignment.parameters.assignmentMethod = '';
+      this.rowData.assignment.parameters.assignmentMethod = [];
       this.selectedAssignmentId = null;
     } else if (newAction == this.actionNone) {
       this.schedulingActions = [this.actionNone];
-      this.rowData.assignment.parameters.assignmentMethod = '';
+      this.rowData.assignment.parameters.assignmentMethod = [];
       this.onSchedulingActionChange(this.actionNone);
     }
   }
@@ -247,34 +225,29 @@ export class DataSampleCreateFormComponent {
   }
 
   saveItem() {
-    console.log();
-
     var canBeSaved = true;
-
+    // Vérifications pour Taskset
     if (this.rowData.taskset.action == 'open' && this.selectedTasksetId == undefined) {
-      window.alert("L'action pour le taskset est 'Open' mais tu n'a pas séléctionné de taskset dans la liste");
+      window.alert("L'action pour le taskset est 'Open' mais tu n'as pas sélectionné de taskset dans la liste");
       canBeSaved = false;
-    } else if (this.rowData.assignment.action == 'open' && this.selectedAssignmentId == undefined) {
-      window.alert("L'action pour l'assignment est 'Open' mais tu n'a pas séléctionné d'assignment dans la liste");
-      canBeSaved = false;
-    } else if (this.rowData.scheduling.action == 'open' && this.selectedSchedulingId == undefined) {
-      window.alert("L'action pour le scheduling est 'Open' mais tu n'a pas séléctionné de scheduling dans la liste");
-      canBeSaved = false;
-    }
-
-    else if (this.rowData.taskset.action == 'generate') {
-      if (this.rowData.taskset.parameters.listOfMaxUtilization.length == 0) {
-        window.alert("Selectionner au moins une valeur pour 'List Of Max Utilization'");
+    } else if (this.rowData.taskset.action == 'generate') {
+      if (this.rowData.taskset.parameters.numberOfCores == "") {
+        window.alert("Sélectionner une valeur pour 'Nbr of cores'");
         canBeSaved = false;
-      }
-
-      else if (this.rowData.taskset.parameters.listOfInterferenceFactors.length == 0) {
-        window.alert("Selectionner au moins une valeur pour 'List Of Interference Factors'");
+      } else if (this.rowData.taskset.parameters.tasksetCount == "") {
+        window.alert("Sélectionner une valeur pour 'Taskset count'");
         canBeSaved = false;
-      }
-
-      else if (this.rowData.taskset.parameters.listOfProbabilityFactors.length == 0) {
-        window.alert("Selectionner au moins une valeur pour 'List Of Probability Factors'");
+      } else if (this.rowData.taskset.parameters.listOfTasksPerTaskset == "") {
+        window.alert("Sélectionner une valeur pour 'Task per taskset'");
+        canBeSaved = false;
+      } else if (this.rowData.taskset.parameters.listOfMaxUtilization.length == 0) {
+        window.alert("Sélectionner au moins une valeur pour 'Max utilizations'");
+        canBeSaved = false;
+      } else if (this.rowData.taskset.parameters.listOfInterferenceFactors.length == 0) {
+        window.alert("Sélectionner au moins une valeur pour 'Interference factors'");
+        canBeSaved = false;
+      } else if (this.rowData.taskset.parameters.listOfProbabilityFactors.length == 0) {
+        window.alert("Sélectionner au moins une valeur pour 'Probability factors'");
         canBeSaved = false;
       }
     }
@@ -283,12 +256,16 @@ export class DataSampleCreateFormComponent {
       return;
     }
 
-    if (this.rowData.assignment.action == 'generate') {
-      if (this.rowData.assignment.parameters.assignmentMethod == '') {
-        window.alert('Selectionner une méthode d\'assignation');
+    // Vérifications pour Assignment
+    if (this.rowData.assignment.action == 'open' && this.selectedAssignmentId == undefined) {
+      window.alert("L'action pour l'assignment est 'Open' mais tu n'as pas sélectionné d'assignment dans la liste");
+      canBeSaved = false;
+    } else if (this.rowData.assignment.action == 'generate') {
+      if (this.rowData.assignment.parameters.assignmentMethod.length == 0) {
+        window.alert("Sélectionner une méthode d'assignation");
         canBeSaved = false;
-      } else if (this.rowData.assignment.parameters.assignmentMethod == 'CITTA' && this.rowData.assignment.parameters.cittaCriteria.length == 0) {
-        window.alert('Selectionner au moins un critère Citta');
+      } else if (this.rowData.assignment.parameters.assignmentMethod.includes('CITTA') && this.rowData.assignment.parameters.cittaCriteria.length == 0) {
+        window.alert('Sélectionner au moins un critère Citta');
         canBeSaved = false;
       }
     }
@@ -297,9 +274,13 @@ export class DataSampleCreateFormComponent {
       return;
     }
 
-    if (this.rowData.scheduling.action == 'generate') {
+    // Vérifications pour Scheduling
+    if (this.rowData.scheduling.action == 'open' && this.selectedSchedulingId == undefined) {
+      window.alert("L'action pour le scheduling est 'Open' mais tu n'as pas sélectionné de scheduling dans la liste");
+      canBeSaved = false;
+    } else if (this.rowData.scheduling.action == 'generate') {
       if (this.rowData.scheduling.parameters.schedulingAlgorithms.length == 0) {
-        window.alert('Selectionner au moins un algorithme de scheduling');
+        window.alert('Sélectionner au moins un algorithme de scheduling');
         canBeSaved = false;
       }
     }
@@ -310,31 +291,27 @@ export class DataSampleCreateFormComponent {
 
     if (canBeSaved) {
       if (window.confirm('Are you sure you want to save this item?')) {
-        /*this.rowData.quality = this.quality/10
-        this.rowData.positivityRating = this.positivityRating/10
-        this.rowData.processed = this.processed == 'Yes' ? true : false  */
-  
         if (this.rowData.taskset.action == 'open' && this.selectedTasksetId != undefined) {
           this.rowData.taskset.tasksetId = this.selectedTasksetId;
         }
-  
+
         if (this.rowData.assignment.action == 'open' && this.selectedAssignmentId != undefined) {
           this.rowData.assignment.assignmentId = this.selectedAssignmentId;
           this.rowData.assignment.tasksetId = this.selectedTasksetId;
         }
-  
+
         if (this.rowData.scheduling.action == 'open' && this.selectedSchedulingId != undefined) {
           this.rowData.scheduling.schedulingId = this.selectedSchedulingId;
           this.rowData.scheduling.assignmentId = this.selectedAssignmentId;
           this.rowData.scheduling.tasksetId = this.selectedTasksetId;
         }
-  
+
         if (this.rowData.taskset.action == 'generate') {
           this.rowData.taskset.parameters.listOfMaxUtilization.sort((a, b) => a - b);
           this.rowData.taskset.parameters.listOfProbabilityFactors.sort((a, b) => a - b);
           this.rowData.taskset.parameters.listOfInterferenceFactors.sort((a, b) => a - b);
         }
-  
+
         this.onSave.emit();
         this.onCancel.emit();
       }

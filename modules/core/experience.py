@@ -3,9 +3,10 @@ import os
 from pathlib import Path
 
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
+from modules.taskset.taskset_set_loader_saver import TasksetSetLoaderSaver
 
 class Experience:
-    def __init__(self, taskset_parameters, assignment_parameters, scheduling_parameters):
+    def __init__(self, taskset_parameters, assignment_parameters, scheduling_parameters, main_path):
         """
         Initializes an Experience object.
 
@@ -17,6 +18,8 @@ class Experience:
         self.taskset_parameters = taskset_parameters
         self.assignment_parameters = assignment_parameters
         self.scheduling_parameters = scheduling_parameters
+
+        self.main_path = main_path
         
         self.taskset_set_obj = None
         self.assignment_obj = None  # Use assignment_obj to avoid confusion with assignment (dict)
@@ -31,20 +34,19 @@ class Experience:
 
     def _process_taskset(self):
         """Handles the generation or opening of the taskset."""
+        taskset_loader_saver = TasksetSetLoaderSaver(self.main_path)
+
         if self.taskset_parameters["action"] == 'generate':
             print("*****")
             print(f"Generating taskset")
-            print(self.taskset_parameters["parameters"])
-            taskset_generator = TasksetSetGenerator(**self.taskset_parameters["parameters"])
-            self.taskset_set = taskset_generator.generate_taskset_set()
-            self.taskset["taskset_id"] = self.taskset_set.taskset_set_number
+            taskset_generator = TasksetSetGenerator(self.taskset_parameters["taskset_id"], **self.taskset_parameters["parameters"])
+            self.taskset_set_obj = taskset_generator.generate_taskset_set()
+            taskset_loader_saver.save(self.taskset_set_obj)
 
-        #TODO todo test this after generate is corrected
         elif self.taskset_parameters["action"] == 'open':
             print("*****")
             print(f"Opening taskset")
-            taskset_loader = TasksetSetLoader()
-            self.taskset_set = taskset_loader.load(self.taskset_parameters["taskset_id"])
+            self.taskset_set_obj = taskset_loader_saver.load(self.taskset_parameters["taskset_id"])
         else:
             print(f"Invalid taskset action: {self.taskset_parameters['action']}")
             return

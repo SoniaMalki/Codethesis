@@ -27,8 +27,8 @@ def main(experience_parameter_index="1"):
     experience.process()
 
     # Save the results
-    result_saver = ResultSaver(Path(__file__).parent)
-    result_saver.save(experience)
+    #result_saver = ResultSaver(Path(__file__).parent)
+    #result_saver.save(experience)
 
 
 if __name__ == "__main__":

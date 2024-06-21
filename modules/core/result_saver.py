@@ -14,19 +14,12 @@ class ResultSaver:
         Args:
             experience (Experience): The Experience object containing the results.
         """
-        # Save TasksetSet
-        if experience.taskset_set_obj is not None:
-            taskset_path = self.results_path / "tasksets"
-            os.makedirs(taskset_path, exist_ok=True)  # Create the tasksets directory
-            taskset_filename = f"taskset_{experience.taskset_set.taskset_set_number}.pkl"
-            with open(taskset_path / taskset_filename, 'wb') as f:
-                pickle.dump(experience.taskset_set, f)
 
         # Save Assignment
         if experience.assignment_obj is not None:
             assignment_path = self.results_path / "assignments"
             os.makedirs(assignment_path, exist_ok=True)  # Create the assignments directory
-            assignment_filename = f"assignment_{experience.assignment_obj.assignment_id}.pkl"
+            assignment_filename = f"{assignment_parameters['assignment_id']}.pkl"
             with open(assignment_path / assignment_filename, 'wb') as f:
                 pickle.dump(experience.assignment_obj, f)
 
@@ -34,6 +27,6 @@ class ResultSaver:
         if experience.scheduling_obj is not None:
             scheduling_path = self.results_path / "schedules"
             os.makedirs(scheduling_path, exist_ok=True)  # Create the schedules directory
-            scheduling_filename = f"scheduling_{experience.scheduling_obj.scheduling_id}.pkl"
+            scheduling_filename = f"{experience.scheduling_parameters['scheduling_id']}.pkl"
             with open(scheduling_path / scheduling_filename, 'wb') as f:
                 pickle.dump(experience.scheduling_obj, f)

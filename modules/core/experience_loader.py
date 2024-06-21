@@ -40,4 +40,5 @@ class ExperienceLoader:
             taskset_parameters=taskset_data,
             assignment_parameters=assignment_data,
             scheduling_parameters=scheduling_data,
+            main_path=self.current_path
         )

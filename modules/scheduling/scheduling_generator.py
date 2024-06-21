@@ -3,18 +3,21 @@ from modules.scheduling.mixed_scheduler import MixedScheduler
 from time import sleep
 
 class SchedulingGenerator:
-    def __init__(self, assignment, taskset_id, assignment_id, scheduling_id, scheduling_algorithms, current_time=0):
-        self.assignment = assignment
+    def __init__(self, taskset_set_obj, assignment_set_obj, taskset_id, assignment_id, scheduling_id, scheduling_algorithms, current_time=0):
+        self.taskset_set_obj = taskset_set_obj
+        self.assignment_set = assignment_set_obj
         self.taskset_id = taskset_id
         self.assignment_id = assignment_id
         self.scheduling_id = scheduling_id
         self.scheduling_algorithms = scheduling_algorithms[0].lower()  # Store in lowercase for case-insensitive comparison
         self.current_time = current_time
+        self.core_number = self.assignment_set.core_number
+
 
     def generate_scheduling(self):
         """Generates schedulings for each assignment within the TasksetSet."""
 
-        schedulings = []  # Store schedulings for each assignment
+        scheduling_list = []  # Store schedulings for each assignment
 
         # Determine the scheduling algorithm once
         if self.scheduling_algorithms == "edf":
@@ -28,34 +31,43 @@ class SchedulingGenerator:
             return None
 
         # Apply the selected scheduling function to all taskset assignments
-        for taskset_assignment in self.assignment:
-            self.number_of_cores = len(taskset_assignment[0])
 
-            schedule, successfully_scheduled = scheduling_function(taskset_assignment)
-            schedulings.append((schedule, successfully_scheduled))
+        for assignment in self.assignment_set:
+            if assignment.success: 
+                schedule, success = scheduling_function(assignment)
+                scheduling_list.append(Scheduling(schedule=schedule, success=success))
+            else:
+                scheduling_list.append(Scheduling(schedule=[], success=0))
 
-        return schedulings  # Return a list of schedulings, one for each taskset assignment
+        scheduling = SchedulingSet(assignment_id=self.assignment_id, taskset_id=self.taskset_id, assignment_method=self.assignment_method,
+                                   citta_criteria=self.citta_criteria, core_number=self.core_number, assignment_list=assignment_list)  # Store assignments for each taskset
+        return scheduling  # Return a list of assignments, one for each taskset
 
-    def _edf_scheduling(self, taskset_assignment):
+
+
+    def _edf_scheduling(self, assignment, taskset):
         """Performs EDF scheduling."""
         scheduler = HomogeneousScheduler(
-            taskset_assignment, "edf", self.number_of_cores, self.current_time
+            taskset,
+            assignment, "edf", self.core_number, self.current_time
         )
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled
 
-    def _dm_scheduling(self, taskset_assignment):
+    def _dm_scheduling(self, assignment, taskset):
         """Performs DM scheduling."""
         scheduler = HomogeneousScheduler(
-            taskset_assignment, "dm", self.number_of_cores, self.current_time
+            taskset,
+            assignment, "dm", self.core_number, self.current_time
         )
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled
 
-    def _mixed_scheduling(self, taskset_assignment):
+    def _mixed_scheduling(self, assignment, taskset):
         """Performs mixed scheduling."""
         scheduler = MixedScheduler(
-            taskset_assignment, "mixed", len(taskset_assignment[0]), self.current_time
+            taskset
+            assignment, "mixed", self.core_number, self.current_time
         )
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled

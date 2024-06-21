@@ -1,4 +1,5 @@
 from modules.assignment.assignment import Assignment
+from modules.assignment.assignment_set import AssignmentSet
 from modules.assignment.assignment_algorithms.citta import Citta
 from modules.assignment.assignment_algorithms.wfdu import Wfdu
 from modules.assignment.assignment_algorithms.ffdu import Ffdu
@@ -17,8 +18,7 @@ class AssignmentGenerator:
 
     def generate_assignment(self):
         """Generates assignments for each Taskset within the TasksetSet."""
-
-        assignment = Assignment()  # Store assignments for each taskset
+        assignment_list = []
 
         # Determine the assignment method once
         if self.assignment_method == "citta":
@@ -35,9 +35,11 @@ class AssignmentGenerator:
 
         # Apply the selected assignment function to all tasksets
         for taskset in self.taskset_set_obj.taskset_list:
+            assignment, success = assignment_function(taskset)
+            assignment_list.append(Assignment(assignment=assignment, success=success))
 
-            assignment.add_result(assignment_function(taskset))
-
+        assignment = AssignmentSet(assignment_id=self.assignment_id, taskset_id=self.taskset_id, assignment_method=self.assignment_method,
+                                   citta_criteria=self.citta_criteria, core_number=self.core_number, assignment_list=assignment_list)  # Store assignments for each taskset
         return assignment  # Return a list of assignments, one for each taskset
 
     # Private methods now take a single taskset as input

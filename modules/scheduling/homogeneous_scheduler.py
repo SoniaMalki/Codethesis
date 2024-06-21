@@ -10,7 +10,7 @@ from modules.utils.schedule_plan import SchedulePlan
 from itertools import chain
 
 class HomogeneousScheduler:
-    def __init__(self, _assignment, _scheduling_algorithm_name, _number_of_cores, _start_time=0, _end_time=0):
+    def __init__(self, _assignment,_taskset , _scheduling_algorithm_name, _number_of_cores, _start_time=0, _end_time=0):
         self.assignment = _assignment
         self.number_of_cores = _number_of_cores
         self.scheduling_algorithm_name = _scheduling_algorithm_name
@@ -23,11 +23,7 @@ class HomogeneousScheduler:
         elif self.scheduling_algorithm_name.lower() == "dmv1":
             self.scheduling_algorithm = DeadlineMonotonicVariant1()
 
-        print(self.assignment)
-        print("-------------")
-        print(self.number_of_cores)
-        print("-------------")
-        print(self.assignment["taskset"])
+
         self.taskset = self.assignment["taskset"]
         self.taskset_assignment = self.assignment["taskset_assignment"]
         self.start_time = _start_time

@@ -28,8 +28,8 @@ class Experience:
         self.main_path = main_path
         
         self.taskset_set_obj = None
-        self.assignment_obj = None  # Use assignment_obj to avoid confusion with assignment (dict)
-        self.scheduling_obj = None  # Use scheduling_obj to avoid confusion with scheduling (dict)
+        self.assignment_set_obj = None 
+        self.scheduling_set_obj = None  
 
     def process(self):
         """Processes the experience, generating tasksets, assignments, and schedulings as needed."""
@@ -70,13 +70,13 @@ class Experience:
                 self.assignment_parameters["assignment_id"],
                 **self.assignment_parameters["parameters"]
             )
-            self.assignment_obj = assignment_generator.generate_assignment()
-            assignment_loader_saver.save(self.assignment_obj, self.assignment_parameters["assignment_id"])
+            self.assignment_set_obj = assignment_generator.generate_assignment()
+            assignment_loader_saver.save(self.assignment_set_obj, self.assignment_parameters["assignment_id"])
 
         elif self.assignment_parameters["action"] == 'open':
             print("*****")
             print(f"Opening assignment")
-            self.assignment_obj = assignment_loader_saver.load(self.assignment_parameters["assignment_id"])
+            self.assignment_set_obj = assignment_loader_saver.load(self.assignment_parameters["assignment_id"])
 
         else:
             print(f"Invalid assignment action: {self.assignment_parameters['action']}")
@@ -90,19 +90,19 @@ class Experience:
             print("*****")
             print(f"Generating scheduling")
             scheduling_generator = SchedulingGenerator(
-                self.assignment_obj,
+                self.assignment_set_obj,
                 self.scheduling_parameters["taskset_id"],
                 self.scheduling_parameters["assignment_id"],
                 self.scheduling_parameters["scheduling_id"],
                 **self.scheduling_parameters["parameters"]
             )
-            self.scheduling_obj = scheduling_generator.generate_scheduling()
-            scheduling_loader_saver.save(self.scheduling_obj, self.scheduling_parameters["scheduling_id"])
+            self.scheduling_set_obj = scheduling_generator.generate_scheduling()
+            scheduling_loader_saver.save(self.scheduling_set_obj, self.scheduling_parameters["scheduling_id"])
 
         elif self.scheduling_parameters["action"] == 'open':
             print("*****")
             print(f"Opening scheduling")
-            self.scheduling_obj = scheduling_loader_saver.load(self.scheduling_parameters["scheduling_id"])
+            self.scheduling_set_obj = scheduling_loader_saver.load(self.scheduling_parameters["scheduling_id"])
         else:
             print(f"Invalid scheduling action: {self.scheduling_parameters['action']}")
             return

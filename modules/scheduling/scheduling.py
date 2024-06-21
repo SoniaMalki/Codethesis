@@ -1,23 +1,9 @@
-class SchedulingResult:
-	def __init__(self):
-		self.schedule = []
+class Schedule:
+    def __init__(self, success, schedule):
+        self.success = success
+        self.schedule = schedule  # This is the actual schedule data
 
-	def add_result(self, successfully_scheduled, schedule, assignment):
-		res = {"successfully_scheduled":successfully_scheduled, "schedule":schedule, "assignment":assignment}
-		self.schedule.append(res)
-
-	def __str__(self):
-		return str(self.schedule)
-
-	def __len__(self):
-		return(len(self.schedule))
-
-	def __iter__(self):
-		return iter(self.schedule)
-
-	def __next__(self):
-		return next(self.schedule)
-
-	def __getitem__(self, i):
-		return self.schedule[i]
-
+    def __str__(self):
+        # You can format the schedule data nicely here
+        # For example, you can print it in a table format
+        return str(self.schedule)  # Or just return the raw schedule data

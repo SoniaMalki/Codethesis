@@ -2,12 +2,12 @@ import math
 import logging
 import numpy 
 import time
-from modules.scheduling_generation.homogeneous_scheduler import HomogeneousScheduler
-from modules.scheduling_generation.earliest_deadline_first import EarliestDeadlineFirst
-from modules.scheduling_generation.deadline_monotonic import DeadlineMonotonic
-from modules.scheduling_generation.combined import Combined
-from modules.scheduling_generation.rhma import Rhma
-from modules.scheduling_generation.schedule_plan import SchedulePlan
+from modules.scheduling.homogeneous_scheduler import HomogeneousScheduler
+from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
+from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
+from modules.scheduling.scheduling_algorithms.combined import Combined
+from modules.scheduling.scheduling_algorithms.rhma import Rhma
+from modules.utils.schedule_plan import SchedulePlan
 
 class MixedScheduler:
     def __init__(self, _assignment, _scheduling_algorithm_name, _number_of_cores, _current_time=0):

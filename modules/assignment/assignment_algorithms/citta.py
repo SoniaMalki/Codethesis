@@ -10,6 +10,7 @@ class Citta:
         self.period = self.taskset.period
         self.wcet = self.taskset.wcet
         self.sorting_criterion = _sorting_criterion
+        print(self.sorting_criterion)
         self.interference = self.taskset.interference
         pass
     def assign(self):
@@ -26,7 +27,38 @@ class Citta:
         else:
             return taskincore, taskset_na, 0
 
+
     def sort_task(self, p, c, interference, sorting_criterion):
+        #Trie les tâches par ordre décroissant selon certains critère. Ca regarde le critère, imaginons 
+        # deadline=[33,10,21] et ça donne l'ordre des tâches selon ça, donc tâche avec plus grande deadline
+        # jusque la tâche avec la plus petite deadline, donc ici taskset=[0,2,1] 
+        taskset = list(range(len(p)))  # Create a list of task indices
+
+        if sorting_criterion == "wcet_ascending":
+            taskset = sorted(taskset, key=lambda k: c[k])
+        elif sorting_criterion == "wcet_descending":
+            taskset = sorted(taskset, key=lambda k: c[k], reverse=True)
+        elif sorting_criterion == "period_ascending":
+            taskset = sorted(taskset, key=lambda k: p[k])
+        elif sorting_criterion == "period_descending":
+            taskset = sorted(taskset, key=lambda k: p[k], reverse=True)
+        elif sorting_criterion == "utilization_ascending":
+            taskset = sorted(taskset, key=lambda k: c[k] / p[k])
+        elif sorting_criterion == "utilization_descending":
+            taskset = sorted(taskset, key=lambda k: c[k] / p[k], reverse=True)
+        elif sorting_criterion == "execution_slack_ascending":
+            taskset = sorted(taskset, key=lambda k: p[k] - c[k])
+        elif sorting_criterion == "execution_slack_descending":
+            taskset = sorted(taskset, key=lambda k: p[k] - c[k], reverse=True)
+        elif sorting_criterion == "random_order":
+            numpy.random.shuffle(taskset)  # Shuffle the list for random order
+        else:
+            print(f"Invalid sorting criterion: {sorting_criterion}. Returning tasks in random order.")
+            numpy.random.shuffle(taskset)
+
+        return taskset
+
+    def sort_task2(self, p, c, interference, sorting_criterion):
         #Trie les tâches par ordre décroissant selon certains critère. Ca regarde le critère, imaginons 
         # deadline=[33,10,21] et ça donne l'ordre des tâches selon ça, donc tâche avec plus grande deadline
         # jusque la tâche avec la plus petite deadline, donc ici taskset=[0,2,1] 

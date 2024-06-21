@@ -2,11 +2,11 @@ import math
 import logging
 import numpy 
 import time
-from modules.scheduling_generation.earliest_deadline_first import EarliestDeadlineFirst
-from modules.scheduling_generation.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
-from modules.scheduling_generation.deadline_monotonic import DeadlineMonotonic
-from modules.scheduling_generation.deadline_monotonic_variant1 import DeadlineMonotonicVariant1
-from modules.scheduling_generation.schedule_plan import SchedulePlan
+from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
+from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
+from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
+from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant1 import DeadlineMonotonicVariant1
+from modules.utils.schedule_plan import SchedulePlan
 from itertools import chain
 
 class HomogeneousScheduler:
@@ -22,6 +22,12 @@ class HomogeneousScheduler:
             self.scheduling_algorithm = DeadlineMonotonic()
         elif self.scheduling_algorithm_name.lower() == "dmv1":
             self.scheduling_algorithm = DeadlineMonotonicVariant1()
+
+        print(self.assignment)
+        print("-------------")
+        print(self.number_of_cores)
+        print("-------------")
+        print(self.assignment["taskset"])
         self.taskset = self.assignment["taskset"]
         self.taskset_assignment = self.assignment["taskset_assignment"]
         self.start_time = _start_time

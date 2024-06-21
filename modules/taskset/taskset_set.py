@@ -42,8 +42,9 @@ class TasksetSet:
                f"Interference: {self.interference}\n"
                f"Utilization: {self.utilization}\n"
                f"Taskset in the set:")
-        for elem in self.taskset_list:
-            res = res + "\n" + str(elem)
-        if len(self.taskset_list) == 0:
-            res = res + "[]\n"
+
+        # for elem in self.taskset_list:
+        #     res = res + "\n" + str(elem)
+        # if len(self.taskset_list) == 0:
+        #     res = res + "[]\n"
         return res

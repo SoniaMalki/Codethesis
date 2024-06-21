@@ -2,10 +2,10 @@ import math
 import logging
 import numpy 
 import time
-from modules.scheduling_generation.homogeneous_scheduler import HomogeneousScheduler
-from modules.scheduling_generation.earliest_deadline_first import EarliestDeadlineFirst
-from modules.scheduling_generation.deadline_monotonic import DeadlineMonotonic
-from modules.scheduling_generation.schedule_plan import SchedulePlan
+from modules.scheduling.homogeneous_scheduler import HomogeneousScheduler
+from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
+from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
+from modules.utils.schedule_plan import SchedulePlan
 
 class Combined:
     def __init__(self):

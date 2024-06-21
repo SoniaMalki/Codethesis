@@ -2,18 +2,17 @@
 import numpy
 import random
 
+import time
+
 class PeriodGenerator:
     def __init__(self, taskset_count, tasks_per_taskset, prime_matrix):
         self.taskset_count = taskset_count
         self.tasks_per_taskset = tasks_per_taskset
-        #self.granularity = granularity
         self.prime_matrix = prime_matrix
 
     def generate_periods(self):
         generated_periods = self.generate_periods_from_matrix()
         generated_periods = numpy.array(generated_periods)
-
-        #generated_periods = numpy.floor(generated_periods / self.granularity) * self.granularity
         return generated_periods
 
     def generate_single_period(self):

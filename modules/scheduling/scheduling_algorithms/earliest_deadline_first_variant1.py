@@ -1,4 +1,4 @@
-from modules.scheduling_generation.time_execution import TimeExecution
+from modules.utils.time_execution import TimeExecution
 import time
 
 class EarliestDeadlineFirstVariant1:  

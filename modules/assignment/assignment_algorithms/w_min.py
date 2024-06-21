@@ -2,7 +2,7 @@ import numpy
 import math
 import time
 
-class Ffdu:
+class Wmin:
     def __init__(self, _taskset ,_number_of_cores, _sorting_criterion):
         self.m = _number_of_cores
         self.taskset =_taskset

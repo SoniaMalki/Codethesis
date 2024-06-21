@@ -1,4 +1,4 @@
-class AssignmentResult:
+class Assignment:
 	def __init__(self):
 		self.assignment = []
 

@@ -1,4 +1,4 @@
-from modules.scheduling_generation.time_execution import TimeExecution
+from modules.utils.time_execution import TimeExecution
 
 class DeadlineMonotonic: 
     def updatepriority(self, current_time, taskset, core_number, previous_job):

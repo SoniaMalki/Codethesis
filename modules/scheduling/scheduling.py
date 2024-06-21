@@ -1,9 +1,19 @@
-class Schedule:
+class Scheduling:
     def __init__(self, success, schedule):
         self.success = success
         self.schedule = schedule  # This is the actual schedule data
 
     def __str__(self):
-        # You can format the schedule data nicely here
-        # For example, you can print it in a table format
-        return str(self.schedule)  # Or just return the raw schedule data
+        return str(self.schedule)
+
+    def __len__(self):
+        return(len(self.schedule))
+
+    def __iter__(self):
+        return iter(self.schedule)
+
+    def __next__(self):
+        return next(self.schedule)
+
+    def __getitem__(self, i):
+        return self.schedule[i]

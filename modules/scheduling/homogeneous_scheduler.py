@@ -10,10 +10,11 @@ from modules.utils.schedule_plan import SchedulePlan
 from itertools import chain
 
 class HomogeneousScheduler:
-    def __init__(self, _assignment,_taskset , _scheduling_algorithm_name, _number_of_cores, _start_time=0, _end_time=0):
-        self.assignment = _assignment
-        self.number_of_cores = _number_of_cores
-        self.scheduling_algorithm_name = _scheduling_algorithm_name
+    def __init__(self, taskset, assignment, scheduling_algorithm_name, number_of_cores, start_time=0, end_time=0):
+        self.taskset = taskset
+        self.assignment = assignment
+        self.number_of_cores = number_of_cores
+        self.scheduling_algorithm_name = scheduling_algorithm_name
         if self.scheduling_algorithm_name.lower() == "edf":
             self.scheduling_algorithm = EarliestDeadlineFirst()
         elif self.scheduling_algorithm_name.lower() == "edfv1":
@@ -24,10 +25,9 @@ class HomogeneousScheduler:
             self.scheduling_algorithm = DeadlineMonotonicVariant1()
 
 
-        self.taskset = self.assignment["taskset"]
-        self.taskset_assignment = self.assignment["taskset_assignment"]
-        self.start_time = _start_time
-        self.end_time = _end_time
+        self.taskset_assignment = self.assignment.assignment
+        self.start_time = start_time
+        self.end_time = end_time
         if self.end_time == 0:
             self.end_time = self.ppcm()
 
@@ -47,15 +47,15 @@ class HomogeneousScheduler:
         running_task_list = [None for core in range(self.number_of_cores)]
         current_task_list = [None for core in range(self.number_of_cores)]
         while current_time < self.end_time:
-            for k, tasks_in_core in enumerate(self.taskset_assignment): #loop for updating priority
+            for k, tasks_in_core in enumerate(self.assignment): #loop for updating priority
                 scheduler.updateStatus(current_time, tasks_in_core)
                 running_task_list[k] = scheduler.updatepriority(current_time, tasks_in_core, k, running_task_list[k]) #teta stocked in here
             
             #beginning of the part that calculate the interference
-            for k, tasks_in_core in enumerate(self.taskset_assignment): #loop for updating the interference matrix W
+            for k, tasks_in_core in enumerate(self.assignment): #loop for updating the interference matrix W
                 if running_task_list[k] != None:
                     if running_task_list[k] != current_task_list[k] and current_time % running_task_list[k].period == 0 : #if there is a context switch (running task is not the same as current_task) & activation time (because %period ==0)
-                        for s in range(len(self.taskset_assignment)): #we will explore the other tasks on other core it this is the case
+                        for s in range(len(self.assignment)): #we will explore the other tasks on other core it this is the case
                             if s != k and sum(running_task_list[k].interference) > 0 : #if the core is another one and the inteference of the job is 1 (it will receive inteference), we will check which task broadcast this interference
                                 if running_task_list[s] != None:
                                     w_matrix[s][k] = 1 #set the matrix to 1
@@ -86,7 +86,7 @@ class HomogeneousScheduler:
         if current_time == self.end_time:
             for core_index, core in enumerate(schedule_plan):
                 schedule_plan_total.add_core_scheduling(core_index, core, self.scheduling_algorithm_name)
-            print(schedule_plan_total)
+            #print(schedule_plan_total)
             return schedule_plan_total, 1, total_interference
     
 

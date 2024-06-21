@@ -10,9 +10,9 @@ class Citta:
         self.period = self.taskset.period
         self.wcet = self.taskset.wcet
         self.sorting_criterion = _sorting_criterion
-        print(self.sorting_criterion)
         self.interference = self.taskset.interference
-        pass
+        
+        
     def assign(self):
         #Algorithme de CITTA
         taskset = self.sort_task(self.period, self.wcet, self.interference, self.sorting_criterion)

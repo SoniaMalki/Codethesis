@@ -16,7 +16,7 @@ class AssignmentGenerator:
         self.citta_criteria = citta_criteria[0].lower()
         self.core_number = core_number
 
-    def generate_assignment(self):
+    def generate_assignment_set(self):
         """Generates assignments for each Taskset within the TasksetSet."""
         assignment_list = []
 

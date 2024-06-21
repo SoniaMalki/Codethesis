@@ -1,5 +1,5 @@
 {
-  "4" : {
+  "1" : {
     "taskset" : {
       "taskset_id" : "taskset_2",
       "action" : "generate",
@@ -92,6 +92,38 @@
       "action" : "none",
       "parameters" : {
         "scheduling_algorithms" : [ ]
+      }
+    }
+  },
+  "4" : {
+    "taskset" : {
+      "taskset_id" : "taskset_2",
+      "action" : "open",
+      "parameters" : {
+        "taskset_repetition": 10,
+        "list_of_probability_factors" : [ 0.1 ],
+        "list_of_max_utilization" : [ 1 ],
+        "tasks_per_taskset" : 10,
+        "list_of_interference_factors" : [ 0.2 ]
+      }
+    },
+    "assignment" : {
+      "assignment_id" : "assignment_1",
+      "taskset_id" : "taskset_2",
+      "action" : "open",
+      "parameters" : {
+        "core_number": 4,
+        "citta_criteria" : [ "wcet_ascending" ],
+        "assignment_method" : [ "CITTA" ]
+      }
+    },
+    "scheduling" : {
+      "assignment_id" : "assignment_1",
+      "taskset_id" : "taskset_2",
+      "scheduling_id" : "scheduling_1",
+      "action" : "generate",
+      "parameters" : {
+        "scheduling_algorithms" : [ "EDF" ]
       }
     }
   }

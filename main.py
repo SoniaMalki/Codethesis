@@ -7,7 +7,6 @@ from pathlib import Path
 import time
 
 from modules.core.experience_loader import ExperienceLoader
-from modules.core.result_saver import ResultSaver
 current_path = Path(__file__).parent
 
 
@@ -16,7 +15,7 @@ def main(experience_parameter_index="1"):
     Main function to run an experiment based on the experience.json configuration.
 
     Args:
-        experience_parameter_index (str, optional): The index of the experience to load from experience.json. Defaults to "0".
+        experience_parameter_index (str, optional): The index of the experience to load from experience.json. Defaults to "1".
     """
 
     # Load the experience
@@ -26,9 +25,6 @@ def main(experience_parameter_index="1"):
     # Process the experience
     experience.process()
 
-    # Save the results
-    #result_saver = ResultSaver(Path(__file__).parent)
-    #result_saver.save(experience)
 
 
 if __name__ == "__main__":

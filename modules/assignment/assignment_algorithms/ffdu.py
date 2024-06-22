@@ -32,7 +32,6 @@ class Ffdu:
         while taskset_not_assigned and successfully_assigned == 1:
             task_in_core, taskset_not_assigned ,successfully_assigned = self.task_partition(task_in_core=task_in_core, taskset_not_assigned=taskset_not_assigned)
 
-        print(task_in_core, taskset_not_assigned, 1)
         if not taskset_not_assigned:
             return task_in_core, taskset_not_assigned, 1
         else:
@@ -56,7 +55,6 @@ class Ffdu:
 
     def check_task_fit(self, task_index, core_index, task_in_core):
         """Vérifie si une tâche peut être affectée à un cœur."""
-        print(task_index, core_index, task_in_core )
         total_utilization = sum(
             self.utilization[task] for task in task_in_core[core_index]
         )

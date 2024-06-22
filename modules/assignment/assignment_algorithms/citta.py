@@ -4,23 +4,24 @@ from pulp import *
 import time
 
 class Citta:
-    def __init__(self, _taskset ,_number_of_cores, _sorting_criterion):
-        self.m = _number_of_cores
-        self.taskset =_taskset
+    def __init__(self, taskset , number_of_cores, sorting_criterion):
+        self.number_of_cores = number_of_cores
+        self.taskset = taskset
         self.period = self.taskset.period
         self.wcet = self.taskset.wcet
-        self.sorting_criterion = _sorting_criterion
         self.interference = self.taskset.interference
+        self.utilization = self.taskset.utilization
+        self.sorting_criterion = sorting_criterion
         
         
     def assign(self):
         #Algorithme de CITTA
-        taskset = self.sort_task(self.period, self.wcet, self.interference, self.sorting_criterion)
+        taskset = self.sort_task()
         taskset_na = taskset[:]
         taskAssigned = 1 #flag qui est a true tant que l'algo a réussi a assigner au moins une tâche a un core, une fois qu'il arrive pas ça sera 0
-        taskincore = [[] for _ in range(self.m)]
+        taskincore = [[] for _ in range(self.number_of_cores)]
         while taskset_na and taskAssigned == 1: #tant que soit on arrive encore a assigner et que le set des tâches à assigner n'est pas vide (il reste donc des tâches à assigner)
-            taskset_na, taskAssigned, taskincore = self.task_partition(taskset_na, self.m, taskincore, self.period, self.wcet, self.interference)
+            taskset_na, taskAssigned, taskincore = self.task_partition(taskset_na, self.number_of_cores, taskincore, self.period, self.wcet, self.interference)
         # print "TaskIncore is ",taskincore
         if not taskset_na:
             return taskincore, taskset_na, 1
@@ -28,57 +29,34 @@ class Citta:
             return taskincore, taskset_na, 0
 
 
-    def sort_task(self, p, c, interference, sorting_criterion):
+    def sort_task(self):
         #Trie les tâches par ordre décroissant selon certains critère. Ca regarde le critère, imaginons 
         # deadline=[33,10,21] et ça donne l'ordre des tâches selon ça, donc tâche avec plus grande deadline
         # jusque la tâche avec la plus petite deadline, donc ici taskset=[0,2,1] 
-        taskset = list(range(len(p)))  # Create a list of task indices
+        taskset = list(range(len(self.period)))  # Create a list of task indices
 
-        if sorting_criterion == "wcet_ascending":
-            taskset = sorted(taskset, key=lambda k: c[k])
-        elif sorting_criterion == "wcet_descending":
-            taskset = sorted(taskset, key=lambda k: c[k], reverse=True)
-        elif sorting_criterion == "period_ascending":
-            taskset = sorted(taskset, key=lambda k: p[k])
-        elif sorting_criterion == "period_descending":
-            taskset = sorted(taskset, key=lambda k: p[k], reverse=True)
-        elif sorting_criterion == "utilization_ascending":
-            taskset = sorted(taskset, key=lambda k: c[k] / p[k])
-        elif sorting_criterion == "utilization_descending":
-            taskset = sorted(taskset, key=lambda k: c[k] / p[k], reverse=True)
-        elif sorting_criterion == "execution_slack_ascending":
-            taskset = sorted(taskset, key=lambda k: p[k] - c[k])
-        elif sorting_criterion == "execution_slack_descending":
-            taskset = sorted(taskset, key=lambda k: p[k] - c[k], reverse=True)
-        elif sorting_criterion == "random_order":
+        if self.sorting_criterion == "wcet_ascending":
+            taskset = sorted(taskset, key=lambda k: self.wcet[k])
+        elif self.sorting_criterion == "wcet_descending":
+            taskset = sorted(taskset, key=lambda k: self.wcet[k], reverse=True)
+        elif self.sorting_criterion == "period_ascending":
+            taskset = sorted(taskset, key=lambda k: self.period[k])
+        elif self.sorting_criterion == "period_descending":
+            taskset = sorted(taskset, key=lambda k: self.period[k], reverse=True)
+        elif self.sorting_criterion == "utilization_ascending":
+            taskset = sorted(taskset, key=lambda k: self.utilization[k])
+        elif self.sorting_criterion == "utilization_descending":
+            taskset = sorted(taskset, key=lambda k: self.utilization[k], reverse=True)
+        elif self.sorting_criterion == "execution_slack_ascending":
+            taskset = sorted(taskset, key=lambda k: self.period[k] - self.wcet[k])
+        elif self.sorting_criterion == "execution_slack_descending":
+            taskset = sorted(taskset, key=lambda k: self.period[k] - self.wcet[k], reverse=True)
+        elif self.sorting_criterion == "random_order":
             numpy.random.shuffle(taskset)  # Shuffle the list for random order
         else:
-            print(f"Invalid sorting criterion: {sorting_criterion}. Returning tasks in random order.")
+            print(f"Invalid sorting criterion: {self.sorting_criterion}. Returning tasks in random order.")
             numpy.random.shuffle(taskset)
 
-        return taskset
-
-    def sort_task2(self, p, c, interference, sorting_criterion):
-        #Trie les tâches par ordre décroissant selon certains critère. Ca regarde le critère, imaginons 
-        # deadline=[33,10,21] et ça donne l'ordre des tâches selon ça, donc tâche avec plus grande deadline
-        # jusque la tâche avec la plus petite deadline, donc ici taskset=[0,2,1] 
-        if (sorting_criterion == "et"): #trier selon le WCET
-            ec = numpy.array(c)
-            taskset = sorted(list(range(len(ec))), key=lambda k: ec[k], reverse=True)
-        elif (sorting_criterion == "pd"): #trier selon la période T
-            per = numpy.array(p)
-            taskset = sorted(list(range(len(per))), key=lambda k: per[k], reverse=True)
-        elif (sorting_criterion == "ra"): # trier selon le ratio WCET/T, donc l'utilisation
-            per = numpy.array(p, dtype='f')
-            ec = numpy.array(c, dtype='f')
-            ratio = ec / per
-            taskset = sorted(list(range(len(ratio))), key=lambda k: ratio[k], reverse=True)
-        elif (sorting_criterion == "sl"): #trier selon le slack, période-wcet, donc période à rien faire.
-            per = numpy.array(p, dtype='f')
-            ec = numpy.array(c, dtype='f')
-            slacks = per - ec
-            taskset = sorted(list(range(len(slacks))), key=lambda k: slacks[k], reverse=True)
-        #todo ajouter else qui est random order TO DO TODO
         return taskset
 
     def task_partition(self, taskset, m, taskincore, period, wcet, interference):

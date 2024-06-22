@@ -1,4 +1,5 @@
 import numpy
+from modules.taskset.task_parameters_generator.deadline_generator import DeadlineGenerator
 from modules.taskset.task_parameters_generator.utilization_generator import UtilizationGenerator
 from modules.taskset.task_parameters_generator.period_generator import PeriodGenerator
 from modules.taskset.task_parameters_generator.wcet_calculator import WCETCalculator
@@ -24,6 +25,7 @@ class TasksetSetGenerator:
         self.utilization_generator = UtilizationGenerator(self.taskset_repetition, self.tasks_per_taskset, self.max_utilization)
         self.period_generator = PeriodGenerator(self.taskset_repetition, self.tasks_per_taskset, self.prime_matrix)
         self.wcet_calculator = WCETCalculator(self.taskset_repetition, self.tasks_per_taskset)
+        self.deadline_generator = DeadlineGenerator()
         self.interference_generator = InterferenceGenerator(self.taskset_repetition, self.tasks_per_taskset, self.interference_factor, self.probability_factor)
 
     def init_taskset_set(self):
@@ -31,7 +33,7 @@ class TasksetSetGenerator:
         periods = self.period_generator.generate_periods()
         wcets = self.wcet_calculator.compute_wcets(periods, utilizations)
         interferences = self.interference_generator.generate_interference(wcets)
-        deadlines = periods[:]  # TO DO: Implement deadline properly
+        deadlines = self.deadline_generator.generate_deadlines(periods=periods, wcets=wcets)
         return [periods, deadlines, utilizations, wcets, interferences]
 
     def generate_taskset_set(self):

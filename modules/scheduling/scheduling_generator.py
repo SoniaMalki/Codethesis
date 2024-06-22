@@ -13,7 +13,7 @@ class SchedulingGenerator:
         self.scheduling_id = scheduling_id
         self.scheduling_algorithms = scheduling_algorithms[0].lower()  # Store in lowercase for case-insensitive comparison
         self.current_time = current_time
-        self.core_number = self.assignment_set.core_number
+        self.number_of_cores = self.assignment_set.number_of_cores
 
 
     def generate_scheduling_set(self):
@@ -50,7 +50,7 @@ class SchedulingGenerator:
         """Performs EDF scheduling."""
         scheduler = HomogeneousScheduler(
             taskset,
-            assignment, "edf", self.core_number, self.current_time
+            assignment, "edf", self.number_of_cores, self.current_time
         )
         schedule, successfully_scheduled, _ = scheduler.schedule()
         return schedule, successfully_scheduled
@@ -59,7 +59,7 @@ class SchedulingGenerator:
         """Performs DM scheduling."""
         scheduler = HomogeneousScheduler(
             taskset,
-            assignment, "dm", self.core_number, self.current_time
+            assignment, "dm", self.number_of_cores, self.current_time
         )
         schedule, successfully_scheduled, _ = scheduler.schedule()
         return schedule, successfully_scheduled
@@ -68,7 +68,7 @@ class SchedulingGenerator:
         """Performs mixed scheduling."""
         scheduler = MixedScheduler(
             taskset,
-            assignment, "mixed", self.core_number, self.current_time
+            assignment, "mixed", self.number_of_cores, self.current_time
         )
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled

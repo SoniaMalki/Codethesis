@@ -80,7 +80,7 @@
       "taskset_id" : "taskset_2",
       "action" : "generate",
       "parameters" : {
-        "core_number": 4,
+        "number_of_cores": 4,
         "citta_criteria" : [ "wcet_ascending" ],
         "assignment_method" : [ "CITTA" ]
       }
@@ -112,7 +112,7 @@
       "taskset_id" : "taskset_2",
       "action" : "open",
       "parameters" : {
-        "core_number": 4,
+        "number_of_cores": 4,
         "citta_criteria" : [ "wcet_ascending" ],
         "assignment_method" : [ "CITTA" ]
       }

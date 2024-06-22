@@ -65,8 +65,7 @@ class AssignmentGenerator:
         """Performs the WFDU assignment algorithm."""
         wfdu_instance = Wfdu(
             taskset,  # Pass a list containing only the current taskset
-            self.number_of_cores,
-            self.citta_criteria  # Use Citta criteria for WFDU as well
+            self.number_of_cores
         )
         assigned_cores, _, successfully_assigned = wfdu_instance.assign()
         
@@ -74,7 +73,7 @@ class AssignmentGenerator:
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):
                 for task_index in core:
-                    task_assignment_list[core_index].append(taskset.taskset_list[task_index])
+                    task_assignment_list[core_index].append(taskset.task_list[task_index])
 
         return task_assignment_list, successfully_assigned
 
@@ -82,8 +81,7 @@ class AssignmentGenerator:
         """Performs the FFDU assignment algorithm."""
         ffdu_instance = Ffdu(
             taskset,  # Pass a list containing only the current taskset
-            self.number_of_cores,
-            self.citta_criteria  # Use Citta criteria for FFDU as well
+            self.number_of_cores
         )
         assigned_cores, _, successfully_assigned = ffdu_instance.assign()
         
@@ -91,7 +89,7 @@ class AssignmentGenerator:
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):
                 for task_index in core:
-                    task_assignment_list[core_index].append(taskset.taskset_list[task_index])
+                    task_assignment_list[core_index].append(taskset.task_list[task_index])
 
         return task_assignment_list, successfully_assigned
 
@@ -99,8 +97,7 @@ class AssignmentGenerator:
         """Performs the Wmin assignment algorithm."""
         wmin_instance = Wmin(
             taskset,  # Pass a list containing only the current taskset
-            self.number_of_cores,
-            self.citta_criteria  # Use Citta criteria for wmin as well
+            self.number_of_cores
         )
         assigned_cores, _, successfully_assigned = wmin_instance.assign()
         
@@ -108,6 +105,6 @@ class AssignmentGenerator:
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):
                 for task_index in core:
-                    task_assignment_list[core_index].append(taskset.taskset_list[task_index])
+                    task_assignment_list[core_index].append(taskset.task_list[task_index])
 
         return task_assignment_list, successfully_assigned

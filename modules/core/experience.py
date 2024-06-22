@@ -87,6 +87,8 @@ class Experience:
                 **self.assignment_parameters["parameters"]
             )
             self.assignment_set_obj = assignment_generator.generate_assignment_set()
+            for assignment in self.assignment_set_obj:
+                print(assignment.success)
             assignment_loader_saver.save(self.assignment_set_obj, self.assignment_parameters["assignment_id"])
 
         elif self.assignment_parameters["action"] == 'open':

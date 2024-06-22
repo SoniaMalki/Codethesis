@@ -3,12 +3,11 @@ import math
 import time
 
 class Wfdu:
-    def __init__(self, _taskset ,_number_of_cores, _sorting_criterion):
+    def __init__(self, _taskset ,_number_of_cores):
         self.m = _number_of_cores
         self.taskset =_taskset
         self.period = self.taskset.period
         self.wcet = self.taskset.wcet
-        self.sorting_criterion = _sorting_criterion
         print(self.m, self.period, self.wcet)
 
     def assign(self):

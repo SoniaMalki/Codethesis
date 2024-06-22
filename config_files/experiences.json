@@ -171,7 +171,39 @@
     "action" : "generate",
     "parameters" : {
       "citta_criteria" : [ "wcet_ascending" ],
-      "assignment_method" : [ "CITTA" ],
+      "assignment_method" : [ "FFDU" ],
+      "number_of_cores": 4
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_",
+    "taskset_id" : "taskset_",
+    "scheduling_id" : "scheduling_",
+    "action" : "none",
+    "parameters" : {
+      "scheduling_algorithms" : [ ]
+    }
+  }
+},
+"15" : {
+  "taskset" : {
+    "taskset_id" : "taskset_15",
+    "action" : "generate",
+    "parameters" : {
+      "taskset_repetition": 1,
+      "list_of_probability_factors" : [ 0.1 ],
+      "list_of_max_utilization" : [ 3.8 ],
+      "tasks_per_taskset" : 5,
+      "list_of_interference_factors" : [ 0.2 ]
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_15",
+    "taskset_id" : "taskset_15",
+    "action" : "generate",
+    "parameters" : {
+      "citta_criteria" : [ "rien"],
+      "assignment_method" : [ "FFDU" ],
       "number_of_cores": 4
     }
   },

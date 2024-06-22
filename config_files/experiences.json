@@ -126,5 +126,63 @@
         "scheduling_algorithms" : [ "EDF" ]
       }
     }
+  },
+
+  "0": {
+    "taskset": {
+      "action": "manual",
+      "taskset_id": "taskset_0",
+      "parameters": {
+        "wcet": [10, 13, 23],
+        "deadline": [12, 200, 50],
+        "period": [20, 200, 55],
+        "interference": [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        "utilization": [0.5, 0.065, 0.418]
+      }
+    },
+    "assignment" : {
+      "assignment_id" : "assignment_",
+      "taskset_id" : "taskset_",
+      "action" : "none",
+      "parameters" : {
+        "citta_criteria" : [ ],
+        "assignment_method" : [ ]
+      }
+    },
+    "scheduling" : {
+      "assignment_id" : "assignment_",
+      "taskset_id" : "taskset_",
+      "scheduling_id" : "scheduling_",
+      "action" : "none",
+      "parameters" : {
+        "scheduling_algorithms" : [ ]
+      }
+    }
+},
+"01": {
+  "taskset": {
+    "action": "open",
+    "taskset_id": "taskset_0",
+    "parameters": {}
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_55",
+    "taskset_id" : "taskset_0",
+    "action" : "generate",
+    "parameters" : {
+      "citta_criteria" : [ "wcet_ascending" ],
+      "assignment_method" : [ "CITTA" ],
+      "number_of_cores": 4
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_",
+    "taskset_id" : "taskset_",
+    "scheduling_id" : "scheduling_",
+    "action" : "none",
+    "parameters" : {
+      "scheduling_algorithms" : [ ]
+    }
   }
+}
 }

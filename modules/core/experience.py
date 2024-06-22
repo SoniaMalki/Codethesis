@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import numpy as np
 
+from modules.taskset.task_parameters_generator.taskset_set_manual import TasksetSetManual
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_loader_saver import TasksetSetLoaderSaver
 from modules.assignment.assignment_generator import AssignmentGenerator
@@ -53,6 +54,21 @@ class Experience:
             print("*****")
             print(f"Opening taskset")
             self.taskset_set_obj = taskset_loader_saver.load(self.taskset_parameters["taskset_id"])
+        
+        elif self.taskset_parameters["action"] == 'manual':
+            print("*****")
+            print(f"Creating taskset manually")
+            taskset_manual = TasksetSetManual(
+                taskset_id=self.taskset_parameters["taskset_id"],
+                wcet_list=self.taskset_parameters["parameters"]["wcet"],
+                deadline_list=self.taskset_parameters["parameters"]["deadline"],
+                period_list=self.taskset_parameters["parameters"]["period"],
+                interference_list=self.taskset_parameters["parameters"]["interference"],
+                utilization_list=self.taskset_parameters["parameters"]["utilization"],
+            )
+            self.taskset_set_obj = taskset_manual.create_taskset_set()
+            taskset_loader_saver.save(self.taskset_set_obj)
+
         else:
             print(f"Invalid taskset action: {self.taskset_parameters['action']}")
             return

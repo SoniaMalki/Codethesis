@@ -84,7 +84,7 @@ class Cittanew:
                     #calculer le wcet + l'interference pour le taskset assigné au core qu'on test
                     wcet_sc[task] = self.compute_cache_interference(task_index=task, core_index=core, taskincore=taskincore, task_tna=taskreming)
                 for task in taskincore[core]:
-                    if self.check_one_task(task, taskincore[core], wcet_sc, self.period) == 0: #on teste la condition de schedule tache par tache sur le core, 
+                    if self.check_one_task(task, taskincore[core], wcet_sc) == 0: #on teste la condition de schedule tache par tache sur le core, 
                         # en prenant en compte la nouvelle tache et les nouveau wcet calculés
                         taskincore[core].remove(task_index) #si on rentre dans la boucle c'est qu'on a renvoyé 0, donc raté pour une seule tâche, on retire donc la nouvelle tâche ajoutée au core 
                         #car avant de l'avoir mis ça marchait, mais en l'ajoutant, ça ne marche plus. Donc c'est cette tâche le problème et on la retire
@@ -102,19 +102,19 @@ class Cittanew:
                 task_tna.append(task_index)
         return task_tna, taskAssigned, taskincore
 
-    def check_one_task(self, task_index, taskincore, wcet_sc, period):
+    def check_one_task(self, task_index, taskincore, wcet_sc):
         #recoit le numero de la tâche à test, les tasks qui sont dans le même core + lui même, le vecteur wcet et period
         #cette fonction tournera plusieurs fois sur toute les tâches du core avec plusieurs appels en changeant task index
-        I_ki = self.dbf(task_index, taskincore, period, wcet_sc) #calcule le dbf pour une tache avec la formule
+        I_ki = self.dbf(task_index, taskincore, self.period, wcet_sc) #calcule le dbf pour une tache avec la formule
         dbf_smaller_d = self.compute_dbf_sum(I_ki) #somme des elem du vecteur dbf, donc sum dbf dans la formule de la condition
-        ci_index = self.find_max_blocking(task_index, taskincore, wcet_sc, period) #essaie de trouver s'il y a un blocking time, si oui calcule avec, sinon sans
+        ci_index = self.find_max_blocking(task_index, taskincore, wcet_sc) #essaie de trouver s'il y a un blocking time, si oui calcule avec, sinon sans
         if (ci_index == -1):  #trouvé aucun max blocking donc on calcule la condition sans.
-            if (period[task_index] >= dbf_smaller_d + wcet_sc[task_index]):
+            if (self.period[task_index] >= dbf_smaller_d + wcet_sc[task_index]):
                 return 1
             else:
                 return 0
         else: #trouvé un max blocking time, on calcule la condition 1.6 avec
-            if (period[task_index] >= dbf_smaller_d + wcet_sc[task_index] + wcet_sc[ci_index]):
+            if (self.period[task_index] >= dbf_smaller_d + wcet_sc[task_index] + wcet_sc[ci_index]):
                 #dbf compris, wcet_sc[ci_index] c'est le blocking time (qui represente max c_j+Icj dans la formule car wcet prend en compte interference)
                 #wcet_sc[task_index] est mis ici car équivalent si on l'avait mis au dbf, mais on évite les erreurs de division par 0 (il vient du calcul de dbf)
                 return 1
@@ -142,7 +142,7 @@ class Cittanew:
             summ = summ + I_ki[i]
         return summ
 
-    def find_max_blocking(self, task_index, taskincore, wcet, period):
+    def find_max_blocking(self, task_index, taskincore, wcet_sc):
         #Calcule le plus grand temps qui pourrait bloquer la tâche dont on calcule le dbf
         #Pour rappel un blocking time est un temps où une tâche k tourne encore alors qu'elle a une priorité plus petite que notre tâche i
         #C'est un temps bloquant car normalement par ordre de priorité i devrait s'executer avant k, mais comme système non-preemptif, c'est un temps bloquant
@@ -150,9 +150,9 @@ class Cittanew:
         max_value = 0
         index = -1
         for k in taskincore:
-            if period[task_index] < period[k]: #si la période de la tâche k est plus grande que la tâche dont on calcule le dbf, donc si la priorité est plus petite
-                if wcet[k] > max_value: #si le wcet de la tâche est le plus grand, ça devient le nouveau max
-                    max_value = wcet[k]
+            if self.period[task_index] < self.period[k]: #si la période de la tâche k est plus grande que la tâche dont on calcule le dbf, donc si la priorité est plus petite
+                if wcet_sc[k] > max_value: #si le wcet de la tâche est le plus grand, ça devient le nouveau max
+                    max_value = wcet_sc[k]
                     index = k #recherche classique de max
         return index #retourne l'index de la tâche qui pourrait induire un temps bloquant
 
@@ -165,8 +165,7 @@ class Cittanew:
         #computation expliquée dans le papier    
             I_run_old = I_run #save le run dans le old pour la comparaison
             I_run = 0 #on recommence à 0
-            interference_index = self.compute_I_run(self.number_of_cores, task_index, core_index, wcet_updated[task_index], self.wcet, self.period,
-                                               self.interference, taskincore, task_tna)
+            interference_index = self.compute_I_run(task_index, core_index, wcet_updated[task_index], taskincore, task_tna)
             time.sleep(0.0002)
             if interference_index != None: #si la fonction I run avec l'ILP renvoie un résultat pour l'interference, alors on l'assigne
                 I_run = interference_index #on a un nouveau I_run la boucle tournera
@@ -178,15 +177,15 @@ class Cittanew:
                 return self.period[task_index] #Le wcet trouvé fait qu'on pourra pas atteindre la deadline, on renvoie la période pour faire comprendre ça
         return wcet_updated[task_index] #on renvoie juste un seul wcet modifié, celui de la tâche testée dans le core spécifique
 
-    def compute_I_run(self, m, task_index, core_index, execution_window, wcet, period, cache_interference, taskincore, task_tna):
+    def compute_I_run(self, task_index, core_index, execution_window, taskincore, task_tna):
         prob = LpProblem("ILPscheduling", LpMaximize)
         #creating the variable N, number of jobs having cache interference with taskindex
-        n = LpVariable.dicts("jobnum", list(range(len(period))), 0, execution_window, LpInteger)
+        n = LpVariable.dicts("jobnum", list(range(len(self.period))), 0, execution_window, LpInteger)
         #adding the n variable * interference to the objective function to maximize
-        prob += lpSum([n[i] * cache_interference[task_index][i] for i in range(len(period))]) 
+        prob += lpSum([n[i] * self.interference[task_index][i] for i in range(len(self.period))]) 
         #Create a LP variable y that will bound n in place of the max function
-        y = LpVariable.dicts("y", list(range(len(period))), lowBound=0, cat='Integer')
-        for i in range(len(period)):
+        y = LpVariable.dicts("y", list(range(len(self.period))), lowBound=0, cat='Integer')
+        for i in range(len(self.period)):
             #adding constraint for this variable y so it will replace the function max used in python2
             prob += y[i] >= 0
             prob += y[i] >= n[i] - 2 #dis dans l'article scientifique qu'on peut remplacer max par y*wcet
@@ -194,21 +193,21 @@ class Cittanew:
             #contrainte qui dit que le N d'une tâche étant dans le meme core que la tache à analyser est 0, parce que ça n'interfere pas
             #contrainte 1.8
             prob += n[core_task] == 0
-        for each_task in range(len(period)):
+        for each_task in range(len(self.period)):
             if each_task != task_index and each_task not in taskincore[core_index]:
                 #contrainte 1.9, pas le eta car avec D=T inutile vaut toujours 0
-                prob += n[each_task] - math.floor(max(0, (execution_window - period[each_task])) / (period[each_task])) >= 0
+                prob += n[each_task] - math.floor(max(0, (execution_window - self.period[each_task])) / (self.period[each_task])) >= 0
                 #contrainte 1.10 pas le max car c'est juste Ci en numerateur, et pas Ci-Ti+Di car Ti = Di, donc impossible d'avoir <0, donc pas besoin du max
-                prob += n[each_task] - 1 - math.ceil(execution_window / period[each_task]) <= 0
+                prob += n[each_task] - 1 - math.ceil(execution_window / self.period[each_task]) <= 0
         #contrainte 1.11
-        for each_core in range(m):
+        for each_core in range(self.number_of_cores):
             if each_core != core_index:
                 if taskincore[each_core] and task_tna:
-                    prob += lpSum([y[x_i]*wcet[x_i] for x_i in taskincore[each_core] or x_i in task_tna]) <= execution_window
+                    prob += lpSum([y[x_i]*self.wcet[x_i] for x_i in taskincore[each_core] or x_i in task_tna]) <= execution_window
                 elif taskincore[each_core]:
-                    prob += lpSum([y[x_i]*wcet[x_i] for x_i in taskincore[each_core]]) <= execution_window
+                    prob += lpSum([y[x_i]*self.wcet[x_i] for x_i in taskincore[each_core]]) <= execution_window
                 elif task_tna:
-                    prob += lpSum([y[x_i]*wcet[x_i] for x_i in task_tna]) <= execution_window
+                    prob += lpSum([y[x_i]*self.wcet[x_i] for x_i in task_tna]) <= execution_window
         #la tâche elle meme ne génère pas d'interference sur elle-meme
         prob += n[task_index] == 0       
 

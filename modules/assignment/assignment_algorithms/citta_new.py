@@ -106,7 +106,7 @@ class Cittanew:
         #recoit le numero de la tâche à test, les tasks qui sont dans le même core + lui même, le vecteur wcet et period
         #cette fonction tournera plusieurs fois sur toute les tâches du core avec plusieurs appels en changeant task index
         I_ki = self.dbf(task_index=task_index, task_in_core=task_in_core, wcet_with_interference=wcet_with_interference) #calcule le dbf pour une tache avec la formule
-        dbf_smaller_d = self.compute_dbf_sum(I_ki) #somme des elem du vecteur dbf, donc sum dbf dans la formule de la condition
+        dbf_smaller_d = self.compute_dbf_sum(I_ki=I_ki) #somme des elem du vecteur dbf, donc sum dbf dans la formule de la condition
         ci_index = self.find_max_blocking(task_index=task_index, task_in_core=task_in_core, wcet_with_interference=wcet_with_interference) #essaie de trouver s'il y a un blocking time, si oui calcule avec, sinon sans
         if (ci_index == -1):  #trouvé aucun max blocking donc on calcule la condition sans.
             if (self.period[task_index] >= dbf_smaller_d + wcet_with_interference[task_index]):

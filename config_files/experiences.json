@@ -81,7 +81,7 @@
       "action" : "generate",
       "parameters" : {
         "number_of_cores": 4,
-        "citta_criteria" : [ "period_descending" ],
+        "citta_criteria" : [ "pd" ],
         "assignment_method" : [ "CITTA" ]
       }
     },

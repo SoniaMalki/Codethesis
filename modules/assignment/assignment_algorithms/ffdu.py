@@ -30,7 +30,7 @@ class Ffdu:
 
         successfully_assigned = 1
         while taskset_not_assigned and successfully_assigned == 1:
-            task_in_core, taskset_not_assigned ,successfully_assigned = self.task_partition(task_in_core=task_in_core, taskset_not_assigned=taskset_not_assigned)
+            task_in_core, taskset_not_assigned, successfully_assigned = self.task_partition(task_in_core=task_in_core, taskset_not_assigned=taskset_not_assigned)
 
         if not taskset_not_assigned:
             return task_in_core, taskset_not_assigned, 1

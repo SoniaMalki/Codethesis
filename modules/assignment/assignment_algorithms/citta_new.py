@@ -5,15 +5,15 @@ import time
 
 class Cittanew:
 
-    def __init__(self, _taskset ,_number_of_cores, _sorting_criterion):
-        self.number_of_cores = _number_of_cores
-        self.taskset =_taskset
+    def __init__(self, taskset , number_of_cores, sorting_criterion):
+        self.number_of_cores = number_of_cores
+        self.taskset = taskset
         self.period = self.taskset.period
         self.wcet = self.taskset.wcet
-        self.sorting_criterion = _sorting_criterion
         self.interference = self.taskset.interference
+        self.utilization = self.taskset.utilization
+        self.sorting_criterion = sorting_criterion
         self.count = 0
-        pass
 
     def sort_task(self):
         #Trie les tâches par ordre décroissant selon certains critère. Ca regarde le critère, imaginons 
@@ -48,59 +48,59 @@ class Cittanew:
     def assign(self):
         #Algorithme de CITTA
         taskset = self.sort_task()
-        taskset_na = taskset[:]
-        taskAssigned = 1 #flag qui est a true tant que l'algo a réussi a assigner au moins une tâche a un core, une fois qu'il arrive pas ça sera 0
-        taskincore = [[] for _ in range(self.number_of_cores)]
-        while taskset_na and taskAssigned == 1: #tant que soit on arrive encore a assigner et que le set des tâches à assigner n'est pas vide (il reste donc des tâches à assigner)
-            taskset_na, taskAssigned, taskincore = self.task_partition(taskset=taskset_na, taskincore=taskincore)
+        taskset_not_assigned = taskset[:]
+        successfully_assigned = 1 #flag qui est a true tant que l'algo a réussi a assigner au moins une tâche a un core, une fois qu'il arrive pas ça sera 0
+        task_in_core = [[] for _ in range(self.number_of_cores)]
+        while taskset_not_assigned and successfully_assigned == 1: #tant que soit on arrive encore a assigner et que le set des tâches à assigner n'est pas vide (il reste donc des tâches à assigner)
+            task_in_core, taskset_not_assigned, successfully_assigned = self.task_partition(taskset=taskset_not_assigned, task_in_core=task_in_core)
         # print "TaskIncore is ",taskincore
-        if not taskset_na:
-            return taskincore, taskset_na, 1
+        if not taskset_not_assigned:
+            return task_in_core, taskset_not_assigned, 1
         else:
-            return taskincore, taskset_na, 0
+            return task_in_core, taskset_not_assigned, 0
 
 
 
-    def task_partition(self, taskset, taskincore):
+    def task_partition(self, taskset, task_in_core):
         #Essaie d'assigner des tâches à des cores
-        taskAssigned = 0 #flag pour dire qu'au moins une tâche est assignée de tout l'attempt. On commence à 0, et si c'est assigné au moins une fois
+        successfully_assigned = 0 #flag pour dire qu'au moins une tâche est assignée de tout l'attempt. On commence à 0, et si c'est assigné au moins une fois
         #ça sera 1, et renverra 1, preuve que la boucle dans catpar qui l'appelle pourra encore tourner car encore possible d'assigner.
-        task_tna = [] #on assume que le set des tâches non assignée est vide au début et se remplit au fur des attempt.
-        taskreming = taskset[:] 
+        task_not_assigned = [] #on assume que le set des tâches non assignée est vide au début et se remplit au fur des attempt.
+        task_to_assign = taskset[:] 
         #attention tasket est le taskset des tâches à chercher a assigner. Au début il vaut le total, mais après vaut task_tna des attempts précédentes
         #taskreming est l'équivalent du taskset, sauf qu'on retire les attempt réussies. On peut pas le faire sur taskset directement vu qu'il y a 
         #une boucle dessus. Mais taskreming prend en compte les tâches assignées en les retirant, c'est le set des tâches à assigner qu'il reste et
         #des tâches qui sont données à task_tna. Utile pour calculer l'interférence, il n'est utilisé que là.
         #taskreming contient tout sauf les tasks qui sont successfly assigned.
         for task_index in taskset:
-            assignTo = -1 # core par défaut si aucun core trouvé ça reste à -1 et à la fin du for, on sait si c'est assigné à un core ou aucun
-            coreSuccess=1
+            assign_to = -1 # core par défaut si aucun core trouvé ça reste à -1 et à la fin du for, on sait si c'est assigné à un core ou aucun
+            core_success=1
             for core in range(self.number_of_cores): #on teste d'assigner la tache du taskset à chaque core m
-                wcet_sc = numpy.copy(self.wcet) #besoin d'un vecteur wcet_sc pour stocker les wcet avec interference qui seront calculées
-                coreSuccess = 1 #on suppose que l'attempt du schedule du core est correcte, pour après la refuser si ça ne va pas
-                taskincore[core].append(task_index) #ajout de la tâche au core pour pouvoir calculer l'interference et si elle fit. 
+                wcet_with_interference = numpy.copy(self.wcet) #besoin d'un vecteur wcet_sc pour stocker les wcet avec interference qui seront calculées
+                core_success = 1 #on suppose que l'attempt du schedule du core est correcte, pour après la refuser si ça ne va pas
+                task_in_core[core].append(task_index) #ajout de la tâche au core pour pouvoir calculer l'interference et si elle fit. 
                 #si c'est accepté alors on la garde au core, sinon on la supprimera du core si l'attempt est refusé
-                for task in taskincore[core]:
+                for task in task_in_core[core]:
                     #calculer le wcet + l'interference pour le taskset assigné au core qu'on test
-                    wcet_sc[task] = self.compute_cache_interference(task_index=task, core_index=core, taskincore=taskincore, task_tna=taskreming)
-                for task in taskincore[core]:
-                    if self.check_one_task(task, taskincore[core], wcet_sc) == 0: #on teste la condition de schedule tache par tache sur le core, 
+                    wcet_with_interference[task] = self.compute_cache_interference(task_index=task, core_index=core, taskincore=task_in_core, task_tna=task_to_assign)
+                for task in task_in_core[core]:
+                    if self.check_one_task(task, task_in_core[core], wcet_with_interference) == 0: #on teste la condition de schedule tache par tache sur le core, 
                         # en prenant en compte la nouvelle tache et les nouveau wcet calculés
-                        taskincore[core].remove(task_index) #si on rentre dans la boucle c'est qu'on a renvoyé 0, donc raté pour une seule tâche, on retire donc la nouvelle tâche ajoutée au core 
+                        task_in_core[core].remove(task_index) #si on rentre dans la boucle c'est qu'on a renvoyé 0, donc raté pour une seule tâche, on retire donc la nouvelle tâche ajoutée au core 
                         #car avant de l'avoir mis ça marchait, mais en l'ajoutant, ça ne marche plus. Donc c'est cette tâche le problème et on la retire
-                        coreSuccess = 0 #on dit que l'attempt de cette tâche à ce core m est fausse, et on va aller au core suivant pour la même tâche
+                        core_success = 0 #on dit que l'attempt de cette tâche à ce core m est fausse, et on va aller au core suivant pour la même tâche
                         break
-                if coreSuccess == 1: #Si on a finit sans coreSuccess 0, alors ça reste à 1, donc ça a marché. L'assignation de la tâche au core sera acceptée
-                    taskreming.remove(task_index) #cette liste ne contient pas les tâches successfly assigned
-                    assignTo = core #on signale le numéro du core m où la tâche sera enregistrée
-                    taskAssigned = 1 #flag qui dit qu'au moins une seule attempt de assigner une tâche à un core est réussie. pour la boucle qui
+                if core_success == 1: #Si on a finit sans coreSuccess 0, alors ça reste à 1, donc ça a marché. L'assignation de la tâche au core sera acceptée
+                    task_to_assign.remove(task_index) #cette liste ne contient pas les tâches successfly assigned
+                    assign_to = core #on signale le numéro du core m où la tâche sera enregistrée
+                    successfully_assigned = 1 #flag qui dit qu'au moins une seule attempt de assigner une tâche à un core est réussie. pour la boucle qui
                     #appelle cette fonction
                     break #on break le for du core pour ne pas continuer à assigner aux core suivant car place trouvées
-            if assignTo == -1: 
+            if assign_to == -1: 
                 # Si on a réussi à assigner à aucun core alors, on l'ajoute a tna, qui regroupe les tâches assignée a aucun core
                 # taskincore[core].remove(task_index)
-                task_tna.append(task_index)
-        return task_tna, taskAssigned, taskincore
+                task_not_assigned.append(task_index)
+        return task_in_core, task_not_assigned, successfully_assigned
 
     def check_one_task(self, task_index, taskincore, wcet_sc):
         #recoit le numero de la tâche à test, les tasks qui sont dans le même core + lui même, le vecteur wcet et period

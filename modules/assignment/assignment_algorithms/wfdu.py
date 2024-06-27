@@ -3,71 +3,55 @@ import math
 import time
 
 class Wfdu:
-    def __init__(self, _taskset ,_number_of_cores):
-        self.m = _number_of_cores
-        self.taskset =_taskset
+    def __init__(self, taskset, number_of_cores):
+        self.number_of_cores = number_of_cores
+        self.taskset = taskset
         self.period = self.taskset.period
         self.wcet = self.taskset.wcet
-        print(self.m, self.period, self.wcet)
+        self.utilization = self.taskset.utilization
+        self.interference = self.taskset.interference
+
 
     def assign(self):
-        print("test")
-        taskset = self.sort_task(self.period, self.wcet)
-        print("test2")
-        taskset_na = taskset[:]
-        taskAssigned = 1 #flag qui est a true tant que l'algo a réussi a assigner au moins une tâche a un core, une fois qu'il arrive pas ça sera 0
-        taskincore = [[] for _ in range(self.m)]
-        while taskset_na and taskAssigned == 1: #tant que soit on arrive encore a assigner et que le set des tâches à assigner n'est pas vide (il reste donc des tâches à assigner)
-            taskset_na, taskAssigned, taskincore = self.task_partition(taskset_na, self.m, taskincore)
-            print(taskset_na, taskAssigned, taskincore)
-        # print "TaskIncore is ",taskincore
-        if not taskset_na:
-            return taskincore, taskset_na, 1
+        taskset = sorted(range(len(self.utilization)), key=lambda k: self.utilization[k], reverse=True)
+        print(taskset)
+        task_in_core = [[] for _ in range(self.number_of_cores)]
+        taskset_not_assigned = taskset[:]
+
+        successfully_assigned = 1
+        while taskset_not_assigned and successfully_assigned == 1:
+            task_in_core, taskset_not_assigned, successfully_assigned = self.task_partition(task_in_core=task_in_core, taskset_not_assigned=taskset_not_assigned)
+
+        if not taskset_not_assigned:
+            return task_in_core, 1
         else:
-            return taskincore, taskset_na, 0
+            return task_in_core, 0
 
-    def sort_task(self, p, c):
-        #Trie les tâches par ordre décroissant selon certains critère. Ca regarde le critère, imaginons 
-        # deadline=[33,10,21] et ça donne l'ordre des tâches selon ça, donc tâche avec plus grande deadline
-        # jusque la tâche avec la plus petite deadline, donc ici taskset=[0,2,1] 
-        # trier selon le ratio WCET/T, donc l'utilisation
-        per = numpy.array(p, dtype='f')
-        ec = numpy.array(c, dtype='f')
-        ratio = ec / per
-        taskset = sorted(list(range(len(ratio))), key=lambda k: ratio[k], reverse=True)
-        time.sleep(2)
-        return taskset
-
-    def task_partition(self, taskset_na, m, taskincore):
-        taskAssigned = 0 # Commence avec l'assomption qu'aucune tâche n'est assignée
-
-        core_utilization = [sum([self.wcet[task] / self.period[task] for task in core]) for core in taskincore]
-
-        # Parcourir les tâches dans l'ordre spécifié, en essayant de les assigner à un cœur
-        for task in taskset_na:
-            task_util = self.wcet[task] / self.period[task]
-
-            # Trouver le cœur avec l'utilisation la plus faible
-            min_utilization = math.inf  # On commence par l'infini pour s'assurer que le premier cœur vérifié aura une utilisation inférieure
-            min_core_index = None
-
-            for i, util in enumerate(core_utilization):
-                if util + task_util <= 1 and util < min_utilization:  # 1 représente 100% d'utilisation
-                    min_utilization = util
-                    min_core_index = i
-
-            # Si un cœur a été trouvé pour la tâche, assignez la tâche à ce cœur
-            if min_core_index is not None:
-                taskincore[min_core_index].append(task)
-                core_utilization[min_core_index] += task_util  # Mettre à jour l'utilisation du cœur
-                taskAssigned = 1  # Une tâche a été assignée
+    def task_partition(self, task_in_core, taskset_not_assigned):
+        successfully_assigned = 0
+        task_not_assigned = []
+        for task_index in taskset_not_assigned:
+            core_index = self.find_worst_fit_core(task_in_core, task_index)
+            if core_index is not None:
+                task_in_core[core_index].append(task_index)
+                successfully_assigned = 1
             else:
-                break  # Si aucune tâche ne peut être assignée, sortir de la boucle
+                task_not_assigned.append(task_index)
+        return task_in_core, task_not_assigned, successfully_assigned
 
-        # Mettre à jour taskset_na pour supprimer les tâches qui ont été assignées
-        tasks_assigned = [task for core in taskincore for task in core]
-        taskset_na = [task for task in taskset_na if task not in tasks_assigned]
-
-        return taskset_na, taskAssigned, taskincore
-
+    def find_worst_fit_core(self, task_in_core, task_index):
+        """Trouve le cœur avec l'utilisation la plus élevée (pour WFDU) et vérifie la limite d'utilisation."""
+        min_utilization = 1
+        worst_fit_core = None
+        for core_index in range(self.number_of_cores):
+            total_utilization = sum(
+                self.utilization[task] for task in task_in_core[core_index]
+            )
+            # Vérifie si la tâche rentre dans la limite d'utilisation du cœur
+            print(min_utilization, total_utilization, core_index, task_index)
+            if total_utilization + self.utilization[task_index] <= 1 and total_utilization < min_utilization:
+                min_utilization = total_utilization
+                worst_fit_core = core_index
+        print(f"assign {task_index} in {worst_fit_core}")
+        return worst_fit_core
     

@@ -12,33 +12,21 @@ class Ffdu:
         self.interference = self.taskset.interference
 
     def assign(self):
-        """
-        Effectue l'affectation des tâches aux cœurs en utilisant FFDU.
-
-        Returns:
-            tuple: Un tuple contenant:
-                - task_in_core: Une liste de listes représentant les tâches affectées à chaque cœur.
-                - taskset_not_assigned: Une liste des tâches non affectées.
-                - success: Un booléen indiquant si l'affectation a réussi.
-        """
-
-        # Trie les tâches par utilisation décroissante
         taskset = sorted(range(len(self.utilization)), key=lambda k: self.utilization[k], reverse=True)
+        print(taskset)
         task_in_core = [[] for _ in range(self.number_of_cores)]
         taskset_not_assigned = taskset[:]
-
 
         successfully_assigned = 1
         while taskset_not_assigned and successfully_assigned == 1:
             task_in_core, taskset_not_assigned, successfully_assigned = self.task_partition(task_in_core=task_in_core, taskset_not_assigned=taskset_not_assigned)
 
         if not taskset_not_assigned:
-            return task_in_core, taskset_not_assigned, 1
+            return task_in_core, 1
         else:
-            return task_in_core, taskset_not_assigned, 0
+            return task_in_core, 0
 
     def task_partition(self, task_in_core, taskset_not_assigned):
-        """Essaie d'affecter les tâches aux cœurs en utilisant FFDU."""
         successfully_assigned = 0
         task_not_assigned = []
         for task_index in taskset_not_assigned:  
@@ -51,10 +39,10 @@ class Ffdu:
                     break
             if not core_found:
                 task_not_assigned.append(task_index)
+                
         return task_in_core, task_not_assigned, successfully_assigned
 
     def check_task_fit(self, task_index, core_index, task_in_core):
-        """Vérifie si une tâche peut être affectée à un cœur."""
         total_utilization = sum(
             self.utilization[task] for task in task_in_core[core_index]
         )

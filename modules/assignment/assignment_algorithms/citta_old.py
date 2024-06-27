@@ -34,7 +34,7 @@ class Cittaold:
         if (sorting_criterion == "et"): #trier selon le WCET
             ec = numpy.array(c)
             taskset = sorted(list(range(len(ec))), key=lambda k: ec[k], reverse=True)
-        elif (sorting_criterion == "pd"): #trier selon la période T
+        elif (sorting_criterion == "period_descending"): #trier selon la période T
             per = numpy.array(p)
             taskset = sorted(list(range(len(per))), key=lambda k: per[k], reverse=True)
         elif (sorting_criterion == "ra"): # trier selon le ratio WCET/T, donc l'utilisation

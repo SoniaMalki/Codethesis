@@ -166,54 +166,42 @@ class Citta:
         return tmp_obj
 
     def check_one_task(self, task_index, core, wcet_with_interference):
-        #recoit le numero de la tâche à test, les tasks qui sont dans le même core + lui même, le vecteur wcet et period
-        #cette fonction tournera plusieurs fois sur toute les tâches du core avec plusieurs appels en changeant task index
-        I_ki = self.dbf(task_index=task_index, core=core, wcet_with_interference=wcet_with_interference) #calcule le dbf pour une tache avec la formule
-        dbf_smaller_d = self.compute_dbf_sum(I_ki=I_ki) #somme des elem du vecteur dbf, donc sum dbf dans la formule de la condition
-        ci_index = self.find_max_blocking(task_index=task_index, core=core, wcet_with_interference=wcet_with_interference) #essaie de trouver s'il y a un blocking time, si oui calcule avec, sinon sans
-        if (ci_index == -1):  #trouvé aucun max blocking donc on calcule la condition sans.
-            if (self.period[task_index] >= dbf_smaller_d):
+        dbf_list = self.dbf(task_index=task_index, core=core, wcet_with_interference=wcet_with_interference) 
+        dbf_sum= self.compute_dbf_sum(dbf_list=dbf_list) 
+        blocking_task_index = self.find_max_blocking(task_index=task_index, core=core, wcet_with_interference=wcet_with_interference) 
+        if (blocking_task_index == -1):  #trouvé aucun max blocking donc on calcule la condition sans.
+            if (self.period[task_index] >= dbf_sum):
                 return 1
             else:
                 return 0
         else: #trouvé un max blocking time, on calcule la condition 1.6 avec
-            if (self.period[task_index] >= dbf_smaller_d + wcet_with_interference[ci_index]):
-                #dbf compris, wcet_sc[ci_index] c'est le blocking time (qui represente max c_j+Icj dans la formule car wcet prend en compte interference)
-                #wcet_sc[task_index] est mis ici car équivalent si on l'avait mis au dbf, mais on évite les erreurs de division par 0 (il vient du calcul de dbf)
+            if (self.period[task_index] >= dbf_sum + wcet_with_interference[blocking_task_index]):
                 return 1
             else:
                 return 0
 
     def dbf(self, task_index, core, wcet_with_interference):
-        #dans la formule wcet+interferecence sont séparées en 2 terme. Ici wcet_sc represente leur addition
-        I_ki = list()
+        dbf_list = list()
         for j in core:
-            if self.period[task_index] < self.period[j]: #cas où on ne calcule pas le DBF car ça ne rentre pas dans les conds, qui sont
-                #les tâches différentes de la tâche à évaluer 
-                #avoir une periode plus petite que task_i. Ici k est plus grand, on calcule pas son DBF. Il est donc mis à 0
-                I_ki.append(0)
+            if self.period[task_index] < self.period[j]: #cas où on ne calcule pas le DBF 
+                dbf_list.append(0)
             else:
-                utili = float(wcet_with_interference[j] / self.period[j]) #utilisation de la tâche
-                interference_k_i = wcet_with_interference[j] + (self.period[task_index] - self.period[j]) * utili  #formule approximation dbf pour tâche k, en temps t=deadline de task_i 
-                I_ki.append(interference_k_i)
-        # retourne une liste contenant le dbf calculé en temps t
-        return I_ki
+                utilisation_with_interference = float(wcet_with_interference[j] / self.period[j]) 
+                dbf_j = wcet_with_interference[j] + (self.period[task_index] - self.period[j]) * utilisation_with_interference  #formule approximation dbf pour tâche k, en temps t=deadline de task_i 
+                dbf_list.append(dbf_j)
+        return dbf_list
 
-    def compute_dbf_sum(self, I_ki):
-        res = 0
-        for i in range(0, len(I_ki)):
-            res = res + I_ki[i]
-        return res
+    def compute_dbf_sum(self, dbf_list):
+        dbf_sum = 0
+        for i in range(0, len(dbf_list)):
+            dbf_sum = dbf_sum + dbf_list[i]
+        return dbf_sum
 
     def find_max_blocking(self, task_index, core, wcet_with_interference):
-        #Calcule le plus grand temps qui pourrait bloquer la tâche dont on calcule le dbf
-        #Pour rappel un blocking time est un temps où une tâche k tourne encore alors qu'elle a une priorité plus petite que notre tâche i
-        #C'est un temps bloquant car normalement par ordre de priorité i devrait s'executer avant k, mais comme système non-preemptif, c'est un temps bloquant
-        #TO DO, voir s'il ne faut pas retirer ça du DBF au vu de mes algo de RHMA
         max_value = 0
         index = -1
         for j in core:
-            if self.period[task_index] < self.period[j]: #si la période de la tâche k est plus grande que la tâche dont on calcule le dbf, donc si la priorité est plus petite
+            if self.period[task_index] < self.period[j]: #si la période de la tâche j est plus grande que la tâche dont on calcule le dbf, donc si la priorité est plus petite
                 if wcet_with_interference[j] > max_value: #si le wcet de la tâche est le plus grand, ça devient le nouveau max
                     max_value = wcet_with_interference[j]
                     index = j #recherche classique de max

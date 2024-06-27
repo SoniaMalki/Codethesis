@@ -246,8 +246,8 @@
     "taskset_id" : "taskset_16",
     "action" : "generate",
     "parameters" : {
-      "citta_criteria" : [ "rien"],
-      "assignment_method" : [ "FFDU" ],
+      "citta_criteria" : [ "wcet_ascending"],
+      "assignment_method" : [ "CITTA" ],
       "number_of_cores": 4
     }
   },

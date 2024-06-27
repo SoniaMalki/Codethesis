@@ -13,7 +13,6 @@ class Ffdu:
 
     def assign(self):
         taskset = sorted(range(len(self.utilization)), key=lambda k: self.utilization[k], reverse=True)
-        print(taskset)
         task_in_core = [[] for _ in range(self.number_of_cores)]
         taskset_not_assigned = taskset[:]
 

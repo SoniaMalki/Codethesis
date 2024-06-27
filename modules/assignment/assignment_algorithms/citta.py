@@ -145,7 +145,7 @@ class Citta:
         for each_core in range(self.number_of_cores):
             if each_core != core_index:
                 if task_in_core[each_core] and task_to_assign:
-                    prob += lpSum([y[x_i]*self.wcet[x_i] for x_i in task_in_core[each_core] or x_i in task_to_assign]) <= execution_window
+                    prob += lpSum([y[x_i]*self.wcet[x_i] for x_i in task_in_core[each_core] for x_i in task_to_assign]) <= execution_window
                 elif task_in_core[each_core]:
                     prob += lpSum([y[x_i]*self.wcet[x_i] for x_i in task_in_core[each_core]]) <= execution_window
                 elif task_to_assign:
@@ -165,9 +165,6 @@ class Citta:
         # print("Value", tmp_obj)
 
         return tmp_obj
-
-
-
 
     def check_one_task(self, task_index, task_in_core, wcet_with_interference):
         #recoit le numero de la tâche à test, les tasks qui sont dans le même core + lui même, le vecteur wcet et period

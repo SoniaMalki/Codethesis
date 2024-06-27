@@ -1,6 +1,7 @@
 from modules.assignment.assignment import Assignment
 from modules.assignment.assignment_set import AssignmentSet
 from modules.assignment.assignment_algorithms.citta import Citta
+from modules.assignment.assignment_algorithms.citta_old import Cittaold
 from modules.assignment.assignment_algorithms.wfdu import Wfdu
 from modules.assignment.assignment_algorithms.ffdu import Ffdu
 from modules.assignment.assignment_algorithms.w_min import Wmin
@@ -51,6 +52,16 @@ class AssignmentGenerator:
             self.citta_criteria
         )
         assigned_cores, successfully_assigned = citta_instance.assign()
+        print(assigned_cores, "citta mine")
+
+        citta_instance= Cittaold(
+            taskset,  # Pass a list containing only the current taskset
+            self.number_of_cores,
+            self.citta_criteria
+        )
+        assigned_cores, _,successfully_assigned = citta_instance.assign()
+        print(assigned_cores, "citta old")
+
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):

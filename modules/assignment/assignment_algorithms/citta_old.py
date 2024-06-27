@@ -11,7 +11,6 @@ class Cittaold:
         self.wcet = self.taskset.wcet
         self.sorting_criterion = _sorting_criterion
         self.interference = self.taskset.interference
-        self.count = 0
         pass
     def assign(self):
         #Algorithme de CITTA
@@ -31,18 +30,18 @@ class Cittaold:
         #Trie les tâches par ordre décroissant selon certains critère. Ca regarde le critère, imaginons 
         # deadline=[33,10,21] et ça donne l'ordre des tâches selon ça, donc tâche avec plus grande deadline
         # jusque la tâche avec la plus petite deadline, donc ici taskset=[0,2,1] 
-        if (sorting_criterion == "et"): #trier selon le WCET
+        if (sorting_criterion == "wcet_descending"): #trier selon le WCET
             ec = numpy.array(c)
             taskset = sorted(list(range(len(ec))), key=lambda k: ec[k], reverse=True)
         elif (sorting_criterion == "period_descending"): #trier selon la période T
             per = numpy.array(p)
             taskset = sorted(list(range(len(per))), key=lambda k: per[k], reverse=True)
-        elif (sorting_criterion == "ra"): # trier selon le ratio WCET/T, donc l'utilisation
+        elif (sorting_criterion == "utilization_descending"): # trier selon le ratio WCET/T, donc l'utilisation
             per = numpy.array(p, dtype='f')
             ec = numpy.array(c, dtype='f')
             ratio = ec / per
             taskset = sorted(list(range(len(ratio))), key=lambda k: ratio[k], reverse=True)
-        elif (sorting_criterion == "sl"): #trier selon le slack, période-wcet, donc période à rien faire.
+        elif (sorting_criterion == "execution_slack_descending"): #trier selon le slack, période-wcet, donc période à rien faire.
             per = numpy.array(p, dtype='f')
             ec = numpy.array(c, dtype='f')
             slacks = per - ec
@@ -162,7 +161,6 @@ class Cittaold:
             else:
                 I_run = 0 #aucune nouvelle interference trouvée, la boucle sera finie car I et I run old 0
             wcet_updated[task_index] = wcet[task_index] + I_run #ça marche toujours car si rien à ajouter on ajoute 0
-
             if wcet_updated[task_index] > period[task_index]:
                 return period[task_index] #Le wcet trouvé fait qu'on pourra pas atteindre la deadline, on renvoie la période pour faire comprendre ça
         return wcet_updated[task_index] #on renvoie juste un seul wcet modifié, celui de la tâche testée dans le core spécifique
@@ -199,8 +197,7 @@ class Cittaold:
                 elif task_tna:
                     prob += lpSum([y[x_i]*wcet[x_i] for x_i in task_tna]) <= execution_window
         #la tâche elle meme ne génère pas d'interference sur elle-meme
-        prob += n[task_index] == 0       
-
+        prob += n[task_index] == 0        
         #prob.solve(GLPK(msg=0))
         #print(prob)
         prob.solve(PULP_CBC_CMD(msg=0)) #TO DO changer de solver
@@ -211,6 +208,5 @@ class Cittaold:
         #   print(v.name, "=", v.varValue)
         tmp_obj = pulp.value(prob.objective)
         # print("Value", tmp_obj)
-  
         return tmp_obj
 

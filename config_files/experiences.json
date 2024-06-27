@@ -247,7 +247,7 @@
     "action" : "generate",
     "parameters" : {
       "citta_criteria" : [ "wcet_ascending"],
-      "assignment_method" : [ "CITTA" ],
+      "assignment_method" : [ "FFDU" ],
       "number_of_cores": 4
     }
   },

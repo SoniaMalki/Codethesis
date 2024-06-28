@@ -146,7 +146,9 @@ class Citta:
         #fonction objective        
         prob += lpSum([N_i_k[i] * self.interference[i][task_index] for i in range(len(self.period))])
 
-        prob.solve(PULP_CBC_CMD(msg=0)) #TO DO changer de solve pour gurobi
+        gurobi_solver = GUROBI_CMD(msg=0, options=[("OutputFlag", 0)])
+        prob.solve(gurobi_solver)
+        #prob.solve(GUROBI(msg=0, options=[("OutputFlag", 0)]))
         solution = pulp.value(prob.objective)
         return solution
 

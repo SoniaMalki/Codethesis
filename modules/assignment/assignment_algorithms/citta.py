@@ -116,7 +116,7 @@ class Citta:
                 prob += N_i_k[task_i] == 0
             else:
                 #contrainte 1.9
-                prob +=  math.floor(max(0, execution_window-self.period[task_i])/ (self.period[task_i])) + (1 if (execution_window % self.period[task_i] - self.period[task_i]) > 0 else 0) <= N_i_k[task_i]
+                prob +=  math.floor(max(0, execution_window-self.period[task_i])/ (self.period[task_i])) + (1 if ((execution_window % self.period[task_i]) - self.deadline[task_i]) > 0 else 0) <= N_i_k[task_i]
                 #contrainte 1.10
                 prob += N_i_k[task_i] <= 1 + math.ceil(max(0, execution_window - self.period[task_i] + self.deadline[task_i]) / self.period[task_i])
         

@@ -51,6 +51,7 @@ class AssignmentGenerator:
             self.number_of_cores,
             self.citta_criteria
         )
+
         assigned_cores, successfully_assigned = citta_instance.assign()
         print(assigned_cores, "citta mine")
 
@@ -59,8 +60,10 @@ class AssignmentGenerator:
             self.number_of_cores,
             self.citta_criteria
         )
-        assigned_cores, _,successfully_assigned = citta_instance.assign()
+
+        assigned_cores,_ ,successfully_assigned = citta_instance.assign()
         print(assigned_cores, "citta old")
+
 
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:

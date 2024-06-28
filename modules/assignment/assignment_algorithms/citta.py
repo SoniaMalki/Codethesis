@@ -8,6 +8,7 @@ class Citta:
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.period = self.taskset.period
+        self.deadline = self.taskset.deadline
         self.wcet = self.taskset.wcet
         self.interference = self.taskset.interference
         self.utilization = self.taskset.utilization
@@ -77,7 +78,7 @@ class Citta:
                 #si c'est accepté alors on la garde au core, sinon on la supprimera du core si l'attempt est refusé
                 for task in task_in_core[core]:
                     #calculer le wcet + l'interference pour le taskset assigné au core qu'on test
-                    wcet_with_interference[task] = self.compute_cache_interference(task_index=task, core_index=core, task_in_core=task_in_core, task_to_assign=task_to_assign)
+                    wcet_with_interference[task] = self.compute_interference(task_index=task, core_index=core, task_in_core=task_in_core, task_to_assign=task_to_assign)
                 for task in task_in_core[core]:
                     if self.check_one_task(task_index=task, core=task_in_core[core], wcet_with_interference=wcet_with_interference) == 0: #on teste la condition de schedule tache par tache sur le core, 
                         # en prenant en compte la nouvelle tache et les nouveau wcet calculés
@@ -97,7 +98,7 @@ class Citta:
                 task_not_assigned.append(task_index)
         return task_in_core, task_not_assigned, successfully_assigned
 
-    def compute_cache_interference(self, task_index, core_index, task_in_core, task_to_assign):
+    def compute_interference(self, task_index, core_index, task_in_core, task_to_assign):
         #Fonction qui compute le cache interférence, et lance la computation iterative pour trouver le upperbound
         I_run = 0
         I_run_old = 1
@@ -106,7 +107,7 @@ class Citta:
         #computation expliquée dans le papier    
             I_run_old = I_run #save le run dans le old pour la comparaison
             I_run = 0 #on recommence à 0
-            interference_index = self.compute_I_run(task_index=task_index, core_index=core_index, execution_window=wcet_updated[task_index], task_in_core=task_in_core, task_to_assign=task_to_assign)
+            interference_index = self.compute_upper_bound_cache_interference(task_index=task_index, core_index=core_index, execution_window=wcet_updated[task_index], task_in_core=task_in_core, task_to_assign=task_to_assign)
             time.sleep(0.0002)
             if interference_index != None: #si la fonction I run avec l'ILP renvoie un résultat pour l'interference, alors on l'assigne
                 I_run = interference_index #on a un nouveau I_run la boucle tournera
@@ -116,54 +117,38 @@ class Citta:
 
             if wcet_updated[task_index] > self.period[task_index]:
                 return self.period[task_index] #Le wcet trouvé fait qu'on pourra pas atteindre la deadline, on renvoie la période pour faire comprendre ça
+
         return wcet_updated[task_index] #on renvoie juste un seul wcet modifié, celui de la tâche testée dans le core spécifique
 
-    def compute_I_run(self, task_index, core_index, execution_window, task_in_core, task_to_assign):
-        prob = LpProblem("ILPscheduling", LpMaximize)
-        #creating the variable N, number of jobs having cache interference with taskindex
-        n = LpVariable.dicts("jobnum", list(range(len(self.period))), 0, execution_window, LpInteger)
-        #adding the n variable * interference to the objective function to maximize
-        prob += lpSum([n[i] * self.interference[task_index][i] for i in range(len(self.period))]) 
-        #Create a LP variable y that will bound n in place of the max function
-        y = LpVariable.dicts("y", list(range(len(self.period))), lowBound=0, cat='Integer')
-        for i in range(len(self.period)):
-            #adding constraint for this variable y so it will replace the function max used in python2
-            prob += y[i] >= 0
-            prob += y[i] >= n[i] - 2 #dis dans l'article scientifique qu'on peut remplacer max par y*wcet
-        for core_task in task_in_core[core_index]: 
-            #contrainte qui dit que le N d'une tâche étant dans le meme core que la tache à analyser est 0, parce que ça n'interfere pas
-            #contrainte 1.8
-            prob += n[core_task] == 0
-        for each_task in range(len(self.period)):
-            if each_task != task_index and each_task not in task_in_core[core_index]:
-                #contrainte 1.9, pas le eta car avec D=T inutile vaut toujours 0
-                prob += n[each_task] - math.floor(max(0, (execution_window - self.period[each_task])) / (self.period[each_task])) >= 0
-                #contrainte 1.10 pas le max car c'est juste Ci en numerateur, et pas Ci-Ti+Di car Ti = Di, donc impossible d'avoir <0, donc pas besoin du max
-                prob += n[each_task] - 1 - math.ceil(execution_window / self.period[each_task]) <= 0
-        #contrainte 1.11
-        for each_core in range(self.number_of_cores):
-            if each_core != core_index:
-                if task_in_core[each_core] and task_to_assign:
-                    prob += lpSum([y[x_i]*self.wcet[x_i] for x_i in task_in_core[each_core] for x_i in task_to_assign]) <= execution_window
-                elif task_in_core[each_core]:
-                    prob += lpSum([y[x_i]*self.wcet[x_i] for x_i in task_in_core[each_core]]) <= execution_window
-                elif task_to_assign:
-                    prob += lpSum([y[x_i]*self.wcet[x_i] for x_i in task_to_assign]) <= execution_window
-        #la tâche elle meme ne génère pas d'interference sur elle-meme
-        prob += n[task_index] == 0       
+    def compute_upper_bound_cache_interference(self, task_index, core_index, execution_window, task_in_core, task_to_assign):
+        prob = LpProblem("Upper_Bound_on_Cache_Interference", LpMaximize)
+        N_i_k = {}
+        max_N_minus_2 = LpVariable.dicts("max_N_minus_2", list(range(len(self.period))), lowBound=0, cat='Integer') #pour remplacer max(0, N-2) contrainte 1.11 
+        for task_i in range(len(self.period)):
+            N_i_k[task_i] = LpVariable(f"N_{task_i}_{task_index}", lowBound=0, upBound=None, cat='Integer')            
+            prob += max_N_minus_2[task_i] >= 0
+            prob += max_N_minus_2[task_i] >= N_i_k[task_i] - 2 
+            if task_i in task_in_core[core_index] or task_index == task_i:
+                #contrainte 1.8
+                prob += N_i_k[task_i] == 0
+            else:
+                #contrainte 1.9
+                prob +=  math.floor(max(0, execution_window-self.period[task_i])/ (self.period[task_i])) + (1 if (execution_window % self.period[task_i] - self.period[task_i]) > 0 else 0) <= N_i_k[task_i]
+                #contrainte 1.10
+                prob += N_i_k[task_i] <= 1 + math.ceil(max(0, execution_window - self.period[task_i] + self.deadline[task_i]) / self.period[task_i])
+        
+        for core in range(self.number_of_cores):
+            if core != core_index:
+                #contrainte 1.11
+                prob += lpSum([(max_N_minus_2[i]*self.wcet[i]) for i in task_in_core[core] if i != task_index]) \
+               + lpSum([(max_N_minus_2[i]*self.wcet[i]) for i in task_to_assign if i != task_index]) <= execution_window    
 
-        #prob.solve(GLPK(msg=0))
-        #print(prob)
-        prob.solve(PULP_CBC_CMD(msg=0)) #TO DO changer de solver
-        # print("-----------------")
-        # print("Status:", LpStatus[prob.status])
-        # print("calculated for task: ",task_index)
-        # for v in prob.variables():
-        #   print(v.name, "=", v.varValue)
-        tmp_obj = pulp.value(prob.objective)
-        # print("Value", tmp_obj)
+        #fonction objective        
+        prob += lpSum([N_i_k[i] * self.interference[i][task_index] for i in range(len(self.period))])
 
-        return tmp_obj
+        prob.solve(PULP_CBC_CMD(msg=0)) #TO DO changer de solve pour gurobi
+        solution = pulp.value(prob.objective)
+        return solution
 
     def check_one_task(self, task_index, core, wcet_with_interference):
         dbf_list = self.dbf(task_index=task_index, core=core, wcet_with_interference=wcet_with_interference) 

@@ -15,10 +15,8 @@ class Citta:
         self.sorting_criterion = sorting_criterion
 
     def sort_task(self):
-        #Trie les tâches par ordre décroissant selon certains critère. Ca regarde le critère, imaginons 
-        # deadline=[33,10,21] et ça donne l'ordre des tâches selon ça, donc tâche avec plus grande deadline
-        # jusque la tâche avec la plus petite deadline, donc ici taskset=[0,2,1] 
-        taskset = list(range(len(self.period)))  # Create a list of task indices
+        #Trie les tâches selon certains critères 
+        taskset = list(range(len(self.taskset)))  
 
         if self.sorting_criterion == "wcet_ascending":
             taskset = sorted(taskset, key=lambda k: self.wcet[k])
@@ -37,7 +35,7 @@ class Citta:
         elif self.sorting_criterion == "execution_slack_descending":
             taskset = sorted(taskset, key=lambda k: self.period[k] - self.wcet[k], reverse=True)
         elif self.sorting_criterion == "random_order":
-            numpy.random.shuffle(taskset)  # Shuffle the list for random order
+            numpy.random.shuffle(taskset)  
         else:
             print(f"Invalid sorting criterion: {self.sorting_criterion}. Returning tasks in random order.")
             numpy.random.shuffle(taskset)
@@ -45,56 +43,41 @@ class Citta:
     
 
     def assign(self):
-        #Algorithme de CITTA
         taskset = self.sort_task()
         taskset_not_assigned = taskset[:]
-        successfully_assigned = 1 #flag qui est a true tant que l'algo a réussi a assigner au moins une tâche a un core, une fois qu'il arrive pas ça sera 0
+        successfully_assigned = 1 
         task_in_core = [[] for _ in range(self.number_of_cores)]
-        while taskset_not_assigned and successfully_assigned == 1: #tant que soit on arrive encore a assigner et que le set des tâches à assigner n'est pas vide (il reste donc des tâches à assigner)
+        while taskset_not_assigned and successfully_assigned == 1: 
             task_in_core, taskset_not_assigned, successfully_assigned = self.task_partition(taskset=taskset_not_assigned, task_in_core=task_in_core)
-        # print "TaskIncore is ",taskincore
+
         if not taskset_not_assigned:
             return task_in_core, 1
         else:
             return task_in_core, 0
 
     def task_partition(self, taskset, task_in_core):
-        #Essaie d'assigner des tâches à des cores
-        successfully_assigned = 0 #flag pour dire qu'au moins une tâche est assignée de tout l'attempt. On commence à 0, et si c'est assigné au moins une fois
-        #ça sera 1, et renverra 1, preuve que la boucle dans catpar qui l'appelle pourra encore tourner car encore possible d'assigner.
-        task_not_assigned = [] #on assume que le set des tâches non assignée est vide au début et se remplit au fur des attempt.
+        successfully_assigned = 0
+        task_not_assigned = [] 
         task_to_assign = taskset[:] 
-        #attention tasket est le taskset des tâches à chercher a assigner. Au début il vaut le total, mais après vaut task_tna des attempts précédentes
-        #taskreming est l'équivalent du taskset, sauf qu'on retire les attempt réussies. On peut pas le faire sur taskset directement vu qu'il y a 
-        #une boucle dessus. Mais taskreming prend en compte les tâches assignées en les retirant, c'est le set des tâches à assigner qu'il reste et
-        #des tâches qui sont données à task_tna. Utile pour calculer l'interférence, il n'est utilisé que là.
-        #taskreming contient tout sauf les tasks qui sont successfly assigned.
         for task_index in taskset:
-            assign_to = -1 # core par défaut si aucun core trouvé ça reste à -1 et à la fin du for, on sait si c'est assigné à un core ou aucun
-            for core in range(self.number_of_cores): #on teste d'assigner la tache du taskset à chaque core m
-                task_in_core[core].append(task_index) #ajout de la tâche au core pour pouvoir calculer l'interference et si elle fit. 
-                wcet_with_interference = numpy.copy(self.wcet) #besoin d'un vecteur wcet_sc pour stocker les wcet avec interference qui seront calculées
-                core_success = 1 #on suppose que l'attempt du schedule du core est correcte, pour après la refuser si ça ne va pas
-                #si c'est accepté alors on la garde au core, sinon on la supprimera du core si l'attempt est refusé
+            assign_to = -1 # core par défaut
+            for core in range(self.number_of_cores): 
+                task_in_core[core].append(task_index) 
+                wcet_with_interference = numpy.copy(self.wcet) 
+                core_success = 1 
                 for task in task_in_core[core]:
-                    #calculer le wcet + l'interference pour le taskset assigné au core qu'on test
                     wcet_with_interference[task] = self.compute_interference(task_index=task, core_index=core, task_in_core=task_in_core, task_to_assign=task_to_assign)
                 for task in task_in_core[core]:
-                    if self.check_one_task(task_index=task, core=task_in_core[core], wcet_with_interference=wcet_with_interference) == 0: #on teste la condition de schedule tache par tache sur le core, 
-                        # en prenant en compte la nouvelle tache et les nouveau wcet calculés
-                        task_in_core[core].remove(task_index) #si on rentre dans la boucle c'est qu'on a renvoyé 0, donc raté pour une seule tâche, on retire donc la nouvelle tâche ajoutée au core 
-                        #car avant de l'avoir mis ça marchait, mais en l'ajoutant, ça ne marche plus. Donc c'est cette tâche le problème et on la retire
-                        core_success = 0 #on dit que l'attempt de cette tâche à ce core m est fausse, et on va aller au core suivant pour la même tâche
+                    if self.check_one_task(task_index=task, core=task_in_core[core], wcet_with_interference=wcet_with_interference) == 0: 
+                        task_in_core[core].remove(task_index)
+                        core_success = 0 
                         break
-                if core_success == 1: #Si on a finit sans coreSuccess 0, alors ça reste à 1, donc ça a marché. L'assignation de la tâche au core sera acceptée
-                    task_to_assign.remove(task_index) #cette liste ne contient pas les tâches successfly assigned
-                    assign_to = core #on signale le numéro du core m où la tâche sera enregistrée
-                    successfully_assigned = 1 #flag qui dit qu'au moins une seule attempt de assigner une tâche à un core est réussie. pour la boucle qui
-                    #appelle cette fonction
-                    break #on break le for du core pour ne pas continuer à assigner aux core suivant car place trouvées
+                if core_success == 1: 
+                    task_to_assign.remove(task_index) 
+                    assign_to = core 
+                    successfully_assigned = 1 
+                    break
             if assign_to == -1: 
-                # Si on a réussi à assigner à aucun core alors, on l'ajoute a tna, qui regroupe les tâches assignée a aucun core
-                # taskincore[core].remove(task_index)
                 task_not_assigned.append(task_index)
         return task_in_core, task_not_assigned, successfully_assigned
 
@@ -146,9 +129,8 @@ class Citta:
         #fonction objective        
         prob += lpSum([N_i_k[i] * self.interference[i][task_index] for i in range(len(self.period))])
 
-        gurobi_solver = GUROBI_CMD(msg=0, options=[("OutputFlag", 0)])
-        prob.solve(gurobi_solver)
-        #prob.solve(GUROBI(msg=0, options=[("OutputFlag", 0)]))
+        
+        prob.solve(GUROBI_CMD(msg=0, options=[("OutputFlag", 0)]))
         solution = pulp.value(prob.objective)
         return solution
 
@@ -188,9 +170,9 @@ class Citta:
         max_value = 0
         index = -1
         for j in core:
-            if self.period[task_index] < self.period[j]: #si la période de la tâche j est plus grande que la tâche dont on calcule le dbf, donc si la priorité est plus petite
-                if wcet_with_interference[j] > max_value: #si le wcet de la tâche est le plus grand, ça devient le nouveau max
+            if self.period[task_index] < self.period[j]: 
+                if wcet_with_interference[j] > max_value: 
                     max_value = wcet_with_interference[j]
-                    index = j #recherche classique de max
-        return index #retourne l'index de la tâche qui pourrait induire un temps bloquant
+                    index = j 
+        return index 
 

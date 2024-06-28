@@ -4,6 +4,7 @@ from modules.assignment.assignment_algorithms.citta import Citta
 from modules.assignment.assignment_algorithms.citta_old import Cittaold
 from modules.assignment.assignment_algorithms.wfdu import Wfdu
 from modules.assignment.assignment_algorithms.ffdu import Ffdu
+from modules.assignment.assignment_algorithms.bfdu import Bfdu
 from modules.assignment.assignment_algorithms.w_min import Wmin
 
 import time
@@ -28,6 +29,8 @@ class AssignmentGenerator:
             assignment_function = self._wfdu_assignment
         elif self.assignment_method == "ffdu":
             assignment_function = self._ffdu_assignment
+        elif self.assignment_method == "bfdu":
+            assignment_function = self._bfdu_assignment
         elif self.assignment_method == "wmin":
             assignment_function = self._wmin_assignment
         else:
@@ -53,7 +56,7 @@ class AssignmentGenerator:
         )
 
         assigned_cores, successfully_assigned = citta_instance.assign()
-        print(assigned_cores, "citta mine")
+        print(assigned_cores, "CITTA reworked result")
 
         citta_instance= Cittaold(
             taskset,  # Pass a list containing only the current taskset
@@ -62,7 +65,7 @@ class AssignmentGenerator:
         )
 
         assigned_cores,_ ,successfully_assigned = citta_instance.assign()
-        print(assigned_cores, "citta old")
+        print(assigned_cores, "CITTA old result")
 
 
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
@@ -80,7 +83,7 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = wfdu_instance.assign()
-        print(assigned_cores)
+        print(assigned_cores, "WFDU result")
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):
@@ -96,7 +99,23 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = ffdu_instance.assign()
-        print(assigned_cores)
+        print(assigned_cores, "FFDU result")
+        task_assignment_list = [[] for _ in range(self.number_of_cores)]
+        if successfully_assigned:
+            for core_index, core in enumerate(assigned_cores):
+                for task_index in core:
+                    task_assignment_list[core_index].append(taskset.task_list[task_index])
+
+        return task_assignment_list, successfully_assigned
+
+    def _bfdu_assignment(self, taskset):
+        """Performs the BFDU assignment algorithm."""
+        bfdu_instance = Bfdu(
+            taskset,  # Pass a list containing only the current taskset
+            self.number_of_cores
+        )
+        assigned_cores, successfully_assigned = bfdu_instance.assign()
+        print(assigned_cores, "BFDU result")
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):

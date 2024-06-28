@@ -82,26 +82,19 @@ class Citta:
         return task_in_core, task_not_assigned, successfully_assigned
 
     def compute_interference(self, task_index, core_index, task_in_core, task_to_assign):
-        #Fonction qui compute le cache interférence, et lance la computation iterative pour trouver le upperbound
         I_run = 0
         I_run_old = 1
-        wcet_updated = numpy.copy(self.wcet) #pour faire les modifs on préfère sauvegarder wcet et ne pas le modifier inutilement
-        while I_run_old != I_run: #si entre deux tours de boucle on arrive à un résultats similaire à l'ancien, on s'arrête. Iterative 
-        #computation expliquée dans le papier    
-            I_run_old = I_run #save le run dans le old pour la comparaison
-            I_run = 0 #on recommence à 0
-            interference_index = self.compute_upper_bound_cache_interference(task_index=task_index, core_index=core_index, execution_window=wcet_updated[task_index], task_in_core=task_in_core, task_to_assign=task_to_assign)
-            time.sleep(0.0002)
-            if interference_index != None: #si la fonction I run avec l'ILP renvoie un résultat pour l'interference, alors on l'assigne
-                I_run = interference_index #on a un nouveau I_run la boucle tournera
-            else:
-                I_run = 0 #aucune nouvelle interference trouvée, la boucle sera finie car I et I run old 0
+        wcet_updated = numpy.copy(self.wcet) #copie wcet pour modif temporaire
+        while I_run_old != I_run and wcet_updated[task_index] <= self.period[task_index]: #si entre deux tours de boucle on arrive à un résultats similaire à l'ancien, on s'arrête.
+            I_run_old = I_run 
+            I_run = self.compute_upper_bound_cache_interference(task_index=task_index, core_index=core_index, execution_window=wcet_updated[task_index], task_in_core=task_in_core, task_to_assign=task_to_assign)
             wcet_updated[task_index] = self.wcet[task_index] + I_run #ça marche toujours car si rien à ajouter on ajoute 0
 
-            if wcet_updated[task_index] > self.period[task_index]:
-                return self.period[task_index] #Le wcet trouvé fait qu'on pourra pas atteindre la deadline, on renvoie la période pour faire comprendre ça
-
-        return wcet_updated[task_index] #on renvoie juste un seul wcet modifié, celui de la tâche testée dans le core spécifique
+        if wcet_updated[task_index] > self.period[task_index]:
+            res = self.period[task_index] #Le wcet trouvé fait qu'on pourra pas atteindre la deadline, on renvoie la période pour faire comprendre ça
+        else: 
+            res = wcet_updated[task_index] #on renvoie juste un seul wcet modifié, celui de la tâche testée dans le core spécifique
+        return res
 
     def compute_upper_bound_cache_interference(self, task_index, core_index, execution_window, task_in_core, task_to_assign):
         prob = LpProblem("Upper_Bound_on_Cache_Interference", LpMaximize)
@@ -127,12 +120,13 @@ class Citta:
                + lpSum([(max_N_minus_2[i]*self.wcet[i]) for i in task_to_assign if i != task_index]) <= execution_window    
 
         #fonction objective        
-        prob += lpSum([N_i_k[i] * self.interference[i][task_index] for i in range(len(self.period))])
+        prob += lpSum([N_i_k[i] * self.interference[task_index][i] for i in range(len(self.period))])
 
         
         prob.solve(GUROBI_CMD(msg=0, options=[("OutputFlag", 0)]))
         solution = pulp.value(prob.objective)
-        return solution
+
+        return solution if solution != None else 0
 
     def check_one_task(self, task_index, core, wcet_with_interference):
         dbf_list = self.dbf(task_index=task_index, core=core, wcet_with_interference=wcet_with_interference) 

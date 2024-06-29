@@ -235,7 +235,7 @@
     "action" : "generate",
     "parameters" : {
       "citta_criteria" : [ "rien"],
-      "assignment_method" : [ "BFDU" ],
+      "assignment_method" : [ "wmin" ],
       "number_of_cores": 4
     }
   },

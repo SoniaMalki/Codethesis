@@ -132,7 +132,8 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = wmin_instance.assign()
-        
+        print("\n=======\nWmin result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
+
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):

@@ -193,6 +193,38 @@
       "taskset_repetition": 1,
       "list_of_probability_factors" : [ 0.1 ],
       "list_of_max_utilization" : [ 3 ],
+      "tasks_per_taskset" : 10,
+      "list_of_interference_factors" : [ 0.2 ]
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_",
+    "taskset_id" : "taskset_",
+    "action" : "none",
+    "parameters" : {
+      "citta_criteria" : [ ],
+      "assignment_method" : [ ]
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_",
+    "taskset_id" : "taskset_",
+    "scheduling_id" : "scheduling_",
+    "action" : "none",
+    "parameters" : {
+      "scheduling_algorithms" : [ ]
+    }
+  }
+},
+
+"155" : {
+  "taskset" : {
+    "taskset_id" : "taskset_15",
+    "action" : "open",
+    "parameters" : {
+      "taskset_repetition": 1,
+      "list_of_probability_factors" : [ 0.1 ],
+      "list_of_max_utilization" : [ 3 ],
       "tasks_per_taskset" : 5,
       "list_of_interference_factors" : [ 0.2 ]
     }
@@ -203,7 +235,7 @@
     "action" : "generate",
     "parameters" : {
       "citta_criteria" : [ "rien"],
-      "assignment_method" : [ "FFDU" ],
+      "assignment_method" : [ "BFDU" ],
       "number_of_cores": 4
     }
   },
@@ -247,7 +279,7 @@
     "action" : "generate",
     "parameters" : {
       "citta_criteria" : [ "utilization_descending"],
-      "assignment_method" : [ "FFDU" ],
+      "assignment_method" : [ "BFDU" ],
       "number_of_cores": 4
     }
   },

@@ -9,7 +9,7 @@ class Ffdu:
         taskset = sorted(range(len(self.utilization)), key=lambda k: self.utilization[k], reverse=True)
         task_in_core = [[] for _ in range(self.number_of_cores)]
         taskset_not_assigned = []
-        
+
         for task_index in taskset:
             core_index = self.find_first_fit_core(task_in_core, task_index)
             if core_index is not None:

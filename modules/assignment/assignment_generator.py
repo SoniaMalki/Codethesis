@@ -21,6 +21,7 @@ class AssignmentGenerator:
     def generate_assignment_set(self):
         """Generates assignments for each Taskset within the TasksetSet."""
         assignment_list = []
+        print(self.taskset_set_obj.taskset_list[0].utilization)
 
         # Determine the assignment method once
         if self.assignment_method == "citta":
@@ -115,7 +116,7 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = bfdu_instance.assign()
-        print("\n=======\BFDU result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
+        print("\n=======\nBFDU result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):

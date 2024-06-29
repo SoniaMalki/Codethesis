@@ -54,5 +54,4 @@ class UtilizationGenerator:
         
         for i in range(0, self.taskset_count):
             utilization_matrix[..., i] = utilization_matrix[numpy.random.permutation(self.tasks_per_taskset), i]
-        print(utilization_matrix)
         return numpy.transpose(utilization_matrix)

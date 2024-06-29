@@ -192,7 +192,7 @@
     "parameters" : {
       "taskset_repetition": 1,
       "list_of_probability_factors" : [ 0.1 ],
-      "list_of_max_utilization" : [ 3.8 ],
+      "list_of_max_utilization" : [ 3 ],
       "tasks_per_taskset" : 5,
       "list_of_interference_factors" : [ 0.2 ]
     }
@@ -247,7 +247,7 @@
     "action" : "generate",
     "parameters" : {
       "citta_criteria" : [ "utilization_descending"],
-      "assignment_method" : [ "CITTA" ],
+      "assignment_method" : [ "FFDU" ],
       "number_of_cores": 4
     }
   },

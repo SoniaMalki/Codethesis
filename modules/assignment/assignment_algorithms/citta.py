@@ -120,7 +120,7 @@ class Citta:
                + lpSum([(max_N_minus_2[i]*self.wcet[i]) for i in task_to_assign if i != task_index]) <= execution_window    
 
         #fonction objective        
-        prob += lpSum([N_i_k[i] * self.interference[task_index][i] for i in range(len(self.period))])
+        prob += lpSum([N_i_k[i] * self.interference[i][task_index] for i in range(len(self.period))])
 
         
         prob.solve(GUROBI_CMD(msg=0, options=[("OutputFlag", 0)]))

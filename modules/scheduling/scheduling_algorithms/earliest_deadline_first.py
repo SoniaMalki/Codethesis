@@ -36,13 +36,13 @@ class EarliestDeadlineFirst:
                         return schedule, 0  
                     
                 if job_to_execute:
-                    schedule[core_index].append(TimeExecution(time=current_time, task_index=job_to_execute.task_number, job_index=job_to_execute.job_identifier))
+                    schedule[core_index].append((current_time, job_to_execute.task_number, job_to_execute.job_identifier))
                     job_to_execute.execute(time_slice=1)
 
                     if job_to_execute.completed:
                         self.ready_queue[core_index].remove(job_to_execute)
                 else:
-                    schedule[core_index].append(TimeExecution(time=current_time))
+                    schedule[core_index].append((current_time, None, None))
 
             current_time += 1
 

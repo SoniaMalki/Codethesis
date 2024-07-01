@@ -38,7 +38,8 @@ class SchedulingGenerator:
         for taskset, assignment in zip(self.taskset_set, self.assignment_set):
             if assignment.success: 
                 schedule, success = scheduling_function(taskset=taskset, assignment=assignment)
-                scheduling_list.append(Scheduling(schedule=schedule, success=success))
+                scheduling_list.append(Scheduling(success=success, schedule=schedule))
+                print(scheduling_list[0])
             else:
                 scheduling_list.append(Scheduling(schedule=[], success=0))
 
@@ -49,21 +50,13 @@ class SchedulingGenerator:
 
     def _edf_scheduling(self, taskset, assignment):
         """Performs EDF scheduling."""
-        print(assignment)
         scheduler = EarliestDeadlineFirst(
             taskset=taskset,
             assignment=assignment, 
             number_of_cores=self.number_of_cores
         )
         schedule, successfully_scheduled = scheduler.schedule()
-        if successfully_scheduled:
-            for core in schedule:
-                for sc in core:
-                    print(sc)
-        
-        else:
-            print("unsuccessfull")
-            
+
         return schedule, successfully_scheduled
 
     def _dm_scheduling(self, taskset, assignment):

@@ -355,7 +355,7 @@
     "parameters" : {
       "citta_criteria" : [ "utilization_descending"],
       "assignment_method" : [ "WFDU" ],
-      "number_of_cores": 1
+      "number_of_cores": 4
     }
   },
   "scheduling" : {

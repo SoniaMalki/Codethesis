@@ -2,12 +2,12 @@ from modules.assignment.assignment import Assignment
 
 class AssignmentSet:
     def __init__(self, assignment_id, taskset_id, assignment_method, citta_criteria, number_of_cores, assignment_list):
-    	self.assignment_id = assignment_id
-    	self.taskset_id = taskset_id
-    	self.assignment_method = assignment_method
-    	self.citta_criteria = citta_criteria
-    	self.number_of_cores = number_of_cores
-    	self.assignment_list = assignment_list
+        self.assignment_id = assignment_id
+        self.taskset_id = taskset_id
+        self.assignment_method = assignment_method
+        self.citta_criteria = citta_criteria
+        self.number_of_cores = number_of_cores
+        self.assignment_list = assignment_list
 
     def __repr__(self):
         return ("AssignmentSet("

@@ -1,18 +1,18 @@
 class TimeExecution:
-	def __init__(self, _time, _task_index=-1, _job_index=-1):
-		self.time =_time
-		self.job_index = _job_index
-		self.task_index = _task_index
-		if _task_index == -1 and _job_index==-1:
+	def __init__(self, time, task_index=None, job_index=None):
+		self.time = time
+		self.job_index = job_index
+		self.task_index = task_index
+		if task_index == None and job_index==None:
 			self.executing = "Idle"
 		else:
-			self.executing = f"T{_task_index}J{_job_index}"
+			self.executing = f"T{task_index}J{job_index}"
 
 	def __repr__(self):
 		return ("TimeExecution("
-			f"_time={self.time}, "
-			f"_job_index={self.job_index}, "
-			f"_task_index={self.task_index}"
+			f"time={self.time}, "
+			f"job_index={self.job_index}, "
+			f"task_index={self.task_index}"
 			")"
 			)
 

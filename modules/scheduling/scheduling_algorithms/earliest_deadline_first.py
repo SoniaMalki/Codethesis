@@ -1,44 +1,49 @@
-class EarliestDeadlineFirst():
-    def __init__(self, taskset, assignment):
+from modules.utils.time_execution import TimeExecution
+
+class EarliestDeadlineFirst:
+    def __init__(self, taskset, assignment, number_of_cores):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
-        self.assignment = assignment
-        self.ready_queue = []
+        self.assignment = assignment  
+        self.number_of_cores = number_of_cores
+        self.job_list = [[] for _ in range(self.number_of_cores)] 
+        self.ready_queue = [[] for _ in range(self.number_of_cores)] 
 
     def schedule(self):
-        """Schedules the tasks using the Earliest Deadline First (EDF) algorithm."""
         current_time = 0
-        schedule = []
+        schedule = [[] for _ in range(self.number_of_cores)]  
 
-        # Initialize the ready queue with jobs from the taskset
-        for task in self.taskset:
-            task.create_jobs(start_time=current_time, finish_time=self.hyperperiod)
-            self.ready_queue.extend(task.job_list)
+        for core_index in range(self.number_of_cores):
+            for task_index in range(len(self.assignment[core_index])):
+                task = self.assignment[core_index][task_index]
+                task.create_jobs(start_time=current_time, finish_time=self.hyperperiod)
+                self.job_list[core_index].extend(task.job_list)
 
         while current_time < self.hyperperiod:
-            # Sort the ready queue by absolute deadline
-            self.ready_queue.sort(key=lambda job: job.relative_deadline)
+            for core_index in range(self.number_of_cores):
+                for job in self.job_list[core_index]:
+                    if job.arrival_time == current_time and not job.completed:
+                        self.ready_queue[core_index].append(job)
 
-            # Find the next job to execute
-            job_to_execute = None
-            for job in self.ready_queue:
-                if job.relative_deadline >= current_time + job.wcet:
-                    job_to_execute = job
-                    break
+                self.ready_queue[core_index].sort(key=lambda job: job.relative_deadline)
 
-            # If no job can be scheduled, mark as unsuccessful
-            if job_to_execute is None:
-                return schedule, False
+                job_to_execute = None
+                for job in self.ready_queue[core_index]:
+                    if job.relative_deadline >= current_time + 1:
+                        job_to_execute = job
+                        break
+                    else:
+                        return schedule, 0  
+                    
+                if job_to_execute:
+                    schedule[core_index].append(TimeExecution(time=current_time, task_index=job_to_execute.task_number, job_index=job_to_execute.job_identifier))
+                    job_to_execute.execute(time_slice=1)
 
-            # Execute the job for its WCET
-            execution_time = min(job_to_execute.wcet, job_to_execute.relative_deadline - current_time)
-            schedule.append(
-                (current_time, current_time + execution_time, job_to_execute.task_number, job_to_execute.job_identifier)
-            )
-            current_time += execution_time
-            job_to_execute.execute(time_slice=execution_time)
+                    if job_to_execute.completed:
+                        self.ready_queue[core_index].remove(job_to_execute)
+                else:
+                    schedule[core_index].append(TimeExecution(time=current_time))
 
-            # Remove completed jobs from the ready queue
-            self.ready_queue = [job for job in self.ready_queue if not job.completed]
+            current_time += 1
 
-        return schedule, True
+        return schedule, 1  

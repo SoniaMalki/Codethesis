@@ -330,6 +330,43 @@
       "scheduling_algorithms" : [ "EDF" ]
     }
   }
+},
+
+"18":
+{
+  "taskset": {
+    "action": "manual",
+    "taskset_id": "taskset_18",
+    "parameters": {
+      "wcet": [4, 3],
+      "deadline": [6, 10],
+      "period": [6, 10],
+      "interference": [
+        [0, 0],
+        [0, 0]
+      ],
+      "utilization": [0.3333, 0.3]
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_18",
+    "taskset_id" : "taskset_18",
+    "action" : "generate",
+    "parameters" : {
+      "citta_criteria" : [ "utilization_descending"],
+      "assignment_method" : [ "WFDU" ],
+      "number_of_cores": 1
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_18",
+    "taskset_id" : "taskset_18",
+    "scheduling_id" : "scheduling_18",
+    "action" : "generate",
+    "parameters" : {
+      "scheduling_algorithms" : [ "EDF" ]
+    }
+  }
 }
 
 }

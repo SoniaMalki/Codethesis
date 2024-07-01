@@ -49,12 +49,21 @@ class SchedulingGenerator:
 
     def _edf_scheduling(self, taskset, assignment):
         """Performs EDF scheduling."""
+        print(assignment)
         scheduler = EarliestDeadlineFirst(
-            taskset,
-            assignment 
+            taskset=taskset,
+            assignment=assignment, 
+            number_of_cores=self.number_of_cores
         )
         schedule, successfully_scheduled = scheduler.schedule()
-        print(schedule)
+        if successfully_scheduled:
+            for core in schedule:
+                for sc in core:
+                    print(sc)
+        
+        else:
+            print("unsuccessfull")
+            
         return schedule, successfully_scheduled
 
     def _dm_scheduling(self, taskset, assignment):

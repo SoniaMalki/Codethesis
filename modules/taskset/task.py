@@ -1,4 +1,5 @@
 import math
+import time
 from modules.taskset.job import Job
 
 class Task:
@@ -50,9 +51,10 @@ class Task:
         return res
 
     def create_jobs(self, start_time, finish_time):
-        self.job_list = []
-        number_of_jobs = math.ceil((finish_time - start_time) / self.period)
-        number_of_jobs_already_created = math.ceil(start_time / self.period)
+        self.job_list = [] 
+        number_of_jobs = math.ceil((finish_time - start_time) / self.period)  
+        
         for i in range(number_of_jobs):
-            new_job = Job(task_number=self.task_number, job_identifier=i + number_of_jobs_already_created, job_number=i, execution_time=self.wcet, relative_deadline=self.deadline, period=self.period, interference=self.interference)
-            self.job_list.append(new_job)
+            relative_deadline = start_time + (i + 1) * self.period 
+            job = Job(task_number=self.task_number, job_identifier=i+1, wcet=self.wcet, relative_deadline=relative_deadline) 
+            self.job_list.append(job)

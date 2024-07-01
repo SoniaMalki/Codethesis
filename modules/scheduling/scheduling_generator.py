@@ -1,18 +1,19 @@
+from modules.scheduling.scheduling import Scheduling
+from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
+from modules.scheduling.scheduling_set import SchedulingSet
 from modules.scheduling.homogeneous_scheduler import HomogeneousScheduler
 from modules.scheduling.mixed_scheduler import MixedScheduler
-from modules.scheduling.scheduling import Scheduling
-from modules.scheduling.scheduling_set import SchedulingSet
-from time import sleep
+
+import time
 
 class SchedulingGenerator:
-    def __init__(self, taskset_set_obj, assignment_set_obj, taskset_id, assignment_id, scheduling_id, scheduling_algorithms, current_time=0):
+    def __init__(self, taskset_set_obj, assignment_set_obj, taskset_id, assignment_id, scheduling_id, scheduling_algorithms):
         self.taskset_set = taskset_set_obj
         self.assignment_set = assignment_set_obj
         self.taskset_id = taskset_id
         self.assignment_id = assignment_id
         self.scheduling_id = scheduling_id
-        self.scheduling_algorithms = scheduling_algorithms[0].lower()  # Store in lowercase for case-insensitive comparison
-        self.current_time = current_time
+        self.scheduling_algorithms = scheduling_algorithms[0].lower()  # Store in lowercase for case-insensitive comparison        
         self.number_of_cores = self.assignment_set.number_of_cores
 
 
@@ -48,18 +49,19 @@ class SchedulingGenerator:
 
     def _edf_scheduling(self, taskset, assignment):
         """Performs EDF scheduling."""
-        scheduler = HomogeneousScheduler(
+        scheduler = EarliestDeadlineFirst(
             taskset,
-            assignment, "edf", self.number_of_cores, self.current_time
+            assignment 
         )
-        schedule, successfully_scheduled, _ = scheduler.schedule()
+        schedule, successfully_scheduled = scheduler.schedule()
+        print(schedule)
         return schedule, successfully_scheduled
 
     def _dm_scheduling(self, taskset, assignment):
         """Performs DM scheduling."""
         scheduler = HomogeneousScheduler(
             taskset,
-            assignment, "dm", self.number_of_cores, self.current_time
+            assignment
         )
         schedule, successfully_scheduled, _ = scheduler.schedule()
         return schedule, successfully_scheduled
@@ -68,7 +70,10 @@ class SchedulingGenerator:
         """Performs mixed scheduling."""
         scheduler = MixedScheduler(
             taskset,
-            assignment, "mixed", self.number_of_cores, self.current_time
+            assignment
         )
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled
+    
+
+

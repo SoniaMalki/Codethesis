@@ -1,3 +1,6 @@
+import copy
+
+from launchctl import job
 class EarliestDeadlineFirstVariant1:
     def __init__(self, taskset, assignment, number_of_cores):
         self.taskset = taskset
@@ -15,6 +18,7 @@ class EarliestDeadlineFirstVariant1:
         self.create_job_list(current_time=current_time)
 
         while current_time < self.hyperperiod:
+            self.previous_jobs = copy.copy(self.current_jobs)
             for core_index in range(self.number_of_cores):
                 self.update_ready_queue(core_index=core_index, current_time=current_time)
                 if not self.select_job(core_index=core_index, current_time=current_time):
@@ -42,10 +46,9 @@ class EarliestDeadlineFirstVariant1:
 
     def select_job(self, core_index, current_time):
         self.current_jobs[core_index] = None
-        sorted_jobs = sorted(self.ready_queue[core_index], key=lambda job: job.relative_deadline)
         highest_priority_job = None
 
-        for job in sorted_jobs:
+        for job in self.ready_queue[core_index]:
             if job.relative_deadline >= current_time + 1:
                 highest_priority_job = job
                 break
@@ -53,12 +56,12 @@ class EarliestDeadlineFirstVariant1:
                 return False
         
         previous_job = self.previous_jobs[core_index]
-        
         # Priority inversion logic
         if previous_job is not None and highest_priority_job is not None:
-            if highest_priority_job != previous_job:
-                if previous_job.remaining_execution_time < highest_priority_job.remaining_execution_time and previous_job.remaining_execution_time != 0:
-                    highest_priority_job = previous_job
+            if not previous_job.completed:
+                if highest_priority_job != previous_job:
+                    if previous_job.remaining_execution_time < highest_priority_job.remaining_execution_time and previous_job.remaining_execution_time != 0:
+                        highest_priority_job = previous_job
         
         self.current_jobs[core_index] = highest_priority_job
         return True
@@ -70,9 +73,6 @@ class EarliestDeadlineFirstVariant1:
             job_to_execute.execute()
             if job_to_execute.completed:
                 self.ready_queue[core_index].remove(job_to_execute)
-                self.previous_jobs[core_index] = None
-            else:
-                self.previous_jobs[core_index] = job_to_execute
         else:
             self.schedule_res[core_index].append((current_time, None, None))
 

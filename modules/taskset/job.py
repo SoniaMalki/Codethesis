@@ -33,7 +33,7 @@ class Job:
             if self.remaining_execution_time <= 0:
                 self.completed = True
 
-    def apply_interference(self, interfering_job_id):
+    def apply_interference(self, interfering_job_id, interfering_interference_factor):
         if interfering_job_id not in self.interference_history:
-            self.remaining_execution_time += 1  # Assuming a fixed delay for simplicity
+            self.remaining_execution_time += interfering_interference_factor
             self.interference_history.add(interfering_job_id)

@@ -18,7 +18,9 @@ class EarliestDeadlineFirst:
                 self.update_ready_queue(core_index=core_index, current_time=current_time)
                 if not self.select_job(core_index=core_index, current_time=current_time):
                     return self.schedule_res, 0  # Return 0 if deadline missed
-                self.check_interference(core_index=core_index, current_time=current_time)
+                self.check_interference(core_index=core_index)
+
+            for core_index in range(self.number_of_cores):
                 self.execute_job(core_index=core_index, current_time=current_time)
             current_time += 1
 
@@ -58,5 +60,16 @@ class EarliestDeadlineFirst:
         else:
             self.schedule_res[core_index].append((current_time, None, None))
 
-    def check_interference(self, core_index, current_time):
-        pass
+    def check_interference(self, core_index):
+        current_job = self.current_jobs[core_index]
+        if current_job and current_job.interference_factor > 0 and not current_job.completed:
+            for other_core_index in range(self.number_of_cores):
+                if other_core_index != core_index:
+                    other_job = self.current_jobs[other_core_index]
+                    if other_job and other_job.interference_factor > 0 and not other_job.completed:
+                        #Chaque job garde l'historique des jobs qui ont interferé (pour pas atteindre boucle)
+                        other_job_id = f"{other_job.task_number}-{other_job.job_identifier}"
+                        current_job_id = f"{current_job.task_number}-{current_job.job_identifier}"
+                        if other_job_id not in current_job.interference_history and current_job_id not in other_job.interference_history:
+                            current_job.apply_interference(interfering_job_id=other_job_id, interfering_interference_factor=other_job.interference_factor)
+                            other_job.apply_interference(interfering_job_id=current_job_id, interfering_interference_factor=current_job.interference_factor)

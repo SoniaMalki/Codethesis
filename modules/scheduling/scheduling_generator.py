@@ -39,7 +39,7 @@ class SchedulingGenerator:
             if assignment.success: 
                 schedule, success = scheduling_function(taskset=taskset, assignment=assignment)
                 scheduling_list.append(Scheduling(success=success, schedule=schedule))
-                print(scheduling_list[0].__str__(end_time=1000))
+                print(scheduling_list[0].__str__(end_time=19))
                 print(f'success: {success}')
 
             else:

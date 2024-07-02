@@ -1,15 +1,18 @@
 import copy
+
 class EarliestDeadlineFirstVariant2:
     def __init__(self, taskset, assignment, number_of_cores):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
         self.assignment = assignment
         self.number_of_cores = number_of_cores
+        self.N = self.number_of_cores #TO DO change this
         self.job_list = [[] for _ in range(self.number_of_cores)]
         self.ready_queue = [[] for _ in range(self.number_of_cores)]
         self.current_jobs = [None] * self.number_of_cores
         self.previous_jobs = [None] * self.number_of_cores
         self.schedule_res = [[] for _ in range(self.number_of_cores)]
+        self.non_preemptible_time = {}
 
     def schedule(self):
         current_time = 0
@@ -52,15 +55,14 @@ class EarliestDeadlineFirstVariant2:
                 break
             else:
                 return False
-        
+
         previous_job = self.previous_jobs[core_index]
-        # Priority inversion logic
-        if previous_job is not None and highest_priority_job is not None:
-            if not previous_job.completed:
-                if highest_priority_job != previous_job:
-                    if previous_job.remaining_execution_time < highest_priority_job.remaining_execution_time and previous_job.remaining_execution_time != 0:
-                        highest_priority_job = previous_job
         
+        # Non-preemptible logic
+        if previous_job is not None and highest_priority_job is not None:
+            if not previous_job.completed and self.non_preemptible_time.get(previous_job, 0) > 0:
+                highest_priority_job = previous_job
+
         self.current_jobs[core_index] = highest_priority_job
         return True
 
@@ -71,6 +73,12 @@ class EarliestDeadlineFirstVariant2:
             job_to_execute.execute()
             if job_to_execute.completed:
                 self.ready_queue[core_index].remove(job_to_execute)
+                self.non_preemptible_time.pop(job_to_execute, None)
+            else:
+                if job_to_execute != self.previous_jobs[core_index]:
+                    self.non_preemptible_time[job_to_execute] = self.N
+                else:
+                    self.non_preemptible_time[job_to_execute] -= 1
         else:
             self.schedule_res[core_index].append((current_time, None, None))
 

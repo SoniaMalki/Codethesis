@@ -1,5 +1,3 @@
-from modules.utils.time_execution import TimeExecution
-
 class EarliestDeadlineFirst:
     def __init__(self, taskset, assignment, number_of_cores):
         self.taskset = taskset
@@ -37,7 +35,7 @@ class EarliestDeadlineFirst:
                     
                 if job_to_execute:
                     schedule[core_index].append((current_time, job_to_execute.task_number, job_to_execute.job_identifier))
-                    job_to_execute.execute(time_slice=1)
+                    job_to_execute.execute()
 
                     if job_to_execute.completed:
                         self.ready_queue[core_index].remove(job_to_execute)

@@ -1,5 +1,5 @@
 class Job:
-    def __init__(self, task_number, job_identifier, wcet, relative_deadline, arrival_time):
+    def __init__(self, task_number, job_identifier, wcet, relative_deadline, arrival_time, interference_factor):
         # To identify job
         self.task_number = task_number
         self.job_identifier = job_identifier
@@ -7,6 +7,7 @@ class Job:
         self.wcet = wcet
         self.relative_deadline = relative_deadline
         self.arrival_time = arrival_time
+        self.interference_factor = interference_factor
 
         # Changing attributes
         self.execution_time = 0  
@@ -19,7 +20,8 @@ class Job:
             f"job_identifier={self.job_identifier}, "
             f"wcet={self.wcet}, "
             f"relative_deadline={self.relative_deadline}, "
-            f"arrival_time={self.arrival_time}"
+            f"arrival_time={self.arrival_time}, "
+            f"interference_factor={self.interference_factor}"
             ")"
         )
 
@@ -32,11 +34,8 @@ class Job:
                f"Remaining Execution Time: {self.execution_time}")
         return res
 
-    def execute(self, time_slice):
+    def execute(self):
         if self.execution_time < self.wcet:
-            self.execution_time += time_slice
+            self.execution_time += 1
             if self.execution_time >= self.wcet:
                 self.completed = True
-
-
-

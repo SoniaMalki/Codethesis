@@ -327,7 +327,7 @@
     "scheduling_id" : "scheduling_17",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "DM" ]
+      "scheduling_algorithms" : [ "EDFV1" ]
     }
   }
 },
@@ -364,7 +364,7 @@
     "scheduling_id" : "scheduling_18",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "DM" ]
+      "scheduling_algorithms" : [ "EDFV1" ]
     }
   }
 }

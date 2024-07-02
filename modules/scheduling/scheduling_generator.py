@@ -1,6 +1,7 @@
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
 from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
+from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
 from modules.scheduling.scheduling_set import SchedulingSet
 from modules.scheduling.homogeneous_scheduler import HomogeneousScheduler
 from modules.scheduling.mixed_scheduler import MixedScheduler
@@ -26,6 +27,8 @@ class SchedulingGenerator:
         # Determine the scheduling algorithm once
         if self.scheduling_algorithms == "edf":
             scheduling_function = self._edf_scheduling
+        elif self.scheduling_algorithms == "edfv1":
+            scheduling_function = self._edf_v1_scheduling
         elif self.scheduling_algorithms == "dm":
             scheduling_function = self._dm_scheduling
         elif self.scheduling_algorithms == "mixed":
@@ -54,6 +57,17 @@ class SchedulingGenerator:
     def _edf_scheduling(self, taskset, assignment):
         """Performs EDF scheduling."""
         scheduler = EarliestDeadlineFirst(
+            taskset=taskset,
+            assignment=assignment, 
+            number_of_cores=self.number_of_cores
+        )
+        schedule, successfully_scheduled = scheduler.schedule()
+
+        return schedule, successfully_scheduled
+    
+    def _edf_v1_scheduling(self, taskset, assignment):
+        """Performs EDF V1 scheduling."""
+        scheduler = EarliestDeadlineFirstVariant1(
             taskset=taskset,
             assignment=assignment, 
             number_of_cores=self.number_of_cores

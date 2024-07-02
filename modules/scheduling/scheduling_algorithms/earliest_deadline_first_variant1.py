@@ -1,6 +1,4 @@
 import copy
-
-from launchctl import job
 class EarliestDeadlineFirstVariant1:
     def __init__(self, taskset, assignment, number_of_cores):
         self.taskset = taskset

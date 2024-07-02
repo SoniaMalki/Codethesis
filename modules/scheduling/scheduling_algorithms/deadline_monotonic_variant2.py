@@ -1,4 +1,4 @@
-class EarliestDeadlineFirst:
+class DeadlineMonotonic:
     def __init__(self, taskset, assignment, number_of_cores):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
@@ -37,7 +37,7 @@ class EarliestDeadlineFirst:
         for job in self.job_list[core_index]:
             if job.arrival_time == current_time and not job.completed:
                 self.ready_queue[core_index].append(job)
-        self.ready_queue[core_index].sort(key=lambda job: job.relative_deadline)
+        self.ready_queue[core_index].sort(key=lambda job: job.absolute_deadline)
 
 
     def select_job(self, core_index, current_time):
@@ -67,7 +67,6 @@ class EarliestDeadlineFirst:
                 if other_core_index != core_index:
                     other_job = self.current_jobs[other_core_index]
                     if other_job and other_job.interference_factor > 0 and not other_job.completed:
-                        #Chaque job garde l'historique des jobs qui ont interferé (pour pas atteindre boucle)
                         other_job_id = f"{other_job.task_number}-{other_job.job_identifier}"
                         current_job_id = f"{current_job.task_number}-{current_job.job_identifier}"
                         if other_job_id not in current_job.interference_history and current_job_id not in other_job.interference_history:

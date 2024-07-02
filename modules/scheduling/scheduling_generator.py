@@ -1,5 +1,6 @@
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
+from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
 from modules.scheduling.scheduling_set import SchedulingSet
 from modules.scheduling.homogeneous_scheduler import HomogeneousScheduler
 from modules.scheduling.mixed_scheduler import MixedScheduler
@@ -63,11 +64,12 @@ class SchedulingGenerator:
 
     def _dm_scheduling(self, taskset, assignment):
         """Performs DM scheduling."""
-        scheduler = HomogeneousScheduler(
-            taskset,
-            assignment
+        scheduler = DeadlineMonotonic(
+            taskset=taskset,
+            assignment=assignment,
+            number_of_cores=self.number_of_cores
         )
-        schedule, successfully_scheduled, _ = scheduler.schedule()
+        schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled
 
     def _mixed_scheduling(self, taskset, assignment):

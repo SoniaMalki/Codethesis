@@ -56,5 +56,5 @@ class Task:
         
         for i in range(number_of_jobs):
             relative_deadline = start_time + (i + 1) * self.period 
-            job = Job(task_number=self.task_number, job_identifier=i+1, wcet=self.wcet, relative_deadline=relative_deadline, arrival_time=start_time + (i) * self.period, interference_factor=self.interference) 
+            job = Job(task_number=self.task_number, job_identifier=i+1, wcet=self.wcet, absolute_deadline=self.deadline, relative_deadline=relative_deadline, arrival_time=start_time + (i) * self.period, interference_factor=self.interference) 
             self.job_list.append(job)

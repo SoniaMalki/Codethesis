@@ -327,7 +327,7 @@
     "scheduling_id" : "scheduling_17",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "EDF" ]
+      "scheduling_algorithms" : [ "DM" ]
     }
   }
 },
@@ -343,7 +343,7 @@
       "period": [4, 5],
       "interference": [
         [1, 0],
-        [0, 2]
+        [0, 1]
       ],
       "utilization": [0.3333, 0.3]
     }
@@ -364,7 +364,7 @@
     "scheduling_id" : "scheduling_18",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "EDF" ]
+      "scheduling_algorithms" : [ "DM" ]
     }
   }
 }

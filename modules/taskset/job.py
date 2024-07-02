@@ -1,8 +1,9 @@
 class Job:
-    def __init__(self, task_number, job_identifier, wcet, relative_deadline, arrival_time, interference_factor):
+    def __init__(self, task_number, job_identifier, wcet, absolute_deadline, relative_deadline, arrival_time, interference_factor):
         self.task_number = task_number
         self.job_identifier = job_identifier
         self.wcet = wcet
+        self.absolute_deadline = absolute_deadline
         self.relative_deadline = relative_deadline
         self.arrival_time = arrival_time
         self.interference_factor = max(interference_factor)

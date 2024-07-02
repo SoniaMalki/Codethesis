@@ -327,7 +327,7 @@
     "scheduling_id" : "scheduling_17",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "DMV1" ]
+      "scheduling_algorithms" : [ "EDFV2" ]
     }
   }
 },

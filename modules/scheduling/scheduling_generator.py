@@ -1,11 +1,12 @@
 from modules.scheduling.scheduling import Scheduling
-from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant1 import DeadlineMonotonicVariant1
-from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
-from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
-from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
 from modules.scheduling.scheduling_set import SchedulingSet
-from modules.scheduling.homogeneous_scheduler import HomogeneousScheduler
 from modules.scheduling.mixed_scheduler import MixedScheduler
+from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
+from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
+from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant2 import EarliestDeadlineFirstVariant2
+from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
+from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant1 import DeadlineMonotonicVariant1
+from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant2 import DeadlineMonotonicVariant2
 
 import time
 
@@ -30,10 +31,14 @@ class SchedulingGenerator:
             scheduling_function = self._edf_scheduling
         elif self.scheduling_algorithms == "edfv1":
             scheduling_function = self._edf_v1_scheduling
+        elif self.scheduling_algorithms == "edfv2":
+            scheduling_function = self._edf_v2_scheduling
         elif self.scheduling_algorithms == "dm":
             scheduling_function = self._dm_scheduling
         elif self.scheduling_algorithms == "dmv1":
             scheduling_function = self._dm_v1_scheduling
+        elif self.scheduling_algorithms == "dmv2":
+            scheduling_function = self._dm_v2_scheduling
         elif self.scheduling_algorithms == "mixed":
             scheduling_function = self._mixed_scheduling
         else:
@@ -78,7 +83,18 @@ class SchedulingGenerator:
         schedule, successfully_scheduled = scheduler.schedule()
 
         return schedule, successfully_scheduled
+    
+    def _edf_v2_scheduling(self, taskset, assignment):
+        """Performs EDF V2 scheduling."""
+        scheduler = EarliestDeadlineFirstVariant2(
+            taskset=taskset,
+            assignment=assignment, 
+            number_of_cores=self.number_of_cores
+        )
+        schedule, successfully_scheduled = scheduler.schedule()
 
+        return schedule, successfully_scheduled
+    
     def _dm_scheduling(self, taskset, assignment):
         """Performs DM scheduling."""
         scheduler = DeadlineMonotonic(
@@ -90,7 +106,7 @@ class SchedulingGenerator:
         return schedule, successfully_scheduled
 
     def _dm_v1_scheduling(self, taskset, assignment):
-        """Performs DM scheduling."""
+        """Performs DM V1 scheduling."""
         scheduler = DeadlineMonotonicVariant1(
             taskset=taskset,
             assignment=assignment,
@@ -98,7 +114,17 @@ class SchedulingGenerator:
         )
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled
-
+    
+    def _dm_v2_scheduling(self, taskset, assignment):
+        """Performs DM V2 scheduling."""
+        scheduler = DeadlineMonotonicVariant2(
+            taskset=taskset,
+            assignment=assignment,
+            number_of_cores=self.number_of_cores
+        )
+        schedule, successfully_scheduled = scheduler.schedule()
+        return schedule, successfully_scheduled
+    
     def _mixed_scheduling(self, taskset, assignment):
         """Performs mixed scheduling."""
         scheduler = MixedScheduler(

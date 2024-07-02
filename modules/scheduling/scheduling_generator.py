@@ -1,6 +1,6 @@
 from modules.scheduling.scheduling import Scheduling
+from modules.scheduling.scheduling_algorithms.combined_scheduler import CombinedScheduler
 from modules.scheduling.scheduling_set import SchedulingSet
-from modules.scheduling.mixed_scheduler import MixedScheduler
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant2 import EarliestDeadlineFirstVariant2
@@ -39,8 +39,8 @@ class SchedulingGenerator:
             scheduling_function = self._dm_v1_scheduling
         elif self.scheduling_algorithms == "dmv2":
             scheduling_function = self._dm_v2_scheduling
-        elif self.scheduling_algorithms == "mixed":
-            scheduling_function = self._mixed_scheduling
+        elif self.scheduling_algorithms == "combined":
+            scheduling_function = self._combined_scheduling
         else:
             print(f"Invalid scheduling algorithm: {self.scheduling_algorithms}. Returning None.")
             return None
@@ -125,13 +125,15 @@ class SchedulingGenerator:
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled
     
-    def _mixed_scheduling(self, taskset, assignment):
-        """Performs mixed scheduling."""
-        scheduler = MixedScheduler(
-            taskset,
-            assignment
+    def _combined_scheduling(self, taskset, assignment):
+        """Performs Combined scheduling."""
+        scheduler = CombinedScheduler(
+            taskset=taskset,
+            assignment=assignment, 
+            number_of_cores=self.number_of_cores
         )
         schedule, successfully_scheduled = scheduler.schedule()
+
         return schedule, successfully_scheduled
     
 

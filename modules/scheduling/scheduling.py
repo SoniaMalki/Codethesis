@@ -3,10 +3,16 @@ class Scheduling:
         self.schedule = schedule 
         self.success = success
 
-    def __str__(self):
+    def __str__(self, end_time=None):
         # Trouver les variables les plus grandes pour le temps (lignes) et core (colonnes)
         max_time = max(time for core_schedule in self.schedule for time, *_ in core_schedule)
         num_cores = len(self.schedule)
+        
+        # Limiter end_time au maximum disponible dans le schedule si end_time est spécifié
+        if end_time is not None:
+            end_time = min(end_time, max_time)
+        else:
+            end_time = max_time
 
         # Calculer la largeur des colonnes (pour l'alignement)
         max_time_width = len(str(max_time))
@@ -26,7 +32,7 @@ class Scheduling:
 
         # Construction du tableau
         output = header + "\n"
-        for t in range(max_time + 1):
+        for t in range(min(end_time + 1, max_time + 1)):
             line = f"Time = {t:{max_time_width}d} : "
             for i, core_schedule in enumerate(self.schedule):
                 for time, task, job in core_schedule:
@@ -41,3 +47,5 @@ class Scheduling:
             output += line.rstrip(" | ") + "\n"
 
         return output
+
+

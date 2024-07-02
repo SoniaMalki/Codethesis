@@ -338,9 +338,9 @@
     "action": "manual",
     "taskset_id": "taskset_18",
     "parameters": {
-      "wcet": [4, 3],
-      "deadline": [6, 10],
-      "period": [6, 10],
+      "wcet": [2, 3],
+      "deadline": [4, 5],
+      "period": [4, 5],
       "interference": [
         [0, 0],
         [0, 0]
@@ -355,7 +355,7 @@
     "parameters" : {
       "citta_criteria" : [ "utilization_descending"],
       "assignment_method" : [ "WFDU" ],
-      "number_of_cores": 4
+      "number_of_cores": 1
     }
   },
   "scheduling" : {

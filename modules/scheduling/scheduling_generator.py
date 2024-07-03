@@ -62,6 +62,8 @@ class SchedulingGenerator:
         for scheduling in scheduling_list:
             a = BusyPeriodGenerator.generate_busy_periods(scheduling=scheduling)
             print(a)
+            for schedule in a:
+                print(schedule.__str__(end_time=5))
         scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id, scheduling_algorithms=self.scheduling_algorithms, scheduling_list=scheduling_list)  # Store assignments for each taskset
         return scheduling  # Return a list of assignments, one for each taskset
 
@@ -77,8 +79,6 @@ class SchedulingGenerator:
             finish_time=20
         )
         schedule, successfully_scheduled = scheduler.schedule()
-        print("----------")
-        print(schedule)
         scheduler_name = self.scheduling_algorithms
         return schedule, successfully_scheduled, scheduler_name
     

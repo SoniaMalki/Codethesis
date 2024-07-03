@@ -93,7 +93,9 @@ class SchedulingGenerator:
         scheduler = EarliestDeadlineFirstVariant2(
             taskset=taskset,
             assignment=assignment, 
-            number_of_cores=self.number_of_cores
+            number_of_cores=self.number_of_cores,
+            start_time=6,
+            finish_time=20
         )
         schedule, successfully_scheduled = scheduler.schedule()
 
@@ -104,7 +106,9 @@ class SchedulingGenerator:
         scheduler = DeadlineMonotonic(
             taskset=taskset,
             assignment=assignment,
-            number_of_cores=self.number_of_cores
+            number_of_cores=self.number_of_cores,
+            start_time=6,
+            finish_time=20
         )
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled
@@ -114,7 +118,9 @@ class SchedulingGenerator:
         scheduler = DeadlineMonotonicVariant1(
             taskset=taskset,
             assignment=assignment,
-            number_of_cores=self.number_of_cores
+            number_of_cores=self.number_of_cores,
+            start_time=6,
+            finish_time=20
         )
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled
@@ -124,7 +130,9 @@ class SchedulingGenerator:
         scheduler = DeadlineMonotonicVariant2(
             taskset=taskset,
             assignment=assignment,
-            number_of_cores=self.number_of_cores
+            number_of_cores=self.number_of_cores,
+            start_time=6,
+            finish_time=20
         )
         schedule, successfully_scheduled = scheduler.schedule()
         return schedule, successfully_scheduled

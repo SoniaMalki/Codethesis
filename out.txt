@@ -19,6 +19,8 @@ Time =  15 :  T1J2     |  T2J3
 Time =  16 :  Idle     |  T2J3
 Time =  17 :  Idle     |  Idle
 
+
+
 Theoric Scheduling EDFV1:
               Core 0   |  Core 1  
 Time =   0 :  T0J1     |  T2J1

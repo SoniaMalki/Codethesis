@@ -1,9 +1,16 @@
 import copy
 
 class DeadlineMonotonicVariant2:
-    def __init__(self, taskset, assignment, number_of_cores):
+    def __init__(self, taskset, assignment, number_of_cores, start_time=0, finish_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
+
+        if finish_time == None:
+            finish_time = self.hyperperiod
+        
+        self.start_time = start_time
+        self.finish_time = finish_time
+
         self.assignment = assignment
         self.number_of_cores = number_of_cores
         self.N = self.number_of_cores #TO DO change this
@@ -15,10 +22,10 @@ class DeadlineMonotonicVariant2:
         self.non_preemptible_time = {}
 
     def schedule(self):
-        current_time = 0
-        self.create_job_list(current_time=current_time)
+        current_time = self.start_time
+        self.create_job_list(start_time=self.start_time, finish_time=self.finish_time)
 
-        while current_time < self.hyperperiod:
+        while current_time < self.finish_time:
             self.previous_jobs = copy.copy(self.current_jobs)
             for core_index in range(self.number_of_cores):
                 self.update_ready_queue(core_index=core_index, current_time=current_time)
@@ -32,11 +39,11 @@ class DeadlineMonotonicVariant2:
 
         return self.schedule_res, 1  # Return schedule and success because no deadline missed at the end of Hyperperiod
 
-    def create_job_list(self, current_time):
+    def create_job_list(self, start_time, finish_time):
         for core_index in range(self.number_of_cores):
             for task_index in range(len(self.assignment[core_index])):
                 task = self.assignment[core_index][task_index]
-                task.create_jobs(start_time=current_time, finish_time=self.hyperperiod)
+                task.create_jobs(start_time=start_time, finish_time=finish_time)
                 self.job_list[core_index].extend(task.job_list)
 
     def update_ready_queue(self, core_index, current_time):

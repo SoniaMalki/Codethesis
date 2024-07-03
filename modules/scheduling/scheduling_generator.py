@@ -67,7 +67,9 @@ class SchedulingGenerator:
         scheduler = EarliestDeadlineFirst(
             taskset=taskset,
             assignment=assignment, 
-            number_of_cores=self.number_of_cores
+            number_of_cores=self.number_of_cores,
+            start_time=6,
+            finish_time=20
         )
         schedule, successfully_scheduled = scheduler.schedule()
 
@@ -78,7 +80,9 @@ class SchedulingGenerator:
         scheduler = EarliestDeadlineFirstVariant1(
             taskset=taskset,
             assignment=assignment, 
-            number_of_cores=self.number_of_cores
+            number_of_cores=self.number_of_cores,
+            start_time=6,
+            finish_time=20
         )
         schedule, successfully_scheduled = scheduler.schedule()
 

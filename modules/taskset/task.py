@@ -50,11 +50,28 @@ class Task:
         res = res + job_str
         return res
 
+
     def create_jobs(self, start_time, finish_time):
-        self.job_list = [] 
-        number_of_jobs = math.ceil((finish_time - start_time) / self.period)  
+        self.job_list = []
+    
+        first_arrival_time = self.period * math.ceil(start_time / self.period)
+        number_of_jobs = math.ceil((finish_time - first_arrival_time) / self.period) + 1
+        first_job_identifier = math.ceil(start_time / self.period) + 1
         
         for i in range(number_of_jobs):
-            relative_deadline = start_time + (i + 1) * self.period 
-            job = Job(task_number=self.task_number, job_identifier=i+1, wcet=self.wcet, absolute_deadline=self.deadline, relative_deadline=relative_deadline, arrival_time=start_time + (i) * self.period, interference_factor=self.interference) 
+            job_identifier = first_job_identifier + i
+            arrival_time = first_arrival_time + i * self.period
+            relative_deadline = arrival_time + self.deadline
+            
+            job = Job(
+                task_number=self.task_number,
+                job_identifier=job_identifier,
+                wcet=self.wcet,
+                absolute_deadline=self.deadline,
+                relative_deadline=relative_deadline,
+                arrival_time=arrival_time,
+                interference_factor=self.interference
+            )
             self.job_list.append(job)
+
+

@@ -1,7 +1,16 @@
+import time
+
+
 class EarliestDeadlineFirst:
-    def __init__(self, taskset, assignment, number_of_cores):
+    def __init__(self, taskset, assignment, number_of_cores, start_time=0, finish_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
+        if finish_time == None:
+            finish_time = self.hyperperiod
+        
+        self.start_time = start_time
+        self.finish_time = finish_time
+
         self.assignment = assignment  
         self.number_of_cores = number_of_cores
         self.job_list = [[] for _ in range(self.number_of_cores)] 
@@ -10,10 +19,10 @@ class EarliestDeadlineFirst:
         self.schedule_res = [[] for _ in range(self.number_of_cores)]
 
     def schedule(self):
-        current_time = 0
-        self.create_job_list(current_time=current_time)
+        current_time = self.start_time
+        self.create_job_list(start_time=self.start_time, finish_time=self.finish_time)
 
-        while current_time < self.hyperperiod:
+        while current_time < self.finish_time:
             for core_index in range(self.number_of_cores):
                 self.update_ready_queue(core_index=core_index, current_time=current_time)
                 if not self.select_job(core_index=core_index, current_time=current_time):
@@ -26,18 +35,20 @@ class EarliestDeadlineFirst:
 
         return self.schedule_res, 1  # Return schedule and success because no deadline missed at the end of Hyperperiod
     
-    def create_job_list(self, current_time):
+    def create_job_list(self, start_time, finish_time):
         for core_index in range(self.number_of_cores):
             for task_index in range(len(self.assignment[core_index])):
                 task = self.assignment[core_index][task_index]
-                task.create_jobs(start_time=current_time, finish_time=self.hyperperiod)
+                task.create_jobs(start_time=start_time, finish_time=finish_time)
                 self.job_list[core_index].extend(task.job_list)
+
 
     def update_ready_queue(self, core_index, current_time):
         for job in self.job_list[core_index]:
             if job.arrival_time == current_time and not job.completed:
                 self.ready_queue[core_index].append(job)
         self.ready_queue[core_index].sort(key=lambda job: job.relative_deadline)
+
 
 
     def select_job(self, core_index, current_time):

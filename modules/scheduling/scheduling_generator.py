@@ -68,11 +68,10 @@ class SchedulingGenerator:
             taskset=taskset,
             assignment=assignment, 
             number_of_cores=self.number_of_cores,
-            start_time=6,
-            finish_time=20
+            start_time=0,
+            finish_time=None
         )
         schedule, successfully_scheduled = scheduler.schedule()
-
         return schedule, successfully_scheduled
     
     def _edf_v1_scheduling(self, taskset, assignment):

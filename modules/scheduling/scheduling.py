@@ -14,6 +14,8 @@ class Scheduling:
         else:
             end_time = max_time
 
+        start_time = min(time for core_schedule in self.schedule for time, *_ in core_schedule)
+
         # Calculer la largeur des colonnes (pour l'alignement)
         max_time_width = len(str(max_time))
         time_column_width = len(f"Time = {max_time:{max_time_width}d} : ")
@@ -32,7 +34,7 @@ class Scheduling:
 
         # Construction du tableau
         output = header + "\n"
-        for t in range(min(end_time + 1, max_time + 1)):
+        for t in range(start_time, end_time+1):
             line = f"Time = {t:{max_time_width}d} : "
             for i, core_schedule in enumerate(self.schedule):
                 for time, task, job in core_schedule:

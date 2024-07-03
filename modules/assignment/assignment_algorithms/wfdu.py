@@ -7,7 +7,6 @@ class Wfdu:
 
     def assign(self):
         taskset = sorted(range(len(self.utilization)), key=lambda k: self.utilization[k], reverse=True)
-        print(taskset)
         task_in_core = [[] for _ in range(self.number_of_cores)]
         taskset_not_assigned = []
 
@@ -16,7 +15,6 @@ class Wfdu:
             if core_index is not None:
                 task_in_core[core_index].append(task_index)
                 self.core_utilizations[core_index] += self.utilization[task_index]
-                print(f"taskindex: {task_index} core ut: {self.core_utilizations}")
             else:
                 taskset_not_assigned.append(task_index)
 

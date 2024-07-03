@@ -21,7 +21,6 @@ class AssignmentGenerator:
     def generate_assignment_set(self):
         """Generates assignments for each Taskset within the TasksetSet."""
         assignment_list = []
-        print(self.taskset_set_obj.taskset_list[0].utilization)
 
         # Determine the assignment method once
         if self.assignment_method == "citta":
@@ -57,7 +56,7 @@ class AssignmentGenerator:
         )
 
         assigned_cores, successfully_assigned = citta_instance.assign()
-        print("\n=======\nCITTA reworked result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
+        print("=======\nCITTA reworked result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
 
         citta_instance_old= Cittaold(
             taskset,  # Pass a list containing only the current taskset
@@ -66,7 +65,7 @@ class AssignmentGenerator:
         )
 
         assigned_cores_old,_ ,successfully_assigned_old = citta_instance_old.assign()
-        print("\n=======\nCITTA old result\n=======\n", f"successfully_assigned: {successfully_assigned_old}\n", f"assigned_cores:{assigned_cores_old}")
+        print("=======\nCITTA old result\n=======\n", f"successfully_assigned: {successfully_assigned_old}\n", f"assigned_cores:{assigned_cores_old}")
 
 
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
@@ -84,7 +83,7 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = wfdu_instance.assign()
-        print("\n=======\nWFDU result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
+        print("=======\nWFDU result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):
@@ -100,7 +99,7 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = ffdu_instance.assign()
-        print("\n=======\nFFDU result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
+        print("=======\nFFDU result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):
@@ -116,7 +115,7 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = bfdu_instance.assign()
-        print("\n=======\nBFDU result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
+        print("=======\nBFDU result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:
             for core_index, core in enumerate(assigned_cores):
@@ -132,7 +131,7 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = wmin_instance.assign()
-        print("\n=======\nWmin result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
+        print("=======\nWmin result\n=======\n", f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
 
         task_assignment_list = [[] for _ in range(self.number_of_cores)]
         if successfully_assigned:

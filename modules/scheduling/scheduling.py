@@ -1,24 +1,26 @@
 class Scheduling:
-    def __init__(self, schedule, success):
+    def __init__(self, schedule, success, scheduler_name):
         self.schedule = schedule 
         self.success = success
+        self.scheduler_name = scheduler_name
+        self.start_time = min(time for core_schedule in self.schedule for time, *_ in core_schedule)
+        self.end_time = max(time for core_schedule in self.schedule for time, *_ in core_schedule)
+
+
 
     def __str__(self, end_time=None):
         # Trouver les variables les plus grandes pour le temps (lignes) et core (colonnes)
-        max_time = max(time for core_schedule in self.schedule for time, *_ in core_schedule)
         num_cores = len(self.schedule)
         
         # Limiter end_time au maximum disponible dans le schedule si end_time est spécifié
         if end_time is not None:
-            end_time = min(end_time, max_time)
+            end_time = min(end_time, self.end_time)
         else:
-            end_time = max_time
-
-        start_time = min(time for core_schedule in self.schedule for time, *_ in core_schedule)
+            end_time = self.end_time
 
         # Calculer la largeur des colonnes (pour l'alignement)
-        max_time_width = len(str(max_time))
-        time_column_width = len(f"Time = {max_time:{max_time_width}d} : ")
+        max_time_width = len(str(end_time))
+        time_column_width = len(f"Time = {end_time:{max_time_width}d} : ")
         max_core_header_width = len(f" Core {num_cores - 1} ")
         core_width = max(
             len(f" T{task}J{job} ") if task is not None and job is not None else len(" Idle ")
@@ -34,7 +36,7 @@ class Scheduling:
 
         # Construction du tableau
         output = header + "\n"
-        for t in range(start_time, end_time+1):
+        for t in range(self.start_time, end_time+1):
             line = f"Time = {t:{max_time_width}d} : "
             for i, core_schedule in enumerate(self.schedule):
                 for time, task, job in core_schedule:

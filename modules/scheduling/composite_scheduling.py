@@ -14,12 +14,13 @@ class CompositeScheduling:
             raise TypeError("Only Scheduling objects can be added")
 
     def __str__(self, end_time=None):
-        combined_str = f"Combined Scheduler: {self.scheduler_name}\n"
-        for schedule in self.schedules:
+        composite_str = f"Composite Scheduling scheduled by: {self.scheduler_name}\n"
+        for schedule_index, schedule in enumerate(self.schedules):
             schedule_str = schedule.__str__(end_time=end_time)
             if schedule_str != '':
-                combined_str += schedule_str + '\n'
-        return combined_str
+                composite_str += f'Schedule {schedule_index} by '
+                composite_str += schedule_str + '\n'
+        return composite_str
 
     def __len__(self):
         return len(self.schedules)

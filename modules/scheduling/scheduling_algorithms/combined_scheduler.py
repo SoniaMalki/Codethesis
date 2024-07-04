@@ -42,7 +42,6 @@ class CombinedScheduler:
         
         for busy_period_index in range(len(self.busy_periods)):  
             shortest_busy_period_length = len(self.busy_periods[busy_period_index]) 
-            print(f"shortest bp length initial: {shortest_busy_period_length}") 
             
             best_scheduling = self.busy_periods[busy_period_index]
 
@@ -51,11 +50,9 @@ class CombinedScheduler:
                 scheduling = BusyPeriodGenerator.generate_shorter_scheduling(scheduling=scheduling)
                 if scheduling.success:
                     busy_period_length = len(scheduling) 
-                    print(f'busy_period_length: {busy_period_length}, shortest_busy_period_lenght: {shortest_busy_period_length}')
                     if busy_period_length < shortest_busy_period_length:
                         shortest_busy_period_length = busy_period_length
                         best_scheduling = scheduling
-            print(f"best_schedule:{best_scheduling}, best_schedule name:{best_scheduling.scheduler_name}")
             
             self.busy_periods[busy_period_index] = best_scheduling
 
@@ -70,6 +67,5 @@ class CombinedScheduler:
                     start_time=start_time,
                     end_time=end_time,
                 )
-        print(f"scheduler name: {scheduler}")
         schedule, success = scheduler.schedule()
         return Scheduling(schedule=schedule, success=success, scheduler_name=str(scheduler))

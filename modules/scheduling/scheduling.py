@@ -34,7 +34,7 @@ class Scheduling:
         header_line = []
         for core in range(num_cores):
             header_line.append(f" {f'Core {core}':{core_width}}")
-        header = f"Schedule by {self.scheduler_name}:\n"
+        header = f"{self.scheduler_name}:\n"
         header += " " * (time_column_width) + " | ".join(header_line)
 
         # Construction du tableau

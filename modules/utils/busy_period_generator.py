@@ -73,6 +73,4 @@ class BusyPeriodGenerator:
         busy_period = BusyPeriodGenerator.generate_busy_periods(scheduling)
         scheduling = busy_period[0]
         return scheduling
-
-
-   
+    

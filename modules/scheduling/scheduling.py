@@ -17,6 +17,9 @@ class Scheduling:
         else:
             end_time = self.end_time
 
+        if end_time < self.start_time:
+            return ''
+        
         # Calculer la largeur des colonnes (pour l'alignement)
         max_time_width = len(str(end_time))
         time_column_width = len(f"Time = {end_time:{max_time_width}d} : ")
@@ -31,7 +34,8 @@ class Scheduling:
         header_line = []
         for core in range(num_cores):
             header_line.append(f" {f'Core {core}':{core_width}}")
-        header = " " * (time_column_width) + " | ".join(header_line)
+        header = f"Schedule by {self.scheduler_name}:\n"
+        header += " " * (time_column_width) + " | ".join(header_line)
 
         # Construction du tableau
         output = header + "\n"

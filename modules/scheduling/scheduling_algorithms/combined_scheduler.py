@@ -22,14 +22,14 @@ class CombinedScheduler:
         ]  # Sans EDF car cas par défaut
 
         # EDF par défaut
-        self.final_schedule = self.generate_scheduling(scheduler_class=EarliestDeadlineFirst)
-        self.busy_periods = BusyPeriodGenerator.generate_busy_periods(self.final_schedule)
+        self.edf_schedule = self.generate_scheduling(scheduler_class=EarliestDeadlineFirst)
+        self.busy_periods = BusyPeriodGenerator.generate_busy_periods(self.edf_schedule)
 
     def __str__(self):
         return self.__class__.__name__
 
     def schedule(self):
-        if not self.final_schedule.success:
+        if not self.edf_schedule.success:
             print("Failed to schedule with EDF")
             return [], 0
         
@@ -38,23 +38,21 @@ class CombinedScheduler:
             print(f"shortest bp length initial: {shortest_busy_period_length}") 
             
             best_scheduling = self.busy_periods[busy_period_index]
-            print(type(best_scheduling))
-            print(f"best schedule : {best_scheduling}; best sch name: {best_scheduling.scheduler_name}")
 
             for scheduler_class in self.schedulers:
                 scheduling = self.generate_scheduling(scheduler_class=scheduler_class, start_time=self.busy_periods[busy_period_index].start_time, finish_time=self.busy_periods[busy_period_index].end_time + 1)
                 scheduling = BusyPeriodGenerator.generate_shorter_scheduling(scheduling=scheduling)
                 if scheduling.success:
-                    busy_period_length = len(scheduling[0]) 
+                    busy_period_length = len(scheduling) 
                     print(f'busy_period_length: {busy_period_length}, shortest_busy_period_lenght: {shortest_busy_period_length}')
                     if busy_period_length < shortest_busy_period_length:
                         shortest_busy_period_length = busy_period_length
                         best_scheduling = scheduling
             print(f"best_schedule:{best_scheduling}, best_schedule name:{best_scheduling.scheduler_name}")
-
+            
             self.busy_periods[busy_period_index] = best_scheduling
 
-        return self.busy_periods, 1 
+        return self.busy_periods
 
 
     def generate_scheduling(self, scheduler_class, start_time=0, finish_time=None):

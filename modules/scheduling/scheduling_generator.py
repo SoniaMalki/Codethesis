@@ -55,7 +55,7 @@ class SchedulingGenerator:
         # Apply the selected scheduling function to all taskset assignments
         for taskset, assignment in zip(self.taskset_set, self.assignment_set):
             if assignment.success: 
-                scheduling = scheduling_function(taskset=taskset, assignment=assignment, scheduler_class=scheduler_class)
+                scheduling = scheduling_function(taskset=taskset, assignment=assignment, scheduler_class=scheduler_class, start_time=0, end_time=None)
                 scheduling_list.append(scheduling)    
                 print(scheduling.__str__(end_time=20))     
                 print(f'success: {scheduling.success}')
@@ -63,24 +63,26 @@ class SchedulingGenerator:
         scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id, scheduling_algorithms=self.scheduling_algorithms, scheduling_list=scheduling_list)  # Store assignments for each taskset
         return scheduling  
 
-    def generate_scheduling(self, taskset, assignment, scheduler_class, start_time=0, finish_time=None):
+    def generate_scheduling(self, taskset, assignment, scheduler_class, start_time=0, end_time=None):
         scheduler = scheduler_class(
                     taskset=taskset,
                     assignment=assignment,
                     number_of_cores=self.number_of_cores,
                     start_time=start_time,
-                    finish_time=finish_time,
+                    end_time=end_time,
                 )
         schedule, success = scheduler.schedule()
         return Scheduling(schedule=schedule, success=success, scheduler_name=str(scheduler))
 
    
-    def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=0, finish_time=None):
+    def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=0, end_time=None):
         scheduling = CompositeScheduling(scheduler_name=scheduler_class)
         scheduler = scheduler_class(
             taskset=taskset,
             assignment=assignment, 
-            number_of_cores=self.number_of_cores
+            number_of_cores=self.number_of_cores,
+            start_time=start_time,
+            end_time=end_time
         )
         busy_periods = scheduler.schedule()
         for busy_period in busy_periods:

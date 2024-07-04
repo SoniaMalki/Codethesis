@@ -9,10 +9,17 @@ from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant2 import
 from modules.utils.busy_period_generator import BusyPeriodGenerator
 
 class CombinedScheduler:
-    def __init__(self, taskset, assignment, number_of_cores):
+    def __init__(self, taskset, assignment, number_of_cores, start_time=0, end_time=None):
         self.taskset = taskset
+        self.hyperperiod = self.taskset.hyperperiod
         self.assignment = assignment
         self.number_of_cores = number_of_cores
+        if end_time == None:
+            end_time = self.hyperperiod
+        
+        self.start_time = start_time
+        self.end_time = end_time        
+        
         self.schedulers = [
             EarliestDeadlineFirstVariant1,
             EarliestDeadlineFirstVariant2,
@@ -22,7 +29,7 @@ class CombinedScheduler:
         ]  # Sans EDF car cas par défaut
 
         # EDF par défaut
-        self.edf_schedule = self.generate_scheduling(scheduler_class=EarliestDeadlineFirst)
+        self.edf_schedule = self.generate_scheduling(scheduler_class=EarliestDeadlineFirst, start_time=self.start_time, end_time=self.end_time)
         self.busy_periods = BusyPeriodGenerator.generate_busy_periods(self.edf_schedule)
 
     def __str__(self):
@@ -40,7 +47,7 @@ class CombinedScheduler:
             best_scheduling = self.busy_periods[busy_period_index]
 
             for scheduler_class in self.schedulers:
-                scheduling = self.generate_scheduling(scheduler_class=scheduler_class, start_time=self.busy_periods[busy_period_index].start_time, finish_time=self.busy_periods[busy_period_index].end_time + 1)
+                scheduling = self.generate_scheduling(scheduler_class=scheduler_class, start_time=self.busy_periods[busy_period_index].start_time, end_time=self.busy_periods[busy_period_index].end_time + 1)
                 scheduling = BusyPeriodGenerator.generate_shorter_scheduling(scheduling=scheduling)
                 if scheduling.success:
                     busy_period_length = len(scheduling) 
@@ -55,13 +62,13 @@ class CombinedScheduler:
         return self.busy_periods
 
 
-    def generate_scheduling(self, scheduler_class, start_time=0, finish_time=None):
+    def generate_scheduling(self, scheduler_class, start_time=0, end_time=None):
         scheduler = scheduler_class(
                     taskset=self.taskset,
                     assignment=self.assignment,
                     number_of_cores=self.number_of_cores,
                     start_time=start_time,
-                    finish_time=finish_time,
+                    end_time=end_time,
                 )
         print(f"scheduler name: {scheduler}")
         schedule, success = scheduler.schedule()

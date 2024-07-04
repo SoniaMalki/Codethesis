@@ -51,11 +51,11 @@ class Task:
         return res
 
 
-    def create_jobs(self, start_time, finish_time):
+    def create_jobs(self, start_time, end_time):
         self.job_list = []
     
         first_arrival_time = self.period * math.ceil(start_time / self.period)
-        number_of_jobs = math.ceil((finish_time - first_arrival_time) / self.period) + 1
+        number_of_jobs = math.ceil((end_time - first_arrival_time) / self.period) + 1
         first_job_identifier = math.ceil(start_time / self.period) + 1
         
         for i in range(number_of_jobs):

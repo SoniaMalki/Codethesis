@@ -2,14 +2,14 @@ import time
 
 
 class EarliestDeadlineFirst:
-    def __init__(self, taskset, assignment, number_of_cores, start_time=0, finish_time=None):
+    def __init__(self, taskset, assignment, number_of_cores, start_time=0, end_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
-        if finish_time == None:
-            finish_time = self.hyperperiod
+        if end_time == None:
+            end_time = self.hyperperiod
         
         self.start_time = start_time
-        self.finish_time = finish_time
+        self.end_time = end_time
 
         self.assignment = assignment  
         self.number_of_cores = number_of_cores
@@ -17,15 +17,15 @@ class EarliestDeadlineFirst:
         self.ready_queue = [[] for _ in range(self.number_of_cores)] 
         self.current_jobs = [None] * self.number_of_cores 
         self.schedule_res = [[] for _ in range(self.number_of_cores)]
-        
+
     def __str__(self):
         return self.__class__.__name__
     
     def schedule(self):
         current_time = self.start_time
-        self.create_job_list(start_time=self.start_time, finish_time=self.finish_time)
+        self.create_job_list(start_time=self.start_time, end_time=self.end_time)
 
-        while current_time < self.finish_time:
+        while current_time < self.end_time:
             for core_index in range(self.number_of_cores):
                 self.update_ready_queue(core_index=core_index, current_time=current_time)
                 if not self.select_job(core_index=core_index, current_time=current_time):
@@ -38,11 +38,11 @@ class EarliestDeadlineFirst:
 
         return self.schedule_res, 1  # Return schedule and success because no deadline missed at the end of Hyperperiod
     
-    def create_job_list(self, start_time, finish_time):
+    def create_job_list(self, start_time, end_time):
         for core_index in range(self.number_of_cores):
             for task_index in range(len(self.assignment[core_index])):
                 task = self.assignment[core_index][task_index]
-                task.create_jobs(start_time=start_time, finish_time=finish_time)
+                task.create_jobs(start_time=start_time, end_time=end_time)
                 self.job_list[core_index].extend(task.job_list)
 
 

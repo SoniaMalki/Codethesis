@@ -21,3 +21,6 @@ class BusyPeriod:
 
     def __getitem__(self, i):
         return self.periods[i]
+
+    def __setitem__(self, i, value):
+        self.periods[i] = value

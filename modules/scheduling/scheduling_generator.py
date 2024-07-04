@@ -52,18 +52,16 @@ class SchedulingGenerator:
         for taskset, assignment in zip(self.taskset_set, self.assignment_set):
             if assignment.success: 
                 schedule, success, scheduler_name = scheduling_function(taskset=taskset, assignment=assignment)
-                scheduling_list.append(Scheduling(success=success, schedule=schedule, scheduler_name=scheduler_name))
-                if success:
-                    print(scheduling_list[0].__str__(end_time=10000))
+                print(type(schedule))
+                print(schedule[2])
+                scheduling_list.append(Scheduling(success=success, schedule=schedule, scheduler_name=scheduler_name))              
                 print(f'success: {success}')
 
-            else:
-                scheduling_list.append(Scheduling(schedule=[], success=0))
-        for scheduling in scheduling_list:
-            a = BusyPeriodGenerator.generate_busy_periods(scheduling=scheduling)
-            print(a)
-            for schedule in a:
-                print(schedule.__str__(end_time=5))
+        # for scheduling in scheduling_list:
+        #     a = BusyPeriodGenerator.generate_busy_periods(scheduling=scheduling)
+        #     print(a)
+        #     for schedule in a:
+        #         print(schedule.__str__(end_time=5))
         scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id, scheduling_algorithms=self.scheduling_algorithms, scheduling_list=scheduling_list)  # Store assignments for each taskset
         return scheduling  # Return a list of assignments, one for each taskset
 

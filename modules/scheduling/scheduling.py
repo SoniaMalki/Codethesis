@@ -3,8 +3,9 @@ class Scheduling:
         self.schedule = schedule 
         self.success = success
         self.scheduler_name = scheduler_name
-        self.start_time = min(time for core_schedule in self.schedule for time, *_ in core_schedule)
-        self.end_time = max(time for core_schedule in self.schedule for time, *_ in core_schedule)
+        if self.schedule:
+            self.start_time = min(time for core_schedule in self.schedule for time, *_ in core_schedule)
+            self.end_time = max(time for core_schedule in self.schedule for time, *_ in core_schedule)
 
     def __str__(self, end_time=None):
         # Trouver les variables les plus grandes pour le temps (lignes) et core (colonnes)
@@ -51,7 +52,7 @@ class Scheduling:
         return output
 
     def __len__(self):
-        return(len(self.schedule))
+        return(self.end_time-self.start_time+1)
 
     def __iter__(self):
         return iter(self.schedule)

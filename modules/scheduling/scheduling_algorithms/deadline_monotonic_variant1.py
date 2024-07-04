@@ -19,6 +19,9 @@ class DeadlineMonotonicVariant1:
         self.previous_jobs = [None] * self.number_of_cores
         self.schedule_res = [[] for _ in range(self.number_of_cores)]
 
+    def __str__(self):
+        return self.__class__.__name__
+
     def schedule(self):
         current_time = self.start_time
         self.create_job_list(start_time=self.start_time, finish_time=self.finish_time)

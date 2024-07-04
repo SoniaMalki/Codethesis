@@ -69,6 +69,10 @@ class BusyPeriodGenerator:
         busy_period = BusyPeriodGenerator.generate_busy_periods_from_schedule(scheduling=scheduling, busy_period_timeslices=busy_period_timeslices)
         return busy_period
 
+    def generate_shorter_scheduling(scheduling):
+        busy_period = BusyPeriodGenerator.generate_busy_periods(scheduling)
+        scheduling = busy_period[0]
+        return scheduling
 
 
    

@@ -21,6 +21,9 @@ class EarliestDeadlineFirstVariant2:
         self.schedule_res = [[] for _ in range(self.number_of_cores)]
         self.non_preemptible_time = {}
 
+    def __str__(self):
+        return self.__class__.__name__
+
     def schedule(self):
         current_time = self.start_time
         self.create_job_list(start_time=self.start_time, finish_time=self.finish_time)

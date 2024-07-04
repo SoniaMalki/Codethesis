@@ -1,7 +1,10 @@
-from modules.scheduling.composite_scheduling import CompositeScheduling
 from modules.scheduling.scheduling import Scheduling
-from modules.scheduling.scheduling_algorithms.combined_scheduler import CombinedScheduler
+from modules.scheduling.composite_scheduling import CompositeScheduling
 from modules.scheduling.scheduling_set import SchedulingSet
+
+from modules.scheduling.scheduling_algorithms.combined_scheduler import CombinedScheduler
+from modules.scheduling.scheduling_algorithms.rhma import Rhma
+
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant2 import EarliestDeadlineFirstVariant2
@@ -10,7 +13,6 @@ from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant1 import
 from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant2 import DeadlineMonotonicVariant2
 
 import time
-
 
 class SchedulingGenerator:
     def __init__(self, taskset_set_obj, assignment_set_obj, taskset_id, assignment_id, scheduling_id, scheduling_algorithms):
@@ -38,7 +40,8 @@ class SchedulingGenerator:
             "DeadlineMonotonicVariant2"
         ]
         composite_scheduling_algorithms = [
-            "CombinedScheduler"
+            "CombinedScheduler",
+            "Rhma"
         ]
         # Determine the scheduling algorithm once
         if self.scheduling_algorithms not in scheduling_algorithms and self.scheduling_algorithms not in composite_scheduling_algorithms:

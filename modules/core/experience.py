@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 import numpy as np
 
-from modules.taskset.task_parameters_generator.taskset_set_manual import TasksetSetManual
+from modules.taskset.taskset_set_manual import TasksetSetManual
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_loader_saver import TasksetSetLoaderSaver
 from modules.assignment.assignment_generator import AssignmentGenerator

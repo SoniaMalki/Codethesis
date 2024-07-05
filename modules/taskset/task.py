@@ -3,13 +3,15 @@ import time
 from modules.taskset.job import Job
 
 class Task:
-    def __init__(self, task_number, wcet, deadline, period, interference, utilization):
+    def __init__(self, task_number, wcet, deadline, period, interference, utilization, absolute_deadline):
         self.task_number = task_number
         self.wcet = wcet
         self.deadline = deadline
         self.period = period
         self.interference = interference
         self.utilization = utilization
+        self.absolute_deadline = absolute_deadline
+
         self.job_list = []
 
     def __repr__(self):

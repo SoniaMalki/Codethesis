@@ -1,21 +1,23 @@
 from .task import Task  
-from math import gcd
-
 
 class Taskset:
-    def __init__(self, taskset_number, wcet, deadline, period, interference, utilization):
+    def __init__(self, taskset_number, wcet, deadline, period, interference, utilization, hyperperiod, N, activation, absolute_deadline):
         self.taskset_number = taskset_number
         self.wcet = wcet
         self.deadline = deadline
         self.period = period
         self.interference = interference
         self.utilization = utilization
-        self.hyperperiod = self.calculate_hyperperiod()
+        self.hyperperiod = hyperperiod
+        self.N = N
+        self.activation = activation
+        self.absolute_deadline = absolute_deadline
         
         self.task_list = []
         for i in range(len(self.period)):
             self.task_list.append(Task(task_number=i, wcet=self.wcet[i], deadline=self.deadline[i], 
-                                       period=self.period[i], interference=self.interference[i], utilization=self.utilization[i]))
+                                       period=self.period[i], interference=self.interference[i], utilization=self.utilization[i],
+                                       absolute_deadline=self.absolute_deadline[i]))
 
     def __repr__(self):
         return ("Taskset("
@@ -55,9 +57,3 @@ class Taskset:
         res = res + task_str
         return res
     
-    def calculate_hyperperiod(self):
-        """Calcule l'hyperpériode du jeu de tâches (PPCM des périodes)."""
-        lcm = self.period[0]
-        for i in range(1, len(self.period)):
-            lcm = lcm * self.period[i] // gcd(lcm, self.period[i])
-        return lcm

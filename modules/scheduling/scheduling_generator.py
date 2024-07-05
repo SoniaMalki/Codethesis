@@ -79,6 +79,7 @@ class SchedulingGenerator:
 
    
     def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=0, end_time=None):
+        taskset.interference = [0,1,1,0]
         scheduler = scheduler_class(
             taskset=taskset,
             assignment=assignment, 

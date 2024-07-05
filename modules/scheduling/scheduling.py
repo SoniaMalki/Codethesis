@@ -7,6 +7,9 @@ class Scheduling:
             self.start_time = min(time for core_schedule in self.schedule for time, *_ in core_schedule)
             self.end_time = max(time for core_schedule in self.schedule for time, *_ in core_schedule)
 
+    def __strs__(self):
+        return str(self.schedule)
+    
     def __str__(self, end_time=None):
         # Trouver les variables les plus grandes pour le temps (lignes) et core (colonnes)
         num_cores = len(self.schedule)
@@ -66,3 +69,31 @@ class Scheduling:
 
     def __getitem__(self, i):
         return self.schedule[i]
+
+    def get_time_units(self):
+        """Returns a list of time units within this Scheduling object."""
+        return list(range(self.start_time, self.end_time + 1))
+
+    def get_activations(self, len_taskset):
+        """Returns a list of lists, where each sublist contains the activation IDs for each task."""
+        activations = [[] for _ in range(len_taskset)]
+        for core_schedule in self.schedule:
+            for time_unit, task_id, job_id in core_schedule:
+                if task_id is not None and job_id not in activations[task_id]:
+                    activations[task_id].append(job_id)
+        return activations
+
+    def get_execution_intervals(self, taskset):
+        """Returns a list of dictionaries, where each dictionary represents a task 
+        and maps activation IDs to lists of time units for that activation.
+        """
+        activations = self.get_activations(len_taskset=len(taskset))
+        execution_intervals = [{} for _ in range(len(taskset))]
+        for core_schedule in self.schedule:
+            for time_unit, task_id, activation_id in core_schedule:
+                if task_id is not None:
+                    if activation_id in activations[task_id]:  # Check if this activation is relevant
+                        if activation_id not in execution_intervals[task_id]:
+                            execution_intervals[task_id][activation_id] = []
+                        execution_intervals[task_id][activation_id].append(time_unit)
+        return execution_intervals

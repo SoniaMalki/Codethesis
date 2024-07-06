@@ -77,46 +77,6 @@ class TasksetSetGenerator:
             absolute_deadlines[taskset_index] = tasks_absolute_deadline
         return absolute_deadlines
 
-
-    @staticmethod
-    def generate_max_I(periods, interferences, activations):
-        maxI = numpy.zeros(len(periods))
-        for taskset_index, period in enumerate(periods):
-            for i in range(len(period)):
-                for j in range(len(period)):
-                    if i != j:
-                        #add condition for different core
-                        #add condition that both have interference (task i and task j)
-                        v_j_to_i = TasksetSetGenerator.calculate_activation_pattern(period=period, activation=activations[taskset_index], interfering_task_index=j, receiving_task_index=i)
-                        for a in activations[taskset_index][i]: 
-                            maxI[taskset_index] += v_j_to_i[a] * max(interferences[taskset_index][j])
-        print(maxI)
-        return maxI
-    
-    @staticmethod
-    def calculate_activation_pattern(period, activation, interfering_task_index, receiving_task_index):
-        """
-        Calculates the activation pattern (v_j->i) of an interfering task j on a receiving task i.
-
-        Args:
-            interfering_task_period (int): The period of the interfering task.
-            receiving_task_period (int): The period of the receiving task.
-
-        Returns:
-            list: The activation pattern as a list.
-        """
-
-        #N_i = TasksetSetGenerator.calculate_lcm([interfering_task_period, receiving_task_period]) // receiving_task_period
-        v_j_to_i = []
-        for a in activation[receiving_task_index]:
-            temp = 1
-            for t in range(a * period[receiving_task_index], (a + 1) * period[receiving_task_index]): #pas de -1 de la formule car python
-                if t - period[interfering_task_index] * math.floor(t // period[interfering_task_index]) == 0:
-                    temp += 1  
-            v_j_to_i.append(temp)
-
-        return v_j_to_i
-
     def init_taskset_set(self):
         utilizations = self.utilization_generator.generate_utilizations()
         periods = self.period_generator.generate_periods()

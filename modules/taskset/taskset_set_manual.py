@@ -17,7 +17,6 @@ class TasksetSetManual:
         N = TasksetSetGenerator.generate_N(periods=[self.period_list], hyperperiods=hyperperiods)
         activations = TasksetSetGenerator.generate_activations(periods=[self.period_list], N=N)
         absolute_deadlines = TasksetSetGenerator.generate_absolute_deadline(periods=[self.period_list], deadlines=[self.deadline_list], activations=activations)
-        maxI = TasksetSetGenerator.generate_max_I(periods=[self.period_list], interferences=[self.interference_list], activations=activations)
         taskset_list = [
             Taskset(
                 taskset_number=0,

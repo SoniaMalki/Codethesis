@@ -18,4 +18,8 @@ class Assignment:
 	def __getitem__(self, i):
 		return self.assignment[i]
 
-
+	def find_task_core(self, task):
+		for core_index, sublist in enumerate(self.assignment):
+			if task in sublist:
+				return core_index
+		return None

@@ -1,3 +1,4 @@
+import time
 from modules.scheduling.scheduling import Scheduling
 from modules.utils.busy_period import BusyPeriod
 
@@ -6,19 +7,19 @@ class BusyPeriodGenerator:
     @staticmethod
     def generate_monocore_busy_periods_timeslice(core_schedule):
         busy_periods = []
-        start = None
+        start = core_schedule[0][0]
 
-        for time, task, job in core_schedule:
+        for time_t, task, job in core_schedule:
             if task is None and job is None:  
                 if start is not None: 
-                    busy_periods.append((start, time-1))
+                    busy_periods.append((start, time_t))
                     start = None
             else:
                 if start is None:  
-                    start = time
-        
+                    start = time_t
+
         if start is not None:
-            busy_periods.append((start, time))
+            busy_periods.append((start, time_t))
 
         return busy_periods
 
@@ -27,7 +28,7 @@ class BusyPeriodGenerator:
     def generate_busy_periods_timeslice(monocore_busy_periods):
         busy_periods = []  
         if monocore_busy_periods:
-            monocore_busy_periods.sort(key=lambda x: x[1])
+            monocore_busy_periods.sort(key=lambda x: x[0])
 
             current_start, current_end = monocore_busy_periods[0]
             for start, end in monocore_busy_periods[1:]:
@@ -59,8 +60,6 @@ class BusyPeriodGenerator:
     @staticmethod
     def generate_busy_periods(scheduling):
         core_schedules = scheduling.schedule
-        
-
         monocore_busy_periods_timeslices = [busy_period 
                             for core_schedule in core_schedules 
                             for busy_period in BusyPeriodGenerator.generate_monocore_busy_periods_timeslice(core_schedule)]

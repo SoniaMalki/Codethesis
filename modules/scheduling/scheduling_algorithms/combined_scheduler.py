@@ -6,6 +6,7 @@ from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant2 i
 from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
 from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant1 import DeadlineMonotonicVariant1
 from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant2 import DeadlineMonotonicVariant2
+from modules.utils.busy_period import BusyPeriod
 from modules.utils.busy_period_generator import BusyPeriodGenerator
 
 class CombinedScheduler:
@@ -47,16 +48,22 @@ class CombinedScheduler:
 
             for scheduler_class in self.schedulers:
                 scheduling = self.generate_scheduling(scheduler_class=scheduler_class, start_time=self.busy_periods[busy_period_index].start_time, end_time=self.busy_periods[busy_period_index].end_time + 1)
-                scheduling = BusyPeriodGenerator.generate_shorter_scheduling(scheduling=scheduling)
+                scheduling_len = BusyPeriodGenerator.generate_scheduling_length(scheduling=scheduling)
+
                 if scheduling.success:
-                    busy_period_length = len(scheduling) 
-                    if busy_period_length < shortest_busy_period_length:
-                        shortest_busy_period_length = busy_period_length
+                    if scheduling_len < shortest_busy_period_length:
+                        shortest_busy_period_length = scheduling_len
                         best_scheduling = scheduling
             
+
             self.busy_periods[busy_period_index] = best_scheduling
 
-        return self.busy_periods
+        final_busy_period = BusyPeriod()
+        for busy_period_index, busy_period in enumerate(self.busy_periods):
+            shorter_busy_period = BusyPeriodGenerator.generate_busy_periods(scheduling=busy_period)
+            for bp in shorter_busy_period:
+                final_busy_period.add_period(scheduling=bp)
+        return final_busy_period
 
 
     def generate_scheduling(self, scheduler_class, start_time=0, end_time=None):

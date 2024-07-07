@@ -59,7 +59,7 @@ class Scheduling:
         return output
 
     def __len__(self):
-        return(self.end_time-self.start_time+1)
+        return(self.end_time-self.start_time)
 
     def __iter__(self):
         return iter(self.schedule)

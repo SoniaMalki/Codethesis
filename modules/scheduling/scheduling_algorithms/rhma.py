@@ -67,13 +67,13 @@ class Rhma:
         maxI = 0
         for i in range(len(self.taskset)):
             for j in range(len(self.taskset)):
-                if i != j and self.assignment.find_task_core(self.taskset[i]) != self.assignment.find_task_core(self.taskset[j]):
-                    if max(self.taskset[i].interference) > 0 and max(self.taskset[j].interference) > 0:
+                if i != j and self.assignment.find_task_core(i) != self.assignment.find_task_core(j):
+                    if self.taskset[i].interference > 0 and self.taskset[j].interference > 0:
                         v_j_to_i = self.calculate_activation_pattern(
                             interfering_task_index=j, receiving_task_index=i)
                         for a in self.taskset.activation[i]:
                             maxI += v_j_to_i[a] * \
-                                max(self.taskset[j].interference)
+                                self.taskset[j].interference
 
         return maxI
 
@@ -94,10 +94,10 @@ class Rhma:
 
     def generate_o_i_j(self):
         o_i_j = []
-        for task in self.taskset:
+        for task_index, task in enumerate(self.taskset):
             core_list = []
             for core in range(self.number_of_cores):
-                if task in self.assignment[core]:
+                if task_index in self.assignment[core]:
                     core_list.append(1)
                 else:
                     core_list.append(0)
@@ -279,6 +279,14 @@ class Rhma:
                             prob += w[i, a] >= (t * x[i, a, j, t]) - \
                                 (a * self.taskset.period[i]) + 1
 
+            for i in range(len(self.taskset)):
+                for k in range(len(self.taskset)):
+                    if i != k:
+                        for a in self.S_i_h[i][h]:
+                            for b in self.S_i_h[k][h]:
+                                # Contrainte factice
+                                prob += m[i, a, k, b] <= 1
+
             # Objective function
             interference_term = lpSum(m[i, a, k, b] for i in range(len(self.taskset)) for k in range(
                 len(self.taskset)) if i != k for a in self.S_i_h[i][h] for b in self.S_i_h[k][h])
@@ -294,13 +302,14 @@ class Rhma:
             prob += interference_term + response_time_term
 
             # Solving the MILP problem
-            print(prob)
-            prob.solve(GUROBI_CMD(msg=0, options=[("OutputFlag", 0)]))
+            prob.solve(GUROBI_CMD(msg=0, options=[
+                       ("OutputFlag", 0), ("TimeLimit", 10)]))
 
             # Checking if a solution is found
             if prob.status == 1:
                 busy_period_schedule = [[]
                                         for _ in range(self.number_of_cores)]
+
                 for t in self.T_h[h]:
                     for i in range(len(self.taskset)):
                         for a in self.S_i_h[i][h]:
@@ -308,6 +317,7 @@ class Rhma:
                                 if x[i, a, j, t].varValue == 1:
                                     busy_period_schedule[j].append(
                                         (t, i, a))
+
                 busy_period_schedule = Scheduling(
                     schedule=busy_period_schedule, success=1, scheduler_name="RHMA")
                 schedule.add_period(scheduling=busy_period_schedule)
@@ -319,6 +329,6 @@ class Rhma:
 
             if prob.status == 1:
                 print(schedule[h])
-                time.sleep(1)
+                time.sleep(100)
 
         return schedule

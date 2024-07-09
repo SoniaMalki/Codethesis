@@ -78,14 +78,15 @@ class TasksetSetGenerator:
 
     @staticmethod
     def generate_absolute_deadline(periods, deadlines, activations):
-        absolute_deadlines = numpy.empty(len(periods), dtype=object)
+        absolute_deadlines = [None] * len(periods)
         for taskset_index, period in enumerate(periods):
             tasks_absolute_deadline = []
             for task_index in range(len(period)):
-                temp = numpy.array(activations[taskset_index][task_index]) * \
-                    periods[taskset_index][task_index] + \
-                    deadlines[taskset_index][task_index]
-                tasks_absolute_deadline.append(temp.tolist())
+                temp = {}
+                for a in activations[taskset_index][task_index]:
+                    temp[a] = ((a - 1) * periods[taskset_index][task_index] +
+                               deadlines[taskset_index][task_index] + 1)
+                tasks_absolute_deadline.append(temp)
             absolute_deadlines[taskset_index] = tasks_absolute_deadline
         return absolute_deadlines
 

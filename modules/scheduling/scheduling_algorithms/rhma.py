@@ -17,7 +17,7 @@ class Rhma:
             end_time = self.hyperperiod
 
         self.start_time = start_time
-        self.end_time = end_time
+        self.end_time = end_time + 1
         # Parameters generated after assignment
         self.maxI = self.generate_max_I()
         self.o_i_j = self.generate_o_i_j()
@@ -28,7 +28,7 @@ class Rhma:
 
         # Parameters generated after busy period generation
         self.S_i_h = self.generate_S_i_h()
-        self.R_i_a_h = self.generate_R_i_a_h_list(self.S_i_h)
+        self.R_i_a_h = self.generate_R_i_a_h(self.S_i_h)
         self.T_h = self.generate_T_h()
         self.d_i_a = self.taskset.absolute_deadline
 
@@ -72,8 +72,8 @@ class Rhma:
                     if self.taskset[i].interference > 0 and self.taskset[j].interference > 0:
                         v_j_to_i = self.calculate_activation_pattern(
                             interfering_task_index=j, receiving_task_index=i)
-                        for a in self.taskset.activation[i]:
-                            maxI += v_j_to_i[a] * \
+                        for a_index, a in enumerate(self.taskset.activation[i]):
+                            maxI += v_j_to_i[a_index] * \
                                 self.taskset[j].interference
 
         return maxI
@@ -83,14 +83,17 @@ class Rhma:
         for a in self.taskset.activation[receiving_task_index]:
             # TODO revoir ces parametres dans le papier pour être sure (les 3)
             activation_in_t = 1
-            activation_start = a * self.taskset.period[receiving_task_index]
+            activation_start = ((
+                a-1) * self.taskset.period[receiving_task_index]) + 1
             # pas de -1 de la formule car python
-            activation_end = (a + 1) * \
-                self.taskset.period[receiving_task_index]
+            activation_end = ((a) *
+                              self.taskset.period[receiving_task_index])+1
+
             for t in range(activation_start, activation_end):
-                if t - self.taskset.period[interfering_task_index] * math.floor(t / self.taskset.period[interfering_task_index]) == 0:
+                if (t-1) - self.taskset.period[interfering_task_index]+1 * math.floor((t-1) / self.taskset.period[interfering_task_index]+1) == 0:
                     activation_in_t += 1
             v_j_to_i.append(activation_in_t)
+
         return v_j_to_i
 
     def generate_o_i_j(self):
@@ -111,37 +114,25 @@ class Rhma:
 
         for i, task_period in enumerate(self.taskset.period):
             for a in self.taskset.activation[i]:
-                activation_start = a * task_period
+                activation_start = ((a-1) * task_period)+1
                 for h, busy_period in enumerate(self.busy_periods):
                     if busy_period.start_time <= activation_start < busy_period.end_time:
                         S_i_h[i][h].append(a)
 
         return S_i_h
 
-    def generate_R_i_a_h(self):
-        R_i_a_h = [[{} for _ in range(len(self.taskset.activation[i]))]
-                   for i in range(len(self.taskset))]
-        for i, task_period in enumerate(self.taskset.period):
-            for a in self.taskset.activation[i]:
-                activation_start = a * task_period
-                activation_end = (a + 1) * task_period
-                for h, busy_period in enumerate(self.busy_periods):
-                    for t in range(busy_period.start_time, busy_period.end_time):
-                        if activation_start <= t < activation_end:
-                            if h not in R_i_a_h[i][a]:
-                                R_i_a_h[i][a][h] = []
-                            R_i_a_h[i][a][h].append(t)
-        return R_i_a_h
-
-    def generate_R_i_a_h_list(self, S_i_h):
-        R_i_a_h = [[[[] for _ in range(len(self.busy_periods))] for _ in range(
-            len(self.taskset.activation[i]))] for i in range(len(self.taskset))]
+    def generate_R_i_a_h(self, S_i_h):
+        R_i_a_h = {}
 
         for i, task_period in enumerate(self.taskset.period):
+            R_i_a_h[i] = {}  # Initialiser le dictionnaire pour la tâche i
             for h, activations_in_bp in enumerate(S_i_h[i]):
                 for a in activations_in_bp:
-                    activation_start = a * task_period
-                    activation_end = (a + 1) * task_period
+                    if a not in R_i_a_h[i]:
+                        R_i_a_h[i][a] = {}
+
+                    activation_start = ((a-1) * task_period) + 1
+                    activation_end = ((a) * task_period) + 1
                     busy_period = self.busy_periods[h]
 
                     intersection_start = max(
@@ -172,9 +163,9 @@ class Rhma:
             for i in range(len(self.taskset)):
                 for a in self.S_i_h[i][h]:
                     for j in range(self.number_of_cores):
-                        for t in self.R_i_a_h[i][a][h]:
-                            x[i, a, j,
-                              t] = LpVariable(f"x_{i}_{a}_{j}_{t}", cat='Binary')
+                        for t in self.T_h[h]:
+                            x[i, a, j, t] = LpVariable(
+                                f"x_{i}_{a}_{j}_{t}", cat='Binary')
 
             m = {}
             for i in range(len(self.taskset)):
@@ -312,11 +303,11 @@ class Rhma:
 
             prob += interference_term + response_time_term
 
-            print("-------------")
-            print(
-                f"Problem for BP {h} from {busy_period.start_time} to {busy_period.end_time}")
-            print(prob)
-            print("----------")
+            # print("-------------")
+            # print(
+            #     f"Problem for BP {h} from {busy_period.start_time} to {busy_period.end_time}")
+            # print(prob)
+            # print("----------")
 
             # Solving the MILP problem
             prob.solve(GUROBI_CMD(msg=0, options=[
@@ -324,6 +315,8 @@ class Rhma:
 
             # Checking if a solution is found
             if prob.status == 1:
+                busy_period_schedule_empty = [[]
+                                              for _ in range(self.number_of_cores)]
                 busy_period_schedule = [[]
                                         for _ in range(self.number_of_cores)]
 
@@ -331,14 +324,14 @@ class Rhma:
                     for i in range(len(self.taskset)):
                         for a in self.S_i_h[i][h]:
                             for j in range(self.number_of_cores):
-                                if (i, a, j, t) in x:
-                                    if x[i, a, j, t].varValue == 1:
-                                        busy_period_schedule[j].append(
-                                            (t, i, a+1))
+                                if x[i, a, j, t].varValue == 1:
+                                    busy_period_schedule[j].append(
+                                        (t, i, a))
 
-                busy_period_schedule = Scheduling(
-                    schedule=busy_period_schedule, success=1, scheduler_name="RHMA")
-                schedule.add_period(scheduling=busy_period_schedule)
+                if busy_period_schedule != busy_period_schedule_empty:
+                    busy_period_schedule = Scheduling(
+                        schedule=busy_period_schedule, success=1, scheduler_name="RHMA")
+                    schedule.add_period(scheduling=busy_period_schedule)
 
             else:
                 print(

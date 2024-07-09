@@ -60,7 +60,6 @@ class Task:
             math.ceil((start_time-1) / self.period) + 1
         number_of_jobs = math.ceil(
             (end_time - first_arrival_time) / self.period) + 1
-        print(number_of_jobs)
         first_job_identifier = math.ceil(start_time-1 / self.period)
 
         for i in range(number_of_jobs):

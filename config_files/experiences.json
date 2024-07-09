@@ -4,7 +4,7 @@
       "taskset_id" : "taskset_2",
       "action" : "generate",
       "parameters" : {
-        "taskset_repetition": 10,
+        "taskset_repetition": 1,
         "list_of_probability_factors" : [ 0.1 ],
         "list_of_max_utilization" : [ 1 ],
         "tasks_per_taskset" : 10,
@@ -36,7 +36,7 @@
       "taskset_id" : "taskset_2",
       "action" : "open",
       "parameters" : {
-        "taskset_repetition": 10,
+        "taskset_repetition": 1,
         "list_of_probability_factors" : [ 0.1 ],
         "list_of_max_utilization" : [ 1 ],
         "tasks_per_taskset" : 10,
@@ -68,7 +68,7 @@
       "taskset_id" : "taskset_2",
       "action" : "open",
       "parameters" : {
-        "taskset_repetition": 10,
+        "taskset_repetition": 1,
         "list_of_probability_factors" : [ 0.1 ],
         "list_of_max_utilization" : [ 1 ],
         "tasks_per_taskset" : 10,
@@ -100,7 +100,7 @@
       "taskset_id" : "taskset_2",
       "action" : "open",
       "parameters" : {
-        "taskset_repetition": 10,
+        "taskset_repetition": 1,
         "list_of_probability_factors" : [ 0.1 ],
         "list_of_max_utilization" : [ 1 ],
         "tasks_per_taskset" : 10,
@@ -304,8 +304,8 @@
       "period": [6, 10, 7, 9],
       "interference": [
         [0, 0, 0, 0],
-        [0, 0, 1, 0],
         [0, 1, 0, 0],
+        [0, 0, 1, 0],
         [0, 0, 0, 0]
       ],
       "utilization": [0.3333, 0.3 ,0.2857, 0.3333]
@@ -342,8 +342,8 @@
       "deadline": [4, 5],
       "period": [4, 5],
       "interference": [
-        [1, 0],
-        [0, 1]
+        [0, 0],
+        [0, 0]
       ],
       "utilization": [0.3333, 0.3]
     }
@@ -364,7 +364,7 @@
     "scheduling_id" : "scheduling_18",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "EDFV1" ]
+      "scheduling_algorithms" : [ "Rhma" ]
     }
   }
 }

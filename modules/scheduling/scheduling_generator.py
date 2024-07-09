@@ -45,11 +45,13 @@ class SchedulingGenerator:
         ]
         # Determine the scheduling algorithm once
         if self.scheduling_algorithms not in scheduling_algorithms and self.scheduling_algorithms not in composite_scheduling_algorithms:
-            print(f"Invalid scheduling algorithm: {self.scheduling_algorithms}. Returning None.")
+            print(
+                f"Invalid scheduling algorithm: {self.scheduling_algorithms}. Returning None.")
             return None
-        
-        else: 
-            scheduler_class = self.get_class_by_name(class_name=self.scheduling_algorithms)
+
+        else:
+            scheduler_class = self.get_class_by_name(
+                class_name=self.scheduling_algorithms)
             if self.scheduling_algorithms in scheduling_algorithms:
                 scheduling_function = self.generate_scheduling
             else:
@@ -57,32 +59,33 @@ class SchedulingGenerator:
 
         # Apply the selected scheduling function to all taskset assignments
         for taskset, assignment in zip(self.taskset_set, self.assignment_set):
-            if assignment.success: 
-                scheduling = scheduling_function(taskset=taskset, assignment=assignment, scheduler_class=scheduler_class, start_time=0, end_time=None)
-                scheduling_list.append(scheduling)    
-                print(scheduling.__str__(end_time=None))     
+            if assignment.success:
+                scheduling = scheduling_function(
+                    taskset=taskset, assignment=assignment, scheduler_class=scheduler_class, start_time=0, end_time=None)
+                scheduling_list.append(scheduling)
+                print(scheduling.__str__(end_time=None))
                 print(f'success: {scheduling.success}')
 
-        scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id, scheduling_algorithms=self.scheduling_algorithms, scheduling_list=scheduling_list)  # Store assignments for each taskset
-        return scheduling  
+        scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id,
+                                   scheduling_algorithms=self.scheduling_algorithms, scheduling_list=scheduling_list)  # Store assignments for each taskset
+        return scheduling
 
     def generate_scheduling(self, taskset, assignment, scheduler_class, start_time=0, end_time=None):
         scheduler = scheduler_class(
-                    taskset=taskset,
-                    assignment=assignment,
-                    number_of_cores=self.number_of_cores,
-                    start_time=start_time,
-                    end_time=end_time,
-                )
+            taskset=taskset,
+            assignment=assignment,
+            number_of_cores=self.number_of_cores,
+            start_time=start_time,
+            end_time=end_time,
+        )
         schedule, success = scheduler.schedule()
         return Scheduling(schedule=schedule, success=success, scheduler_name=str(scheduler))
 
-   
     def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=0, end_time=None):
-        taskset.interference = [0,1,1,0]
+        taskset.interference = [0, 0, 0, 0]
         scheduler = scheduler_class(
             taskset=taskset,
-            assignment=assignment, 
+            assignment=assignment,
             number_of_cores=self.number_of_cores,
             start_time=start_time,
             end_time=end_time
@@ -92,6 +95,3 @@ class SchedulingGenerator:
         for busy_period in busy_periods:
             scheduling.add_schedule(schedule=busy_period)
         return scheduling
-    
-
-

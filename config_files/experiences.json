@@ -123,7 +123,7 @@
       "scheduling_id" : "scheduling_1",
       "action" : "generate",
       "parameters" : {
-        "scheduling_algorithms" : [ "EDF" ]
+        "scheduling_algorithms" : [ "Rhma" ]
       }
     }
   },
@@ -327,7 +327,7 @@
     "scheduling_id" : "scheduling_17",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "Rhma" ]
+      "scheduling_algorithms" : [ "CombinedScheduler" ]
     }
   }
 },

@@ -6,8 +6,8 @@ class Job:
         self.absolute_deadline = absolute_deadline
         self.relative_deadline = relative_deadline
         self.arrival_time = arrival_time
-        self.interference_factor = max(interference_factor)
-        
+        self.interference_factor = interference_factor
+
         self.remaining_execution_time = self.wcet
         self.completed = False
         self.interference_history = set()  # To keep track of which jobs have interfered

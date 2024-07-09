@@ -1,5 +1,6 @@
 from modules.assignment.assignment import Assignment
 
+
 class AssignmentSet:
     def __init__(self, assignment_id, taskset_id, assignment_method, citta_criteria, number_of_cores, assignment_list):
         self.assignment_id = assignment_id
@@ -18,7 +19,7 @@ class AssignmentSet:
                 f"number_of_cores={self.number_of_cores}, "
                 f"assignment_list={self.assignment_list}, "
                 ")"
-        )
+                )
 
     def __len__(self):
         return len(self.assignment_list)
@@ -30,7 +31,7 @@ class AssignmentSet:
         return next(self.assignment_list)
 
     def __getitem__(self, i):
-        return self.taskset_list[i]
+        return self.assignment_list[i]
 
     def __str__(self):
         res = (f"Assignment id: {self.assignment_id}\n"

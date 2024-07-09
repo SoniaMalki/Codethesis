@@ -14,6 +14,7 @@ from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant2 import
 
 import time
 
+
 class SchedulingGenerator:
     def __init__(self, taskset_set_obj, assignment_set_obj, taskset_id, assignment_id, scheduling_id, scheduling_algorithms):
         self.taskset_set = taskset_set_obj
@@ -82,7 +83,6 @@ class SchedulingGenerator:
         return Scheduling(schedule=schedule, success=success, scheduler_name=str(scheduler))
 
     def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=0, end_time=None):
-        taskset.interference = [0, 0, 0, 0]
         scheduler = scheduler_class(
             taskset=taskset,
             assignment=assignment,

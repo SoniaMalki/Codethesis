@@ -1,6 +1,7 @@
 import json
 import os
 from pathlib import Path
+import time
 import numpy as np
 
 from modules.taskset.taskset_set_manual import TasksetSetManual
@@ -27,10 +28,10 @@ class Experience:
         self.scheduling_parameters = scheduling_parameters
 
         self.main_path = main_path
-        
+
         self.taskset_set_obj = None
-        self.assignment_set_obj = None 
-        self.scheduling_set_obj = None  
+        self.assignment_set_obj = None
+        self.scheduling_set_obj = None
 
     def process(self):
         """Processes the experience, generating tasksets, assignments, and schedulings as needed."""
@@ -46,15 +47,17 @@ class Experience:
         if self.taskset_parameters["action"] == 'generate':
             print("*****")
             print(f"Generating taskset")
-            taskset_generator = TasksetSetGenerator(self.taskset_parameters["taskset_id"], **self.taskset_parameters["parameters"])
+            taskset_generator = TasksetSetGenerator(
+                self.taskset_parameters["taskset_id"], **self.taskset_parameters["parameters"])
             self.taskset_set_obj = taskset_generator.generate_taskset_set()
             taskset_loader_saver.save(self.taskset_set_obj)
 
         elif self.taskset_parameters["action"] == 'open':
             print("*****")
             print(f"Opening taskset")
-            self.taskset_set_obj = taskset_loader_saver.load(self.taskset_parameters["taskset_id"])
-        
+            self.taskset_set_obj = taskset_loader_saver.load(
+                self.taskset_parameters["taskset_id"])
+
         elif self.taskset_parameters["action"] == 'manual':
             print("*****")
             print(f"Creating taskset manually")
@@ -70,7 +73,8 @@ class Experience:
             taskset_loader_saver.save(self.taskset_set_obj)
 
         else:
-            print(f"Invalid taskset action: {self.taskset_parameters['action']}")
+            print(
+                f"Invalid taskset action: {self.taskset_parameters['action']}")
             return
 
     def process_assignment(self):
@@ -87,23 +91,27 @@ class Experience:
                 **self.assignment_parameters["parameters"]
             )
             self.assignment_set_obj = assignment_generator.generate_assignment_set()
-            assignment_loader_saver.save(self.assignment_set_obj, self.assignment_parameters["assignment_id"])
+            assignment_loader_saver.save(
+                self.assignment_set_obj, self.assignment_parameters["assignment_id"])
 
         elif self.assignment_parameters["action"] == 'open':
             print("*****")
             print(f"Opening assignment")
-            self.assignment_set_obj = assignment_loader_saver.load(self.assignment_parameters["assignment_id"])
-        
+            self.assignment_set_obj = assignment_loader_saver.load(
+                self.assignment_parameters["assignment_id"])
+
         elif self.assignment_parameters["action"] == 'none':
             print(f"None received. Pass")
-        
+
         else:
-            print(f"Invalid assignment action: {self.assignment_parameters['action']}")
+            print(
+                f"Invalid assignment action: {self.assignment_parameters['action']}")
             return
 
     def process_scheduling(self):
         """Handles the generation or opening of the scheduling."""
         scheduling_loader_saver = SchedulingLoaderSaver(self.main_path)
+        self.shape_interference_for_scheduling()
 
         if self.scheduling_parameters["action"] == 'generate':
             print("*****")
@@ -117,16 +125,32 @@ class Experience:
                 **self.scheduling_parameters["parameters"]
             )
             self.scheduling_set_obj = scheduling_generator.generate_scheduling_set()
-            scheduling_loader_saver.save(self.scheduling_set_obj, self.scheduling_parameters["scheduling_id"])
+            scheduling_loader_saver.save(
+                self.scheduling_set_obj, self.scheduling_parameters["scheduling_id"])
 
         elif self.scheduling_parameters["action"] == 'open':
             print("*****")
             print(f"Opening scheduling")
-            self.scheduling_set_obj = scheduling_loader_saver.load(self.scheduling_parameters["scheduling_id"])
-        
+            self.scheduling_set_obj = scheduling_loader_saver.load(
+                self.scheduling_parameters["scheduling_id"])
+
         elif self.scheduling_parameters["action"] == 'none':
             print(f"None received. Pass")
-        
+
         else:
-            print(f"Invalid scheduling action: {self.scheduling_parameters['action']}")
+            print(
+                f"Invalid scheduling action: {self.scheduling_parameters['action']}")
             return
+
+    def shape_interference_for_scheduling(self):
+        new_interference = []
+        for taskset in self.taskset_set_obj:
+            taskset_interference = np.max(taskset.interference, axis=0)
+            # Modif au niveau Taskset Set
+            new_interference.append(taskset_interference)
+            taskset.interference = taskset_interference  # Modif au niveau Taskset
+            for task_index, task in enumerate(taskset):
+                # Modif au niveau Task
+                task.interference = taskset_interference[task_index]
+
+        self.taskset_set_obj.interference = np.array(new_interference)

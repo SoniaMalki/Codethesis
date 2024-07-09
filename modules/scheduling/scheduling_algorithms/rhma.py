@@ -243,12 +243,17 @@ class Rhma:
                             prob += left_side <= right_side
 
             # Constraint 20
+            # Quand t=0 (donc au début), c'est faux car tout est transformé par 0. il faudrait commencer tout le schedule à 1.
+            # Gros refactoring à venir
+
             for i in range(len(self.taskset)):
                 for a in self.S_i_h[i][h]:
-                    left_side = lpSum(t * x[i, a, j, t] for j in range(self.number_of_cores)
-                                      for t in self.R_i_a_h[i][a][h])
-                    right_side = self.d_i_a[i][a] - 1
-                    prob += left_side <= right_side
+                    for t in self.T_h[h]:
+                        left_side = lpSum(t * x[i, a, j, t]
+                                          for j in range(self.number_of_cores))
+
+                        right_side = self.d_i_a[i][a] - 1
+                        prob += left_side <= right_side
 
             # Constraint 21
             for j in range(self.number_of_cores):

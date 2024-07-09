@@ -11,7 +11,7 @@ from modules.utils.busy_period_generator import BusyPeriodGenerator
 
 
 class CombinedScheduler:
-    def __init__(self, taskset, assignment, number_of_cores, start_time=0, end_time=None):
+    def __init__(self, taskset, assignment, number_of_cores, start_time=1, end_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
         self.assignment = assignment

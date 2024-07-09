@@ -3,7 +3,7 @@ import time
 
 
 class DeadlineMonotonicVariant1:
-    def __init__(self, taskset, assignment, number_of_cores, start_time=0, end_time=None):
+    def __init__(self, taskset, assignment, number_of_cores, start_time=1, end_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
 
@@ -29,7 +29,7 @@ class DeadlineMonotonicVariant1:
         self.create_job_list(start_time=self.start_time,
                              end_time=self.end_time)
 
-        while current_time < self.end_time:
+        while current_time <= self.end_time:
             self.previous_jobs = copy.copy(self.current_jobs)
             for core_index in range(self.number_of_cores):
                 self.update_ready_queue(

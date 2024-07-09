@@ -1,5 +1,5 @@
 class DeadlineMonotonic:
-    def __init__(self, taskset, assignment, number_of_cores, start_time=0, end_time=None):
+    def __init__(self, taskset, assignment, number_of_cores, start_time=1, end_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
 
@@ -24,7 +24,7 @@ class DeadlineMonotonic:
         self.create_job_list(start_time=self.start_time,
                              end_time=self.end_time)
 
-        while current_time < self.end_time:
+        while current_time <= self.end_time:
             for core_index in range(self.number_of_cores):
                 self.update_ready_queue(
                     core_index=core_index, current_time=current_time)

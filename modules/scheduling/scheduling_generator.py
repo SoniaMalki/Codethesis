@@ -62,7 +62,7 @@ class SchedulingGenerator:
         for taskset, assignment in zip(self.taskset_set, self.assignment_set):
             if assignment.success:
                 scheduling = scheduling_function(
-                    taskset=taskset, assignment=assignment, scheduler_class=scheduler_class, start_time=0, end_time=None)
+                    taskset=taskset, assignment=assignment, scheduler_class=scheduler_class, start_time=1, end_time=None)
                 scheduling_list.append(scheduling)
                 print(scheduling.__str__(end_time=None))
                 print(f'success: {scheduling.success}')
@@ -71,7 +71,7 @@ class SchedulingGenerator:
                                    scheduling_algorithms=self.scheduling_algorithms, scheduling_list=scheduling_list)  # Store assignments for each taskset
         return scheduling
 
-    def generate_scheduling(self, taskset, assignment, scheduler_class, start_time=0, end_time=None):
+    def generate_scheduling(self, taskset, assignment, scheduler_class, start_time=1, end_time=None):
         scheduler = scheduler_class(
             taskset=taskset,
             assignment=assignment,
@@ -82,7 +82,7 @@ class SchedulingGenerator:
         schedule, success = scheduler.schedule()
         return Scheduling(schedule=schedule, success=success, scheduler_name=str(scheduler))
 
-    def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=0, end_time=None):
+    def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=1, end_time=None):
         scheduler = scheduler_class(
             taskset=taskset,
             assignment=assignment,

@@ -1,4 +1,5 @@
-from .task import Task  
+from .task import Task
+
 
 class Taskset:
     def __init__(self, taskset_number, wcet, deadline, period, interference, utilization, hyperperiod, N, activation, absolute_deadline):
@@ -12,10 +13,10 @@ class Taskset:
         self.N = N
         self.activation = activation
         self.absolute_deadline = absolute_deadline
-        
+
         self.task_list = []
         for i in range(len(self.period)):
-            self.task_list.append(Task(task_number=i, wcet=self.wcet[i], deadline=self.deadline[i], 
+            self.task_list.append(Task(task_number=i, wcet=self.wcet[i], deadline=self.deadline[i],
                                        period=self.period[i], interference=self.interference[i], utilization=self.utilization[i],
                                        absolute_deadline=self.absolute_deadline[i]))
 
@@ -28,7 +29,7 @@ class Taskset:
                 f"interference={self.interference}, "
                 f"utilization={self.utilization}"
                 ")"
-        )
+                )
 
     def __len__(self):
         return len(self.task_list)
@@ -40,7 +41,7 @@ class Taskset:
         return next(self.task_list)
 
     def __getitem__(self, i):
-         return self.task_list[i]
+        return self.task_list[i]
 
     def __str__(self):
         res = (f"Taskset number: {self.taskset_number}\n"
@@ -56,4 +57,3 @@ class Taskset:
             task_str = task_str + "[]"
         res = res + task_str
         return res
-    

@@ -364,7 +364,7 @@
     "scheduling_id" : "scheduling_18",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "CombinedScheduler" ]
+      "scheduling_algorithms" : [ "Rhma" ]
     }
   }
 }

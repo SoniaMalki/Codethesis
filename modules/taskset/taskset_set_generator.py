@@ -67,8 +67,11 @@ class TasksetSetGenerator:
         activations = numpy.empty(len(periods), dtype=object)
         for taskset_index, period in enumerate(periods):
             tasks_activations = []
-            for task_index in range(len(period)):
-                temp = list(range(int(N[taskset_index][task_index])))
+            # On ajoute 1 à taskset_index pour commencer l'indexation à 1
+            for task_index in range(1, len(period)+1):
+                # On décale l'intervalle de 1 pour commencer à 1
+                temp = list(
+                    range(1, int(N[taskset_index][task_index - 1]) + 1))
                 tasks_activations.append(temp)
             activations[taskset_index] = tasks_activations
         return activations

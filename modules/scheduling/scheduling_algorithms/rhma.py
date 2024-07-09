@@ -236,11 +236,10 @@ class Rhma:
                             right_side = self.taskset.wcet[i] * \
                                 self.o_i_j[i][j]
 
-                            print(right_side)
-                            time.sleep(2)
                             right_side += lpSum(m[i, a, k, b] * self.taskset.interference[k] * self.o_i_j[i][j]
-                                                for k in range(len(self.taskset)) if k != i
+                                                for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.interference[k] > 0 and self.taskset.interference[i] > 0
                                                 for b in self.S_i_h[k][h])
+
                             prob += left_side <= right_side
 
             # Constraint 20

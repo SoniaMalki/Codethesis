@@ -145,7 +145,7 @@ class Experience:
     def shape_interference_for_scheduling(self):
         new_interference = []
         for taskset in self.taskset_set_obj:
-            taskset_interference = np.max(taskset.interference, axis=0)
+            taskset_interference = np.max(taskset.interference, axis=1)
             # Modif au niveau Taskset Set
             new_interference.append(taskset_interference)
             taskset.interference = taskset_interference  # Modif au niveau Taskset

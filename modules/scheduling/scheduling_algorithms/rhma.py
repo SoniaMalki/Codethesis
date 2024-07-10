@@ -232,7 +232,7 @@ class Rhma:
                                                 for b in self.S_i_h[k][h])
 
                             prob += left_side == right_side
-            if h == 2:
+            if h == 0:
                 print(prob)
                 time.sleep(400)
             # Constraint 20

@@ -100,7 +100,7 @@ class CombinedScheduler:
         scheduling = [[] for _ in range(self.number_of_cores)]
         for core in scheduling:
             core.append((1, None, None))
-            core.append((self.hyperperiod, None, None))
+            core.append((self.end_time, None, None))
         empty_scheduling = Scheduling(
             schedule=scheduling, success=0, scheduler_name="N/A")
 

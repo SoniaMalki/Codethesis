@@ -9,7 +9,7 @@ class EarliestDeadlineFirst:
             end_time = self.hyperperiod
 
         self.start_time = start_time
-        self.end_time = end_time+1
+        self.end_time = end_time
 
         self.assignment = assignment
         self.number_of_cores = number_of_cores
@@ -26,7 +26,7 @@ class EarliestDeadlineFirst:
         self.create_job_list(start_time=self.start_time,
                              end_time=self.end_time)
 
-        while current_time < self.end_time:
+        while current_time <= self.end_time:
             for core_index in range(self.number_of_cores):
                 self.update_ready_queue(
                     core_index=core_index, current_time=current_time)
@@ -59,7 +59,7 @@ class EarliestDeadlineFirst:
     def select_job(self, core_index, current_time):
         self.current_jobs[core_index] = None
         for job in self.ready_queue[core_index]:
-            if job.relative_deadline > current_time:
+            if job.relative_deadline >= current_time + 1:
                 self.current_jobs[core_index] = job
                 break
             else:

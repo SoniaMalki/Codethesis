@@ -10,7 +10,7 @@ class EarliestDeadlineFirstVariant2:
             end_time = self.hyperperiod
 
         self.start_time = start_time
-        self.end_time = end_time+1
+        self.end_time = end_time
 
         self.assignment = assignment
         self.number_of_cores = number_of_cores
@@ -30,7 +30,7 @@ class EarliestDeadlineFirstVariant2:
         self.create_job_list(start_time=self.start_time,
                              end_time=self.end_time)
 
-        while current_time < self.end_time:
+        while current_time <= self.end_time:
             self.previous_jobs = copy.copy(self.current_jobs)
             for core_index in range(self.number_of_cores):
                 self.update_ready_queue(

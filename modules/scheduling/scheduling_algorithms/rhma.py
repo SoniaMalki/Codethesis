@@ -17,7 +17,7 @@ class Rhma:
             end_time = self.hyperperiod
 
         self.start_time = start_time
-        self.end_time = end_time + 1
+        self.end_time = end_time
         # Parameters generated after assignment
         self.maxI = self.generate_max_I()
         self.o_i_j = self.generate_o_i_j()
@@ -303,15 +303,14 @@ class Rhma:
 
             prob += interference_term + response_time_term
 
-            # print("-------------")
-            # print(
-            #     f"Problem for BP {h} from {busy_period.start_time} to {busy_period.end_time}")
+            print("-------------")
+            print(
+                f"Solving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
             # print(prob)
-            # print("----------")
 
             # Solving the MILP problem
             prob.solve(GUROBI_CMD(msg=0, options=[
-                       ("OutputFlag", 0), ("TimeLimit", 1000)]))
+                       ("OutputFlag", 0), ("TimeLimit", 10)]))
 
             # Checking if a solution is found
             if prob.status == 1:
@@ -332,6 +331,9 @@ class Rhma:
                     busy_period_schedule = Scheduling(
                         schedule=busy_period_schedule, success=1, scheduler_name="RHMA")
                     schedule.add_period(scheduling=busy_period_schedule)
+                else:
+                    print("empty")
+                    time.sleep(1)
 
             else:
                 print(

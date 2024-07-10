@@ -52,7 +52,7 @@ class TasksetSetGenerator:
         hyperperiods = numpy.zeros(len(periods), dtype=int)
         for taskset_index, period in enumerate(periods):
             hyperperiods[taskset_index] = TasksetSetGenerator.calculate_lcm(
-                period=period)
+                period=period) + 1
         return hyperperiods
 
     @staticmethod

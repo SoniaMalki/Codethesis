@@ -7,7 +7,7 @@ class DeadlineMonotonic:
             end_time = self.hyperperiod
 
         self.start_time = start_time
-        self.end_time = end_time+1
+        self.end_time = end_time
 
         self.assignment = assignment
         self.number_of_cores = number_of_cores
@@ -24,7 +24,7 @@ class DeadlineMonotonic:
         self.create_job_list(start_time=self.start_time,
                              end_time=self.end_time)
 
-        while current_time < self.end_time:
+        while current_time <= self.end_time:
             for core_index in range(self.number_of_cores):
                 self.update_ready_queue(
                     core_index=core_index, current_time=current_time)

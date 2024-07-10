@@ -258,7 +258,7 @@ class Rhma:
                                 for j in range(self.number_of_cores):
                                     for l in range(self.number_of_cores):
                                         if j != l:
-                                            for t in set(self.R_i_a_h[i][a][h]).intersection(self.R_i_a_h[k][b][h]):
+                                            for t in self.T_h[h]:
                                                 prob += m[i, a, k, b] >= x[i,
                                                                            a, j, t] + x[k, b, l, t] - 1
 

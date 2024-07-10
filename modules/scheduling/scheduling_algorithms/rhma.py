@@ -199,10 +199,6 @@ class Rhma:
                             if not set(self.R_i_a_h[i][a][h]).intersection(self.R_i_a_h[k][b][h]):
                                 prob += m[i, a, k, b] == 0
 
-            if h == 1:
-                print(prob)
-                time.sleep(200)
-
             # Constraint 18
             for i in range(len(self.taskset)):
                 for j in range(self.number_of_cores):

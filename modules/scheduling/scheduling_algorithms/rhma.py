@@ -278,17 +278,10 @@ class Rhma:
                             prob += w[i, a] >= (t * x[i, a, j, t]) - \
                                 (a * self.taskset.period[i]) + 1
 
-            for i in range(len(self.taskset)):
-                for k in range(len(self.taskset)):
-                    if i != k:
-                        for a in self.S_i_h[i][h]:
-                            for b in self.S_i_h[k][h]:
-                                # Contrainte factice
-                                prob += m[i, a, k, b] <= 1
-
             # Objective function
             interference_term = lpSum(m[i, a, k, b] for i in range(len(self.taskset)) for k in range(
-                len(self.taskset)) if i != k for a in self.S_i_h[i][h] for b in self.S_i_h[k][h])
+                len(self.taskset)) for a in self.S_i_h[i][h] for b in self.S_i_h[k][h])
+
             response_time_term = lpSum(
                 (1 / self.taskset.deadline[i]) * w[i, a] for i in range(len(self.taskset)) for a in self.S_i_h[i][h])
 

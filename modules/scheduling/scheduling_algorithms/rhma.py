@@ -187,7 +187,7 @@ class Rhma:
             for i in range(len(self.taskset)):
                 for a in self.S_i_h[i][h]:
                     for j in range(self.number_of_cores):
-                        for t in self.R_i_a_h[i][a][h]:
+                        for t in self.T_h[h]:
                             if self.o_i_j[i][j] == 0:
                                 prob += x[i, a, j, t] == 0
 
@@ -198,6 +198,10 @@ class Rhma:
                         for b in self.S_i_h[k][h]:
                             if not set(self.R_i_a_h[i][a][h]).intersection(self.R_i_a_h[k][b][h]):
                                 prob += m[i, a, k, b] == 0
+
+            if h == 1:
+                print(prob)
+                time.sleep(200)
 
             # Constraint 18
             for i in range(len(self.taskset)):
@@ -293,9 +297,8 @@ class Rhma:
 
             prob += interference_term + response_time_term
 
-            print("-------------")
             print(
-                f"Solving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
+                f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
             # print(prob)
 
             # Solving the MILP problem

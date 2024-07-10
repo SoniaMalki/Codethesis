@@ -270,11 +270,11 @@ class Rhma:
                             for b in self.S_i_h[k][h]:
                                 prob += m[i, a, k, b] == m[k, b, i, a]
 
-            # Contrainte 24
+            # Constraint 24
             for i in range(len(self.taskset)):
                 for a in self.S_i_h[i][h]:
                     for j in range(self.number_of_cores):
-                        for t in self.R_i_a_h[i][a][h]:
+                        for t in self.T_h[h]:
                             prob += w[i, a] >= (t * x[i, a, j, t]) - \
                                 (a * self.taskset.period[i]) + 1
 

@@ -66,7 +66,7 @@ class CombinedScheduler:
 
             for scheduler_class in self.schedulers:
                 scheduling = self.generate_scheduling(
-                    scheduler_class=scheduler_class, start_time=self.busy_periods[busy_period_index].start_time, end_time=self.busy_periods[busy_period_index].end_time + 1)
+                    scheduler_class=scheduler_class, start_time=self.busy_periods[busy_period_index].start_time, end_time=self.busy_periods[busy_period_index].end_time)
                 scheduling_len = BusyPeriodGenerator.generate_scheduling_length(
                     scheduling=scheduling)
 
@@ -85,7 +85,7 @@ class CombinedScheduler:
                 final_busy_period.add_period(scheduling=bp)
         return final_busy_period
 
-    def generate_scheduling(self, scheduler_class, start_time=0, end_time=None):
+    def generate_scheduling(self, scheduler_class, start_time=1, end_time=None):
         scheduler = scheduler_class(
             taskset=self.taskset,
             assignment=self.assignment,

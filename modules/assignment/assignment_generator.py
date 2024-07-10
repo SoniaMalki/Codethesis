@@ -1,7 +1,6 @@
 from modules.assignment.assignment import Assignment
 from modules.assignment.assignment_set import AssignmentSet
 from modules.assignment.assignment_algorithms.citta import Citta
-from modules.assignment.assignment_algorithms.citta_old import Cittaold
 from modules.assignment.assignment_algorithms.wfdu import Wfdu
 from modules.assignment.assignment_algorithms.ffdu import Ffdu
 from modules.assignment.assignment_algorithms.bfdu import Bfdu
@@ -62,16 +61,6 @@ class AssignmentGenerator:
         assigned_cores, successfully_assigned = citta_instance.assign()
         print("=======\nCITTA reworked result\n=======\n",
               f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
-
-        citta_instance_old = Cittaold(
-            taskset,  # Pass a list containing only the current taskset
-            self.number_of_cores,
-            self.citta_criteria
-        )
-
-        assigned_cores_old, _, successfully_assigned_old = citta_instance_old.assign()
-        print("=======\nCITTA old result\n=======\n",
-              f"successfully_assigned: {successfully_assigned_old}\n", f"assigned_cores:{assigned_cores_old}")
 
         return assigned_cores, successfully_assigned
 

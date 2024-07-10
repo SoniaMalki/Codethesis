@@ -327,7 +327,7 @@
     "scheduling_id" : "scheduling_17",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "EarliestDeadlineFirstVariant1" ]
+      "scheduling_algorithms" : [ "Rhma" ]
     }
   }
 },
@@ -354,7 +354,7 @@
     "action" : "generate",
     "parameters" : {
       "citta_criteria" : [ "utilization_descending"],
-      "assignment_method" : [ "WFDU" ],
+      "assignment_method" : [ "CITTA" ],
       "number_of_cores": 2
     }
   },
@@ -364,7 +364,7 @@
     "scheduling_id" : "scheduling_18",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "Rhma" ]
+      "scheduling_algorithms" : [ "CombinedScheduler" ]
     }
   }
 }

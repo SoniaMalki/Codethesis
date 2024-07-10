@@ -8,7 +8,6 @@ class ExperienceLoader:
     def __init__(self, main_path):
         self.main_path = main_path
 
-
     def load(self, filename, experience_parameter_index="1"):
         """
         Loads an Experience object from a JSON file.
@@ -24,11 +23,11 @@ class ExperienceLoader:
             experience_data = json.load(f)
 
         # Validate the experience_parameter_index
-        if experience_parameter_index in experience_data:
-            experience_parameters = experience_data[experience_parameter_index]
-        else:
+        if experience_parameter_index not in experience_data:
+            experience_parameter_index_old = experience_parameter_index
             experience_parameter_index = list(experience_data.keys())[0]
-            print(f"Invalid experience parameter index: {experience_parameter_index}. Defaulting to index to first key: {experience_parameter_index}.")
+            print(
+                f"Invalid experience parameter index: {experience_parameter_index_old}. Defaulting to index to first key: {experience_parameter_index}.")
 
         # Get the experience parameters based on the index
         taskset_parameters = experience_data[experience_parameter_index]["taskset"]

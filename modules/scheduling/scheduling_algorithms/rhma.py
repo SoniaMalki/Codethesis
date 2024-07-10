@@ -232,7 +232,9 @@ class Rhma:
                                                 for b in self.S_i_h[k][h])
 
                             prob += left_side == right_side
-
+            if h == 2:
+                print(prob)
+                time.sleep(400)
             # Constraint 20
             for i in range(len(self.taskset)):
                 for a in self.S_i_h[i][h]:

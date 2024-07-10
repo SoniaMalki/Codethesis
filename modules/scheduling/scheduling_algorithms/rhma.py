@@ -231,12 +231,9 @@ class Rhma:
                                                 for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.interference[k] > 0 and self.taskset.interference[i] > 0
                                                 for b in self.S_i_h[k][h])
 
-                            prob += left_side <= right_side
+                            prob += left_side == right_side
 
             # Constraint 20
-            # Quand t=0 (donc au début), c'est faux car tout est transformé par 0. il faudrait commencer tout le schedule à 1.
-            # Gros refactoring à venir
-
             for i in range(len(self.taskset)):
                 for a in self.S_i_h[i][h]:
                     for t in self.T_h[h]:
@@ -250,7 +247,7 @@ class Rhma:
             for j in range(self.number_of_cores):
                 for t in self.T_h[h]:
                     prob += lpSum(x[i, a, j, t] for i in range(len(self.taskset))
-                                  for a in self.S_i_h[i][h] if t in self.R_i_a_h[i][a][h]) <= 1
+                                  for a in self.S_i_h[i][h]) <= 1
 
             # Constraint 22
             for i in range(len(self.taskset)):

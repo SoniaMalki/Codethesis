@@ -33,12 +33,12 @@ class Rhma:
         self.d_i_a = self.taskset.absolute_deadline
 
         # Save parameters to file to analyse
-        output_path = f"{Path(__file__).parent.parent.parent.parent}/output_parameters.txt"
+        output_path = f"{Path(__file__).parent.parent.parent.parent}/other_files/output_parameters.txt"
         self.save_parameters_to_file(
             file_path=output_path)
 
     def output_parameters_to_str(self):
-        output_res = "---------------------\n Parameters \n --------------\n"
+        output_res = "---------------------\n Parameters \n---------------------\n"
         output_res += f"N: {self.taskset.N} \n"
         output_res += f"C: {self.taskset.wcet} \n"
         output_res += f"D: {self.taskset.deadline} \n"

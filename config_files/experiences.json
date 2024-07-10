@@ -327,7 +327,7 @@
     "scheduling_id" : "scheduling_17",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "Rhma" ]
+      "scheduling_algorithms" : [ "EarliestDeadlineFirstVariant1" ]
     }
   }
 },
@@ -338,7 +338,7 @@
     "action": "manual",
     "taskset_id": "taskset_18",
     "parameters": {
-      "wcet": [1, 3],
+      "wcet": [2, 3],
       "deadline": [4, 5],
       "period": [4, 5],
       "interference": [

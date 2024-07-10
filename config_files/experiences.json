@@ -342,8 +342,8 @@
       "deadline": [4, 5],
       "period": [4, 5],
       "interference": [
-        [0, 0],
-        [0, 0]
+        [0, 2],
+        [1, 0]
       ],
       "utilization": [0.3333, 0.3]
     }

@@ -23,25 +23,40 @@ class CombinedScheduler:
         self.end_time = end_time
 
         self.schedulers = [
+            EarliestDeadlineFirst,
             EarliestDeadlineFirstVariant1,
             EarliestDeadlineFirstVariant2,
             DeadlineMonotonic,
             DeadlineMonotonicVariant1,
             DeadlineMonotonicVariant2,
-        ]  # Sans EDF car cas par défaut
+        ]
 
-        # EDF par défaut
-        self.edf_schedule = self.generate_scheduling(
-            scheduler_class=EarliestDeadlineFirst, start_time=self.start_time, end_time=self.end_time)
+        # Find the scheduling by default
+        default_scheduler_class_success = 0
+        default_scheduler_class_index = 0
+
+        while not default_scheduler_class_success and default_scheduler_class_index < len(self.schedulers):
+            default_scheduler_class = self.schedulers[default_scheduler_class_index]
+            self.default_schedule = self.generate_scheduling(
+                scheduler_class=default_scheduler_class, start_time=self.start_time, end_time=self.end_time)
+            default_scheduler_class_success = self.default_schedule.success
+
+            if default_scheduler_class_success:
+                self.schedulers = self.schedulers[default_scheduler_class_index+1:]
+
+            default_scheduler_class_index += 1
+
         self.busy_periods = BusyPeriodGenerator.generate_busy_periods(
-            self.edf_schedule)
+            self.default_schedule)
 
     def __str__(self):
         return self.__class__.__name__
 
     def schedule(self):
-        if not self.edf_schedule.success:
-            print("Failed to schedule with EDF")
+        if not self.default_schedule.success:
+            print(
+                "Failed to schedule with all the schedulers. CombinedScheduler will return empty Scheduling for the whole period")
+            return self.create_empty_return()
 
         for busy_period_index in range(len(self.busy_periods)):
             shortest_busy_period_length = len(
@@ -80,3 +95,15 @@ class CombinedScheduler:
         )
         schedule, success = scheduler.schedule()
         return Scheduling(schedule=schedule, success=success, scheduler_name=str(scheduler))
+
+    def create_empty_return(self):
+        scheduling = [[] for _ in range(self.number_of_cores)]
+        for core in scheduling:
+            core.append((1, None, None))
+            core.append((self.hyperperiod, None, None))
+        empty_scheduling = Scheduling(
+            schedule=scheduling, success=0, scheduler_name="N/A")
+
+        empty_busy_period = BusyPeriod()
+        empty_busy_period.add_period(empty_scheduling)
+        return empty_busy_period

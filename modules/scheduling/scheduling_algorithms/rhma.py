@@ -152,11 +152,16 @@ class Rhma:
         return T_h
 
     def schedule(self):
+        print(
+            f"-------------\nSolving RHMA")
+
         schedule = BusyPeriod()
 
         for h, busy_period in enumerate(self.busy_periods):
             prob = LpProblem(
                 f"RHMA_Busy_Period_{h}", LpMinimize)
+            print(
+                f"-------------\nCreating variables for BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
 
             # Variables
             x = {}
@@ -232,9 +237,7 @@ class Rhma:
                                                 for b in self.S_i_h[k][h])
 
                             prob += left_side == right_side
-            if h == 0:
-                print(prob)
-                time.sleep(400)
+
             # Constraint 20
             for i in range(len(self.taskset)):
                 for a in self.S_i_h[i][h]:

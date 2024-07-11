@@ -6,8 +6,8 @@
       "parameters" : {
         "taskset_repetition": 1,
         "list_of_probability_factors" : [ 0.1 ],
-        "list_of_max_utilization" : [ 1 ],
-        "tasks_per_taskset" : 10,
+        "list_of_max_utilization" : [ 0.2 ],
+        "tasks_per_taskset" : 5,
         "list_of_interference_factors" : [ 0.2 ]
       }
     },
@@ -82,7 +82,7 @@
       "parameters" : {
         "number_of_cores": 4,
         "citta_criteria" : [ "period_descending" ],
-        "assignment_method" : [ "CITTA" ]
+        "assignment_method" : [ "WFDU" ]
       }
     },
     "scheduling" : {
@@ -364,7 +364,7 @@
     "scheduling_id" : "scheduling_18",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "Rhma" ]
+      "scheduling_algorithms" : [ "Rhmac" ]
     }
   }
 }

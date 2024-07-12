@@ -80,7 +80,9 @@ class Experience:
     def process_assignment(self):
         """Handles the generation or opening of the assignment."""
         assignment_loader_saver = AssignmentLoaderSaver(self.main_path)
-
+        # TODO change this
+        if self.assignment_parameters["parameters"]["assignment_method"][0] == "Wmin":
+            self.shape_interference_for_scheduling()
         if self.assignment_parameters["action"] == 'generate':
             print("*****")
             print(f"Generating assignment")
@@ -111,7 +113,8 @@ class Experience:
     def process_scheduling(self):
         """Handles the generation or opening of the scheduling."""
         scheduling_loader_saver = SchedulingLoaderSaver(self.main_path)
-        self.shape_interference_for_scheduling()
+        if self.assignment_parameters["parameters"]["assignment_method"][0] != "Wmin":
+            self.shape_interference_for_scheduling()
 
         if self.scheduling_parameters["action"] == 'generate':
             print("*****")

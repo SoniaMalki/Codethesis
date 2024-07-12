@@ -1,14 +1,14 @@
 ### Decision Variables
-- $$ x_{iajt} $$: Binary variable indicating if task $$i$$ is executed at time $$t$$ during activation $$a$$ on core $$j$$.
-- $$m_{iakb}$$: Binary variable indicating if an interference occurs between activation $$a $$ of task $$i$$ and activation $$b$$ of task $$k$$.
-- $$w_{ia}$$: Non-negative integer variable representing the response time for activation $$a$$ of task $$i$$.
+- $$ x_{iajt} $$: $$1$$ if task $$i$$ in activation $$a$$ is allocated to core $$j$$ and executed at time $$t$$ and $$0$$ otherwise.
+
+- $$m_{iakb}$$: Interference matrix. $$1$$ if execution of $$\tau_i$$ in activation $$a$$ coincides with the execution of $$\tau_k$$ in activation $$b$$ and $$0$$ otherwise.
+
+- $$w_{ia}$$: Response time matrix. Response time of $$\tau_i$$ in activation $$a$$.
 
 ### Objective Function
 To minimize interference and the response time of the tasks across all system executions:
 
-$$  \min \text{Obj} = \frac{1}{\text{maxI}} \left( \sum_{\substack{i, k \in \tau \\ a \in S_{ih}, b \in S_{kh}}} m_{iakb} \right) + \sum_{\forall i, a \in R_{iah}} \frac{w_{ia}}{D_i} $$
-
-
+$$  \min \text{Obj} = \frac{1}{\text{maxI}} \left( \sum_{\substack{\forall i, k \in \tau \\ \forall a \in S_{ih} \\ \forall b \in S_{kh}}} m_{iakb} \right) + \sum_{\forall i, a \in R_{iah}} \frac{w_{ia}}{D_i} $$
 
 ### Constraints
 1. $$ x_{iajt} = o_{ij} \quad \forall i, a, j, t|i, a \in R_{iah}, t \in T_{h}, \quad \text{if } o_{ij}=0 $$
@@ -31,7 +31,7 @@ $$  \min \text{Obj} = \frac{1}{\text{maxI}} \left( \sum_{\substack{i, k \in \tau
 
 7. $$ m_{iakb} \geq x_{iajt} + x_{kblt} - 1 \quad \forall i, a, k, b, j, l, t | a \in S_{ih}, b \in S_{kh}, t \in T_h  $$
   
-$$\text{and if } i \neq k \text{ and if } j \leq l $$
+$$\text{and if } i \neq k \text{ and if } j \neq l $$
 
 8. $$ m_{iakb} = m_{kbia} \quad \forall i, a, k, b|a \in S_{ih}, b \in S_{kh}, \text{if } k \neq i $$
 
@@ -39,10 +39,30 @@ $$\text{and if } i \neq k \text{ and if } j \leq l $$
 
 10. **Variable Domains**:
    - $$ x_{iajt}, m_{iakb} \in \{0, 1\} $$
+
    - $$ w_{ia} \geq 0 $$
 
 ### Parameters
-- $$ C_i $$: Worst case execution time of task $$ i $$.
-- $$ D_i $$: Relative deadline of task $$ i $$.
-- $$ T_i $$: Period of task $$ i $$.
-- $$ I_i $$: Interference factor of task $$ i $$ over other tasks.
+- $$ C_i $$ : Worst case computation time of $$\tau_i$$.
+
+- $$ D_i $$ : Relative deadline of $$\tau_i$$.
+
+- $$d_{ia}$$ : Absolute deadline of $$\tau_i$$ in activation $$a$$.
+
+- $$ T_i $$ : Period of $$\tau_i$$.
+
+- $$ I_i $$ : Interference factor of $$\tau_i$$ over other tasks.
+
+- $$N_i$$ : Number of activations of $$\tau_i$$.
+
+- $$o_{ij}$$ : $$1$$ if $$\tau_i$$ is allocated to core $$M_j$$ and $$0$$ otherwise.
+
+- $$S_{ih}$$ : Activations of task $$\tau_i$$ executed in the busy period $$\text{BP}_h$$.
+
+- $$R_{iah}$$ : Possible execution time interval for task $$\tau_i$$ in its activation $$a$$ in the busy period $$\text{BP}_h$$.
+
+- $$T_h$$ : Execution times for the busy period $$\text{BP}_h$$.
+
+- $$lcm$$ : Hyperperiod of the task set.
+
+- $$maxI$$ : Maximum possible received interferences.  

@@ -354,7 +354,7 @@
     "action" : "generate",
     "parameters" : {
       "citta_criteria" : [ "utilization_descending"],
-      "assignment_method" : [ "WFDU" ],
+      "assignment_method" : [ "Wmin" ],
       "number_of_cores": 2
     }
   },
@@ -362,9 +362,9 @@
     "assignment_id" : "assignment_18",
     "taskset_id" : "taskset_18",
     "scheduling_id" : "scheduling_18",
-    "action" : "generate",
+    "action" : "None",
     "parameters" : {
-      "scheduling_algorithms" : [ "Rhmac" ]
+      "scheduling_algorithms" : [ "Rhma" ]
     }
   }
 }

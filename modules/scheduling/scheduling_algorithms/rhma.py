@@ -300,7 +300,8 @@ class Rhma:
 
             print(
                 f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
-            # print(prob)
+            #print(prob)
+            #time.sleep(300)
 
             # Solving the MILP problem
             prob.solve(GUROBI_CMD(msg=0, options=[

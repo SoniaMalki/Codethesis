@@ -44,10 +44,20 @@ class Wmin:
 
         # Constraint 22
         for k in range(self.number_of_cores):
-            prob += lpSum([self.interference[j] * o[i, k] * (1 - o[j, k])
-                           for i in range(len(self.taskset)) if self.interference[i] != 0
-                           for j in range(len(self.taskset)) if i != j
-                           ]) == maxW_k[k]
+            for i in range(len(self.taskset)):
+                if self.interference[i] != 0:
+                    for j in range(len(self.taskset)):
+                        if i != j:
+                            # Variable pour o[i, k] * (1 - o[j, k]) (s'assurer que i et j comptent l'interference que si coeur diff (que i dans coeur k))
+                            z = LpVariable(f"z_{i}_{j}_{k}", cat='Binary')
+                            prob += z <= o[i, k]
+                            prob += z <= (1 - o[j, k])
+                            prob += z >= o[i, k] + (1 - o[j, k]) - 1
+
+                            prob += lpSum([self.interference[j] * z
+                                           for i in range(len(self.taskset)) if self.interference[i] != 0
+                                           for j in range(len(self.taskset)) if i != j
+                                           ]) == maxW_k[k]
 
         # Objective function
         prob += lpSum([maxW_k[k] for k in range(self.number_of_cores)]) == maxW

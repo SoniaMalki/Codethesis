@@ -304,8 +304,8 @@
       "period": [6, 10, 7, 9],
       "interference": [
         [0, 0, 0, 0],
-        [0, 1, 0, 0],
         [0, 0, 1, 0],
+        [0, 1, 0, 0],
         [0, 0, 0, 0]
       ],
       "utilization": [0.3333, 0.3 ,0.2857, 0.3333]
@@ -317,7 +317,7 @@
     "action" : "generate",
     "parameters" : {
       "citta_criteria" : [ "utilization_descending"],
-      "assignment_method" : [ "WFDU" ],
+      "assignment_method" : [ "Wmin" ],
       "number_of_cores": 2
     }
   },

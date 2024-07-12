@@ -1,4 +1,5 @@
 from pulp import *
+import time
 
 
 class Wmin:
@@ -27,6 +28,13 @@ class Wmin:
 
         maxW = LpVariable("maxW", lowBound=0)
 
+        z = {}
+        for i in range(len(self.taskset)):
+            for j in range(len(self.taskset)):
+                for k in range(self.number_of_cores):
+                    if i != j and self.interference[i] != 0 and self.interference[j] != 0:
+                        z[i, j, k] = LpVariable(f"z_{i}_{j}_{k}", cat='Binary')
+
         # Constraints
 
         # Constraint 19
@@ -47,26 +55,24 @@ class Wmin:
             for i in range(len(self.taskset)):
                 if self.interference[i] != 0:
                     for j in range(len(self.taskset)):
-                        if i != j:
+                        if i != j and self.interference[j] != 0:
                             # Variable pour o[i, k] * (1 - o[j, k]) (s'assurer que i et j comptent l'interference que si coeur diff (que i dans coeur k))
-                            z = LpVariable(f"z_{i}_{j}_{k}", cat='Binary')
-                            prob += z <= o[i, k]
-                            prob += z <= (1 - o[j, k])
-                            prob += z >= o[i, k] + (1 - o[j, k]) - 1
+                            prob += z[i, j, k] <= o[i, k]
+                            prob += z[i, j, k] <= (1 - o[j, k])
+                            prob += z[i, j, k] >= o[i, k] + (1 - o[j, k]) - 1
 
-                            prob += lpSum([self.interference[j] * z
-                                           for i in range(len(self.taskset)) if self.interference[i] != 0
-                                           for j in range(len(self.taskset)) if i != j
-                                           ]) == maxW_k[k]
+            prob += lpSum([self.interference[j] * z[i, j, k]
+                           for i in range(len(self.taskset)) if self.interference[i] != 0
+                           for j in range(len(self.taskset)) if i != j and self.interference[j] != 0
+                           ]) == maxW_k[k]
 
         # Objective function
-        prob += lpSum([maxW_k[k] for k in range(self.number_of_cores)]) == maxW
+        prob += maxW == lpSum([maxW_k[k] for k in range(self.number_of_cores)])
         prob += maxW
 
         # Solving the MILP problem
         prob.solve(GUROBI_CMD(msg=0, options=[("OutputFlag", 0)]))
         print(prob)
-
         task_in_core = [[] for _ in range(self.number_of_cores)]
         # Checking if a solution is found
         if prob.status == 1:

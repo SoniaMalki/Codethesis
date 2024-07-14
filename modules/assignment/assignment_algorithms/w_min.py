@@ -72,7 +72,6 @@ class Wmin:
 
         # Solving the MILP problem
         prob.solve(GUROBI_CMD(msg=0, options=[("OutputFlag", 0)]))
-        print(prob)
         task_in_core = [[] for _ in range(self.number_of_cores)]
         # Checking if a solution is found
         if prob.status == 1:

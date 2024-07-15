@@ -9,10 +9,12 @@ from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
 
 np.random.seed(42)
-random.seed(42)  
+random.seed(42)
 
-assignment_methods = ["WFDU", "FFDU", "BFDU", "Wmin"]
-citta_criteria_list = ["utilization_descending"]
+assignment_methods_with_criteria = ["CITTA"]
+assignment_methods_without_criteria = ["BFDU", "FFDU", "WFDU", "Wmin"]
+citta_criteria_list = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending",
+                       "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
 experiences = ["manual_1", "generate_1"]
 
 
@@ -43,12 +45,20 @@ def prepare_input_data_manual_1(assignment_method, citta_criteria=""):
 
 def create_expected_assignment_output_manual_1(assignment_method, citta_criteria):
     if assignment_method == "CITTA":
-        assignment_method = ("CITTA",  citta_criteria)
+        assignment_method = ("CITTA", citta_criteria)
     expected_assignment = {
         "WFDU": [(1, [[0, 1], [3, 2]])],
         "FFDU": [(1, [[0, 3, 1], [2]])],
         "BFDU": [(1, [[0, 3, 1], [2]])],
+        ("CITTA", "wcet_ascending"): [(1, [[0, 2], [1, 3]])],
+        ("CITTA", "wcet_descending"): [(1, [[1, 3, 2], [0]])],
+        ("CITTA", "period_ascending"): [(1, [[0, 2], [3, 1]])],
+        ("CITTA", "period_descending"): [(1, [[1, 3, 2], [0]])],
+        ("CITTA", "utilization_ascending"): [(1, [[2, 1, 3], [0]])],
         ("CITTA", "utilization_descending"): [(1, [[0, 3], [1, 2]])],
+        ("CITTA", "execution_slack_ascending"): [(1, [[0, 2], [3, 1]])],
+        ("CITTA", "execution_slack_descending"): [(1, [[1, 3, 2], [0]])],
+        ("CITTA", "random_order"): [(1, [[1, 3, 2], [0]])],
         "Wmin": [(1, [[0], [1, 2, 3]])]
     }
     return expected_assignment[assignment_method]
@@ -76,12 +86,20 @@ def prepare_input_data_generate_1(assignment_method, citta_criteria=""):
 
 def create_expected_assignment_output_generate_1(assignment_method, citta_criteria):
     if assignment_method == "CITTA":
-        assignment_method = ("CITTA",  citta_criteria)
+        assignment_method = ("CITTA", citta_criteria)
     expected_assignment = {
         "WFDU": [(1, [[2, 0], [3, 1]])],
         "FFDU": [(1, [[2, 3, 1, 0], []])],
         "BFDU": [(1, [[2, 3, 1, 0], []])],
+        ("CITTA", "wcet_ascending"): [(1, [[0, 2, 1], [3]])],
+        ("CITTA", "wcet_descending"): [(1, [[3], [1, 0, 2]])],
+        ("CITTA", "period_ascending"): [(1, [[2, 0, 1], [3]])],
+        ("CITTA", "period_descending"): [(1, [[3], [0, 1, 2]])],
+        ("CITTA", "utilization_ascending"): [(1, [[0, 1, 2], [3]])],
         ("CITTA", "utilization_descending"): [(1, [[2, 1, 0], [3]])],
+        ("CITTA", "execution_slack_ascending"): [(1, [[2, 1, 0], [3]])],
+        ("CITTA", "execution_slack_descending"): [(1, [[3], [0, 1, 2]])],
+        ("CITTA", "random_order"): [(1, [[3], [2, 0, 1]])],
         "Wmin": [(1, [[], [0, 1, 2, 3]])]
     }
     return expected_assignment[assignment_method]
@@ -149,10 +167,24 @@ def reset_random_seed():
     np.random.seed(42)
     random.seed(42)
 
+# Générer les combinaisons de paramètres nécessaires
 
-@pytest.mark.parametrize("assignment_method", assignment_methods, ids=lambda method: f"{method}")
-@pytest.mark.parametrize("citta_criteria", citta_criteria_list, ids=lambda criteria: f"{criteria}")
-@pytest.mark.parametrize("experience", experiences, ids=lambda exp: f"{exp}")
+
+def generate_param_combinations():
+    combinations = []
+    for method in assignment_methods_without_criteria:
+        for experience in experiences:
+            combinations.append((method, "", experience))
+    for method in assignment_methods_with_criteria:
+        for criteria in citta_criteria_list:
+            for experience in experiences:
+                combinations.append((method, criteria, experience))
+    return combinations
+
+# Paramétrage des tests avec pytest.mark.parametrize
+
+
+@pytest.mark.parametrize("assignment_method,citta_criteria,experience", generate_param_combinations(), ids=lambda val: f"{val}")
 def test_assignment(assignment_method, citta_criteria, experience):
     input_data = prepare_input_data(
         experience, assignment_method, citta_criteria)

@@ -7,10 +7,9 @@ from modules.assignment.assignment_generator import AssignmentGenerator
 from modules.assignment.assignment_loader_saver import AssignmentLoaderSaver
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
-# Configuration initiale des tests
 
 np.random.seed(42)
-random.seed(42)  # Setting a seed for reproducibility
+random.seed(42)  
 
 assignment_methods = ["WFDU", "FFDU", "BFDU", "Wmin"]
 citta_criteria_list = ["utilization_descending"]
@@ -52,7 +51,6 @@ def create_expected_assignment_output_manual_1(assignment_method, citta_criteria
         ("CITTA", "utilization_descending"): [(1, [[0, 3], [1, 2]])],
         "Wmin": [(1, [[0], [1, 2, 3]])]
     }
-
     return expected_assignment[assignment_method]
 
 
@@ -86,7 +84,6 @@ def create_expected_assignment_output_generate_1(assignment_method, citta_criter
         ("CITTA", "utilization_descending"): [(1, [[2, 1, 0], [3]])],
         "Wmin": [(1, [[], [0, 1, 2, 3]])]
     }
-
     return expected_assignment[assignment_method]
 
 
@@ -133,25 +130,26 @@ def shape_interference(taskset_set_obj):
     new_interference = []
     for taskset in taskset_set_obj:
         taskset_interference = np.max(taskset.interference, axis=1)
-        # Modif au niveau Taskset Set
         new_interference.append(taskset_interference)
-        taskset.interference = taskset_interference  # Modif au niveau Taskset
+        taskset.interference = taskset_interference
         for task_index, task in enumerate(taskset):
-            # Modif au niveau Task
             task.interference = taskset_interference[task_index]
-
     taskset_set_obj.interference = np.array(new_interference)
     return taskset_set_obj
 
 
 def verify_assignment(assignment, expected_assignment):
     for result, exp_ass in zip(assignment, expected_assignment):
-        # Vérification des résultats
         assert result.success == exp_ass[0]
         assert result.assignment == exp_ass[1]
 
 
-# Paramétrage des tests avec pytest.mark.parametrize
+@pytest.fixture(autouse=True)
+def reset_random_seed():
+    np.random.seed(42)
+    random.seed(42)
+
+
 @pytest.mark.parametrize("assignment_method", assignment_methods, ids=lambda method: f"{method}")
 @pytest.mark.parametrize("citta_criteria", citta_criteria_list, ids=lambda criteria: f"{criteria}")
 @pytest.mark.parametrize("experience", experiences, ids=lambda exp: f"{exp}")
@@ -167,6 +165,6 @@ def test_assignment(assignment_method, citta_criteria, experience):
     elif taskset_action == "generate":
         taskset = create_taskset_generate(taskset_id, taskset_parameters)
     else:
-        print("Invalid parameter")
+        raise ValueError("Invalid parameter")
     assignment = create_assignment(taskset, assignment_parameters)
     verify_assignment(assignment, expected_assignment)

@@ -63,6 +63,8 @@ def expected_task_structure():
     ]
 
 # Test creation
+
+
 def create_taskset(data):
     """Create and return a Taskset object using provided data."""
     generator = TasksetSetGenerator(
@@ -122,6 +124,12 @@ def verify_task_attributes(taskset_set, expected_tasks):
             assert np.isclose(task.utilization,
                               exp_task['utilization'], rtol=1e-04)
             assert task.absolute_deadline == exp_task['absolute_deadline']
+
+
+@pytest.fixture(autouse=True)
+def reset_random_seed():
+    np.random.seed(42)
+    random.seed(42)
 
 
 @pytest.mark.parametrize("input_data, expected_taskset_set, expected_taskset, expected_tasks", [

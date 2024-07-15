@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 from modules.taskset.taskset_set_manual import TasksetSetManual
 
+#Test N1
 def prepare_input_data():
     """Prepare and return input data for the test."""
     return {
@@ -12,7 +13,6 @@ def prepare_input_data():
         "interference_list": [[0, 1], [1, 0]],
         "utilization_list": [0.3333, 0.3]
     }
-
 
 def expected_taskset_structure():
     """Prepare and return expected Taskset structure for the test."""
@@ -38,7 +38,45 @@ def expected_task_structure():
             'interference': [1, 0], 'utilization': 0.3, 'absolute_deadline': {1: 6, 2: 11, 3: 16, 4: 21}}
     ]
 
+#Test N2
+def prepare_input_data2():
+    """Prepare and return a second set of input data for the test."""
+    return {
+        "taskset_id": "taskset_manual_test_2",
+        "wcet_list": [2, 4],
+        "deadline_list": [6, 8],
+        "period_list": [6, 8],
+        "interference_list": [[0, 2], [2, 0]],
+        "utilization_list": [0.25, 0.4]
+    }
 
+
+def expected_taskset_structure2():
+    """Prepare and return a second expected Taskset structure for the test."""
+    return {
+        'taskset_number': 0,
+        'wcet': np.array([2, 4]),
+        'deadline': np.array([6, 8]),
+        'period': np.array([6, 8]),
+        'interference': np.array([[0, 2], [2, 0]]),
+        'utilization': np.array([0.25, 0.4]),
+        'hyperperiod': 24,
+        'N': np.array([4, 3]),
+        'activation': [np.array([1, 2, 3, 4]), np.array([1, 2, 3])]
+    }
+
+
+def expected_task_structure2():
+    """Prepare and return a second set of expected Task structures for the test."""
+    return [
+        {'task_number': 0, 'wcet': 2, 'deadline': 6, 'period': 6, 'interference': [
+            0, 2], 'utilization': 0.25, 'absolute_deadline': {1: 7, 2: 13, 3: 19, 4: 25}},
+        {'task_number': 1, 'wcet': 4, 'deadline': 8, 'period': 8, 'interference': [
+            2, 0], 'utilization': 0.4, 'absolute_deadline': {1: 9, 2: 17, 3: 25}}
+    ]
+
+
+# Test creation
 def create_taskset(data):
     """Create and return a Taskset object using provided data."""
     taskset_manual = TasksetSetManual(
@@ -79,12 +117,11 @@ def verify_task_attributes(taskset, expected_tasks):
 
 
 @pytest.mark.parametrize("input_data, expected_ts, expected_tasks", [
-    (prepare_input_data(), expected_taskset_structure(), expected_task_structure())
+    (prepare_input_data(), expected_taskset_structure(), expected_task_structure()),
+    (prepare_input_data2(), expected_taskset_structure2(), expected_task_structure2())
 ])
 def test_taskset_creation(input_data, expected_ts, expected_tasks):
     """Main test function to test taskset creation and attribute validation."""
     taskset = create_taskset(input_data)
     verify_taskset_attributes(taskset, expected_ts)
     verify_task_attributes(taskset, expected_tasks)
-
-

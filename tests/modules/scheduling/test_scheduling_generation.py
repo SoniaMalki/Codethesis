@@ -32,7 +32,7 @@ scheduling_algorithms_with_combination = [
 ]
 scheduling_algorithms = scheduling_algorithms_with_combination + \
     scheduling_algorithms_without_combination
-experiences = ["manual_1"]
+experiences = ["manual_1", "generate_1"]
 
 
 def prepare_input_data_manual_1(scheduling_algorithm):

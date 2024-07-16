@@ -14,7 +14,7 @@ from modules.scheduling.scheduling_generator import SchedulingGenerator
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
 
-save_results = True
+save_results = False
 np.random.seed(42)
 random.seed(42)
 

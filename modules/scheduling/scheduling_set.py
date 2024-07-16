@@ -40,3 +40,12 @@ class SchedulingSet:
                )
 
         return res
+
+    def __eq__(self, other):
+        if not isinstance(other, SchedulingSet):
+            return NotImplemented
+        return (self.scheduling_id == other.scheduling_id and
+                self.taskset_id == other.taskset_id and
+                self.assignment_id == other.assignment_id and
+                self.scheduling_algorithms == other.scheduling_algorithms and
+                self.scheduling_list == other.scheduling_list)

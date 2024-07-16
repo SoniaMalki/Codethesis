@@ -57,3 +57,18 @@ class Taskset:
             task_str = task_str + "[]"
         res = res + task_str
         return res
+
+    def __eq__(self, other):
+        if not isinstance(other, Taskset):
+            return NotImplemented
+        return (self.taskset_number == other.taskset_number and
+                self.wcet == other.wcet and
+                self.deadline == other.deadline and
+                self.period == other.period and
+                self.interference == other.interference and
+                self.utilization == other.utilization and
+                self.hyperperiod == other.hyperperiod and
+                self.N == other.N and
+                self.activation == other.activation and
+                self.absolute_deadline == other.absolute_deadline and
+                self.task_list == other.task_list)

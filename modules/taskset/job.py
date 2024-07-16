@@ -38,3 +38,17 @@ class Job:
         if interfering_job_id not in self.interference_history:
             self.remaining_execution_time += interfering_interference_factor
             self.interference_history.add(interfering_job_id)
+
+    def __eq__(self, other):
+        if not isinstance(other, Job):
+            return NotImplemented
+        return (self.task_number == other.task_number and
+                self.job_identifier == other.job_identifier and
+                self.wcet == other.wcet and
+                self.absolute_deadline == other.absolute_deadline and
+                self.relative_deadline == other.relative_deadline and
+                self.arrival_time == other.arrival_time and
+                self.interference_factor == other.interference_factor and
+                self.remaining_execution_time == other.remaining_execution_time and
+                self.completed == other.completed and
+                self.interference_history == other.interference_history)

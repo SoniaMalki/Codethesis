@@ -43,3 +43,13 @@ class AssignmentSet:
                )
 
         return res
+
+    def __eq__(self, other):
+        if not isinstance(other, AssignmentSet):
+            return NotImplemented
+        return (self.assignment_id == other.assignment_id and
+                self.taskset_id == other.taskset_id and
+                self.assignment_method == other.assignment_method and
+                self.citta_criteria == other.citta_criteria and
+                self.number_of_cores == other.number_of_cores and
+                self.assignment_list == other.assignment_list)

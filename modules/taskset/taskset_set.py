@@ -48,3 +48,14 @@ class TasksetSet:
         # if len(self.taskset_list) == 0:
         #     res = res + "[]\n"
         return res
+
+    def __eq__(self, other):
+        if not isinstance(other, TasksetSet):
+            return NotImplemented
+        return (self.taskset_id == other.taskset_id and
+                self.wcet == other.wcet and
+                self.deadline == other.deadline and
+                self.period == other.period and
+                self.interference == other.interference and
+                self.utilization == other.utilization and
+                self.taskset_list == other.taskset_list)

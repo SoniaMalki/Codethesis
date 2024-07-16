@@ -77,3 +77,15 @@ class Task:
                 interference_factor=self.interference
             )
             self.job_list.append(job)
+
+    def __eq__(self, other):
+        if not isinstance(other, Task):
+            return NotImplemented
+        return (self.task_number == other.task_number and
+                self.wcet == other.wcet and
+                self.deadline == other.deadline and
+                self.period == other.period and
+                self.interference == other.interference and
+                self.utilization == other.utilization and
+                self.absolute_deadline == other.absolute_deadline and
+                self.job_list == other.job_list)

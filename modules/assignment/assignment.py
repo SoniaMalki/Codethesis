@@ -26,3 +26,8 @@ class Assignment:
             if task_index in sublist:
                 return core_index
         return None
+
+    def __eq__(self, other):
+        if not isinstance(other, Assignment):
+            return NotImplemented
+        return self.assignment == other.assignment and self.success == other.success

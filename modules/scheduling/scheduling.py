@@ -72,3 +72,10 @@ class Scheduling:
 
     def __getitem__(self, i):
         return self.schedule[i]
+
+    def __eq__(self, other):
+        if not isinstance(other, Scheduling):
+            return NotImplemented
+        return (self.schedule == other.schedule and
+                self.success == other.success and
+                self.scheduler_name == other.scheduler_name)

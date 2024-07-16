@@ -28,3 +28,9 @@ class CompositeScheduling:
     def __getitem__(self, i):
         return self.schedules[i]
 
+    def __eq__(self, other):
+        if not isinstance(other, CompositeScheduling):
+            return NotImplemented
+        return (self.scheduler_name == other.scheduler_name and
+                self.success == other.success and
+                self.schedules == other.schedules)

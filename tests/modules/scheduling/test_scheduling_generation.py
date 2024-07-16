@@ -14,7 +14,7 @@ from modules.scheduling.scheduling_generator import SchedulingGenerator
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
 
-save_results = False
+save_results = True
 np.random.seed(42)
 random.seed(42)
 
@@ -160,8 +160,7 @@ def shape_interference(taskset_set_obj):
 
 def verify_scheduling(scheduling, expected_scheduling):
     for result, exp_s in zip(scheduling, expected_scheduling):
-        assert result.success == exp_s.success
-        assert result.schedule == exp_s.schedule
+        assert result == exp_s
 
 
 @pytest.fixture(autouse=True)

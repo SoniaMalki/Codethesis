@@ -6,7 +6,7 @@ class SchedulingLoaderSaver:
     def __init__(self, main_path):
         self.scheduling_path = main_path / "results" / "schedulings"
         self.expected_scheduling_path = main_path / \
-            "tests" / "results" / "expected_schedulings"
+            "tests" / "results_test" / "expected_schedulings"
 
     def load(self, scheduling_id):
         scheduling_filename = f"{scheduling_id}.pkl"
@@ -25,7 +25,7 @@ class SchedulingLoaderSaver:
 
     def load_test_expected_result(self, scheduling_id, experience, scheduling_algorithm):
 
-        scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}.pkl"
+        scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}.pklr"
         filepath = self.expected_scheduling_path / scheduling_filename
         if os.path.exists(filepath):
             with open(filepath, "rb") as f:
@@ -36,6 +36,6 @@ class SchedulingLoaderSaver:
     def save_test_expected_result(self, scheduling_obj, scheduling_id, experience, scheduling_algorithm):
         if scheduling_obj is not None:
             os.makedirs(self.expected_scheduling_path, exist_ok=True)
-            scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}.pkl"
+            scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}.pklr"
             with open(self.expected_scheduling_path / scheduling_filename, 'wb') as f:
                 pickle.dump(scheduling_obj, f)

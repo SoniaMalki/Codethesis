@@ -34,8 +34,7 @@ class Rhma:
 
         # Save parameters to file to analyse
         output_path = f"{Path(__file__).parent.parent.parent.parent}/other_files/output_parameters.txt"
-        self.save_parameters_to_file(
-            file_path=output_path)
+        # self.save_parameters_to_file(file_path = output_path)
 
     def output_parameters_to_str(self):
         output_res = "---------------------\n Parameters \n---------------------\n"

@@ -1,5 +1,6 @@
 from modules.scheduling.scheduling import Scheduling
 
+
 class SchedulingSet:
     def __init__(self, scheduling_id, taskset_id, assignment_id, scheduling_algorithms, scheduling_list):
         self.scheduling_id = scheduling_id
@@ -16,19 +17,19 @@ class SchedulingSet:
                 f"scheduling_algorithms={self.scheduling_algorithms}, "
                 f"scheduling_list={self.scheduling_list}, "
                 ")"
-        )
+                )
 
     def __len__(self):
-        return len(self.schedule_list)
+        return len(self.scheduling_list)
 
     def __iter__(self):
-        return iter(self.schedule_list)
+        return iter(self.scheduling_list)
 
     def __next__(self):
-        return next(self.schedule_list)
+        return next(self.scheduling_list)
 
     def __getitem__(self, i):
-        return self.schedule_list[i]
+        return self.scheduling_list[i]
 
     def __str__(self):
         res = (f"Scheduling id: {self.scheduling_id}\n"

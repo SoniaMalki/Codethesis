@@ -59,8 +59,6 @@ class AssignmentGenerator:
         )
 
         assigned_cores, successfully_assigned = citta_instance.assign()
-        print("=======\nCITTA reworked result\n=======\n",
-              f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
 
         return assigned_cores, successfully_assigned
 
@@ -71,8 +69,6 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = wfdu_instance.assign()
-        print("=======\nWFDU result\n=======\n",
-              f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
 
         return assigned_cores, successfully_assigned
 
@@ -83,8 +79,6 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = ffdu_instance.assign()
-        print("=======\nFFDU result\n=======\n",
-              f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
 
         return assigned_cores, successfully_assigned
 
@@ -95,8 +89,6 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = bfdu_instance.assign()
-        print("=======\nBFDU result\n=======\n",
-              f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
 
         return assigned_cores, successfully_assigned
 
@@ -107,7 +99,5 @@ class AssignmentGenerator:
             self.number_of_cores
         )
         assigned_cores, successfully_assigned = wmin_instance.assign()
-        print("=======\nWmin result\n=======\n",
-              f"successfully_assigned: {successfully_assigned}\n", f"assigned_cores:{assigned_cores}")
 
         return assigned_cores, successfully_assigned

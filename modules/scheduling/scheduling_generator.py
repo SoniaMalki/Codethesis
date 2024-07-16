@@ -64,8 +64,6 @@ class SchedulingGenerator:
                 scheduling = scheduling_function(
                     taskset=taskset, assignment=assignment, scheduler_class=scheduler_class, start_time=1, end_time=None)
                 scheduling_list.append(scheduling)
-                print(scheduling.__str__(end_time=None))
-                print(f'success: {scheduling.success}')
 
         scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id,
                                    scheduling_algorithms=self.scheduling_algorithms, scheduling_list=scheduling_list)  # Store assignments for each taskset

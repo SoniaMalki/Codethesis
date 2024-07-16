@@ -152,16 +152,16 @@ class Rhma:
         return T_h
 
     def schedule(self):
-        print(
-            f"-------------\nSolving RHMA")
+        # print(
+        #     f"-------------\nSolving RHMA")
 
         schedule = BusyPeriod()
 
         for h, busy_period in enumerate(self.busy_periods):
             prob = LpProblem(
                 f"RHMA_Busy_Period_{h}", LpMinimize)
-            print(
-                f"-------------\nCreating variables for BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
+            # print(
+            #     f"-------------\nCreating variables for BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
 
             # Variables
             x = {}
@@ -298,10 +298,9 @@ class Rhma:
 
             prob += interference_term + response_time_term
 
-            print(
-                f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
-            #print(prob)
-            #time.sleep(300)
+            # print(f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
+            # print(prob)
+            # time.sleep(300)
 
             # Solving the MILP problem
             prob.solve(GUROBI_CMD(msg=0, options=[
@@ -322,17 +321,13 @@ class Rhma:
                                     busy_period_schedule[j].append(
                                         (t, i, a))
 
-                if busy_period_schedule != busy_period_schedule_empty:
-                    busy_period_schedule = Scheduling(
-                        schedule=busy_period_schedule, success=1, scheduler_name="RHMA")
-                    schedule.add_period(scheduling=busy_period_schedule)
-                else:
-                    print("empty")
-                    time.sleep(1)
+                busy_period_schedule = Scheduling(
+                    schedule=busy_period_schedule, success=1, scheduler_name="RHMA")
+                schedule.add_period(scheduling=busy_period_schedule)
 
             else:
-                print(
-                    f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
+                # print(
+                #     f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
                 schedule.add_period(scheduling=self.busy_periods[h])
 
         return schedule

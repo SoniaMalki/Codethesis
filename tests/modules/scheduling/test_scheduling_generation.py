@@ -1,7 +1,10 @@
+import os
+from pathlib import Path
 import random
 import numpy as np
 import pytest
 from modules.assignment.assignment_generator import AssignmentGenerator
+from modules.scheduling.scheduling_loader_saver import SchedulingLoaderSaver
 from modules.scheduling.scheduling_set import SchedulingSet
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.composite_scheduling import CompositeScheduling
@@ -11,7 +14,7 @@ from modules.scheduling.scheduling_generator import SchedulingGenerator
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
 
-
+save_results = False
 np.random.seed(42)
 random.seed(42)
 
@@ -29,7 +32,7 @@ scheduling_algorithms_with_combination = [
 ]
 scheduling_algorithms = scheduling_algorithms_with_combination + \
     scheduling_algorithms_without_combination
-experiences = ["manual_1", "generate_1"]
+experiences = ["manual_1"]
 
 
 def prepare_input_data_manual_1(scheduling_algorithm):
@@ -96,51 +99,15 @@ def prepare_input_data(experience, scheduling_algorithm):
         return prepare_input_data_generate_1(scheduling_algorithm=scheduling_algorithm)
 
 
-def create_expected_scheduling_output_manual_1(scheduling_algorithm):
-    if scheduling_algorithm in scheduling_algorithms_without_combination:
-        schedule = [[(1, None, None), (10, None, None)], [
-            (1, None, None), (10, None, None)]]
-        success = True
-
-    elif scheduling_algorithm in scheduling_algorithms_with_combination:
-        schedule = [[(1, None, None), (10, None, None)], [
-            (1, None, None), (10, None, None)]]
-        success = True
-    else:
-        raise ValueError(
-            f"The scheduling_algorithm ({scheduling_algorithm}) is not valid")
-
-    expected_scheduling = Scheduling(
-        scheduler_name=scheduling_algorithm, schedule=schedule, success=success)
-
+def prepare_output_data(scheduling_loader_saver, experience, scheduling, scheduling_parameters, scheduling_algorithm):
+    save_test_results(scheduling_loader_saver, scheduling,
+                      scheduling_parameters, experience, scheduling_algorithm)
+    expected_scheduling = scheduling_loader_saver.load_test_expected_result(
+        scheduling_parameters["scheduling_id"],
+        experience,
+        scheduling_algorithm,
+    )
     return expected_scheduling
-
-
-def create_expected_scheduling_output_generate_1(scheduling_algorithm):
-    if scheduling_algorithm in scheduling_algorithms_without_combination:
-        schedule = [[(1, None, None), (10, None, None)], [
-            (1, None, None), (10, None, None)]]
-        success = True
-
-    elif scheduling_algorithm in scheduling_algorithms_with_combination:
-        schedule = [[(1, None, None), (10, None, None)], [
-            (1, None, None), (10, None, None)]]
-        success = True
-    else:
-        raise ValueError(
-            f"The scheduling_algorithm ({scheduling_algorithm}) is not valid")
-
-    expected_scheduling = Scheduling(
-        scheduler_name=scheduling_algorithm, schedule=schedule, success=success)
-
-    return expected_scheduling
-
-
-def prepare_output_data(experience, scheduling_algorithm):
-    if experience == "manual_1":
-        return create_expected_scheduling_output_manual_1(scheduling_algorithm=scheduling_algorithm)
-    elif experience == "generate_1":
-        return create_expected_scheduling_output_generate_1(scheduling_algorithm=scheduling_algorithm)
 
 
 def create_taskset_manual(taskset_id, taskset_parameters):
@@ -193,8 +160,8 @@ def shape_interference(taskset_set_obj):
 
 def verify_scheduling(scheduling, expected_scheduling):
     for result, exp_s in zip(scheduling, expected_scheduling):
-        assert result.success == exp_s[0]
-        assert result.schedule == exp_s[1]
+        assert result.success == exp_s.success
+        assert result.schedule == exp_s.schedule
 
 
 @pytest.fixture(autouse=True)
@@ -210,7 +177,16 @@ def generate_param_combinations():
             combinations.append((algorithm, experience))
     return combinations
 
-# Paramétrage des tests avec pytest.mark.parametrize
+
+def save_test_results(scheduling_loader_saver, scheduling, scheduling_parameters, experience, scheduling_algorithm):
+    if save_results:
+        # Sauvegarder les résultats pour la première exécution du test
+        scheduling_loader_saver.save_test_expected_result(
+            scheduling,
+            scheduling_parameters["scheduling_id"],
+            experience,
+            scheduling_algorithm,
+        )
 
 
 @pytest.mark.parametrize("scheduling_algorithm,experience", generate_param_combinations(), ids=lambda val: f"{val}")
@@ -218,8 +194,7 @@ def test_scheduling(scheduling_algorithm, experience):
     input_data = prepare_input_data(
         experience, scheduling_algorithm)
     taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters = input_data
-    expected_scheduling = prepare_output_data(
-        experience=experience, scheduling_algorithm=scheduling_algorithm)
+    scheduling_loader_saver = SchedulingLoaderSaver(Path(os.getcwd()))
 
     if taskset_action == "manual":
         taskset = create_taskset_manual(taskset_id, taskset_parameters)
@@ -231,4 +206,11 @@ def test_scheduling(scheduling_algorithm, experience):
     if assignment_parameters["assignment_method"][0].lower() != "wmin":
         shape_interference(taskset)
     scheduling = create_scheduling(taskset, assignment, scheduling_parameters)
-    # verify_scheduling(scheduling, expected_scheduling)
+
+    expected_scheduling = prepare_output_data(
+        scheduling_loader_saver, experience, scheduling, scheduling_parameters, scheduling_algorithm)
+
+    if expected_scheduling is not None:
+        verify_scheduling(scheduling, expected_scheduling)
+    else:
+        assert False, "Résultats de scheduling attendus non trouvés, veuillez les créer."

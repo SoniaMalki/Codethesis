@@ -32,61 +32,66 @@ scheduling_algorithms_with_combination = [
 ]
 scheduling_algorithms = scheduling_algorithms_with_combination + \
     scheduling_algorithms_without_combination
-experiences = ["manual_1", "generate_1"]
+experiences = ["manual_1", "manual_2"]
 
 
-def prepare_input_data_manual_1(scheduling_algorithm):
+def prepare_input_data_taskset_manual_1():
     taskset_id = "taskset_manual_1"
     taskset_action = "manual"
+    wcet = [2, 3, 2, 3]
+    deadline = [6, 10, 7, 9]
+    period = [6, 10, 7, 9]
+    interference = [
+        [0, 0, 0, 0],
+        [0, 0, 1, 0],
+        [0, 1, 0, 0],
+        [0, 0, 0, 0]
+    ]
+    utilization = [w / p for w, p in zip(wcet, period)]
+
+    return taskset_id, taskset_action, wcet, deadline, period, interference, utilization
+
+
+def prepare_input_data_taskset_manual_2():
+    taskset_id = "taskset_manual_2"
+    taskset_action = "manual"
+    wcet = [3, 3, 21, 14, 8]
+    deadline = [12, 15, 75, 24, 25]
+    period = [12, 15, 75, 24, 25]
+    interference = [
+        [0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0]
+    ]
+    utilization = [w / p for w, p in zip(wcet, period)]
+
+    return taskset_id, taskset_action, wcet, deadline, period, interference, utilization
+
+
+def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, interference, utilization, scheduling_algorithm):
+    taskset_id = taskset_id
+    taskset_action = taskset_action
     taskset_parameters = {
-        "wcet_list": [2, 3, 2, 3],
-        "deadline_list": [6, 10, 7, 9],
-        "period_list": [6, 10, 7, 9],
-        "interference_list": [
-            [0, 0, 0, 0],
-            [0, 0, 1, 0],
-            [0, 1, 0, 0],
-            [0, 0, 0, 0]
-        ],
-        "utilization_list": [0.3333, 0.3, 0.2857, 0.3333]
+        "wcet_list": wcet,
+        "deadline_list": deadline,
+        "period_list": period,
+        "interference_list": interference,
+        "utilization_list": utilization
     }
+
     assignment_parameters = {
-        "assignment_id": "assignment_manual_1",
-        "taskset_id": "taskset_manual_1",
+        "assignment_id": "assignment",
+        "taskset_id": "taskset",
         "citta_criteria": [""],
         "assignment_method": ["WFDU"],
         "number_of_cores": 2
     }
     scheduling_parameters = {
-        "assignment_id": "assignment_manual_1",
-        "taskset_id": "taskset_manual_1",
-        "scheduling_id": "scheduling_manual_1",
-        "scheduling_algorithms": [scheduling_algorithm]
-    }
-    return taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters
-
-
-def prepare_input_data_generate_1(scheduling_algorithm):
-    taskset_id = "taskset_generate_1"
-    taskset_action = "generate"
-    taskset_parameters = {
-        "taskset_repetition": 1,
-        "list_of_probability_factors": [0.1],
-        "list_of_max_utilization": [0.2],
-        "tasks_per_taskset": 4,
-        "list_of_interference_factors": [0.2]
-    }
-    assignment_parameters = {
-        "assignment_id": "assignment_generate_1",
-        "taskset_id": "taskset_generate_1",
-        "citta_criteria": [""],
-        "assignment_method": ["WFDU"],
-        "number_of_cores": 2
-    }
-    scheduling_parameters = {
-        "assignment_id": "assignment_generate_1",
-        "taskset_id": "taskset_generate_1",
-        "scheduling_id": "scheduling_generate_1",
+        "assignment_id": "assignment",
+        "taskset_id": "taskset",
+        "scheduling_id": "scheduling",
         "scheduling_algorithms": [scheduling_algorithm]
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters
@@ -94,9 +99,11 @@ def prepare_input_data_generate_1(scheduling_algorithm):
 
 def prepare_input_data(experience, scheduling_algorithm):
     if experience == "manual_1":
-        return prepare_input_data_manual_1(scheduling_algorithm=scheduling_algorithm)
-    elif experience == "generate_1":
-        return prepare_input_data_generate_1(scheduling_algorithm=scheduling_algorithm)
+        taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_1()
+    elif experience == "manual_2":
+        taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_2()
+
+    return prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, interference, utilization, scheduling_algorithm)
 
 
 def prepare_output_data(scheduling_loader_saver, experience, scheduling, scheduling_parameters, scheduling_algorithm):

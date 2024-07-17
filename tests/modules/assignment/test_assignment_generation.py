@@ -11,8 +11,8 @@ from modules.taskset.taskset_set_manual import TasksetSetManual
 np.random.seed(42)
 random.seed(42)
 
-assignment_methods_with_criteria = ["CITTA", "BFDU"]
-assignment_methods_without_criteria = ["FFDU", "WFDU", "Wmin"]
+assignment_methods_with_criteria = ["CITTA", "BFDU", "FFDU"]
+assignment_methods_without_criteria = ["WFDU", "Wmin"]
 sorting_criterion_list = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending",
                           "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
 experiences = ["manual_1", "generate_1"]
@@ -48,7 +48,6 @@ def create_expected_assignment_output_manual_1(assignment_method, sorting_criter
         assignment_method = (assignment_method, sorting_criterion)
     expected_assignment = {
         "WFDU": [(1, [[0, 1], [3, 2]])],
-        "FFDU": [(1, [[0, 3, 1], [2]])],
         ("BFDU", "wcet_ascending"): [(1, [[0, 2, 1], [3]])],
         ("BFDU", "wcet_descending"): [(1, [[1, 3, 0], [2]])],
         ("BFDU", "period_ascending"): [(1, [[0, 2, 3], [1]])],
@@ -58,6 +57,17 @@ def create_expected_assignment_output_manual_1(assignment_method, sorting_criter
         ("BFDU", "execution_slack_ascending"): [(1, [[0, 2, 3], [1]])],
         ("BFDU", "execution_slack_descending"): [(1, [[1, 3, 2], [0]])],
         ("BFDU", "random_order"): [(1, [[1, 3, 0], [2]])],
+
+        ("FFDU", "wcet_ascending"): [(1, [[0, 2, 1], [3]])],
+        ("FFDU", "wcet_descending"): [(1, [[1, 3, 0], [2]])],
+        ("FFDU", "period_ascending"): [(1, [[0, 2, 3], [1]])],
+        ("FFDU", "period_descending"): [(1, [[1, 3, 2], [0]])],
+        ("FFDU", "utilization_ascending"): [(1, [[2, 1, 0], [3]])],
+        ("FFDU", "utilization_descending"): [(1, [[0, 3, 1], [2]])],
+        ("FFDU", "execution_slack_ascending"): [(1, [[0, 2, 3], [1]])],
+        ("FFDU", "execution_slack_descending"): [(1, [[1, 3, 2], [0]])],
+        ("FFDU", "random_order"): [(1, [[1, 3, 0], [2]])],
+
         ("CITTA", "wcet_ascending"): [(1, [[0, 2], [1, 3]])],
         ("CITTA", "wcet_descending"): [(1, [[1, 3, 2], [0]])],
         ("CITTA", "period_ascending"): [(1, [[0, 2], [3, 1]])],
@@ -97,7 +107,6 @@ def create_expected_assignment_output_generate_1(assignment_method, sorting_crit
         assignment_method = (assignment_method, sorting_criterion)
     expected_assignment = {
         "WFDU": [(1, [[2, 0], [3, 1]])],
-        "FFDU": [(1, [[2, 3, 1, 0], []])],
         ("BFDU", "wcet_ascending"): [(1, [[0, 2, 1, 3], []])],
         ("BFDU", "wcet_descending"): [(1, [[3, 1, 0, 2], []])],
         ("BFDU", "period_ascending"): [(1, [[2, 0, 1, 3], []])],
@@ -107,6 +116,15 @@ def create_expected_assignment_output_generate_1(assignment_method, sorting_crit
         ("BFDU", "execution_slack_ascending"): [(1, [[2, 1, 0, 3], []])],
         ("BFDU", "execution_slack_descending"): [(1, [[3, 0, 1, 2], []])],
         ("BFDU", "random_order"): [(1, [[3, 2, 0, 1], []])],
+        ("FFDU", "wcet_ascending"): [(1, [[0, 2, 1, 3], []])],
+        ("FFDU", "wcet_descending"): [(1, [[3, 1, 0, 2], []])],
+        ("FFDU", "period_ascending"): [(1, [[2, 0, 1, 3], []])],
+        ("FFDU", "period_descending"): [(1, [[3, 0, 1, 2], []])],
+        ("FFDU", "utilization_ascending"): [(1, [[0, 1, 3, 2], []])],
+        ("FFDU", "utilization_descending"): [(1, [[2, 3, 1, 0], []])],
+        ("FFDU", "execution_slack_ascending"): [(1, [[2, 1, 0, 3], []])],
+        ("FFDU", "execution_slack_descending"): [(1, [[3, 0, 1, 2], []])],
+        ("FFDU", "random_order"): [(1, [[3, 2, 0, 1], []])],
         ("CITTA", "wcet_ascending"): [(1, [[0, 2, 1], [3]])],
         ("CITTA", "wcet_descending"): [(1, [[3], [1, 0, 2]])],
         ("CITTA", "period_ascending"): [(1, [[2, 0, 1], [3]])],

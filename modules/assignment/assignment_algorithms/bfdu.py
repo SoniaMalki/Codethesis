@@ -11,7 +11,6 @@ class Bfdu:
         self.wcet = self.taskset.wcet
         self.interference = self.taskset.interference
         self.utilization = self.taskset.utilization
-        self.sorting_criterion = sorting_criterion
         self.core_utilizations = [0] * self.number_of_cores
 
     def sort_task(self):

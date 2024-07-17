@@ -327,7 +327,10 @@
     "scheduling_id" : "scheduling_17",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "Rhma" ]
+      "scheduling_algorithms" : [ "Rhma" ],
+      "scheduling_options": {
+        "non_preemption_time_variant2": "wcet_of_tasks"
+      }
     }
   }
 },

@@ -66,7 +66,8 @@ class AssignmentGenerator:
         """Performs the WFDU assignment algorithm."""
         wfdu_instance = Wfdu(
             taskset,  # Pass a list containing only the current taskset
-            self.number_of_cores
+            self.number_of_cores,
+            self.sorting_criterion
         )
         assigned_cores, successfully_assigned = wfdu_instance.assign()
 
@@ -76,7 +77,8 @@ class AssignmentGenerator:
         """Performs the FFDU assignment algorithm."""
         ffdu_instance = Ffdu(
             taskset,  # Pass a list containing only the current taskset
-            self.number_of_cores
+            self.number_of_cores,
+            self.sorting_criterion
         )
         assigned_cores, successfully_assigned = ffdu_instance.assign()
 
@@ -86,7 +88,8 @@ class AssignmentGenerator:
         """Performs the BFDU assignment algorithm."""
         bfdu_instance = Bfdu(
             taskset,  # Pass a list containing only the current taskset
-            self.number_of_cores
+            self.number_of_cores,
+            self.sorting_criterion,
         )
         assigned_cores, successfully_assigned = bfdu_instance.assign()
 

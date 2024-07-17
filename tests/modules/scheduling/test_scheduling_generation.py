@@ -84,7 +84,7 @@ def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, i
     assignment_parameters = {
         "assignment_id": "assignment",
         "taskset_id": "taskset",
-        "sorting_criterion": [""],
+        "sorting_criterion": ["utilization_descending"],
         "assignment_method": ["WFDU"],
         "number_of_cores": 2
     }

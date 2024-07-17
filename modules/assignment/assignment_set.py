@@ -2,11 +2,11 @@ from modules.assignment.assignment import Assignment
 
 
 class AssignmentSet:
-    def __init__(self, assignment_id, taskset_id, assignment_method, citta_criteria, number_of_cores, assignment_list):
+    def __init__(self, assignment_id, taskset_id, assignment_method, sorting_criterion, number_of_cores, assignment_list):
         self.assignment_id = assignment_id
         self.taskset_id = taskset_id
         self.assignment_method = assignment_method
-        self.citta_criteria = citta_criteria
+        self.sorting_criterion = sorting_criterion
         self.number_of_cores = number_of_cores
         self.assignment_list = assignment_list
 
@@ -15,7 +15,7 @@ class AssignmentSet:
                 f"assignment_id={self.assignment_id}, "
                 f"taskset_id={self.taskset_id}, "
                 f"assignment_method={self.assignment_method}, "
-                f"citta_criteria={self.citta_criteria}, "
+                f"sorting_criterion={self.sorting_criterion}, "
                 f"number_of_cores={self.number_of_cores}, "
                 f"assignment_list={self.assignment_list}, "
                 ")"
@@ -37,7 +37,7 @@ class AssignmentSet:
         res = (f"Assignment id: {self.assignment_id}\n"
                f"Taskset ID: {self.taskset_id}\n"
                f"Assignment Method: {self.assignment_method}\n"
-               f"CITTA criteria: {self.citta_criteria}\n"
+               f"CITTA criteria: {self.sorting_criterion}\n"
                f"Core Number: {self.number_of_cores}\n"
                f"Assignment List: {self.assignment_list}\n"
                )
@@ -50,6 +50,6 @@ class AssignmentSet:
         return (self.assignment_id == other.assignment_id and
                 self.taskset_id == other.taskset_id and
                 self.assignment_method == other.assignment_method and
-                self.citta_criteria == other.citta_criteria and
+                self.sorting_criterion == other.sorting_criterion and
                 self.number_of_cores == other.number_of_cores and
                 self.assignment_list == other.assignment_list)

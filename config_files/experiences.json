@@ -16,7 +16,7 @@
       "taskset_id" : "taskset_",
       "action" : "none",
       "parameters" : {
-        "citta_criteria" : [ ],
+        "sorting_criterion" : [ ],
         "assignment_method" : [ ]
       }
     },
@@ -48,7 +48,7 @@
       "taskset_id" : "taskset_",
       "action" : "none",
       "parameters" : {
-        "citta_criteria" : [ ],
+        "sorting_criterion" : [ ],
         "assignment_method" : [ ]
       }
     },
@@ -81,7 +81,7 @@
       "action" : "generate",
       "parameters" : {
         "number_of_cores": 4,
-        "citta_criteria" : [ "period_descending" ],
+        "sorting_criterion" : [ "period_descending" ],
         "assignment_method" : [ "WFDU" ]
       }
     },
@@ -113,7 +113,7 @@
       "action" : "open",
       "parameters" : {
         "number_of_cores": 4,
-        "citta_criteria" : [ "wcet_ascending" ],
+        "sorting_criterion" : [ "wcet_ascending" ],
         "assignment_method" : [ "CITTA" ]
       }
     },
@@ -145,7 +145,7 @@
       "taskset_id" : "taskset_",
       "action" : "none",
       "parameters" : {
-        "citta_criteria" : [ ],
+        "sorting_criterion" : [ ],
         "assignment_method" : [ ]
       }
     },
@@ -170,7 +170,7 @@
     "taskset_id" : "taskset_0",
     "action" : "generate",
     "parameters" : {
-      "citta_criteria" : [ "wcet_ascending" ],
+      "sorting_criterion" : [ "wcet_ascending" ],
       "assignment_method" : [ "WFDU" ],
       "number_of_cores": 4
     }
@@ -202,7 +202,7 @@
     "taskset_id" : "taskset_",
     "action" : "none",
     "parameters" : {
-      "citta_criteria" : [ ],
+      "sorting_criterion" : [ ],
       "assignment_method" : [ ]
     }
   },
@@ -234,7 +234,7 @@
     "taskset_id" : "taskset_15",
     "action" : "generate",
     "parameters" : {
-      "citta_criteria" : [ "rien"],
+      "sorting_criterion" : [ "rien"],
       "assignment_method" : [ "wmin" ],
       "number_of_cores": 4
     }
@@ -278,8 +278,8 @@
     "taskset_id" : "taskset_16",
     "action" : "generate",
     "parameters" : {
-      "citta_criteria" : [ "utilization_descending"],
-      "assignment_method" : [ "BFDU" ],
+      "sorting_criterion" : [ "utilization_descending"],
+      "assignment_method" : [ "CITTA" ],
       "number_of_cores": 4
     }
   },
@@ -316,7 +316,7 @@
     "taskset_id" : "taskset_17",
     "action" : "generate",
     "parameters" : {
-      "citta_criteria" : [ "utilization_descending"],
+      "sorting_criterion" : [ "utilization_descending"],
       "assignment_method" : [ "Wmin" ],
       "number_of_cores": 2
     }
@@ -353,7 +353,7 @@
     "taskset_id" : "taskset_18",
     "action" : "generate",
     "parameters" : {
-      "citta_criteria" : [ "utilization_descending"],
+      "sorting_criterion" : [ "utilization_descending"],
       "assignment_method" : [ "Wmin" ],
       "number_of_cores": 2
     }

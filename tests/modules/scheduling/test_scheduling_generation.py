@@ -84,7 +84,7 @@ def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, i
     assignment_parameters = {
         "assignment_id": "assignment",
         "taskset_id": "taskset",
-        "citta_criteria": [""],
+        "sorting_criterion": [""],
         "assignment_method": ["WFDU"],
         "number_of_cores": 2
     }
@@ -133,7 +133,7 @@ def create_assignment(taskset, assignment_parameters):
         taskset_id=assignment_parameters["taskset_id"],
         assignment_id=assignment_parameters["assignment_id"],
         assignment_method=assignment_parameters["assignment_method"],
-        citta_criteria=assignment_parameters["citta_criteria"],
+        sorting_criterion=assignment_parameters["sorting_criterion"],
         number_of_cores=assignment_parameters["number_of_cores"]
     )
     assignment = generator.generate_assignment_set()

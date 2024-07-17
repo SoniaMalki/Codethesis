@@ -2,9 +2,10 @@ import copy
 
 
 class EarliestDeadlineFirstVariant2:
-    def __init__(self, taskset, assignment, number_of_cores, start_time=1, end_time=None):
+    def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=1, end_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
+        self.scheduling_options = scheduling_options
 
         if end_time == None:
             end_time = self.hyperperiod
@@ -14,7 +15,7 @@ class EarliestDeadlineFirstVariant2:
 
         self.assignment = assignment
         self.number_of_cores = number_of_cores
-        self.N = self.number_of_cores  # TO DO change this
+        self.initial_non_preemption_time = scheduling_options["non_preemption_time_variant2"]
         self.job_list = [[] for _ in range(self.number_of_cores)]
         self.ready_queue = [[] for _ in range(self.number_of_cores)]
         self.current_jobs = [None] * self.number_of_cores
@@ -93,7 +94,7 @@ class EarliestDeadlineFirstVariant2:
                 self.non_preemptible_time.pop(job_to_execute, None)
             else:
                 if job_to_execute != self.previous_jobs[core_index]:
-                    self.non_preemptible_time[job_to_execute] = self.N
+                    self.non_preemptible_time[job_to_execute] = self.initial_non_preemption_time
                 else:
                     self.non_preemptible_time[job_to_execute] -= 1
         else:

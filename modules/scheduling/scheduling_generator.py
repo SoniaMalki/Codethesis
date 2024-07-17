@@ -16,13 +16,14 @@ import time
 
 
 class SchedulingGenerator:
-    def __init__(self, taskset_set_obj, assignment_set_obj, taskset_id, assignment_id, scheduling_id, scheduling_algorithms):
+    def __init__(self, taskset_set_obj, assignment_set_obj, taskset_id, assignment_id, scheduling_id, scheduling_algorithms, scheduling_options):
         self.taskset_set = taskset_set_obj
         self.assignment_set = assignment_set_obj
         self.taskset_id = taskset_id
         self.assignment_id = assignment_id
         self.scheduling_id = scheduling_id
         self.scheduling_algorithms = scheduling_algorithms[0]
+        self.scheduling_options = scheduling_options
         self.number_of_cores = self.assignment_set.number_of_cores
 
     def get_class_by_name(self, class_name):
@@ -66,7 +67,7 @@ class SchedulingGenerator:
                 scheduling_list.append(scheduling)
 
         scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id,
-                                   scheduling_algorithms=self.scheduling_algorithms, scheduling_list=scheduling_list)  # Store assignments for each taskset
+                                   scheduling_algorithms=self.scheduling_algorithms, scheduling_options=self.scheduling_options, scheduling_list=scheduling_list)  # Store assignments for each taskset
         return scheduling
 
     def generate_scheduling(self, taskset, assignment, scheduler_class, start_time=1, end_time=None):
@@ -74,6 +75,7 @@ class SchedulingGenerator:
             taskset=taskset,
             assignment=assignment,
             number_of_cores=self.number_of_cores,
+            scheduling_options=self.scheduling_options,
             start_time=start_time,
             end_time=end_time,
         )
@@ -85,6 +87,7 @@ class SchedulingGenerator:
             taskset=taskset,
             assignment=assignment,
             number_of_cores=self.number_of_cores,
+            scheduling_options=self.scheduling_options,
             start_time=start_time,
             end_time=end_time
         )

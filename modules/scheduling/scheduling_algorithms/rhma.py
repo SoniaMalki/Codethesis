@@ -8,11 +8,12 @@ from modules.utils.busy_period import BusyPeriod
 
 
 class Rhma:
-    def __init__(self, taskset, assignment, number_of_cores, start_time=0, end_time=None):
+    def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=0, end_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
         self.assignment = assignment
         self.number_of_cores = number_of_cores
+        self.scheduling_options = scheduling_options
         if end_time == None:
             end_time = self.hyperperiod
 
@@ -22,7 +23,8 @@ class Rhma:
         self.maxI = self.generate_max_I()
         self.o_i_j = self.generate_o_i_j()
         self.combined_scheduler = CombinedScheduler(taskset=self.taskset, assignment=self.assignment,
-                                                    number_of_cores=self.number_of_cores, start_time=self.start_time,
+                                                    number_of_cores=self.number_of_cores, scheduling_options=self.scheduling_options,
+                                                    start_time=self.start_time,
                                                     end_time=self.end_time)
         self.busy_periods = self.combined_scheduler.schedule()
 

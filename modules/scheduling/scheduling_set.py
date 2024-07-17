@@ -2,11 +2,12 @@ from modules.scheduling.scheduling import Scheduling
 
 
 class SchedulingSet:
-    def __init__(self, scheduling_id, taskset_id, assignment_id, scheduling_algorithms, scheduling_list):
+    def __init__(self, scheduling_id, taskset_id, assignment_id, scheduling_algorithms, scheduling_options, scheduling_list):
         self.scheduling_id = scheduling_id
         self.taskset_id = taskset_id
         self.assignment_id = assignment_id
         self.scheduling_algorithms = scheduling_algorithms
+        self.scheduling_options = scheduling_options
         self.scheduling_list = scheduling_list
 
     def __repr__(self):
@@ -48,4 +49,5 @@ class SchedulingSet:
                 self.taskset_id == other.taskset_id and
                 self.assignment_id == other.assignment_id and
                 self.scheduling_algorithms == other.scheduling_algorithms and
+                self.scheduling_options == other.scheduling_options and
                 self.scheduling_list == other.scheduling_list)

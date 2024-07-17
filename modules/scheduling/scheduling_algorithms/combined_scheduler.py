@@ -11,11 +11,12 @@ from modules.utils.busy_period_generator import BusyPeriodGenerator
 
 
 class CombinedScheduler:
-    def __init__(self, taskset, assignment, number_of_cores, start_time=1, end_time=None):
+    def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=1, end_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
         self.assignment = assignment
         self.number_of_cores = number_of_cores
+        self.scheduling_options = scheduling_options
         if end_time == None:
             end_time = self.hyperperiod
 
@@ -90,6 +91,7 @@ class CombinedScheduler:
             taskset=self.taskset,
             assignment=self.assignment,
             number_of_cores=self.number_of_cores,
+            scheduling_options=self.scheduling_options,
             start_time=start_time,
             end_time=end_time,
         )

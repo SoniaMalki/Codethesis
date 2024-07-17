@@ -92,7 +92,10 @@ def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, i
         "assignment_id": "assignment",
         "taskset_id": "taskset",
         "scheduling_id": "scheduling",
-        "scheduling_algorithms": [scheduling_algorithm]
+        "scheduling_algorithms": [scheduling_algorithm],
+        "scheduling_options": {
+            "non_preemption_time_variant2": 2
+        }
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters
 
@@ -147,7 +150,8 @@ def create_scheduling(taskset, assignment, scheduling_parameters):
         taskset_id=scheduling_parameters["taskset_id"],
         assignment_id=scheduling_parameters["assignment_id"],
         scheduling_id=scheduling_parameters["scheduling_id"],
-        scheduling_algorithms=scheduling_parameters["scheduling_algorithms"]
+        scheduling_algorithms=scheduling_parameters["scheduling_algorithms"],
+        scheduling_options=scheduling_parameters["scheduling_options"]
     )
     scheduling = generator.generate_scheduling_set()
     return scheduling

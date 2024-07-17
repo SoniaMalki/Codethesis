@@ -2,9 +2,10 @@ import copy
 
 
 class EarliestDeadlineFirstVariant1:
-    def __init__(self, taskset, assignment, number_of_cores, start_time=1, end_time=None):
+    def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=1, end_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
+        self.scheduling_options = scheduling_options
 
         if end_time == None:
             end_time = self.hyperperiod

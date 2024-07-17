@@ -23,9 +23,9 @@ class SchedulingLoaderSaver:
             with open(self.scheduling_path / scheduling_filename, 'wb') as f:
                 pickle.dump(scheduling_obj, f)
 
-    def load_test_expected_result(self, scheduling_id, experience, scheduling_algorithm):
+    def load_test_expected_result(self, scheduling_id, experience, scheduling_algorithm, non_preemption_time_variant2):
 
-        scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}.pklr"
+        scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}_{non_preemption_time_variant2}.pklr"
         filepath = self.expected_scheduling_path / scheduling_filename
         if os.path.exists(filepath):
             with open(filepath, "rb") as f:
@@ -33,9 +33,9 @@ class SchedulingLoaderSaver:
         else:
             return None
 
-    def save_test_expected_result(self, scheduling_obj, scheduling_id, experience, scheduling_algorithm):
+    def save_test_expected_result(self, scheduling_obj, scheduling_id, experience, scheduling_algorithm, non_preemption_time_variant2):
         if scheduling_obj is not None:
             os.makedirs(self.expected_scheduling_path, exist_ok=True)
-            scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}.pklr"
+            scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}_{non_preemption_time_variant2}.pklr"
             with open(self.expected_scheduling_path / scheduling_filename, 'wb') as f:
                 pickle.dump(scheduling_obj, f)

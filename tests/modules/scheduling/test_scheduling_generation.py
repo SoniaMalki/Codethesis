@@ -14,7 +14,7 @@ from modules.scheduling.scheduling_generator import SchedulingGenerator
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
 
-save_results = False
+save_results = True
 np.random.seed(42)
 random.seed(42)
 
@@ -30,6 +30,13 @@ scheduling_algorithms_with_combination = [
     "CombinedScheduler",
     "Rhma"
 ]
+
+scheduling_options_non_preemption_time_variant2 = [
+    "number_of_tasks",
+    "wcet_of_tasks",
+    "system_utilization"
+]
+
 scheduling_algorithms = scheduling_algorithms_with_combination + \
     scheduling_algorithms_without_combination
 experiences = ["manual_1", "manual_2"]
@@ -70,7 +77,7 @@ def prepare_input_data_taskset_manual_2():
     return taskset_id, taskset_action, wcet, deadline, period, interference, utilization
 
 
-def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, interference, utilization, scheduling_algorithm):
+def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, interference, utilization, scheduling_algorithm, non_preemption_time_variant_2):
     taskset_id = taskset_id
     taskset_action = taskset_action
     taskset_parameters = {
@@ -94,28 +101,29 @@ def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, i
         "scheduling_id": "scheduling",
         "scheduling_algorithms": [scheduling_algorithm],
         "scheduling_options": {
-            "non_preemption_time_variant2": "system_utilization"
+            "non_preemption_time_variant2": non_preemption_time_variant_2
         }
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters
 
 
-def prepare_input_data(experience, scheduling_algorithm):
+def prepare_input_data(experience, scheduling_algorithm, non_preemption_time_variant_2):
     if experience == "manual_1":
         taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_1()
     elif experience == "manual_2":
         taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_2()
 
-    return prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, interference, utilization, scheduling_algorithm)
+    return prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, interference, utilization, scheduling_algorithm, non_preemption_time_variant_2)
 
 
-def prepare_output_data(scheduling_loader_saver, experience, scheduling, scheduling_parameters, scheduling_algorithm):
+def prepare_output_data(scheduling_loader_saver, experience, scheduling, scheduling_parameters, scheduling_algorithm, non_preemption_time_variant_2):
     save_test_results(scheduling_loader_saver, scheduling,
-                      scheduling_parameters, experience, scheduling_algorithm)
+                      scheduling_parameters, experience, scheduling_algorithm, non_preemption_time_variant_2)
     expected_scheduling = scheduling_loader_saver.load_test_expected_result(
         scheduling_parameters["scheduling_id"],
         experience,
         scheduling_algorithm,
+        non_preemption_time_variant_2
     )
     return expected_scheduling
 
@@ -182,13 +190,15 @@ def reset_random_seed():
 
 def generate_param_combinations():
     combinations = []
-    for algorithm in scheduling_algorithms:
-        for experience in experiences:
-            combinations.append((algorithm, experience))
+    for non_preemp_t_variant_2 in scheduling_options_non_preemption_time_variant2:
+        for algorithm in scheduling_algorithms:
+            for experience in experiences:
+                combinations.append(
+                    (algorithm, experience, non_preemp_t_variant_2))
     return combinations
 
 
-def save_test_results(scheduling_loader_saver, scheduling, scheduling_parameters, experience, scheduling_algorithm):
+def save_test_results(scheduling_loader_saver, scheduling, scheduling_parameters, experience, scheduling_algorithm, non_preemption_time_variant_2):
     if save_results:
         # Sauvegarder les résultats pour la première exécution du test
         scheduling_loader_saver.save_test_expected_result(
@@ -196,13 +206,14 @@ def save_test_results(scheduling_loader_saver, scheduling, scheduling_parameters
             scheduling_parameters["scheduling_id"],
             experience,
             scheduling_algorithm,
+            non_preemption_time_variant_2,
         )
 
 
-@pytest.mark.parametrize("scheduling_algorithm,experience", generate_param_combinations(), ids=lambda val: f"{val}")
-def test_scheduling(scheduling_algorithm, experience):
+@pytest.mark.parametrize("scheduling_algorithm,experience, non_preemption_time_variant2", generate_param_combinations(), ids=lambda val: f"{val}")
+def test_scheduling(scheduling_algorithm, experience, non_preemption_time_variant2):
     input_data = prepare_input_data(
-        experience, scheduling_algorithm)
+        experience, scheduling_algorithm, non_preemption_time_variant2)
     taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters = input_data
     scheduling_loader_saver = SchedulingLoaderSaver(Path(os.getcwd()))
 
@@ -212,13 +223,14 @@ def test_scheduling(scheduling_algorithm, experience):
         taskset = create_taskset_generate(taskset_id, taskset_parameters)
     else:
         raise ValueError("Invalid parameter")
-    assignment = create_assignment(taskset, assignment_parameters)
+    assignment = create_assignment(
+        taskset, assignment_parameters)
     if assignment_parameters["assignment_method"][0].lower() != "wmin":
         shape_interference(taskset)
     scheduling = create_scheduling(taskset, assignment, scheduling_parameters)
 
     expected_scheduling = prepare_output_data(
-        scheduling_loader_saver, experience, scheduling, scheduling_parameters, scheduling_algorithm)
+        scheduling_loader_saver, experience, scheduling, scheduling_parameters, scheduling_algorithm, non_preemption_time_variant2)
 
     if expected_scheduling is not None:
         verify_scheduling(scheduling, expected_scheduling)

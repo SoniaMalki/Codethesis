@@ -1,5 +1,7 @@
 import copy
 
+import numpy
+
 
 class EarliestDeadlineFirstVariant2:
     def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=1, end_time=None):
@@ -15,7 +17,7 @@ class EarliestDeadlineFirstVariant2:
 
         self.assignment = assignment
         self.number_of_cores = number_of_cores
-        self.initial_non_preemption_time = scheduling_options["non_preemption_time_variant2"]
+        self.initial_non_preemption_time = self.initiate_non_preemption_time_variant_2()
         self.job_list = [[] for _ in range(self.number_of_cores)]
         self.ready_queue = [[] for _ in range(self.number_of_cores)]
         self.current_jobs = [None] * self.number_of_cores
@@ -94,7 +96,7 @@ class EarliestDeadlineFirstVariant2:
                 self.non_preemptible_time.pop(job_to_execute, None)
             else:
                 if job_to_execute != self.previous_jobs[core_index]:
-                    self.non_preemptible_time[job_to_execute] = self.initial_non_preemption_time
+                    self.non_preemptible_time[job_to_execute] = self.initial_non_preemption_time[job_to_execute.task_number]
                 else:
                     self.non_preemptible_time[job_to_execute] -= 1
         else:
@@ -114,3 +116,20 @@ class EarliestDeadlineFirstVariant2:
                                 interfering_job_id=other_job_id, interfering_interference_factor=other_job.interference_factor)
                             other_job.apply_interference(
                                 interfering_job_id=current_job_id, interfering_interference_factor=current_job.interference_factor)
+
+    def initiate_non_preemption_time_variant_2(self):
+        non_preemption_criterion = self.scheduling_options["non_preemption_time_variant2"]
+        if non_preemption_criterion == "number_of_tasks":
+            non_preemption_time = [len(self.taskset)
+                                   for _ in range(len(self.taskset))]
+        elif non_preemption_criterion == "wcet_of_tasks":
+            non_preemption_time = [wcet for wcet in self.taskset.wcet]
+        elif non_preemption_criterion == "system_utilization":
+            system_utilization = numpy.sum(self.taskset.utilization)
+            non_preemption_time = [
+                system_utilization for _ in range(len(self.taskset))]
+        else:
+            print("Invalid criterion, using number of tasks by default")
+            non_preemption_time = [len(self.taskset)
+                                   for _ in range(len(self.taskset))]
+        return non_preemption_time

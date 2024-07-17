@@ -1,12 +1,53 @@
+import numpy
+
+
 class Bfdu:
-    def __init__(self, taskset, number_of_cores):
+    def __init__(self, taskset, number_of_cores, sorting_criterion):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
+        self.sorting_criterion = sorting_criterion
+        self.period = self.taskset.period
+        self.deadline = self.taskset.deadline
+        self.wcet = self.taskset.wcet
+        self.interference = self.taskset.interference
         self.utilization = self.taskset.utilization
-        self.core_utilizations = [0] * self.number_of_cores  
+        self.sorting_criterion = sorting_criterion
+        self.core_utilizations = [0] * self.number_of_cores
+
+    def sort_task(self):
+        # Trie les tâches selon certains critères
+        taskset = list(range(len(self.taskset)))
+
+        if self.sorting_criterion == "wcet_ascending":
+            taskset = sorted(taskset, key=lambda k: self.wcet[k])
+        elif self.sorting_criterion == "wcet_descending":
+            taskset = sorted(taskset, key=lambda k: self.wcet[k], reverse=True)
+        elif self.sorting_criterion == "period_ascending":
+            taskset = sorted(taskset, key=lambda k: self.period[k])
+        elif self.sorting_criterion == "period_descending":
+            taskset = sorted(
+                taskset, key=lambda k: self.period[k], reverse=True)
+        elif self.sorting_criterion == "utilization_ascending":
+            taskset = sorted(taskset, key=lambda k: self.utilization[k])
+        elif self.sorting_criterion == "utilization_descending":
+            taskset = sorted(
+                taskset, key=lambda k: self.utilization[k], reverse=True)
+        elif self.sorting_criterion == "execution_slack_ascending":
+            taskset = sorted(
+                taskset, key=lambda k: self.period[k] - self.wcet[k])
+        elif self.sorting_criterion == "execution_slack_descending":
+            taskset = sorted(
+                taskset, key=lambda k: self.period[k] - self.wcet[k], reverse=True)
+        elif self.sorting_criterion == "random_order":
+            numpy.random.shuffle(taskset)
+        else:
+            print(
+                f"Invalid sorting criterion: {self.sorting_criterion}. Returning tasks in random order.")
+            numpy.random.shuffle(taskset)
+        return taskset
 
     def assign(self):
-        taskset = sorted(range(len(self.utilization)), key=lambda k: self.utilization[k], reverse=True)
+        taskset = self.sort_task()
         task_in_core = [[] for _ in range(self.number_of_cores)]
         taskset_not_assigned = []
 

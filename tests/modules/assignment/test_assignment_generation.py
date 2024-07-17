@@ -11,14 +11,14 @@ from modules.taskset.taskset_set_manual import TasksetSetManual
 np.random.seed(42)
 random.seed(42)
 
-assignment_methods_with_criteria = ["CITTA"]
-assignment_methods_without_criteria = ["BFDU", "FFDU", "WFDU", "Wmin"]
-citta_criteria_list = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending",
-                       "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
+assignment_methods_with_criteria = ["CITTA", "BFDU"]
+assignment_methods_without_criteria = ["FFDU", "WFDU", "Wmin"]
+sorting_criterion_list = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending",
+                          "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
 experiences = ["manual_1", "generate_1"]
 
 
-def prepare_input_data_manual_1(assignment_method, citta_criteria=""):
+def prepare_input_data_manual_1(assignment_method, sorting_criterion=""):
     taskset_id = "taskset_manual_1"
     taskset_action = "manual"
     taskset_parameters = {
@@ -36,20 +36,28 @@ def prepare_input_data_manual_1(assignment_method, citta_criteria=""):
     assignment_parameters = {
         "assignment_id": "assignment_manual_1",
         "taskset_id": "taskset_manual_1",
-        "citta_criteria": [citta_criteria],
+        "sorting_criterion": [sorting_criterion],
         "assignment_method": [assignment_method],
         "number_of_cores": 2
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters
 
 
-def create_expected_assignment_output_manual_1(assignment_method, citta_criteria):
-    if assignment_method == "CITTA":
-        assignment_method = ("CITTA", citta_criteria)
+def create_expected_assignment_output_manual_1(assignment_method, sorting_criterion):
+    if assignment_method in assignment_methods_with_criteria:
+        assignment_method = (assignment_method, sorting_criterion)
     expected_assignment = {
         "WFDU": [(1, [[0, 1], [3, 2]])],
         "FFDU": [(1, [[0, 3, 1], [2]])],
-        "BFDU": [(1, [[0, 3, 1], [2]])],
+        ("BFDU", "wcet_ascending"): [(1, [[0, 2, 1], [3]])],
+        ("BFDU", "wcet_descending"): [(1, [[1, 3, 0], [2]])],
+        ("BFDU", "period_ascending"): [(1, [[0, 2, 3], [1]])],
+        ("BFDU", "period_descending"): [(1, [[1, 3, 2], [0]])],
+        ("BFDU", "utilization_ascending"): [(1, [[2, 1, 0], [3]])],
+        ("BFDU", "utilization_descending"): [(1, [[0, 3, 1], [2]])],
+        ("BFDU", "execution_slack_ascending"): [(1, [[0, 2, 3], [1]])],
+        ("BFDU", "execution_slack_descending"): [(1, [[1, 3, 2], [0]])],
+        ("BFDU", "random_order"): [(1, [[1, 3, 0], [2]])],
         ("CITTA", "wcet_ascending"): [(1, [[0, 2], [1, 3]])],
         ("CITTA", "wcet_descending"): [(1, [[1, 3, 2], [0]])],
         ("CITTA", "period_ascending"): [(1, [[0, 2], [3, 1]])],
@@ -64,7 +72,7 @@ def create_expected_assignment_output_manual_1(assignment_method, citta_criteria
     return expected_assignment[assignment_method]
 
 
-def prepare_input_data_generate_1(assignment_method, citta_criteria=""):
+def prepare_input_data_generate_1(assignment_method, sorting_criterion=""):
     taskset_action = "generate"
     taskset_id = "taskset_generate_1"
     taskset_parameters = {
@@ -77,20 +85,28 @@ def prepare_input_data_generate_1(assignment_method, citta_criteria=""):
     assignment_parameters = {
         "assignment_id": "assignment_generate_1",
         "taskset_id": "taskset_generate_1",
-        "citta_criteria": [citta_criteria],
+        "sorting_criterion": [sorting_criterion],
         "assignment_method": [assignment_method],
         "number_of_cores": 2
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters
 
 
-def create_expected_assignment_output_generate_1(assignment_method, citta_criteria):
-    if assignment_method == "CITTA":
-        assignment_method = ("CITTA", citta_criteria)
+def create_expected_assignment_output_generate_1(assignment_method, sorting_criterion):
+    if assignment_method in assignment_methods_with_criteria:
+        assignment_method = (assignment_method, sorting_criterion)
     expected_assignment = {
         "WFDU": [(1, [[2, 0], [3, 1]])],
         "FFDU": [(1, [[2, 3, 1, 0], []])],
-        "BFDU": [(1, [[2, 3, 1, 0], []])],
+        ("BFDU", "wcet_ascending"): [(1, [[0, 2, 1, 3], []])],
+        ("BFDU", "wcet_descending"): [(1, [[3, 1, 0, 2], []])],
+        ("BFDU", "period_ascending"): [(1, [[2, 0, 1, 3], []])],
+        ("BFDU", "period_descending"): [(1, [[3, 0, 1, 2], []])],
+        ("BFDU", "utilization_ascending"): [(1, [[0, 1, 3, 2], []])],
+        ("BFDU", "utilization_descending"): [(1, [[2, 3, 1, 0], []])],
+        ("BFDU", "execution_slack_ascending"): [(1, [[2, 1, 0, 3], []])],
+        ("BFDU", "execution_slack_descending"): [(1, [[3, 0, 1, 2], []])],
+        ("BFDU", "random_order"): [(1, [[3, 2, 0, 1], []])],
         ("CITTA", "wcet_ascending"): [(1, [[0, 2, 1], [3]])],
         ("CITTA", "wcet_descending"): [(1, [[3], [1, 0, 2]])],
         ("CITTA", "period_ascending"): [(1, [[2, 0, 1], [3]])],
@@ -105,18 +121,18 @@ def create_expected_assignment_output_generate_1(assignment_method, citta_criter
     return expected_assignment[assignment_method]
 
 
-def prepare_input_data(experience, assignment_method, citta_criteria=""):
+def prepare_input_data(experience, assignment_method, sorting_criterion=""):
     if experience == "manual_1":
-        return prepare_input_data_manual_1(assignment_method=assignment_method, citta_criteria=citta_criteria)
+        return prepare_input_data_manual_1(assignment_method=assignment_method, sorting_criterion=sorting_criterion)
     elif experience == "generate_1":
-        return prepare_input_data_generate_1(assignment_method=assignment_method, citta_criteria=citta_criteria)
+        return prepare_input_data_generate_1(assignment_method=assignment_method, sorting_criterion=sorting_criterion)
 
 
-def prepare_output_data(experience, assignment_method, citta_criteria=""):
+def prepare_output_data(experience, assignment_method, sorting_criterion=""):
     if experience == "manual_1":
-        return create_expected_assignment_output_manual_1(assignment_method=assignment_method, citta_criteria=citta_criteria)
+        return create_expected_assignment_output_manual_1(assignment_method=assignment_method, sorting_criterion=sorting_criterion)
     elif experience == "generate_1":
-        return create_expected_assignment_output_generate_1(assignment_method=assignment_method, citta_criteria=citta_criteria)
+        return create_expected_assignment_output_generate_1(assignment_method=assignment_method, sorting_criterion=sorting_criterion)
 
 
 def create_taskset_manual(taskset_id, taskset_parameters):
@@ -137,7 +153,7 @@ def create_assignment(taskset, assignment_parameters):
         taskset_id=assignment_parameters["taskset_id"],
         assignment_id=assignment_parameters["assignment_id"],
         assignment_method=assignment_parameters["assignment_method"],
-        citta_criteria=assignment_parameters["citta_criteria"],
+        sorting_criterion=assignment_parameters["sorting_criterion"],
         number_of_cores=assignment_parameters["number_of_cores"]
     )
     assignment = generator.generate_assignment_set()
@@ -176,7 +192,7 @@ def generate_param_combinations():
         for experience in experiences:
             combinations.append((method, "", experience))
     for method in assignment_methods_with_criteria:
-        for criteria in citta_criteria_list:
+        for criteria in sorting_criterion_list:
             for experience in experiences:
                 combinations.append((method, criteria, experience))
     return combinations
@@ -184,13 +200,13 @@ def generate_param_combinations():
 # Paramétrage des tests avec pytest.mark.parametrize
 
 
-@pytest.mark.parametrize("assignment_method,citta_criteria,experience", generate_param_combinations(), ids=lambda val: f"{val}")
-def test_assignment(assignment_method, citta_criteria, experience):
+@pytest.mark.parametrize("assignment_method,sorting_criterion,experience", generate_param_combinations(), ids=lambda val: f"{val}")
+def test_assignment(assignment_method, sorting_criterion, experience):
     input_data = prepare_input_data(
-        experience, assignment_method, citta_criteria)
+        experience, assignment_method, sorting_criterion)
     taskset_action, taskset_id, taskset_parameters, assignment_parameters = input_data
     expected_assignment = prepare_output_data(
-        experience=experience, assignment_method=assignment_method, citta_criteria=citta_criteria)
+        experience=experience, assignment_method=assignment_method, sorting_criterion=sorting_criterion)
 
     if taskset_action == "manual":
         taskset = create_taskset_manual(taskset_id, taskset_parameters)

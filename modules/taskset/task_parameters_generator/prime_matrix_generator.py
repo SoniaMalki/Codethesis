@@ -2,6 +2,7 @@
 from sympy import primerange
 import random
 
+
 class PrimeMatrixGenerator:
     def __init__(self, max_hyperperiod=100000, max_prime=20, gen_limit_exponent=2):
         self.max_hyperperiod = max_hyperperiod
@@ -23,7 +24,8 @@ class PrimeMatrixGenerator:
     def generate_matrix(self):
         self.prime_matrix = self.generate_initial_matrix()
         self.prime_matrix = self.prune_matrix()
-        self.prime_matrix = self.add_duplicates_to_matrix(max_length=20, max_duplicates=6)
+        self.prime_matrix = self.add_duplicates_to_matrix(
+            max_length=20, max_duplicates=6)
 
     def generate_initial_matrix(self):
         primes = list(primerange(2, self.max_prime))
@@ -32,27 +34,29 @@ class PrimeMatrixGenerator:
         for i, prime in enumerate(primes):
             row = [prime ** 0]  # Start with [1]
             prime_matrix.append(row)
-            
+
             for j in range(len(prime_matrix)):
                 exponent = len(prime_matrix[j])
                 prime_matrix[j].append(primes[j] ** exponent)
-                
+
                 if self.calculate_hyperperiod(prime_matrix) > self.generation_limit:
                     return prime_matrix
         return prime_matrix
 
     def prune_matrix(self):
         while self.calculate_hyperperiod() > self.max_hyperperiod:
-            max_values = [(max(row), idx) for idx, row in enumerate(self.prime_matrix) if row]
+            max_values = [(max(row), idx)
+                          for idx, row in enumerate(self.prime_matrix) if row]
             max_values.sort(reverse=True)
-            
+
             max_val, max_index = max_values[0]
             self.prime_matrix[max_index].pop()
-            
+
             if self.calculate_hyperperiod() <= self.max_hyperperiod:
                 break
 
-        self.prime_matrix = [row for row in self.prime_matrix if not (len(row) == 1 and row[0] == 1)]
+        self.prime_matrix = [row for row in self.prime_matrix if not (
+            len(row) == 1 and row[0] == 1)]
         return self.prime_matrix
 
     def display_matrix_details(self, header_message):
@@ -71,6 +75,7 @@ class PrimeMatrixGenerator:
                     row.insert(random.randint(0, len(row)), value_to_duplicate)
             row.sort()
         return self.prime_matrix
+
 
 # Example usage
 if __name__ == "__main__":

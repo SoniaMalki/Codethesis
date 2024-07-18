@@ -3,11 +3,13 @@ import time
 
 
 class Wmin:
-    def __init__(self, taskset, number_of_cores):
+    def __init__(self, taskset, number_of_cores, assignment_options):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.utilization = self.taskset.utilization
         self.interference = self.taskset.interference
+        self.solving_time_limit_MILP = assignment_options.get(
+            "solving_time_limit_MILP", None)
 
     def assign(self):
         prob = LpProblem("Wmin_Assignment", LpMinimize)
@@ -71,7 +73,12 @@ class Wmin:
         prob += maxW
 
         # Solving the MILP problem
-        prob.solve(GUROBI_CMD(msg=0, options=[("OutputFlag", 0)]))
+        options = [("OutputFlag", 0)]
+        if self.solving_time_limit_MILP is not None:
+            options.append(("TimeLimit", self.solving_time_limit_MILP))
+
+        prob.solve(GUROBI_CMD(msg=0, options=options))
+
         task_in_core = [[] for _ in range(self.number_of_cores)]
         # Checking if a solution is found
         if prob.status == 1:
@@ -80,6 +87,9 @@ class Wmin:
                     if o[i, k].varValue == 1:
                         task_in_core[k].append(i)
             return task_in_core, 1
+        elif prob.status == LpStatusNotSolved:
+            print("Time limit was hit during optimization.")
+            return task_in_core, 0
         else:
             print("Wmin failed to find a solution.")
             return task_in_core, 0

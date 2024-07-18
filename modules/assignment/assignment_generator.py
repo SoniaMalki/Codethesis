@@ -102,7 +102,8 @@ class AssignmentGenerator:
         """Performs the Wmin assignment algorithm."""
         wmin_instance = Wmin(
             taskset,  # Pass a list containing only the current taskset
-            self.number_of_cores
+            self.number_of_cores,
+            self.assignment_options
         )
         assigned_cores, successfully_assigned = wmin_instance.assign()
 

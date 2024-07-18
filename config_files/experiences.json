@@ -317,7 +317,7 @@
     "action" : "generate",
     "parameters" : {
       "sorting_criterion" : [ "utilization_descending"],
-      "assignment_method" : [ "CITTA" ],
+      "assignment_method" : [ "Wmin" ],
       "number_of_cores": 2,
       "assignment_options" : {
 

@@ -39,7 +39,9 @@ def prepare_input_data_manual_1(assignment_method, sorting_criterion=""):
         "sorting_criterion": [sorting_criterion],
         "assignment_method": [assignment_method],
         "number_of_cores": 2,
-        "assignment_options": {}
+        "assignment_options": {
+            "solving_time_limit_MILP": 10
+        }
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters
 
@@ -105,7 +107,9 @@ def prepare_input_data_generate_1(assignment_method, sorting_criterion=""):
         "sorting_criterion": [sorting_criterion],
         "assignment_method": [assignment_method],
         "number_of_cores": 2,
-        "assignment_options": {}
+        "assignment_options": {
+            "solving_time_limit_MILP": 10
+        }
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters
 

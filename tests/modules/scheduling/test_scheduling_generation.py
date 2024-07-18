@@ -102,7 +102,7 @@ def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, i
         "scheduling_algorithms": [scheduling_algorithm],
         "scheduling_options": {
             "non_preemption_time_variant2": non_preemption_time_variant_2,
-            "solving_time_limit_RHMA": 10,
+            "solving_time_limit_MILP": 10,
         }
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters

@@ -15,8 +15,8 @@ class Rhma:
         self.number_of_cores = number_of_cores
         self.scheduling_options = scheduling_options
 
-        self.solving_time_limit_RHMA = self.scheduling_options.get(
-            "solving_time_limit_RHMA", None)
+        self.solving_time_limit_MILP = self.scheduling_options.get(
+            "solving_time_limit_MILP", None)
 
         if end_time == None:
             end_time = self.hyperperiod
@@ -311,8 +311,8 @@ class Rhma:
             options = [
                 ("OutputFlag", 0)
             ]
-            if self.solving_time_limit_RHMA is not None:
-                options.append(("Timelimit", self.solving_time_limit_RHMA))
+            if self.solving_time_limit_MILP is not None:
+                options.append(("Timelimit", self.solving_time_limit_MILP))
 
             prob.solve(GUROBI_CMD(msg=0, options=options))
 

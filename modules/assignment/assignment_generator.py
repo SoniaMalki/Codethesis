@@ -10,7 +10,7 @@ import time
 
 
 class AssignmentGenerator:
-    def __init__(self, taskset_set_obj, taskset_id, assignment_id, assignment_method, sorting_criterion, number_of_cores):
+    def __init__(self, taskset_set_obj, taskset_id, assignment_id, assignment_method, sorting_criterion, number_of_cores, assignment_options):
         self.taskset_set_obj = taskset_set_obj
         self.taskset_id = taskset_id
         self.assignment_id = assignment_id
@@ -18,6 +18,7 @@ class AssignmentGenerator:
         self.assignment_method = assignment_method[0].lower()
         self.sorting_criterion = sorting_criterion[0].lower()
         self.number_of_cores = number_of_cores
+        self.assignment_options = assignment_options
 
     def generate_assignment_set(self):
         """Generates assignments for each Taskset within the TasksetSet."""
@@ -44,6 +45,7 @@ class AssignmentGenerator:
             assignment, success = assignment_function(taskset)
             assignment_list.append(Assignment(
                 assignment=assignment, success=success))
+            print(assignment, success)
 
         assignment = AssignmentSet(assignment_id=self.assignment_id, taskset_id=self.taskset_id, assignment_method=self.assignment_method,
                                    sorting_criterion=self.sorting_criterion, number_of_cores=self.number_of_cores, assignment_list=assignment_list)  # Store assignments for each taskset
@@ -55,7 +57,8 @@ class AssignmentGenerator:
         citta_instance = Citta(
             taskset,  # Pass a list containing only the current taskset
             self.number_of_cores,
-            self.sorting_criterion
+            self.sorting_criterion,
+            self.assignment_options
         )
 
         assigned_cores, successfully_assigned = citta_instance.assign()

@@ -75,8 +75,11 @@ class Citta:
                 wcet_with_interference = numpy.copy(self.wcet)
                 core_success = 1
                 for task in task_in_core[core]:
-                    wcet_with_interference[task] = self.compute_interference(
+                    interference, success = self.compute_interference(
                         task_index=task, core_index=core, task_in_core=task_in_core, task_to_assign=task_to_assign)
+                    if not success:
+                        return task_in_core, task_to_assign, 0  # Time limit hit, stop immediately
+                    wcet_with_interference[task] = interference
                 for task in task_in_core[core]:
                     if self.check_one_task(task_index=task, core=task_in_core[core], wcet_with_interference=wcet_with_interference) == 0:
                         task_in_core[core].remove(task_index)
@@ -99,9 +102,12 @@ class Citta:
         # si entre deux tours de boucle on arrive à un résultats similaire à l'ancien, on s'arrête.
         while I_run_old != I_run and wcet_updated[task_index] <= self.period[task_index]:
             I_run_old = I_run
-            I_run = self.compute_upper_bound_cache_interference(
+            I_run, success = self.compute_upper_bound_cache_interference(
                 task_index=task_index, core_index=core_index, execution_window=wcet_updated[task_index], task_in_core=task_in_core, task_to_assign=task_to_assign)
             # ça marche toujours car si rien à ajouter on ajoute 0
+
+            if not success:
+                return self.period[task_index], False  # Time limit hit
             wcet_updated[task_index] = self.wcet[task_index] + I_run
 
         if wcet_updated[task_index] > self.period[task_index]:
@@ -110,7 +116,7 @@ class Citta:
         else:
             # on renvoie juste un seul wcet modifié, celui de la tâche testée dans le core spécifique
             res = wcet_updated[task_index]
-        return res
+        return res, True
 
     def compute_upper_bound_cache_interference(self, task_index, core_index, execution_window, task_in_core, task_to_assign):
         prob = LpProblem("Upper_Bound_on_Cache_Interference", LpMaximize)
@@ -157,10 +163,9 @@ class Citta:
 
         if prob.status == LpStatusNotSolved:
             print("Time limit was hit during optimization.")
+            return solution if solution is not None else 0, False
         else:
-            print("Optimization completed within the time limit.")
-
-        return solution if solution != None else 0
+            return solution if solution is not None else 0, True
 
     def check_one_task(self, task_index, core, wcet_with_interference):
         dbf_list = self.dbf(task_index=task_index, core=core,

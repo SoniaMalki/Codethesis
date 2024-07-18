@@ -38,7 +38,8 @@ def prepare_input_data_manual_1(assignment_method, sorting_criterion=""):
         "taskset_id": "taskset_manual_1",
         "sorting_criterion": [sorting_criterion],
         "assignment_method": [assignment_method],
-        "number_of_cores": 2
+        "number_of_cores": 2,
+        "assignment_options": {}
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters
 
@@ -103,7 +104,8 @@ def prepare_input_data_generate_1(assignment_method, sorting_criterion=""):
         "taskset_id": "taskset_generate_1",
         "sorting_criterion": [sorting_criterion],
         "assignment_method": [assignment_method],
-        "number_of_cores": 2
+        "number_of_cores": 2,
+        "assignment_options": {}
     }
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters
 
@@ -186,7 +188,8 @@ def create_assignment(taskset, assignment_parameters):
         assignment_id=assignment_parameters["assignment_id"],
         assignment_method=assignment_parameters["assignment_method"],
         sorting_criterion=assignment_parameters["sorting_criterion"],
-        number_of_cores=assignment_parameters["number_of_cores"]
+        number_of_cores=assignment_parameters["number_of_cores"],
+        assignment_options=assignment_parameters["assignment_options"]
     )
     assignment = generator.generate_assignment_set()
     return assignment

@@ -99,7 +99,10 @@ def prepare_input_data_generate_1(assignment_method, sorting_criterion=""):
         "list_of_probability_factors": [0.1],
         "list_of_max_utilization": [0.2],
         "tasks_per_taskset": 4,
-        "list_of_interference_factors": [0.2]
+        "list_of_interference_factors": [0.2],
+        "taskset_options": {
+            "deadline_option": "leq_period"
+        }
     }
     assignment_parameters = {
         "assignment_id": "assignment_generate_1",

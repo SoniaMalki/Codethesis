@@ -16,7 +16,7 @@ from modules.taskset.task import Task
 
 
 class TasksetSetGenerator:
-    def __init__(self, taskset_id, taskset_repetition, tasks_per_taskset, list_of_interference_factors, list_of_probability_factors, list_of_max_utilization):
+    def __init__(self, taskset_id, taskset_repetition, tasks_per_taskset, list_of_interference_factors, list_of_probability_factors, list_of_max_utilization, taskset_options):
 
         self.taskset_id = taskset_id
         self.taskset_repetition = taskset_repetition
@@ -24,6 +24,8 @@ class TasksetSetGenerator:
         self.interference_factor = list_of_interference_factors[0]
         self.probability_factor = list_of_probability_factors[0]
         self.max_utilization = list_of_max_utilization[0]
+        self.taskset_options = taskset_options
+        self.deadline_option = self.taskset_options["deadline_option"]
 
         self.prime_matrix_generator = PrimeMatrixGenerator(
             max_hyperperiod=100000, max_prime=20, gen_limit_exponent=2)
@@ -96,7 +98,7 @@ class TasksetSetGenerator:
         interferences = self.interference_generator.generate_interference(
             wcets)
         deadlines = self.deadline_generator.generate_deadlines(
-            periods=periods, wcets=wcets)
+            periods=periods, wcets=wcets, deadline_option=self.deadline_option)
         hyperperiods = TasksetSetGenerator.generate_hyperperiods(
             periods=periods)
         N = TasksetSetGenerator.generate_N(

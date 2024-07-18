@@ -16,7 +16,10 @@ def prepare_input_data():
         "probability_factors": [0.1],
         "max_utilizations": [0.2],
         "tasks_per_taskset": 2,
-        "interference_factors": [0.2]
+        "interference_factors": [0.2],
+        "taskset_options": {
+            "deadline_option": "leq_period"
+        }
     }
 
 
@@ -73,7 +76,8 @@ def create_taskset(data):
         list_of_probability_factors=data['probability_factors'],
         list_of_max_utilization=data['max_utilizations'],
         tasks_per_taskset=data['tasks_per_taskset'],
-        list_of_interference_factors=data['interference_factors']
+        list_of_interference_factors=data['interference_factors'],
+        taskset_options=data["taskset_options"]
     )
     taskset_set = generator.generate_taskset_set()
     return taskset_set

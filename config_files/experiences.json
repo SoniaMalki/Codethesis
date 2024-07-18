@@ -220,13 +220,16 @@
 "155" : {
   "taskset" : {
     "taskset_id" : "taskset_15",
-    "action" : "open",
+    "action" : "generate",
     "parameters" : {
       "taskset_repetition": 1,
       "list_of_probability_factors" : [ 0.1 ],
       "list_of_max_utilization" : [ 3 ],
       "tasks_per_taskset" : 5,
-      "list_of_interference_factors" : [ 0.2 ]
+      "list_of_interference_factors" : [ 0.2 ],
+      "taskset_options": {
+        "deadline_option": "eq_period"
+      }
     }
   },
   "assignment" : {
@@ -236,7 +239,8 @@
     "parameters" : {
       "sorting_criterion" : [ "rien"],
       "assignment_method" : [ "wmin" ],
-      "number_of_cores": 4
+      "number_of_cores": 4,
+      "assignment_options": {}
     }
   },
   "scheduling" : {

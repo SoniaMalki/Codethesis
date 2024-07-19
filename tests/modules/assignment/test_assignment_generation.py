@@ -1,3 +1,4 @@
+from pathlib import Path
 import random
 import numpy as np
 import pytest
@@ -7,6 +8,8 @@ from modules.assignment.assignment_generator import AssignmentGenerator
 from modules.assignment.assignment_loader_saver import AssignmentLoaderSaver
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
+
+main_path = Path(".")
 
 np.random.seed(42)
 random.seed(42)
@@ -101,7 +104,10 @@ def prepare_input_data_generate_1(assignment_method, sorting_criterion=""):
         "tasks_per_taskset": 4,
         "list_of_interference_factors": [0.2],
         "taskset_options": {
-            "deadline_option": "leq_period"
+            "deadline_option": "leq_period",
+            "max_hyperperiod": 100000,
+            "max_prime": 20,
+            "gen_limit_exponent": 2
         }
     }
     assignment_parameters = {
@@ -182,7 +188,8 @@ def create_taskset_manual(taskset_id, taskset_parameters):
 
 
 def create_taskset_generate(taskset_id, taskset_parameters):
-    generator = TasksetSetGenerator(taskset_id, **taskset_parameters)
+    generator = TasksetSetGenerator(
+        main_path, taskset_id, **taskset_parameters)
     return generator.generate_taskset_set()
 
 

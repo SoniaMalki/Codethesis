@@ -1,10 +1,11 @@
+from pathlib import Path
 import numpy as np
 import pytest
 import random
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 np.random.seed(42)
 random.seed(42)  # Setting a seed for reproducibility
-
+main_path = Path(".")
 # Test N1
 
 
@@ -18,7 +19,10 @@ def prepare_input_data():
         "tasks_per_taskset": 2,
         "interference_factors": [0.2],
         "taskset_options": {
-            "deadline_option": "leq_period"
+            "deadline_option": "leq_period",
+            "max_hyperperiod": 100000,
+            "max_prime": 20,
+            "gen_limit_exponent": 2
         }
     }
 
@@ -71,6 +75,7 @@ def expected_task_structure():
 def create_taskset(data):
     """Create and return a Taskset object using provided data."""
     generator = TasksetSetGenerator(
+        main_path=main_path,
         taskset_id=data['taskset_id'],
         taskset_repetition=data['taskset_repetition'],
         list_of_probability_factors=data['probability_factors'],

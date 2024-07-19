@@ -228,7 +228,10 @@
       "tasks_per_taskset" : 5,
       "list_of_interference_factors" : [ 0.2 ],
       "taskset_options": {
-        "deadline_option": "eq_period"
+        "deadline_option": "eq_period",
+        "max_hyperperiod": 100000,
+        "max_prime": 20,
+        "gen_limit_exponent": 2
       }
     }
   },

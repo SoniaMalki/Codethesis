@@ -1,16 +1,29 @@
 
 from sympy import primerange
 import random
+from pathlib import Path
+
+from modules.taskset.task_parameters_generator.prime_matrix_loader_saver import PrimeMatrixLoaderSaver
 
 
 class PrimeMatrixGenerator:
-    def __init__(self, max_hyperperiod=100000, max_prime=20, gen_limit_exponent=2):
+    def __init__(self, main_path, max_hyperperiod, max_prime, gen_limit_exponent):
+        self.main_path = main_path
+        self.loader_saver = PrimeMatrixLoaderSaver(main_path)
         self.max_hyperperiod = max_hyperperiod
         self.max_prime = max_prime
         self.generation_limit = max_hyperperiod**gen_limit_exponent
-        self.prime_matrix = []
-        self.generate_matrix()
+        self.prime_matrix = self.load_or_generate_matrix()
         self.calculate_hyperperiod = self.calculate_hyperperiod()
+
+    def load_or_generate_matrix(self):
+        try:
+            return self.loader_saver.load(self.max_hyperperiod, self.max_prime, self.generation_limit)
+        except FileNotFoundError:
+            prime_matrix = self.generate_matrix()
+            self.loader_saver.save(
+                prime_matrix, self.max_hyperperiod, self.max_prime, self.generation_limit)
+            return prime_matrix
 
     def calculate_hyperperiod(self, matrix=None):
         if matrix is None:
@@ -26,6 +39,7 @@ class PrimeMatrixGenerator:
         self.prime_matrix = self.prune_matrix()
         self.prime_matrix = self.add_duplicates_to_matrix(
             max_length=20, max_duplicates=6)
+        return self.prime_matrix
 
     def generate_initial_matrix(self):
         primes = list(primerange(2, self.max_prime))
@@ -79,5 +93,5 @@ class PrimeMatrixGenerator:
 
 # Example usage
 if __name__ == "__main__":
-    matrix_obj = PrimeMatrixGenerator()
+    matrix_obj = PrimeMatrixGenerator(main_path=Path("."))
     matrix_obj.display_matrix_details("Final matrix:")

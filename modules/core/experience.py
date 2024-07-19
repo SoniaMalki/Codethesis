@@ -48,6 +48,7 @@ class Experience:
             print("*****")
             print(f"Generating taskset")
             taskset_generator = TasksetSetGenerator(
+                self.main_path,
                 self.taskset_parameters["taskset_id"], **self.taskset_parameters["parameters"])
             self.taskset_set_obj = taskset_generator.generate_taskset_set()
             taskset_loader_saver.save(self.taskset_set_obj)

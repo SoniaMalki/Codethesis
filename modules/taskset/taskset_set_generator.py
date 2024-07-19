@@ -16,7 +16,7 @@ from modules.taskset.task import Task
 
 
 class TasksetSetGenerator:
-    def __init__(self, taskset_id, taskset_repetition, tasks_per_taskset, list_of_interference_factors, list_of_probability_factors, list_of_max_utilization, taskset_options):
+    def __init__(self, main_path, taskset_id, taskset_repetition, tasks_per_taskset, list_of_interference_factors, list_of_probability_factors, list_of_max_utilization, taskset_options):
 
         self.taskset_id = taskset_id
         self.taskset_repetition = taskset_repetition
@@ -26,11 +26,15 @@ class TasksetSetGenerator:
         self.max_utilization = list_of_max_utilization[0]
         self.taskset_options = taskset_options
         self.deadline_option = self.taskset_options["deadline_option"]
+        self.max_hyperperiod = self.taskset_options["max_hyperperiod"]
+        self.max_prime = self.taskset_options["max_prime"]
+        self.gen_limit_exponent = self.taskset_options["gen_limit_exponent"]
 
         self.prime_matrix_generator = PrimeMatrixGenerator(
-            max_hyperperiod=100000, max_prime=20, gen_limit_exponent=2)
+            main_path=main_path, max_hyperperiod=self.max_hyperperiod, max_prime=self.max_prime, gen_limit_exponent=self.gen_limit_exponent)
         self.prime_matrix = self.prime_matrix_generator.prime_matrix
 
+        print(self.prime_matrix)
         self.utilization_generator = UtilizationGenerator(
             self.taskset_repetition, self.tasks_per_taskset, self.max_utilization)
         self.period_generator = PeriodGenerator(

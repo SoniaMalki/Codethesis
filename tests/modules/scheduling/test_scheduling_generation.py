@@ -11,8 +11,19 @@ from modules.scheduling.composite_scheduling import CompositeScheduling
 from modules.assignment.assignment_set import AssignmentSet
 from modules.assignment.assignment import Assignment
 from modules.scheduling.scheduling_generator import SchedulingGenerator
+from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
+import tempfile
+
+
+@pytest.fixture(scope="function", autouse=True)
+def use_temporary_prime_matrix_path():
+    global prime_path
+    with tempfile.TemporaryDirectory() as temp_dir:
+        prime_path = Path(temp_dir)
+        yield
+
 
 save_results = False
 np.random.seed(42)
@@ -39,7 +50,7 @@ scheduling_options_non_preemption_time_variant2 = [
 
 scheduling_algorithms = scheduling_algorithms_with_combination + \
     scheduling_algorithms_without_combination
-experiences = ["manual_1", "manual_2"]
+experiences = ["manual_1", "manual_2", "generate_1"]
 
 
 def prepare_input_data_taskset_manual_1():
@@ -54,6 +65,7 @@ def prepare_input_data_taskset_manual_1():
         [0, 1, 0, 0],
         [0, 0, 0, 0]
     ]
+
     utilization = [w / p for w, p in zip(wcet, period)]
 
     return taskset_id, taskset_action, wcet, deadline, period, interference, utilization
@@ -77,9 +89,25 @@ def prepare_input_data_taskset_manual_2():
     return taskset_id, taskset_action, wcet, deadline, period, interference, utilization
 
 
-def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, interference, utilization, scheduling_algorithm, non_preemption_time_variant_2):
-    taskset_id = taskset_id
-    taskset_action = taskset_action
+def prepare_input_data_taskset_generate_1():
+    taskset_id = "taskset_generate_1"
+    taskset_action = "generate"
+    taskset_repetition = 1
+    list_of_probability_factors = [0.1]
+    list_of_max_utilization = [3]
+    tasks_per_taskset = 5
+    list_of_interference_factors = [0.2]
+    taskset_options = {
+        "deadline_option": "eq_period",
+        "max_hyperperiod": 10000,
+        "max_prime": 20,
+        "gen_limit_exponent": 2
+    }
+
+    return taskset_id, taskset_action, taskset_repetition, list_of_probability_factors, list_of_max_utilization, tasks_per_taskset, list_of_interference_factors, taskset_options
+
+
+def prepare_input_data_dic_taskset_manual(wcet, deadline, period, interference, utilization):
     taskset_parameters = {
         "wcet_list": wcet,
         "deadline_list": deadline,
@@ -87,7 +115,22 @@ def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, i
         "interference_list": interference,
         "utilization_list": utilization
     }
+    return taskset_parameters
 
+
+def prepare_input_data_dic_taskset_generate(taskset_repetition, list_of_probability_factors, list_of_max_utilization, tasks_per_taskset, list_of_interference_factors, taskset_options):
+    taskset_parameters = {
+        "taskset_repetition": taskset_repetition,
+        "list_of_probability_factors": list_of_probability_factors,
+        "list_of_max_utilization": list_of_max_utilization,
+        "tasks_per_taskset": tasks_per_taskset,
+        "list_of_interference_factors": list_of_interference_factors,
+        "taskset_options": taskset_options
+    }
+    return taskset_parameters
+
+
+def prepare_input_data_dic(scheduling_algorithm, non_preemption_time_variant_2):
     assignment_parameters = {
         "assignment_id": "assignment",
         "taskset_id": "taskset",
@@ -108,7 +151,7 @@ def prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, i
             "solving_time_limit_MILP": 10,
         }
     }
-    return taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters
+    return assignment_parameters, scheduling_parameters
 
 
 def prepare_input_data(experience, scheduling_algorithm, non_preemption_time_variant_2):
@@ -116,8 +159,18 @@ def prepare_input_data(experience, scheduling_algorithm, non_preemption_time_var
         taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_1()
     elif experience == "manual_2":
         taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_2()
+    elif experience == "generate_1":
+        taskset_id, taskset_action, taskset_repetition, list_of_probability_factors, list_of_max_utilization, tasks_per_taskset, list_of_interference_factors, taskset_options = prepare_input_data_taskset_generate_1()
 
-    return prepare_input_data_dic(taskset_id, taskset_action, wcet, deadline, period, interference, utilization, scheduling_algorithm, non_preemption_time_variant_2)
+    if taskset_action == "manual":
+        taskset_parameters = prepare_input_data_dic_taskset_manual(
+            wcet, deadline, period, interference, utilization)
+    elif taskset_action == "generate":
+        taskset_parameters = prepare_input_data_dic_taskset_generate(
+            taskset_repetition, list_of_probability_factors, list_of_max_utilization, tasks_per_taskset, list_of_interference_factors, taskset_options)
+    assignment_parameters, scheduling_parameters = prepare_input_data_dic(
+        scheduling_algorithm, non_preemption_time_variant_2)
+    return taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters
 
 
 def prepare_output_data(scheduling_loader_saver, experience, scheduling, scheduling_parameters, scheduling_algorithm, non_preemption_time_variant_2):
@@ -138,7 +191,13 @@ def create_taskset_manual(taskset_id, taskset_parameters):
 
 
 def create_taskset_generate(taskset_id, taskset_parameters):
-    generator = TasksetSetGenerator(taskset_id, **taskset_parameters)
+    max_hyperperiod = taskset_parameters["taskset_options"]["max_hyperperiod"]
+    max_prime = taskset_parameters["taskset_options"]["max_prime"]
+    gen_limit_exponent = taskset_parameters["taskset_options"]["gen_limit_exponent"]
+    PrimeMatrixGenerator(
+        main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
+    generator = TasksetSetGenerator(
+        prime_path, taskset_id, **taskset_parameters)
     return generator.generate_taskset_set()
 
 
@@ -187,7 +246,7 @@ def verify_scheduling(scheduling, expected_scheduling):
         assert result == exp_s
 
 
-@pytest.fixture(autouse=True)
+@ pytest.fixture(autouse=True)
 def reset_random_seed():
     np.random.seed(42)
     random.seed(42)
@@ -215,7 +274,7 @@ def save_test_results(scheduling_loader_saver, scheduling, scheduling_parameters
         )
 
 
-@pytest.mark.parametrize("scheduling_algorithm,experience, non_preemption_time_variant2", generate_param_combinations(), ids=lambda val: f"{val}")
+@ pytest.mark.parametrize("scheduling_algorithm,experience, non_preemption_time_variant2", generate_param_combinations(), ids=lambda val: f"{val}")
 def test_scheduling(scheduling_algorithm, experience, non_preemption_time_variant2):
     input_data = prepare_input_data(
         experience, scheduling_algorithm, non_preemption_time_variant2)

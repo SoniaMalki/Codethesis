@@ -1,0 +1,388 @@
+{
+  "1" : {
+    "taskset" : {
+      "taskset_id" : "taskset_2",
+      "action" : "generate",
+      "parameters" : {
+        "taskset_repetition": 1,
+        "list_of_probability_factors" : [ 0.1 ],
+        "list_of_max_utilization" : [ 0.2 ],
+        "tasks_per_taskset" : 5,
+        "list_of_interference_factors" : [ 0.2 ]
+      }
+    },
+    "assignment" : {
+      "assignment_id" : "assignment_",
+      "taskset_id" : "taskset_",
+      "action" : "none",
+      "parameters" : {
+        "sorting_criterion" : [ ],
+        "assignment_method" : [ ]
+      }
+    },
+    "scheduling" : {
+      "assignment_id" : "assignment_",
+      "taskset_id" : "taskset_",
+      "scheduling_id" : "scheduling_",
+      "action" : "none",
+      "parameters" : {
+        "scheduling_algorithms" : [ ]
+      }
+    }
+  },
+
+  "2" : {
+    "taskset" : {
+      "taskset_id" : "taskset_2",
+      "action" : "open",
+      "parameters" : {
+        "taskset_repetition": 1,
+        "list_of_probability_factors" : [ 0.1 ],
+        "list_of_max_utilization" : [ 1 ],
+        "tasks_per_taskset" : 10,
+        "list_of_interference_factors" : [ 0.2 ]
+      }
+    },
+    "assignment" : {
+      "assignment_id" : "assignment_",
+      "taskset_id" : "taskset_",
+      "action" : "none",
+      "parameters" : {
+        "sorting_criterion" : [ ],
+        "assignment_method" : [ ]
+      }
+    },
+    "scheduling" : {
+      "assignment_id" : "assignment_",
+      "taskset_id" : "taskset_",
+      "scheduling_id" : "scheduling_",
+      "action" : "none",
+      "parameters" : {
+        "scheduling_algorithms" : [ ]
+      }
+    }
+  },
+
+  "3" : {
+    "taskset" : {
+      "taskset_id" : "taskset_2",
+      "action" : "open",
+      "parameters" : {
+        "taskset_repetition": 1,
+        "list_of_probability_factors" : [ 0.1 ],
+        "list_of_max_utilization" : [ 1 ],
+        "tasks_per_taskset" : 10,
+        "list_of_interference_factors" : [ 0.2 ]
+      }
+    },
+    "assignment" : {
+      "assignment_id" : "assignment_1",
+      "taskset_id" : "taskset_2",
+      "action" : "generate",
+      "parameters" : {
+        "number_of_cores": 4,
+        "sorting_criterion" : [ "period_descending" ],
+        "assignment_method" : [ "WFDU" ]
+      }
+    },
+    "scheduling" : {
+      "assignment_id" : "assignment_",
+      "taskset_id" : "taskset_",
+      "scheduling_id" : "scheduling_",
+      "action" : "none",
+      "parameters" : {
+        "scheduling_algorithms" : [ ]
+      }
+    }
+  },
+  "4" : {
+    "taskset" : {
+      "taskset_id" : "taskset_2",
+      "action" : "open",
+      "parameters" : {
+        "taskset_repetition": 1,
+        "list_of_probability_factors" : [ 0.1 ],
+        "list_of_max_utilization" : [ 1 ],
+        "tasks_per_taskset" : 10,
+        "list_of_interference_factors" : [ 0.2 ]
+      }
+    },
+    "assignment" : {
+      "assignment_id" : "assignment_1",
+      "taskset_id" : "taskset_2",
+      "action" : "open",
+      "parameters" : {
+        "number_of_cores": 4,
+        "sorting_criterion" : [ "wcet_ascending" ],
+        "assignment_method" : [ "CITTA" ]
+      }
+    },
+    "scheduling" : {
+      "assignment_id" : "assignment_1",
+      "taskset_id" : "taskset_2",
+      "scheduling_id" : "scheduling_1",
+      "action" : "generate",
+      "parameters" : {
+        "scheduling_algorithms" : [ "Rhma" ]
+      }
+    }
+  },
+
+  "0": {
+    "taskset": {
+      "action": "manual",
+      "taskset_id": "taskset_0",
+      "parameters": {
+        "wcet": [10, 13, 23],
+        "deadline": [12, 200, 50],
+        "period": [20, 200, 55],
+        "interference": [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
+        "utilization": [0.5, 0.065, 0.418]
+      }
+    },
+    "assignment" : {
+      "assignment_id" : "assignment_",
+      "taskset_id" : "taskset_",
+      "action" : "none",
+      "parameters" : {
+        "sorting_criterion" : [ ],
+        "assignment_method" : [ ]
+      }
+    },
+    "scheduling" : {
+      "assignment_id" : "assignment_",
+      "taskset_id" : "taskset_",
+      "scheduling_id" : "scheduling_",
+      "action" : "none",
+      "parameters" : {
+        "scheduling_algorithms" : [ ]
+      }
+    }
+},
+"01": {
+  "taskset": {
+    "action": "open",
+    "taskset_id": "taskset_0",
+    "parameters": {}
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_55",
+    "taskset_id" : "taskset_0",
+    "action" : "generate",
+    "parameters" : {
+      "sorting_criterion" : [ "wcet_ascending" ],
+      "assignment_method" : [ "WFDU" ],
+      "number_of_cores": 4
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_",
+    "taskset_id" : "taskset_",
+    "scheduling_id" : "scheduling_",
+    "action" : "none",
+    "parameters" : {
+      "scheduling_algorithms" : [ ]
+    }
+  }
+},
+"15" : {
+  "taskset" : {
+    "taskset_id" : "taskset_15",
+    "action" : "generate",
+    "parameters" : {
+      "taskset_repetition": 1,
+      "list_of_probability_factors" : [ 0.1 ],
+      "list_of_max_utilization" : [ 3 ],
+      "tasks_per_taskset" : 10,
+      "list_of_interference_factors" : [ 0.2 ]
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_",
+    "taskset_id" : "taskset_",
+    "action" : "none",
+    "parameters" : {
+      "sorting_criterion" : [ ],
+      "assignment_method" : [ ]
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_",
+    "taskset_id" : "taskset_",
+    "scheduling_id" : "scheduling_",
+    "action" : "none",
+    "parameters" : {
+      "scheduling_algorithms" : [ ]
+    }
+  }
+},
+
+"155" : {
+  "taskset" : {
+    "taskset_id" : "taskset_15",
+    "action" : "generate",
+    "parameters" : {
+      "taskset_repetition": 1,
+      "list_of_probability_factors" : [ 0.1 ],
+      "list_of_max_utilization" : [ 3 ],
+      "tasks_per_taskset" : 5,
+      "list_of_interference_factors" : [ 0.2 ],
+      "taskset_options": {
+        "deadline_option": "eq_period",
+        "max_hyperperiod": 100000,
+        "max_prime": 20,
+        "gen_limit_exponent": 2
+      }
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_15",
+    "taskset_id" : "taskset_15",
+    "action" : "generate",
+    "parameters" : {
+      "sorting_criterion" : [ "rien"],
+      "assignment_method" : [ "wmin" ],
+      "number_of_cores": 4,
+      "assignment_options": {}
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_",
+    "taskset_id" : "taskset_",
+    "scheduling_id" : "scheduling_",
+    "action" : "none",
+    "parameters" : {
+      "scheduling_algorithms" : [ ]
+    }
+  }
+},
+"16":
+{
+  "taskset": {
+    "action": "manual",
+    "taskset_id": "taskset_16",
+    "parameters": {
+      "wcet": [18, 15, 20, 5, 7, 18, 6, 6, 3, 1],
+      "deadline": [25, 35, 55, 15, 20, 45, 30, 22, 35, 25],
+      "period": [25, 35, 55, 15, 20, 45, 30, 22, 35, 25],
+      "interference": [
+        [0, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+        [4, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 5, 0, 0, 0, 0, 0, 0],
+        [0, 0, 6, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      ],
+      "utilization": [0.72, 0.4286, 0.3636, 0.3333, 0.35, 0.4, 0.2, 0.2727, 0.0857, 0.04]
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_16",
+    "taskset_id" : "taskset_16",
+    "action" : "generate",
+    "parameters" : {
+      "sorting_criterion" : [ "utilization_descending"],
+      "assignment_method" : [ "CITTA" ],
+      "number_of_cores": 4
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_",
+    "taskset_id" : "taskset_",
+    "scheduling_id" : "scheduling_",
+    "action" : "none",
+    "parameters" : {
+      "scheduling_algorithms" : [ ]
+    }
+  }
+},
+"17":
+{
+  "taskset": {
+    "action": "manual",
+    "taskset_id": "taskset_17",
+    "parameters": {
+      "wcet": [2, 3, 2, 3],
+      "deadline": [6, 10, 7, 9],
+      "period": [6, 10, 7, 9],
+      "interference": [
+        [0, 0, 0, 0],
+        [0, 0, 1, 0],
+        [0, 1, 0, 0],
+        [0, 0, 0, 0]
+      ],
+      "utilization": [0.3333, 0.3 ,0.2857, 0.3333]
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_17",
+    "taskset_id" : "taskset_17",
+    "action" : "generate",
+    "parameters" : {
+      "sorting_criterion" : [ "utilization_descending"],
+      "assignment_method" : [ "Wmin" ],
+      "number_of_cores": 2,
+      "assignment_options" : {
+
+          "solving_time_limit_MILP": 0
+
+      }
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_17",
+    "taskset_id" : "taskset_17",
+    "scheduling_id" : "scheduling_17",
+    "action" : "generate",
+    "parameters" : {
+      "scheduling_algorithms" : [ "Rhma" ],
+      "scheduling_options": {
+        "non_preemption_time_variant2": "wcet_of_tasks",
+        "solving_time_limit_MILP": 2
+      }
+    }
+  }
+},
+
+"18":
+{
+  "taskset": {
+    "action": "manual",
+    "taskset_id": "taskset_18",
+    "parameters": {
+      "wcet": [1, 3],
+      "deadline": [4, 5],
+      "period": [4, 5],
+      "interference": [
+        [0, 1],
+        [1, 0]
+      ],
+      "utilization": [0.3333, 0.3]
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_18",
+    "taskset_id" : "taskset_18",
+    "action" : "generate",
+    "parameters" : {
+      "sorting_criterion" : [ "utilization_descending"],
+      "assignment_method" : [ "Wmin" ],
+      "number_of_cores": 2
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_18",
+    "taskset_id" : "taskset_18",
+    "scheduling_id" : "scheduling_18",
+    "action" : "None",
+    "parameters" : {
+      "scheduling_algorithms" : [ "Rhma" ]
+    }
+  }
+}
+
+}

@@ -16,14 +16,14 @@ from modules.taskset.task import Task
 
 
 class TasksetSetGenerator:
-    def __init__(self, main_path, taskset_id, taskset_repetition, tasks_per_taskset, list_of_interference_factors, list_of_probability_factors, list_of_max_utilization, taskset_options):
+    def __init__(self, main_path, taskset_id, taskset_repetition, tasks_per_taskset, interference_factor, probability_factor, max_utilization, taskset_options):
 
         self.taskset_id = taskset_id
         self.taskset_repetition = taskset_repetition
         self.tasks_per_taskset = tasks_per_taskset
-        self.interference_factor = list_of_interference_factors[0]
-        self.probability_factor = list_of_probability_factors[0]
-        self.max_utilization = list_of_max_utilization[0]
+        self.interference_factor = interference_factor
+        self.probability_factor = probability_factor
+        self.max_utilization = max_utilization
         self.taskset_options = taskset_options
         self.deadline_option = self.taskset_options["deadline_option"]
         self.max_hyperperiod = self.taskset_options["max_hyperperiod"]

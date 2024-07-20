@@ -15,8 +15,8 @@ class AssignmentGenerator:
         self.taskset_id = taskset_id
         self.assignment_id = assignment_id
         # Store in lowercase for case-insensitive comparison
-        self.assignment_method = assignment_method[0].lower()
-        self.sorting_criterion = sorting_criterion[0].lower()
+        self.assignment_method = assignment_method
+        self.sorting_criterion = sorting_criterion
         self.number_of_cores = number_of_cores
         self.assignment_options = assignment_options
 
@@ -25,15 +25,15 @@ class AssignmentGenerator:
         assignment_list = []
 
         # Determine the assignment method once
-        if self.assignment_method == "citta":
+        if self.assignment_method == "CITTA":
             assignment_function = self._citta_assignment
-        elif self.assignment_method == "wfdu":
+        elif self.assignment_method == "WFDU":
             assignment_function = self._wfdu_assignment
-        elif self.assignment_method == "ffdu":
+        elif self.assignment_method == "FFDU":
             assignment_function = self._ffdu_assignment
-        elif self.assignment_method == "bfdu":
+        elif self.assignment_method == "BFDU":
             assignment_function = self._bfdu_assignment
-        elif self.assignment_method == "wmin":
+        elif self.assignment_method == "Wmin":
             assignment_function = self._wmin_assignment
         else:
             print(

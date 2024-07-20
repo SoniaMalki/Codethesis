@@ -2,11 +2,11 @@ from modules.scheduling.scheduling import Scheduling
 
 
 class SchedulingSet:
-    def __init__(self, scheduling_id, taskset_id, assignment_id, scheduling_algorithms, scheduling_options, scheduling_list):
+    def __init__(self, scheduling_id, taskset_id, assignment_id, scheduling_algorithm, scheduling_options, scheduling_list):
         self.scheduling_id = scheduling_id
         self.taskset_id = taskset_id
         self.assignment_id = assignment_id
-        self.scheduling_algorithms = scheduling_algorithms
+        self.scheduling_algorithm = scheduling_algorithm
         self.scheduling_options = scheduling_options
         self.scheduling_list = scheduling_list
 
@@ -36,7 +36,7 @@ class SchedulingSet:
         res = (f"Scheduling id: {self.scheduling_id}\n"
                f"Taskset ID: {self.taskset_id}\n"
                f"Assignment ID: {self.assignment_id}\n"
-               f"Scheduling Algorithms: {self.scheduling_algorithms}\n"
+               f"Scheduling Algorithms: {self.scheduling_algorithm}\n"
                f"Scheduling List: {self.scheduling_list}\n"
                )
 
@@ -48,6 +48,6 @@ class SchedulingSet:
         return (self.scheduling_id == other.scheduling_id and
                 self.taskset_id == other.taskset_id and
                 self.assignment_id == other.assignment_id and
-                self.scheduling_algorithms == other.scheduling_algorithms and
+                self.scheduling_algorithm == other.scheduling_algorithm and
                 self.scheduling_options == other.scheduling_options and
                 self.scheduling_list == other.scheduling_list)

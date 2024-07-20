@@ -28,9 +28,9 @@
     "taskset_id" : "taskset_1",
     "action" : "generate",
     "parameters" : {
-      "sorting_criterion" : [ "utilization_descending" ],
-      "assignment_method" : [ "CITTA" ],
-      "number_of_cores": 4,
+      "sorting_criterion" : "utilization_descending",
+      "assignment_method" : "CITTA",
+      "number_of_cores": 10,
       "assignment_options": {
         "solving_time_limit_MILP": 2
       }
@@ -42,9 +42,9 @@
     "scheduling_id" : "scheduling_1",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "EarliestDeadlineFirst" ],
+      "scheduling_algorithm" : "DeadlineMonotonicVariant2",
       "scheduling_options": {
-        "non_preemption_time_variant2": [ "wcet_of_tasks" ],
+        "non_preemption_time_variant2": "wcet_of_tasks",
         "solving_time_limit_MILP": 2
       }
     }
@@ -73,8 +73,8 @@
     "taskset_id" : "taskset_2",
     "action" : "generate",
     "parameters" : {
-      "sorting_criterion" : [ "utilization_descending" ],
-      "assignment_method" : [ "Wmin" ],
+      "sorting_criterion" : "utilization_descending",
+      "assignment_method" : "Wmin",
       "number_of_cores": 2,
       "assignment_options" : {
           "solving_time_limit_MILP": 90
@@ -87,7 +87,7 @@
     "scheduling_id" : "scheduling_2",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "Rhma" ],
+      "scheduling_algorithm" : "Rhma",
       "scheduling_options": {
         "non_preemption_time_variant2": "wcet_of_tasks",
         "solving_time_limit_MILP": 2
@@ -102,10 +102,10 @@
     "action" : "generate",
     "parameters" : {
       "taskset_repetition": 1,
-      "list_of_probability_factors" : [ 0.1 ],
-      "list_of_max_utilization" : [ 1 ],
+      "probability_factor" :  0.1,
+      "max_utilization" : 1 ,
       "tasks_per_taskset" : 10,
-      "list_of_interference_factors" : [ 0.2 ],
+      "interference_factor" : 0.2,
       "taskset_options": {
         "deadline_option": "leq_period",
         "max_hyperperiod": 1000,
@@ -119,9 +119,9 @@
     "taskset_id" : "taskset_3",
     "action" : "generate",
     "parameters" : {
-      "sorting_criterion" : [ "utilization_descending"],
-      "assignment_method" : [ "CITTA" ],
-      "number_of_cores": 2,
+      "sorting_criterion" : "utilization_descending",
+      "assignment_method" : "CITTA",
+      "number_of_cores": 20,
       "assignment_options": {
         "solving_time_limit_MILP": 10000
       }
@@ -133,7 +133,7 @@
     "scheduling_id" : "scheduling_3",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithms" : [ "DeadlineMonotonicVariant2" ],
+      "scheduling_algorithm" : "DeadlineMonotonicVariant2",
       "scheduling_options": {
         "non_preemption_time_variant2": "number_of_tasks"
 

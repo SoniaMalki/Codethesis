@@ -6,10 +6,20 @@ from modules.assignment.assignment_algorithms import citta
 from modules.assignment.assignment_set import AssignmentSet
 from modules.assignment.assignment_generator import AssignmentGenerator
 from modules.assignment.assignment_loader_saver import AssignmentLoaderSaver
+from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
 
-main_path = Path(".")
+import tempfile
+
+
+@pytest.fixture(scope="function", autouse=True)
+def use_temporary_prime_matrix_path():
+    global prime_path
+    with tempfile.TemporaryDirectory() as temp_dir:
+        prime_path = Path(temp_dir)
+        yield
+
 
 np.random.seed(42)
 random.seed(42)
@@ -189,7 +199,7 @@ def create_taskset_manual(taskset_id, taskset_parameters):
 
 def create_taskset_generate(taskset_id, taskset_parameters):
     generator = TasksetSetGenerator(
-        main_path, taskset_id, **taskset_parameters)
+        prime_path, taskset_id, **taskset_parameters)
     return generator.generate_taskset_set()
 
 
@@ -256,10 +266,14 @@ def test_assignment(assignment_method, sorting_criterion, experience):
     taskset_action, taskset_id, taskset_parameters, assignment_parameters = input_data
     expected_assignment = prepare_output_data(
         experience=experience, assignment_method=assignment_method, sorting_criterion=sorting_criterion)
-
     if taskset_action == "manual":
         taskset = create_taskset_manual(taskset_id, taskset_parameters)
     elif taskset_action == "generate":
+        max_hyperperiod = taskset_parameters["taskset_options"]["max_hyperperiod"]
+        max_prime = taskset_parameters["taskset_options"]["max_prime"]
+        gen_limit_exponent = taskset_parameters["taskset_options"]["gen_limit_exponent"]
+        PrimeMatrixGenerator(
+            main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
         taskset = create_taskset_generate(taskset_id, taskset_parameters)
     else:
         raise ValueError("Invalid parameter")

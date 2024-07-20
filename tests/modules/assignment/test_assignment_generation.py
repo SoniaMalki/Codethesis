@@ -198,6 +198,11 @@ def create_taskset_manual(taskset_id, taskset_parameters):
 
 
 def create_taskset_generate(taskset_id, taskset_parameters):
+    max_hyperperiod = taskset_parameters["taskset_options"]["max_hyperperiod"]
+    max_prime = taskset_parameters["taskset_options"]["max_prime"]
+    gen_limit_exponent = taskset_parameters["taskset_options"]["gen_limit_exponent"]
+    PrimeMatrixGenerator(
+        main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
     generator = TasksetSetGenerator(
         prime_path, taskset_id, **taskset_parameters)
     return generator.generate_taskset_set()
@@ -269,11 +274,6 @@ def test_assignment(assignment_method, sorting_criterion, experience):
     if taskset_action == "manual":
         taskset = create_taskset_manual(taskset_id, taskset_parameters)
     elif taskset_action == "generate":
-        max_hyperperiod = taskset_parameters["taskset_options"]["max_hyperperiod"]
-        max_prime = taskset_parameters["taskset_options"]["max_prime"]
-        gen_limit_exponent = taskset_parameters["taskset_options"]["gen_limit_exponent"]
-        PrimeMatrixGenerator(
-            main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
         taskset = create_taskset_generate(taskset_id, taskset_parameters)
     else:
         raise ValueError("Invalid parameter")

@@ -1,12 +1,20 @@
+import tempfile
 from pathlib import Path
 import numpy as np
 import pytest
 import random
+from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
 np.random.seed(42)
-random.seed(42)  # Setting a seed for reproducibility
-main_path = Path(".")
-# Test N1
+random.seed(42)
+
+
+@pytest.fixture(scope="function", autouse=True)
+def use_temporary_prime_matrix_path():
+    global prime_path
+    with tempfile.TemporaryDirectory() as temp_dir:
+        prime_path = Path(temp_dir)
+        yield
 
 
 def prepare_input_data():
@@ -74,8 +82,13 @@ def expected_task_structure():
 
 def create_taskset(data):
     """Create and return a Taskset object using provided data."""
+    max_hyperperiod = data["taskset_options"]["max_hyperperiod"]
+    max_prime = data["taskset_options"]["max_prime"]
+    gen_limit_exponent = data["taskset_options"]["gen_limit_exponent"]
+    PrimeMatrixGenerator(
+        main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
     generator = TasksetSetGenerator(
-        main_path=main_path,
+        main_path=prime_path,
         taskset_id=data['taskset_id'],
         taskset_repetition=data['taskset_repetition'],
         list_of_probability_factors=data['probability_factors'],

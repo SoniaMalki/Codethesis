@@ -22,10 +22,10 @@ def prepare_input_data():
     return {
         "taskset_id": "taskset_generate_test",
         "taskset_repetition": 1,
-        "probability_factors": [0.1],
-        "max_utilizations": [0.2],
+        "probability_factor": 0.1,
+        "max_utilization": 0.2,
         "tasks_per_taskset": 2,
-        "interference_factors": [0.2],
+        "interference_factor": 0.2,
         "taskset_options": {
             "deadline_option": "leq_period",
             "max_hyperperiod": 100000,
@@ -91,10 +91,10 @@ def create_taskset(data):
         main_path=prime_path,
         taskset_id=data['taskset_id'],
         taskset_repetition=data['taskset_repetition'],
-        list_of_probability_factors=data['probability_factors'],
-        list_of_max_utilization=data['max_utilizations'],
+        probability_factor=data['probability_factor'],
+        max_utilization=data['max_utilization'],
         tasks_per_taskset=data['tasks_per_taskset'],
-        list_of_interference_factors=data['interference_factors'],
+        interference_factor=data['interference_factor'],
         taskset_options=data["taskset_options"]
     )
     taskset_set = generator.generate_taskset_set()

@@ -49,8 +49,8 @@ def prepare_input_data_manual_1(assignment_method, sorting_criterion=""):
     assignment_parameters = {
         "assignment_id": "assignment_manual_1",
         "taskset_id": "taskset_manual_1",
-        "sorting_criterion": [sorting_criterion],
-        "assignment_method": [assignment_method],
+        "sorting_criterion": sorting_criterion,
+        "assignment_method": assignment_method,
         "number_of_cores": 2,
         "assignment_options": {
             "solving_time_limit_MILP": 10
@@ -109,10 +109,10 @@ def prepare_input_data_generate_1(assignment_method, sorting_criterion=""):
     taskset_id = "taskset_generate_1"
     taskset_parameters = {
         "taskset_repetition": 1,
-        "list_of_probability_factors": [0.1],
-        "list_of_max_utilization": [0.2],
+        "probability_factor": 0.1,
+        "max_utilization": 0.2,
         "tasks_per_taskset": 4,
-        "list_of_interference_factors": [0.2],
+        "interference_factor": 0.2,
         "taskset_options": {
             "deadline_option": "leq_period",
             "max_hyperperiod": 100000,
@@ -123,8 +123,8 @@ def prepare_input_data_generate_1(assignment_method, sorting_criterion=""):
     assignment_parameters = {
         "assignment_id": "assignment_generate_1",
         "taskset_id": "taskset_generate_1",
-        "sorting_criterion": [sorting_criterion],
-        "assignment_method": [assignment_method],
+        "sorting_criterion": sorting_criterion,
+        "assignment_method": assignment_method,
         "number_of_cores": 2,
         "assignment_options": {
             "solving_time_limit_MILP": 10
@@ -209,7 +209,7 @@ def create_taskset_generate(taskset_id, taskset_parameters):
 
 
 def create_assignment(taskset, assignment_parameters):
-    if assignment_parameters["assignment_method"][0].lower() == 'wmin':
+    if assignment_parameters["assignment_method"].lower() == 'wmin':
         taskset = shape_interference(taskset)
     generator = AssignmentGenerator(
         taskset_set_obj=taskset,

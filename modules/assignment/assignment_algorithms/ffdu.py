@@ -2,7 +2,7 @@ import numpy
 
 
 class Ffdu:
-    def __init__(self, taskset, number_of_cores, sorting_criterion):
+    def __init__(self, taskset, number_of_cores, sorting_criterion, assignment_options):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.sorting_criterion = sorting_criterion
@@ -12,6 +12,7 @@ class Ffdu:
         self.interference = self.taskset.interference
         self.utilization = self.taskset.utilization
         self.core_utilizations = [0] * self.number_of_cores
+        self.assignment_options = assignment_options
 
     def sort_task(self):
         # Trie les tâches selon certains critères

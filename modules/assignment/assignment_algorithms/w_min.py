@@ -10,6 +10,7 @@ class Wmin:
         self.interference = self.taskset.interference
         self.solving_time_limit_MILP = assignment_options.get(
             "solving_time_limit_MILP", None)
+        self.assignment_options = assignment_options
 
     def assign(self):
         prob = LpProblem("Wmin_Assignment", LpMinimize)

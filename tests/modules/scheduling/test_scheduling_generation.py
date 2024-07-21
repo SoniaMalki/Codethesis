@@ -93,10 +93,10 @@ def prepare_input_data_taskset_generate_1():
     taskset_id = "taskset_generate_1"
     taskset_action = "generate"
     taskset_repetition = 1
-    list_of_probability_factors = [0.1]
-    list_of_max_utilization = [3]
+    probability_factor = 0.1
+    max_utilization = 3
     tasks_per_taskset = 5
-    list_of_interference_factors = [0.2]
+    interference_factor = 0.2
     taskset_options = {
         "deadline_option": "eq_period",
         "max_hyperperiod": 10000,
@@ -104,7 +104,7 @@ def prepare_input_data_taskset_generate_1():
         "gen_limit_exponent": 2
     }
 
-    return taskset_id, taskset_action, taskset_repetition, list_of_probability_factors, list_of_max_utilization, tasks_per_taskset, list_of_interference_factors, taskset_options
+    return taskset_id, taskset_action, taskset_repetition, probability_factor, max_utilization, tasks_per_taskset, interference_factor, taskset_options
 
 
 def prepare_input_data_dic_taskset_manual(wcet, deadline, period, interference, utilization):
@@ -118,13 +118,13 @@ def prepare_input_data_dic_taskset_manual(wcet, deadline, period, interference, 
     return taskset_parameters
 
 
-def prepare_input_data_dic_taskset_generate(taskset_repetition, list_of_probability_factors, list_of_max_utilization, tasks_per_taskset, list_of_interference_factors, taskset_options):
+def prepare_input_data_dic_taskset_generate(taskset_repetition, probability_factor, max_utilization, tasks_per_taskset, interference_factor, taskset_options):
     taskset_parameters = {
         "taskset_repetition": taskset_repetition,
-        "list_of_probability_factors": list_of_probability_factors,
-        "list_of_max_utilization": list_of_max_utilization,
+        "probability_factor": probability_factor,
+        "max_utilization": max_utilization,
         "tasks_per_taskset": tasks_per_taskset,
-        "list_of_interference_factors": list_of_interference_factors,
+        "interference_factor": interference_factor,
         "taskset_options": taskset_options
     }
     return taskset_parameters
@@ -134,8 +134,8 @@ def prepare_input_data_dic(scheduling_algorithm, non_preemption_time_variant_2):
     assignment_parameters = {
         "assignment_id": "assignment",
         "taskset_id": "taskset",
-        "sorting_criterion": ["utilization_descending"],
-        "assignment_method": ["WFDU"],
+        "sorting_criterion": "utilization_descending",
+        "assignment_method": "WFDU",
         "number_of_cores": 2,
         "assignment_options": {
 
@@ -145,7 +145,7 @@ def prepare_input_data_dic(scheduling_algorithm, non_preemption_time_variant_2):
         "assignment_id": "assignment",
         "taskset_id": "taskset",
         "scheduling_id": "scheduling",
-        "scheduling_algorithms": [scheduling_algorithm],
+        "scheduling_algorithm": scheduling_algorithm,
         "scheduling_options": {
             "non_preemption_time_variant2": non_preemption_time_variant_2,
             "solving_time_limit_MILP": 10,
@@ -160,14 +160,14 @@ def prepare_input_data(experience, scheduling_algorithm, non_preemption_time_var
     elif experience == "manual_2":
         taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_2()
     elif experience == "generate_1":
-        taskset_id, taskset_action, taskset_repetition, list_of_probability_factors, list_of_max_utilization, tasks_per_taskset, list_of_interference_factors, taskset_options = prepare_input_data_taskset_generate_1()
+        taskset_id, taskset_action, taskset_repetition, probability_factor, max_utilization, tasks_per_taskset, interference_factor, taskset_options = prepare_input_data_taskset_generate_1()
 
     if taskset_action == "manual":
         taskset_parameters = prepare_input_data_dic_taskset_manual(
             wcet, deadline, period, interference, utilization)
     elif taskset_action == "generate":
         taskset_parameters = prepare_input_data_dic_taskset_generate(
-            taskset_repetition, list_of_probability_factors, list_of_max_utilization, tasks_per_taskset, list_of_interference_factors, taskset_options)
+            taskset_repetition, probability_factor, max_utilization, tasks_per_taskset, interference_factor, taskset_options)
     assignment_parameters, scheduling_parameters = prepare_input_data_dic(
         scheduling_algorithm, non_preemption_time_variant_2)
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters
@@ -222,7 +222,7 @@ def create_scheduling(taskset, assignment, scheduling_parameters):
         taskset_id=scheduling_parameters["taskset_id"],
         assignment_id=scheduling_parameters["assignment_id"],
         scheduling_id=scheduling_parameters["scheduling_id"],
-        scheduling_algorithms=scheduling_parameters["scheduling_algorithms"],
+        scheduling_algorithm=scheduling_parameters["scheduling_algorithm"],
         scheduling_options=scheduling_parameters["scheduling_options"]
     )
     scheduling = generator.generate_scheduling_set()
@@ -289,7 +289,7 @@ def test_scheduling(scheduling_algorithm, experience, non_preemption_time_varian
         raise ValueError("Invalid parameter")
     assignment = create_assignment(
         taskset, assignment_parameters)
-    if assignment_parameters["assignment_method"][0].lower() != "wmin":
+    if assignment_parameters["assignment_method"].lower() != "wmin":
         shape_interference(taskset)
     scheduling = create_scheduling(taskset, assignment, scheduling_parameters)
 

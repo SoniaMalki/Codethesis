@@ -70,7 +70,8 @@ class AssignmentGenerator:
         wfdu_instance = Wfdu(
             taskset,  # Pass a list containing only the current taskset
             self.number_of_cores,
-            self.sorting_criterion
+            self.sorting_criterion,
+            self.assignment_options
         )
         assigned_cores, successfully_assigned = wfdu_instance.assign()
 
@@ -81,7 +82,8 @@ class AssignmentGenerator:
         ffdu_instance = Ffdu(
             taskset,  # Pass a list containing only the current taskset
             self.number_of_cores,
-            self.sorting_criterion
+            self.sorting_criterion,
+            self.assignment_options
         )
         assigned_cores, successfully_assigned = ffdu_instance.assign()
 
@@ -93,6 +95,7 @@ class AssignmentGenerator:
             taskset,  # Pass a list containing only the current taskset
             self.number_of_cores,
             self.sorting_criterion,
+            self.assignment_options
         )
         assigned_cores, successfully_assigned = bfdu_instance.assign()
 

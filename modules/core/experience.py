@@ -81,9 +81,7 @@ class Experience:
     def process_assignment(self):
         """Handles the generation or opening of the assignment."""
         assignment_loader_saver = AssignmentLoaderSaver(self.main_path)
-        # TODO change this
-        if self.assignment_parameters["parameters"]["assignment_method"].lower() == "wmin":
-            self.shape_interference_for_scheduling()
+
         if self.assignment_parameters["action"] == 'generate':
             print("*****")
             print(f"Generating assignment")
@@ -114,8 +112,6 @@ class Experience:
     def process_scheduling(self):
         """Handles the generation or opening of the scheduling."""
         scheduling_loader_saver = SchedulingLoaderSaver(self.main_path)
-        if self.assignment_parameters["parameters"]["assignment_method"].lower() != "wmin":
-            self.shape_interference_for_scheduling()
 
         if self.scheduling_parameters["action"] == 'generate':
             print("*****")
@@ -145,16 +141,3 @@ class Experience:
             print(
                 f"Invalid scheduling action: {self.scheduling_parameters['action']}")
             return
-
-    def shape_interference_for_scheduling(self):
-        new_interference = []
-        for taskset in self.taskset_set_obj:
-            taskset_interference = np.max(taskset.interference, axis=1)
-            # Modif au niveau Taskset Set
-            new_interference.append(taskset_interference)
-            taskset.interference = taskset_interference  # Modif au niveau Taskset
-            for task_index, task in enumerate(taskset):
-                # Modif au niveau Task
-                task.interference = taskset_interference[task_index]
-
-        self.taskset_set_obj.interference = np.array(new_interference)

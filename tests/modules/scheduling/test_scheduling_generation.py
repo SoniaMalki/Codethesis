@@ -229,18 +229,6 @@ def create_scheduling(taskset, assignment, scheduling_parameters):
     return scheduling
 
 
-def shape_interference(taskset_set_obj):
-    new_interference = []
-    for taskset in taskset_set_obj:
-        taskset_interference = np.max(taskset.interference, axis=1)
-        new_interference.append(taskset_interference)
-        taskset.interference = taskset_interference
-        for task_index, task in enumerate(taskset):
-            task.interference = taskset_interference[task_index]
-    taskset_set_obj.interference = np.array(new_interference)
-    return taskset_set_obj
-
-
 def verify_assignment(assignment):
     for result in assignment:
         assert result.success == 1
@@ -296,8 +284,6 @@ def test_scheduling(scheduling_algorithm, experience, non_preemption_time_varian
     assignment = create_assignment(
         taskset, assignment_parameters)
 
-    # if assignment_parameters["assignment_method"].lower() != "wmin":
-    #     shape_interference(taskset)
     verify_assignment(assignment)
     scheduling = create_scheduling(taskset, assignment, scheduling_parameters)
 

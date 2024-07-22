@@ -8,6 +8,7 @@ class Wmin:
         self.taskset = taskset
         self.utilization = self.taskset.utilization
         self.interference = self.taskset.interference
+        self.single_interference = self.taskset.single_interference
         self.solving_time_limit_MILP = assignment_options.get(
             "solving_time_limit_MILP", None)
         self.assignment_options = assignment_options
@@ -35,7 +36,7 @@ class Wmin:
         for i in range(len(self.taskset)):
             for j in range(len(self.taskset)):
                 for k in range(self.number_of_cores):
-                    if i != j and self.interference[i] != 0 and self.interference[j] != 0:
+                    if i != j and self.single_interference[i] != 0 and self.single_interference[j] != 0:
                         z[i, j, k] = LpVariable(f"z_{i}_{j}_{k}", cat='Binary')
 
         # Constraints
@@ -56,17 +57,17 @@ class Wmin:
         # Constraint 22
         for k in range(self.number_of_cores):
             for i in range(len(self.taskset)):
-                if self.interference[i] != 0:
+                if self.single_interference[i] != 0:
                     for j in range(len(self.taskset)):
-                        if i != j and self.interference[j] != 0:
+                        if i != j and self.single_interference[j] != 0:
                             # Variable pour o[i, k] * (1 - o[j, k]) (s'assurer que i et j comptent l'interference que si coeur diff (que i dans coeur k))
                             prob += z[i, j, k] <= o[i, k]
                             prob += z[i, j, k] <= (1 - o[j, k])
                             prob += z[i, j, k] >= o[i, k] + (1 - o[j, k]) - 1
 
-            prob += lpSum([self.interference[j] * z[i, j, k]
-                           for i in range(len(self.taskset)) if self.interference[i] != 0
-                           for j in range(len(self.taskset)) if i != j and self.interference[j] != 0
+            prob += lpSum([self.single_interference[j] * z[i, j, k]
+                           for i in range(len(self.taskset)) if self.single_interference[i] != 0
+                           for j in range(len(self.taskset)) if i != j and self.single_interference[j] != 0
                            ]) == maxW_k[k]
 
         # Objective function

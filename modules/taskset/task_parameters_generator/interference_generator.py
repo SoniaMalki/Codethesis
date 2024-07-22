@@ -24,9 +24,7 @@ class InterferenceGenerator:
     def generate_taskset_interference(self, task_wcets):
         taskset_interference_matrix = numpy.zeros(
             (self.tasks_per_taskset, self.tasks_per_taskset))
-        taskset_interference = numpy.zeros(self.tasks_per_taskset)
         for task_index_i in range(self.tasks_per_taskset):
-            max_interference = 0
             for task_index_j in range(task_index_i + 1, self.tasks_per_taskset):
                 random_value = numpy.random.uniform(0, 1)
                 interference_occurs = 1 if random_value < self.probability_factor else 0
@@ -35,9 +33,9 @@ class InterferenceGenerator:
                     min(task_wcets[task_index_i], task_wcets[task_index_j])
                 )
                 taskset_interference_matrix[task_index_j][task_index_i] = taskset_interference_matrix[task_index_i][task_index_j]
-                if taskset_interference_matrix[task_index_i][task_index_j] > max_interference:
-                    max_interference = taskset_interference_matrix[task_index_i][task_index_j]
-            taskset_interference[task_index_i] = max_interference
+
         for i in range(self.tasks_per_taskset):
             taskset_interference_matrix[i, i] = 0
+        taskset_interference = numpy.array([max(row)
+                                            for row in taskset_interference_matrix])
         return taskset_interference_matrix, taskset_interference

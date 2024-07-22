@@ -241,7 +241,13 @@ def shape_interference(taskset_set_obj):
     return taskset_set_obj
 
 
+def verify_assignment(assignment):
+    for result in assignment:
+        assert result.success == 1
+
+
 def verify_scheduling(scheduling, expected_scheduling):
+    print(expected_scheduling)
     for result, exp_s in zip(scheduling, expected_scheduling):
         assert result == exp_s
 
@@ -289,8 +295,10 @@ def test_scheduling(scheduling_algorithm, experience, non_preemption_time_varian
         raise ValueError("Invalid parameter")
     assignment = create_assignment(
         taskset, assignment_parameters)
+
     if assignment_parameters["assignment_method"].lower() != "wmin":
         shape_interference(taskset)
+    verify_assignment(assignment)
     scheduling = create_scheduling(taskset, assignment, scheduling_parameters)
 
     expected_scheduling = prepare_output_data(

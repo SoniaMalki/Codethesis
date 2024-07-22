@@ -209,8 +209,6 @@ def create_taskset_generate(taskset_id, taskset_parameters):
 
 
 def create_assignment(taskset, assignment_parameters):
-    if assignment_parameters["assignment_method"].lower() == 'wmin':
-        taskset = shape_interference(taskset)
     generator = AssignmentGenerator(
         taskset_set_obj=taskset,
         taskset_id=assignment_parameters["taskset_id"],
@@ -222,18 +220,6 @@ def create_assignment(taskset, assignment_parameters):
     )
     assignment = generator.generate_assignment_set()
     return assignment
-
-
-def shape_interference(taskset_set_obj):
-    new_interference = []
-    for taskset in taskset_set_obj:
-        taskset_interference = np.max(taskset.interference, axis=1)
-        new_interference.append(taskset_interference)
-        taskset.interference = taskset_interference
-        for task_index, task in enumerate(taskset):
-            task.interference = taskset_interference[task_index]
-    taskset_set_obj.interference = np.array(new_interference)
-    return taskset_set_obj
 
 
 def verify_assignment(assignment, expected_assignment):

@@ -10,7 +10,7 @@ class TasksetSetManual:
         self.deadline_list = deadline_list
         self.period_list = period_list
         self.interference_list = interference_list
-        self.single_interference = [9 for _ in range(len(self.wcet_list))]
+        self.single_interference = [max(row) for row in self.interference_list]
         self.utilization_list = utilization_list
 
     def create_taskset_set(self):

@@ -247,7 +247,7 @@ def verify_assignment(assignment):
 
 
 def verify_scheduling(scheduling, expected_scheduling):
-    # assert scheduling == expected_scheduling
+    assert scheduling == expected_scheduling
     for result, exp_s in zip(scheduling, expected_scheduling):
         assert result == exp_s
 

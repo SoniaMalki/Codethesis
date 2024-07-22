@@ -15,7 +15,7 @@ class SchedulingSet:
                 f"scheduling_id={self.scheduling_id}, "
                 f"taskset_id={self.taskset_id}, "
                 f"assignment_id={self.assignment_id}, "
-                f"scheduling_algorithms={self.scheduling_algorithms}, "
+                f"scheduling_algorithms={self.scheduling_algorithm}, "
                 f"scheduling_list={self.scheduling_list}, "
                 ")"
                 )
@@ -36,7 +36,7 @@ class SchedulingSet:
         res = (f"Scheduling id: {self.scheduling_id}\n"
                f"Taskset ID: {self.taskset_id}\n"
                f"Assignment ID: {self.assignment_id}\n"
-               f"Scheduling Algorithms: {self.scheduling_algorithms}\n"
+               f"Scheduling Algorithm: {self.scheduling_algorithm}\n"
                f"Scheduling List: {self.scheduling_list}\n"
                )
 
@@ -48,6 +48,6 @@ class SchedulingSet:
         return (self.scheduling_id == other.scheduling_id and
                 self.taskset_id == other.taskset_id and
                 self.assignment_id == other.assignment_id and
-                self.scheduling_algorithms == other.scheduling_algorithms and
+                self.scheduling_algorithm == other.scheduling_algorithm and
                 self.scheduling_options == other.scheduling_options and
                 self.scheduling_list == other.scheduling_list)

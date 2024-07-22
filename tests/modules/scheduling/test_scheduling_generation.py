@@ -94,7 +94,7 @@ def prepare_input_data_taskset_generate_1():
     taskset_action = "generate"
     taskset_repetition = 1
     probability_factor = 0.1
-    max_utilization = 3
+    max_utilization = 1
     tasks_per_taskset = 5
     interference_factor = 0.2
     taskset_options = {
@@ -298,7 +298,7 @@ def test_scheduling(scheduling_algorithm, experience, non_preemption_time_varian
 
     if assignment_parameters["assignment_method"].lower() != "wmin":
         shape_interference(taskset)
-    # verify_assignment(assignment)
+    verify_assignment(assignment)
     scheduling = create_scheduling(taskset, assignment, scheduling_parameters)
 
     expected_scheduling = prepare_output_data(

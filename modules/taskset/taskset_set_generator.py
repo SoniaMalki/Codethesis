@@ -99,8 +99,9 @@ class TasksetSetGenerator:
         utilizations = self.utilization_generator.generate_utilizations()
         periods = self.period_generator.generate_periods()
         wcets = self.wcet_calculator.compute_wcets(periods, utilizations)
-        interferences = self.interference_generator.generate_interference(
+        interferences, single_interference = self.interference_generator.generate_interference(
             wcets)
+
         deadlines = self.deadline_generator.generate_deadlines(
             periods=periods, wcets=wcets, deadline_option=self.deadline_option)
         hyperperiods = TasksetSetGenerator.generate_hyperperiods(
@@ -111,14 +112,14 @@ class TasksetSetGenerator:
             periods=periods, N=N)
         absolute_deadlines = TasksetSetGenerator.generate_absolute_deadline(
             periods=periods, deadlines=deadlines, activations=activations)
-        return [periods, deadlines, utilizations, wcets, interferences, hyperperiods, N, activations, absolute_deadlines]
+        return [periods, deadlines, utilizations, wcets, interferences, single_interference, hyperperiods, N, activations, absolute_deadlines]
 
     def generate_taskset_set(self):
-        periods, deadlines, utilizations, wcets, interferences, hyperperiods, N, activations, absolute_deadlines = self.init_taskset_set()
+        periods, deadlines, utilizations, wcets, interferences, single_interference, hyperperiods, N, activations, absolute_deadlines = self.init_taskset_set()
         taskset_set_generated = []
         for i in range(len(periods)):
             taskset_set_generated.append(Taskset(taskset_number=i, wcet=wcets[i], deadline=deadlines[i], period=periods[i], interference=interferences[
-                                         i], utilization=utilizations[i], hyperperiod=hyperperiods[i], N=N[i], activation=activations[i], absolute_deadline=absolute_deadlines[i]))
-        res = TasksetSet(taskset_id=self.taskset_id, wcet=wcets, deadline=deadlines, period=periods,
+                                         i], single_interference=single_interference[i], utilization=utilizations[i], hyperperiod=hyperperiods[i], N=N[i], activation=activations[i], absolute_deadline=absolute_deadlines[i]))
+        res = TasksetSet(taskset_id=self.taskset_id, wcet=wcets, deadline=deadlines, period=periods, single_interference=single_interference,
                          interference=interferences, utilization=utilizations, taskset_list=taskset_set_generated)
         return res

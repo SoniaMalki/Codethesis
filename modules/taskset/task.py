@@ -4,12 +4,13 @@ from modules.taskset.job import Job
 
 
 class Task:
-    def __init__(self, task_number, wcet, deadline, period, interference, utilization, absolute_deadline):
+    def __init__(self, task_number, wcet, deadline, period, interference, single_interference, utilization, absolute_deadline):
         self.task_number = task_number
         self.wcet = wcet
         self.deadline = deadline
         self.period = period
         self.interference = interference
+        self.single_interference = single_interference
         self.utilization = utilization
         self.absolute_deadline = absolute_deadline
 
@@ -86,6 +87,7 @@ class Task:
                 self.deadline == other.deadline and
                 self.period == other.period and
                 self.interference == other.interference and
+                self.single_interference == other.single_interference and
                 self.utilization == other.utilization and
                 self.absolute_deadline == other.absolute_deadline and
                 self.job_list == other.job_list)

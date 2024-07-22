@@ -2,12 +2,13 @@ from .task import Task
 
 
 class Taskset:
-    def __init__(self, taskset_number, wcet, deadline, period, interference, utilization, hyperperiod, N, activation, absolute_deadline):
+    def __init__(self, taskset_number, wcet, deadline, period, interference, single_interference, utilization, hyperperiod, N, activation, absolute_deadline):
         self.taskset_number = taskset_number
         self.wcet = wcet
         self.deadline = deadline
         self.period = period
         self.interference = interference
+        self.single_interference = single_interference
         self.utilization = utilization
         self.hyperperiod = hyperperiod
         self.N = N
@@ -17,7 +18,8 @@ class Taskset:
         self.task_list = []
         for i in range(len(self.period)):
             self.task_list.append(Task(task_number=i, wcet=self.wcet[i], deadline=self.deadline[i],
-                                       period=self.period[i], interference=self.interference[i], utilization=self.utilization[i],
+                                       period=self.period[i], interference=self.interference[
+                                           i], single_interference=self.single_interference[i], utilization=self.utilization[i],
                                        absolute_deadline=self.absolute_deadline[i]))
 
     def __repr__(self):
@@ -66,6 +68,7 @@ class Taskset:
                 self.deadline == other.deadline and
                 self.period == other.period and
                 self.interference == other.interference and
+                self.single_interference == other.single_interference and
                 self.utilization == other.utilization and
                 self.hyperperiod == other.hyperperiod and
                 self.N == other.N and

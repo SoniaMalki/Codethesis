@@ -48,7 +48,7 @@ class Rhma:
         output_res += f"C: {self.taskset.wcet} \n"
         output_res += f"D: {self.taskset.deadline} \n"
         output_res += f"T: {self.taskset.period} \n"
-        output_res += f"I: {self.taskset.interference} \n"
+        output_res += f"I: {self.taskset.single_interference} \n"
         output_res += f"Hyperperiod: {self.taskset.hyperperiod} \n"
         output_res += f"Activation: {self.taskset.activation} \n"
         output_res += f"Absolute deadline: {self.taskset.absolute_deadline} \n"
@@ -74,12 +74,12 @@ class Rhma:
         for i in range(len(self.taskset)):
             for j in range(len(self.taskset)):
                 if i != j and self.assignment.find_task_core(i) != self.assignment.find_task_core(j):
-                    if self.taskset[i].interference > 0 and self.taskset[j].interference > 0:
+                    if self.taskset[i].single_interference > 0 and self.taskset[j].single_interference > 0:
                         v_j_to_i = self.calculate_activation_pattern(
                             interfering_task_index=j, receiving_task_index=i)
                         for a_index, a in enumerate(self.taskset.activation[i]):
                             maxI += v_j_to_i[a_index] * \
-                                self.taskset[j].interference
+                                self.taskset[j].single_interference
 
         return maxI
 
@@ -219,8 +219,8 @@ class Rhma:
                         right_side = len(
                             self.S_i_h[i][h]) * self.taskset.wcet[i] * self.o_i_j[i][j]
 
-                        right_side += lpSum(m[i, a, k, b] * self.taskset.interference[k] * self.o_i_j[i][j]
-                                            for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.interference[k] > 0 and self.taskset.interference[i] > 0
+                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
+                                            for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
                                             for a in self.S_i_h[i][h]
                                             for b in self.S_i_h[k][h])
 
@@ -237,8 +237,8 @@ class Rhma:
                             right_side = self.taskset.wcet[i] * \
                                 self.o_i_j[i][j]
 
-                            right_side += lpSum(m[i, a, k, b] * self.taskset.interference[k] * self.o_i_j[i][j]
-                                                for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.interference[k] > 0 and self.taskset.interference[i] > 0
+                            right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
+                                                for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
                                                 for b in self.S_i_h[k][h])
 
                             prob += left_side == right_side

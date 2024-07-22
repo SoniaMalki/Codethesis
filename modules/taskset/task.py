@@ -75,7 +75,7 @@ class Task:
                 absolute_deadline=self.deadline,
                 relative_deadline=relative_deadline,
                 arrival_time=arrival_time,
-                interference_factor=self.interference
+                interference_factor=self.single_interference
             )
             self.job_list.append(job)
 

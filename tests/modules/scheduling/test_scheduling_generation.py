@@ -296,8 +296,8 @@ def test_scheduling(scheduling_algorithm, experience, non_preemption_time_varian
     assignment = create_assignment(
         taskset, assignment_parameters)
 
-    if assignment_parameters["assignment_method"].lower() != "wmin":
-        shape_interference(taskset)
+    # if assignment_parameters["assignment_method"].lower() != "wmin":
+    #     shape_interference(taskset)
     verify_assignment(assignment)
     scheduling = create_scheduling(taskset, assignment, scheduling_parameters)
 

@@ -170,26 +170,21 @@ class Rhma:
 
             # Variables
             x = {}
-            for i in range(len(self.taskset)):
-                for a in self.S_i_h[i][h]:
-                    for j in range(self.number_of_cores):
-                        for t in self.T_h[h]:
-                            x[i, a, j, t] = LpVariable(
-                                f"x_{i}_{a}_{j}_{t}", cat='Binary')
-
             m = {}
-            for i in range(len(self.taskset)):
-                for a in self.S_i_h[i][h]:
-                    for k in range(len(self.taskset)):
-                        for b in self.S_i_h[k][h]:
-                            m[i, a, k,
-                              b] = LpVariable(f"m_{i}_{a}_{k}_{b}", cat='Binary')
-
             w = {}
             for i in range(len(self.taskset)):
                 for a in self.S_i_h[i][h]:
                     w[i, a] = LpVariable(
                         f"w_{i}_{a}", lowBound=0, cat='Integer')
+                    for j in range(self.number_of_cores):
+                        for t in self.T_h[h]:
+                            x[i, a, j, t] = LpVariable(
+                                f"x_{i}_{a}_{j}_{t}", cat='Binary')
+                            
+                    for k in range(len(self.taskset)):
+                        for b in self.S_i_h[k][h]:
+                            m[i, a, k,
+                              b] = LpVariable(f"m_{i}_{a}_{k}_{b}", cat='Binary')
 
             # Constraints
 

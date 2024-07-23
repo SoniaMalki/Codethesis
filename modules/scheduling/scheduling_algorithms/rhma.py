@@ -180,7 +180,7 @@ class Rhma:
                         for t in self.T_h[h]:
                             x[i, a, j, t] = LpVariable(
                                 f"x_{i}_{a}_{j}_{t}", cat='Binary')
-                            
+
                     for k in range(len(self.taskset)):
                         for b in self.S_i_h[k][h]:
                             m[i, a, k,
@@ -304,7 +304,8 @@ class Rhma:
 
             # Solving the MILP problem
             options = [
-                ("OutputFlag", 0)
+                ("OutputFlag", 0),
+                ("Seed", 42)
             ]
             if self.solving_time_limit_MILP is not None:
                 options.append(("Timelimit", self.solving_time_limit_MILP))

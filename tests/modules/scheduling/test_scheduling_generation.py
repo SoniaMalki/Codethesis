@@ -148,7 +148,7 @@ def prepare_input_data_dic(scheduling_algorithm, non_preemption_time_variant_2):
         "scheduling_algorithm": scheduling_algorithm,
         "scheduling_options": {
             "non_preemption_time_variant2": non_preemption_time_variant_2,
-            "solving_time_limit_MILP": 10,
+            "solving_time_limit_MILP": None,
         }
     }
     return assignment_parameters, scheduling_parameters

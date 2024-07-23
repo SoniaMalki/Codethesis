@@ -311,8 +311,11 @@ class Rhma:
 
             prob.solve(GUROBI_CMD(msg=0, options=options))
 
+            print("Probstatus: ", prob.status, 'for BP: ', h)
+
             # Checking if a solution is found
-            if prob.status == 1:
+            if prob.status == LpStatusOptimal:
+
                 busy_period_schedule_empty = [[]
                                               for _ in range(self.number_of_cores)]
                 busy_period_schedule = [[]

@@ -135,7 +135,7 @@ def prepare_input_data_dic(scheduling_algorithm, non_preemption_time_variant_2):
         "assignment_id": "assignment",
         "taskset_id": "taskset",
         "sorting_criterion": "utilization_descending",
-        "assignment_method": "WFDU",
+        "assignment_method": "WorstFitAssigner",
         "number_of_cores": 2,
         "assignment_options": {
 

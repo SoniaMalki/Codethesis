@@ -1,9 +1,9 @@
 from modules.assignment.assignment import Assignment
 from modules.assignment.assignment_set import AssignmentSet
 from modules.assignment.assignment_algorithms.citta import Citta
-from modules.assignment.assignment_algorithms.wfdu import Wfdu
-from modules.assignment.assignment_algorithms.ffdu import Ffdu
-from modules.assignment.assignment_algorithms.bfdu import Bfdu
+from modules.assignment.assignment_algorithms.worst_fit_assigner import WorstFitAssigner
+from modules.assignment.assignment_algorithms.first_fit_assigner import FirstFitAssigner
+from modules.assignment.assignment_algorithms.best_fit_assigner import BestFitAssigner
 from modules.assignment.assignment_algorithms.w_min import Wmin
 
 import time
@@ -27,12 +27,12 @@ class AssignmentGenerator:
         # Determine the assignment method once
         if self.assignment_method == "CITTA":
             assignment_function = self._citta_assignment
-        elif self.assignment_method == "WFDU":
-            assignment_function = self._wfdu_assignment
-        elif self.assignment_method == "FFDU":
-            assignment_function = self._ffdu_assignment
-        elif self.assignment_method == "BFDU":
-            assignment_function = self._bfdu_assignment
+        elif self.assignment_method == "WorstFitAssigner":
+            assignment_function = self._WorstFitAssigner_assignment
+        elif self.assignment_method == "FirstFitAssigner":
+            assignment_function = self._FirstFitAssigner_assignment
+        elif self.assignment_method == "BestFitAssigner":
+            assignment_function = self._BestFitAssigner_assignment
         elif self.assignment_method == "Wmin":
             assignment_function = self._wmin_assignment
         else:
@@ -65,39 +65,39 @@ class AssignmentGenerator:
 
         return assigned_cores, successfully_assigned
 
-    def _wfdu_assignment(self, taskset):
-        """Performs the WFDU assignment algorithm."""
-        wfdu_instance = Wfdu(
+    def _WorstFitAssigner_assignment(self, taskset):
+        """Performs the WorstFitAssigner assignment algorithm."""
+        WorstFitAssigner_instance = WorstFitAssigner(
             taskset,  # Pass a list containing only the current taskset
             self.number_of_cores,
             self.sorting_criterion,
             self.assignment_options
         )
-        assigned_cores, successfully_assigned = wfdu_instance.assign()
+        assigned_cores, successfully_assigned = WorstFitAssigner_instance.assign()
 
         return assigned_cores, successfully_assigned
 
-    def _ffdu_assignment(self, taskset):
-        """Performs the FFDU assignment algorithm."""
-        ffdu_instance = Ffdu(
+    def _FirstFitAssigner_assignment(self, taskset):
+        """Performs the FirstFitAssigner assignment algorithm."""
+        FirstFitAssigner_instance = FirstFitAssigner(
             taskset,  # Pass a list containing only the current taskset
             self.number_of_cores,
             self.sorting_criterion,
             self.assignment_options
         )
-        assigned_cores, successfully_assigned = ffdu_instance.assign()
+        assigned_cores, successfully_assigned = FirstFitAssigner_instance.assign()
 
         return assigned_cores, successfully_assigned
 
-    def _bfdu_assignment(self, taskset):
-        """Performs the BFDU assignment algorithm."""
-        bfdu_instance = Bfdu(
+    def _BestFitAssigner_assignment(self, taskset):
+        """Performs the BestFitAssigner assignment algorithm."""
+        BestFitAssigner_instance = BestFitAssigner(
             taskset,  # Pass a list containing only the current taskset
             self.number_of_cores,
             self.sorting_criterion,
             self.assignment_options
         )
-        assigned_cores, successfully_assigned = bfdu_instance.assign()
+        assigned_cores, successfully_assigned = BestFitAssigner_instance.assign()
 
         return assigned_cores, successfully_assigned
 

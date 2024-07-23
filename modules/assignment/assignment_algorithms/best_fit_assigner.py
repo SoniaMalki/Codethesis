@@ -1,7 +1,7 @@
 import numpy
 
 
-class Bfdu:
+class BestFitAssigner:
     def __init__(self, taskset, number_of_cores, sorting_criterion, assignment_options):
         self.number_of_cores = number_of_cores
         self.taskset = taskset

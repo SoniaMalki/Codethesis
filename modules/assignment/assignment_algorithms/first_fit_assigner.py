@@ -1,7 +1,7 @@
 import numpy
 
 
-class Wfdu:
+class FirstFitAssigner:
     def __init__(self, taskset, number_of_cores, sorting_criterion, assignment_options):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
@@ -52,7 +52,7 @@ class Wfdu:
         taskset_not_assigned = []
 
         for task_index in taskset:
-            core_index = self.find_worst_fit_core(task_in_core, task_index)
+            core_index = self.find_first_fit_core(task_in_core, task_index)
             if core_index is not None:
                 task_in_core[core_index].append(task_index)
                 self.core_utilizations[core_index] += self.utilization[task_index]
@@ -65,13 +65,10 @@ class Wfdu:
         else:
             return task_in_core, 0
 
-    def find_worst_fit_core(self, task_in_core, task_index):
-        """Trouve le cœur avec l'utilisation la moins élevée (pour WFDU) et vérifie la limite d'utilisation."""
-        min_utilization = 1
-        worst_fit_core = None
+    def find_first_fit_core(self, task_in_core, task_index):
+        """Trouve le premier cœur disponible (pour FFDU) et vérifie la limite d'utilisation."""
         for core_index in range(self.number_of_cores):
             # Vérifie si la tâche rentre dans la limite d'utilisation du cœur
-            if self.core_utilizations[core_index] + self.utilization[task_index] <= 1 and self.core_utilizations[core_index] < min_utilization:
-                min_utilization = self.core_utilizations[core_index]
-                worst_fit_core = core_index
-        return worst_fit_core
+            if self.core_utilizations[core_index] + self.utilization[task_index] <= 1:
+                return core_index
+        return None

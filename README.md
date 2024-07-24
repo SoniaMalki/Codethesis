@@ -62,9 +62,13 @@ Le code propose plusieurs algorithmes d'assignation qui peuvent être sélection
 La classe `AssignmentGenerator` est responsable de la génération des assignations en fonction de l'algorithme spécifié (`assignment_method`) et des paramètres associés. Les algorithmes d'assignation suivants sont disponibles :
 
 - **`CITTA`**:  Algorithme de partitionnement de tâches qui tient compte des interférences de cache lors de l'assignation des tâches aux cœurs. Utilise un modèle MILP pour calculer la borne supérieure de l'interférence de cache et recherche une partition qui garantit l'ordonnançabilité sous cette contrainte.
-- **`WorstFitAssigner`**: 
-- **`FirstFitAssigner`**: 
-- **`BestFitAssigner`**:  
+
+- **`WorstFitAssigner`**: Algorithme de partitionnement de tâches qui assigne chaque tâche au processeur ayant l'utilisation la plus faible parmi ceux pouvant encore l'accueillir. Les tâches sont préalablement triées selon le critère défini par `sorting_criterion`.  La validité de l'assignation est vérifiée en s'assurant que l'utilisation du processeur après l'ajout de la tâche ne dépasse pas 1.
+
+- **`FirstFitAssigner`**: Algorithme de partitionnement de tâches qui assigne chaque tâche au premier processeur rencontré pouvant encore l'acceuillir.  Les tâches sont préalablement triées selon le critère défini par `sorting_criterion`.  La validité de l'assignation est vérifiée en s'assurant que l'utilisation du processeur après l'ajout de la tâche ne dépasse pas 1.
+
+- **`BestFitAssigner`**: Algorithme de partitionnement de tâches qui assigne chaque tâche au processeur ayant l'utilisation la plus élevée parmi ceux pouvant encore l'accueillir. Les tâches sont préalablement triées selon le critère défini par `sorting_criterion`.  La validité de l'assignation est vérifiée en s'assurant que l'utilisation du processeur après l'ajout de la tâche ne dépasse pas 1. 
+
 - **`Wmin`**:  
 
 

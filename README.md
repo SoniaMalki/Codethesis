@@ -25,9 +25,9 @@ Les paramètres clés pour la génération de tasksets sont définis dans le fic
 
 Les paramètres de chaque tâche (`wcet`, `deadline`, `period`, `interference`, `single_interference`, `utilization`, `hyperperiod`, `N`, `activation`, `absolute_deadline`) sont générés par les modules suivants :
 
-- **`UtilizationGenerator`**: Génère les utilisations des tâches en s'assurant que la somme des utilisations des tâches d'un même taskset ne dépasse pas l'utilisation maximale spécifiée (`max_utilization`). Utilise la méthode décrite dans $ajouter citation$
-- **`PrimeMatrixGenerator`**: Génère une matrice de nombres premiers utilisée pour créer des périodes de tâches uniques et éviter les explosions d'hyperpériode.  Utilise la méthode décrite dans @LimitationHyperperiodRealtimegoossens2001. Les matrices sont générés si elles n'existent pas, elles sont ensuite sauvegardées pour être réutilisées. On différencie les différentes matrice par leur paramètres qui sont ajoutés au nom du fichier.
-- **`PeriodGenerator`**:  Utilise la matrice de nombres premiers pour générer les périodes des tâches. Utilise la méthode décrite dans @LimitationHyperperiodRealtimegoossens2001. 
+- **`UtilizationGenerator`**: Génère les utilisations des tâches en s'assurant que la somme des utilisations des tâches d'un même taskset ne dépasse pas l'utilisation maximale spécifiée (`max_utilization`). Utilise la méthode décrite dans [1] (Emberson, Stafford, & Davis, 2010)
+- **`PrimeMatrixGenerator`**: Génère une matrice de nombres premiers utilisée pour créer des périodes de tâches uniques et éviter les explosions d'hyperpériode.  Utilise la méthode décrite dans [2] (Goossens & Macq, 2001). Les matrices sont générés si elles n'existent pas, elles sont ensuite sauvegardées pour être réutilisées. On différencie les différentes matrice par leur paramètres qui sont ajoutés au nom du fichier.
+- **`PeriodGenerator`**:  Utilise la matrice de nombres premiers pour générer les périodes des tâches. Utilise la méthode décrite dans [2] (Goossens & Macq, 2001). 
 - **`WCETCalculator`**:  Calcule le WCET de chaque tâche en fonction de sa période et de son utilisation. (WCET = utilization * period) 
 - **`DeadlineGenerator`**: Génère les deadlines des tâches en fonction de l'option spécifiée `deadline_option`.
 - **`InterferenceGenerator`**:  Génère les interférences entre les tâches d'un même taskset en utilisant le facteur d'interférence (`interference_factor`) et la probabilité d'interférence (`probability_factor`). Si une interference a lieu (`probability_factor`), elle est calculée en fonction de `interference_factor` et du `wcet`.
@@ -78,7 +78,7 @@ Les paramètres de l'algorithme d'ordonnancement sont définis dans le fichier `
 
 - **`scheduling_algorithm`**:  Nom de l'algorithme d'ordonnancement à utiliser. 
 - **`scheduling_options`**: Options spécifiques à l'algorithme d'ordonnancement si nécessaire. 
-- **`non_preemption_time_variant_2`**: Option disponible pour déterminer le facteur de non-preemption pour les variants 2 de EDF et DM. Les options disponibles sont: number_of_tasks, wcet_of_tasks & system_utilization, définie selon $ajouter citation$
+- **`non_preemption_time_variant_2`**: Option disponible pour déterminer le facteur de non-preemption pour les variants 2 de EDF et DM. Les options disponibles sont: number_of_tasks, wcet_of_tasks & system_utilization, définie selon [3] (Aceituno et al., 2022).
 
 #### 3.2. Algorithmes d'ordonnancement
 
@@ -106,14 +106,11 @@ Les algorithmes `CombinedScheduler` et `Rhma` utilisent le concept de busy perio
 - **`generate_busy_periods()`**:  Combine les fonctions précédentes pour générer un objet `BusyPeriod` à partir d'un objet `Scheduling`.
 - **`generate_scheduling_length()`**:  Calcule la durée totale des périodes occupées d'un ordonnancement. Cela permet de comparer les Busy Period et choisir l'algorithme qui permet d'obtenir la plus courte BP.
 
-
 ## Références
-@inproceedings{LimitationHyperperiodRealtimegoossens2001,
-    title = {Limitation of the hyper-period in real-time periodic task set generation},
-    booktitle = {Proceedings of the 9th international conference on real-time systems},
-    publisher = {Teknea},
-    author = {Goossens, Joel and Macq, Christophe},
-    year = {2001},
-    pages = {133--148},
-    file = {2001 - Limitation of the hyper-period in real-time periodic task set generation (Joël Goossens, Christophe Macq).pdf:/home/sonia/Zotero/storage/MUE8EAP5/2001 - Limitation of the hyper-period in real-time periodic task set generation (Joël Goossens, Christophe Macq).pdf:application/pdf},
-}
+
+- [1] Emberson, P., Stafford, R., & Davis, R. I. (2010). Techniques for the synthesis of multiprocessor tasksets. 
+
+- [2] Goossens, J., & Macq, C. (2001). Limitation of the hyper-period in real-time periodic task set generation. In Proceedings of the 9th International Conference on Real-Time Systems (pp. 133–148). Teknea.
+
+- [3] Aceituno, J. M., Guasque Ortega, A., Balbastre Betoret, P., Simó Ten, J., & Crespo Lorente, A. (2022). Planificador combinado: una estrategia para mejorar el rendimiento de los sistemas de tiempo real crítico. In XLIII Jornadas de Automática: libro de actas: 7, 8 y 9 de septiembre de 2022, Logroño (La Rioja) (pp. 870–876). Servizo de Publicacións da UDC. doi:10.17979/spudc.9788497498418.0870
+

@@ -8,18 +8,18 @@ Le processus de génération de tasksets vise à créer des ensembles de tâches
 
 Les paramètres clés pour la génération de tasksets sont définis dans le fichier `experience.json`.  Ils sont ensuite utilisés par la classe `TasksetSetGenerator` pour créer les tasksets. 
 
-- **`taskset_repetition`**:  Nombre de tasksets à générer. Permet de répéter une expérience plusieurs fois avec les même paramètre de génération, pour faire des moyennes.
-- **`tasks_per_taskset`**:  Nombre de tâches dans chaque taskset.
-- **`interference_factor`**: Facteur utilisé pour calculer l'interférence entre les tâches. L'interférence est défini comme un pourcentage du WCET.
-- **`probability_factor`**: Probabilité qu'une interférence se produise entre deux tâches.
-- **`max_utilization`**:  Utilisation maximale autorisée pour chaque taskset. 
+- **`taskset_repetition`**:  Nombre de tasksets à générer. Permet de répéter une expérience plusieurs fois avec les même paramètre de génération, pour faire des moyennes. (choix entre : 1, 2, 4, 8 ou 16)
+- **`tasks_per_taskset`**:  Nombre de tâches dans chaque taskset. (choix entre: 10 ou 20)
+- **`interference_factor`**: Facteur utilisé pour calculer l'interférence entre les tâches. L'interférence est défini comme un pourcentage du WCET. (choix entre: 0.2 ou 0.8)
+- **`probability_factor`**: Probabilité qu'une interférence se produise entre deux tâches. (choix entre: 0.1 ou 0.4)
+- **`max_utilization`**:  Utilisation maximale autorisée pour chaque taskset. (choix entre: 0.2 à 1 par incrément de 0.2. Cela est multiplié par le nombre de coeurs disponibles)
 - **`taskset_options`** Options spécifiques à l'algorithme de generation de taskset si nécessaire.
     - **`deadline_option`**: Option pour la génération des deadlines.
         - `eq_period`:  La deadline est égale à la période de la tâche.
         - `leq_period`: La deadline est un nombre aléatoire entre le WCET et la période de la tâche.
-    - **`max_hyperperiod`**:  Hyperpériode maximale autorisée pour les tasksets générés. Permet de ne pas avoir une explosion de paramètres.
-    - **`max_prime`**:  Nombre premier maximal utilisé pour générer les périodes des tâches. 
-    - **`gen_limit_exponent`**: Exposant utilisé pour limiter l'hyperpériode maximale lors de la génération de la matrice de nombres premiers.
+    - **`max_hyperperiod`**:  Hyperpériode maximale autorisée pour les tasksets générés. Permet de ne pas avoir une explosion de paramètres. (choix entre: différentes puissances de 10 jusqu'à limite raisonnable)
+    - **`max_prime`**:  Nombre premier maximal utilisé pour générer les périodes des tâches. (choix entre: différents premiers jusque 23)
+    - **`gen_limit_exponent`**: Exposant utilisé pour limiter l'hyperpériode maximale lors de la génération de la matrice de nombres premiers. (choix entre: 2, 3, 4 ou 5)
 
 #### 1.2. Génération des paramètres des tâches
 
@@ -41,7 +41,7 @@ Le processus d'assignation de tasksets vise à répartir les tâches entre diff�
 
 Les paramètres de l'algorithme d'assignation sont définis dans le fichier `experience.json`. 
 
-- **`assignment_method`**:  Nom de l'algorithme d'assignation à utiliser.
+- **`assignment_method`**:  Nom de l'algorithme d'assignation à utiliser. (voir 2.2)
 - **`sorting_criterion`**:  Critère de tri des tâches avant l'assignation.
     - `wcet_ascending`:  Tri des tâches par WCET croissant.
     - `wcet_descending`: Tri des tâches par WCET décroissant.
@@ -52,8 +52,9 @@ Les paramètres de l'algorithme d'assignation sont définis dans le fichier `exp
     - `execution_slack_ascending`:  Tri des tâches par marge d'exécution croissante (période - WCET).
     - `execution_slack_descending`:  Tri des tâches par marge d'exécution décroissante (période - WCET).
     - `random_order`:  Tri aléatoire des tâches.
-- **`number_of_cores`**:  Nombre de processeurs disponibles pour l'assignation des tâches. 
+- **`number_of_cores`**:  Nombre de processeurs disponibles pour l'assignation des tâches. (choix entre: 2, 4 ou 8). 
 - **`assignment_options`**: Options spécifiques à l'algorithme d'assignation si nécessaire.
+    - `solving_time_limit_MILP`:  Limite de temps imposée au solveur MILP avant d'abandonner la recherche. (choix à définir.) 
 
 
 #### 2.2. Algorithmes d'assignation
@@ -79,9 +80,10 @@ L'ordonnancement des tâches sur les processeurs est la dernière étape du proc
 
 Les paramètres de l'algorithme d'ordonnancement sont définis dans le fichier `experience.json`. 
 
-- **`scheduling_algorithm`**:  Nom de l'algorithme d'ordonnancement à utiliser. 
+- **`scheduling_algorithm`**:  Nom de l'algorithme d'ordonnancement à utiliser. (voir 3.2)
 - **`scheduling_options`**: Options spécifiques à l'algorithme d'ordonnancement si nécessaire. 
-- **`non_preemption_time_variant_2`**: Option disponible pour déterminer le facteur de non-preemption pour les variants 2 de EDF et DM. Les options disponibles sont: number_of_tasks, wcet_of_tasks & system_utilization, définie selon [3] (Aceituno et al., 2022).
+    - `non_preemption_time_variant_2`: Option disponible pour déterminer le facteur de non-preemption pour les variants 2 de EDF et DM. (choix entre: number_of_tasks, wcet_of_tasks ou system_utilization) définie selon [3] (Aceituno et al., 2022).
+    - `solving_time_limit_MILP`:  Limite de temps imposée au solveur MILP avant d'abandonner la recherche. (choix à définir.) 
 
 #### 3.2. Algorithmes d'ordonnancement
 

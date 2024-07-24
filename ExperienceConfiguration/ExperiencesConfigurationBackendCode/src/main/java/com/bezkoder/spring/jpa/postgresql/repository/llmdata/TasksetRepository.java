@@ -1,9 +1,0 @@
-package com.bezkoder.spring.jpa.postgresql.repository.llmdata;
-
-import com.bezkoder.spring.jpa.postgresql.model.llmdata.Taskset;
-import com.bezkoder.spring.jpa.postgresql.model.llmdata.TasksetParameters;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-
-public interface TasksetRepository extends JpaRepository<Taskset, Long>, JpaSpecificationExecutor<Taskset> {
-}

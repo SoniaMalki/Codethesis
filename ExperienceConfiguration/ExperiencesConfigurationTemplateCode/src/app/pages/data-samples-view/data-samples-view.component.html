@@ -1,9 +1,0 @@
-<nb-card>
-  
-  <nb-card-header>Filter & Sorts</nb-card-header>
-  <nb-card-body>
-    <button nbButton size="small" status="primary" style="display:flex; margin-left:94.3%; padding-top:10px; margin-bottom: 9px;" (click)="openCreateModal()">Create</button>
-    
-  </nb-card-body>
-</nb-card>
-<ngx-smart-table [data]="experiencesLoaded" (onExecute)="onExecuteButtonClicked($event)" (onDelete)="onDeleteButtonClicked($event)" (onEdit)="onEditButtonClicked($event)" (onCreate)="openCreateModal()"></ngx-smart-table>

@@ -69,8 +69,7 @@ La classe `AssignmentGenerator` est responsable de la génération des assignati
 
 - **`BestFitAssigner`**: Algorithme de partitionnement de tâches qui assigne chaque tâche au processeur ayant l'utilisation la plus élevée parmi ceux pouvant encore l'accueillir. Les tâches sont préalablement triées selon le critère défini par `sorting_criterion`.  La validité de l'assignation est vérifiée en s'assurant que l'utilisation du processeur après l'ajout de la tâche ne dépasse pas 1. 
 
-- **`Wmin`**:  
-
+- **`Wmin`**: Algorithme d'allocation de tâches qui vise à minimiser l'interférence maximale potentielle entre les tâches. Il utilise une formulation MILP pour modéliser le problème et trouver une solution optimale en termes de minimisation de l'interférence. Wmin utilise le facteur d'interférence de chaque tâche pour estimer l'interférence potentielle et l'objectif est de minimiser la somme des interférences maximales possibles pour chaque cœur. 
 
 ### 3. Génération d'Ordonnancements
 

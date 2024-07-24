@@ -1,0 +1,27 @@
+{
+    "assignment_generate_1_c2": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c2",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_1_c2",
+            "taskset_id": "taskset_generate_1_c2",
+            "parameters": {
+                "sorting_criterion": "wcet_ascending",
+                "assignment_method": "CITTA",
+                "number_of_cores": 2,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 2
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    }
+}

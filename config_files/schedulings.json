@@ -1,0 +1,32 @@
+{
+    "scheduling_generate_1_c2": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c2",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_1_c2",
+            "taskset_id": "taskset_generate_1_c2",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_1_c2",
+            "taskset_id": "taskset_generate_1_c2",
+            "assignment_id": "assignment_generate_1_c2",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirst",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    }
+}

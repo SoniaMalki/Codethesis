@@ -1,0 +1,27 @@
+{
+    "taskset_generate_1_c2": {
+        "taskset": {
+            "action": "generate",
+            "taskset_id": "taskset_generate_1_c2",
+            "parameters": {
+                "taskset_repetition": 1,
+                "tasks_per_taskset": 10,
+                "interference_factor": 0.2,
+                "probability_factor": 0.1,
+                "max_utilization": 0.4,
+                "taskset_options": {
+                    "deadline_option": "eq_period",
+                    "max_hyperperiod": 10,
+                    "max_prime": 2,
+                    "gen_limit_exponent": 2
+                }
+            }
+        },
+        "assignment": {
+            "action": "none"
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    }
+}

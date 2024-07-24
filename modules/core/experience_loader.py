@@ -7,34 +7,51 @@ from modules.core.experience import Experience
 class ExperienceLoader:
     def __init__(self, main_path):
         self.main_path = main_path
+        self.config_files = {
+            "taskset": "config_files/tasksets.json",
+            "assignment": "config_files/assignments.json",
+            "scheduling": "config_files/schedulings.json"
+        }
 
-    def load(self, filename, experience_parameter_index="1"):
+    def load(self, experience_parameter_key):
         """
-        Loads an Experience object from a JSON file.
+        Loads an Experience object from the appropriate JSON configuration file based on the given key.
 
         Args:
-            filename (str): The path to the JSON file.
-            experience_parameter_index (str, optional): The index of the experience to load. Defaults to first key.
+            experience_parameter_key (str): The key of the experience to load.
 
         Returns:
             Experience: An Experience object containing the loaded data.
         """
+
+        # Déterminer le type d'expérience (taskset, assignment ou scheduling)
+        experience_type = experience_parameter_key.split('_')[0]
+
+        # Charger le fichier JSON correspondant
+        filename = self.config_files.get(experience_type)
+        if not filename:
+            print(
+                f"Error: Invalid experience type '{experience_type}' in key '{experience_parameter_key}'.")
+            return None
+
         with open(f"{self.main_path}/{filename}", 'r') as f:
             experience_data = json.load(f)
 
-        # Validate the experience_parameter_index
-        if experience_parameter_index not in experience_data:
-            experience_parameter_index_old = experience_parameter_index
-            experience_parameter_index = list(experience_data.keys())[0]
+        if experience_parameter_key not in experience_data:
             print(
-                f"Invalid experience parameter index: {experience_parameter_index_old}. Defaulting to index to first key: {experience_parameter_index}.")
+                f"Error: Experience parameter key '{experience_parameter_key}' not found in '{filename}'.")
+            return None
 
-        # Get the experience parameters based on the index
-        taskset_parameters = experience_data[experience_parameter_index]["taskset"]
-        assignment_parameters = experience_data[experience_parameter_index]["assignment"]
-        scheduling_parameters = experience_data[experience_parameter_index]["scheduling"]
+        # Charger les paramètres de l'expérience
+        experience_params = experience_data[experience_parameter_key]
+        taskset_parameters = experience_params.get(
+            "taskset", {"action": "none"})
+        assignment_parameters = experience_params.get(
+            "assignment", {"action": "none"})
+        scheduling_parameters = experience_params.get(
+            "scheduling", {"action": "none"})
 
-        # Create the Experience object
+        # Créer l'objet Experience
         return Experience(
             taskset_parameters=taskset_parameters,
             assignment_parameters=assignment_parameters,

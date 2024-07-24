@@ -6,7 +6,7 @@ Le processus de génération de tasksets vise à créer des ensembles de tâches
 
 #### 1.1. Paramètres de génération
 
-Les paramètres clés pour la génération de tasksets sont définis dans le fichier `experience.json`.  Ils sont ensuite utilisés par la classe `TasksetSetGenerator` pour créer les tasksets. 
+Les paramètres clés pour la génération de tasksets sont définis dans le fichier `tasksets.json`.  Ils sont ensuite utilisés par la classe `TasksetSetGenerator` pour créer les tasksets. 
 
 - **`taskset_repetition`**:  Nombre de tasksets à générer. Permet de répéter une expérience plusieurs fois avec les même paramètre de génération, pour faire des moyennes. (choix entre : 1, 2, 4, 8 ou 16)
 - **`tasks_per_taskset`**:  Nombre de tâches dans chaque taskset. (choix entre: 10 ou 20)
@@ -39,7 +39,7 @@ Le processus d'assignation de tasksets vise à répartir les tâches entre diff�
 
 #### 2.1. Paramètres d'assignation
 
-Les paramètres de l'algorithme d'assignation sont définis dans le fichier `experience.json`. 
+Les paramètres de l'algorithme d'assignation sont définis dans le fichier `assignments.json`. 
 
 - **`assignment_method`**:  Nom de l'algorithme d'assignation à utiliser. (voir 2.2)
 - **`sorting_criterion`**:  Critère de tri des tâches avant l'assignation.
@@ -58,7 +58,7 @@ Les paramètres de l'algorithme d'assignation sont définis dans le fichier `exp
 
 
 #### 2.2. Algorithmes d'assignation
-Le code propose plusieurs algorithmes d'assignation qui peuvent être sélectionnés dans le fichier `experience.json`.
+Le code propose plusieurs algorithmes d'assignation qui peuvent être sélectionnés dans le fichier `assignments.json`.
 
 La classe `AssignmentGenerator` est responsable de la génération des assignations en fonction de l'algorithme spécifié (`assignment_method`) et des paramètres associés. Les algorithmes d'assignation suivants sont disponibles :
 
@@ -78,7 +78,7 @@ L'ordonnancement des tâches sur les processeurs est la dernière étape du proc
 
 #### 3.1. Paramètres d'ordonnancement
 
-Les paramètres de l'algorithme d'ordonnancement sont définis dans le fichier `experience.json`. 
+Les paramètres de l'algorithme d'ordonnancement sont définis dans le fichier `schedulings.json`. 
 
 - **`scheduling_algorithm`**:  Nom de l'algorithme d'ordonnancement à utiliser. (voir 3.2)
 - **`scheduling_options`**: Options spécifiques à l'algorithme d'ordonnancement si nécessaire. 
@@ -87,7 +87,7 @@ Les paramètres de l'algorithme d'ordonnancement sont définis dans le fichier `
 
 #### 3.2. Algorithmes d'ordonnancement
 
-Le code propose plusieurs algorithmes d'ordonnancement qui peuvent être sélectionnés dans le fichier `experience.json`.
+Le code propose plusieurs algorithmes d'ordonnancement qui peuvent être sélectionnés dans le fichier `schedulings.json`.
 
 La classe `SchedulingGenerator` est responsable de la génération des ordonnancements en fonction de l'algorithme spécifié (`scheduling_algorithm`) et des paramètres associés. Les algorithmes d'ordonnancement suivants sont disponibles : 
 

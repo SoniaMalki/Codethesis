@@ -24,7 +24,8 @@ def use_temporary_prime_matrix_path():
 np.random.seed(42)
 random.seed(42)
 
-assignment_methods_with_criteria = ["CITTA", "BestFitAssigner", "FirstFitAssigner", "WorstFitAssigner"]
+assignment_methods_with_criteria = [
+    "Citta", "BestFitAssigner", "FirstFitAssigner", "WorstFitAssigner"]
 assignment_methods_without_criteria = ["Wmin"]
 sorting_criterion_list = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending",
                           "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
@@ -90,15 +91,15 @@ def create_expected_assignment_output_manual_1(assignment_method, sorting_criter
         ("WorstFitAssigner", "execution_slack_ascending"): [(1, [[0, 1], [2, 3]])],
         ("WorstFitAssigner", "execution_slack_descending"): [(1, [[1, 2], [3, 0]])],
         ("WorstFitAssigner", "random_order"): [(1, [[1, 0], [3, 2]])],
-        ("CITTA", "wcet_ascending"): [(1, [[0, 2], [1, 3]])],
-        ("CITTA", "wcet_descending"): [(1, [[1, 3, 2], [0]])],
-        ("CITTA", "period_ascending"): [(1, [[0, 2], [3, 1]])],
-        ("CITTA", "period_descending"): [(1, [[1, 3, 2], [0]])],
-        ("CITTA", "utilization_ascending"): [(1, [[2, 1, 3], [0]])],
-        ("CITTA", "utilization_descending"): [(1, [[0, 3], [1, 2]])],
-        ("CITTA", "execution_slack_ascending"): [(1, [[0, 2], [3, 1]])],
-        ("CITTA", "execution_slack_descending"): [(1, [[1, 3, 2], [0]])],
-        ("CITTA", "random_order"): [(1, [[1, 3, 2], [0]])],
+        ("Citta", "wcet_ascending"): [(1, [[0, 2], [1, 3]])],
+        ("Citta", "wcet_descending"): [(1, [[1, 3, 2], [0]])],
+        ("Citta", "period_ascending"): [(1, [[0, 2], [3, 1]])],
+        ("Citta", "period_descending"): [(1, [[1, 3, 2], [0]])],
+        ("Citta", "utilization_ascending"): [(1, [[2, 1, 3], [0]])],
+        ("Citta", "utilization_descending"): [(1, [[0, 3], [1, 2]])],
+        ("Citta", "execution_slack_ascending"): [(1, [[0, 2], [3, 1]])],
+        ("Citta", "execution_slack_descending"): [(1, [[1, 3, 2], [0]])],
+        ("Citta", "random_order"): [(1, [[1, 3, 2], [0]])],
         "Wmin": [(1, [[0], [1, 2, 3]])]
     }
     return expected_assignment[assignment_method]
@@ -164,15 +165,15 @@ def create_expected_assignment_output_generate_1(assignment_method, sorting_crit
         ("WorstFitAssigner", "execution_slack_ascending"): [(1, [[2], [1, 0, 3]])],
         ("WorstFitAssigner", "execution_slack_descending"): [(1, [[3], [0, 1, 2]])],
         ("WorstFitAssigner", "random_order"): [(1, [[3, 0, 1], [2]])],
-        ("CITTA", "wcet_ascending"): [(1, [[0, 2, 1], [3]])],
-        ("CITTA", "wcet_descending"): [(1, [[3], [1, 0, 2]])],
-        ("CITTA", "period_ascending"): [(1, [[2, 0, 1], [3]])],
-        ("CITTA", "period_descending"): [(1, [[3], [0, 1, 2]])],
-        ("CITTA", "utilization_ascending"): [(1, [[0, 1, 2], [3]])],
-        ("CITTA", "utilization_descending"): [(1, [[2, 1, 0], [3]])],
-        ("CITTA", "execution_slack_ascending"): [(1, [[2, 1, 0], [3]])],
-        ("CITTA", "execution_slack_descending"): [(1, [[3], [0, 1, 2]])],
-        ("CITTA", "random_order"): [(1, [[3], [2, 0, 1]])],
+        ("Citta", "wcet_ascending"): [(1, [[0, 2, 1], [3]])],
+        ("Citta", "wcet_descending"): [(1, [[3], [1, 0, 2]])],
+        ("Citta", "period_ascending"): [(1, [[2, 0, 1], [3]])],
+        ("Citta", "period_descending"): [(1, [[3], [0, 1, 2]])],
+        ("Citta", "utilization_ascending"): [(1, [[0, 1, 2], [3]])],
+        ("Citta", "utilization_descending"): [(1, [[2, 1, 0], [3]])],
+        ("Citta", "execution_slack_ascending"): [(1, [[2, 1, 0], [3]])],
+        ("Citta", "execution_slack_descending"): [(1, [[3], [0, 1, 2]])],
+        ("Citta", "random_order"): [(1, [[3], [2, 0, 1]])],
         "Wmin": [(1, [[], [0, 1, 2, 3]])]
     }
     return expected_assignment[assignment_method]

@@ -25,15 +25,7 @@ class SchedulingGenerator:
         self.scheduling_algorithm = scheduling_algorithm
         self.scheduling_options = scheduling_options
         self.number_of_cores = self.assignment_set.number_of_cores
-
-    def get_class_by_name(self, class_name):
-        return globals()[class_name]
-
-    def generate_scheduling_set(self):
-        """Generates schedulings for each assignment within the TasksetSet."""
-
-        scheduling_list = []  # Store schedulings for each assignment
-        scheduling_algorithms = [
+        self.scheduling_algorithms = [
             "EarliestDeadlineFirst",
             "EarliestDeadlineFirstVariant1",
             "EarliestDeadlineFirstVariant2",
@@ -41,23 +33,29 @@ class SchedulingGenerator:
             "DeadlineMonotonicVariant1",
             "DeadlineMonotonicVariant2"
         ]
-        composite_scheduling_algorithms = [
+
+        self.composite_scheduling_algorithms = [
             "CombinedScheduler",
             "Rhma"
         ]
+
+    def generate_scheduling_set(self):
+        """Generates schedulings for each assignment within the TasksetSet."""
+
+        scheduling_list = []  # Store schedulings for each assignment
+
         # Determine the scheduling algorithm once
-        if self.scheduling_algorithm not in scheduling_algorithms and self.scheduling_algorithm not in composite_scheduling_algorithms:
+        if self.scheduling_algorithm not in self.scheduling_algorithms and self.scheduling_algorithm not in self.composite_scheduling_algorithms:
             print(
                 f"Invalid scheduling algorithm: {self.scheduling_algorithm}. Returning None.")
             return None
 
+        scheduler_class = globals()[self.scheduling_algorithm]
+
+        if self.scheduling_algorithm in self.scheduling_algorithms:
+            scheduling_function = self.generate_scheduling
         else:
-            scheduler_class = self.get_class_by_name(
-                class_name=self.scheduling_algorithm)
-            if self.scheduling_algorithm in scheduling_algorithms:
-                scheduling_function = self.generate_scheduling
-            else:
-                scheduling_function = self.generate_composite_scheduling
+            scheduling_function = self.generate_composite_scheduling
 
         # Apply the selected scheduling function to all taskset assignments
         for taskset, assignment in zip(self.taskset_set, self.assignment_set):

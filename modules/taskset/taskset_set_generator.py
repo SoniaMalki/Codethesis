@@ -34,7 +34,6 @@ class TasksetSetGenerator:
             main_path=main_path, max_hyperperiod=self.max_hyperperiod, max_prime=self.max_prime, gen_limit_exponent=self.gen_limit_exponent)
         self.prime_matrix = self.prime_matrix_generator.prime_matrix
 
-        print(self.prime_matrix)
         self.utilization_generator = UtilizationGenerator(
             self.taskset_repetition, self.tasks_per_taskset, self.max_utilization)
         self.period_generator = PeriodGenerator(

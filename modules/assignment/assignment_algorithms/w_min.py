@@ -33,21 +33,25 @@ class Wmin:
 
         return o, U_M, maxW_k, maxW, z
 
-    def createLpConstraints(self, prob, o, U_M, maxW_k, maxW, z):
-        # Constraints
+    def createLpConstraints(self, o, U_M, maxW_k, maxW, z):
+        constraint_19 = []
+        constraint_20 = []
+        constraint_21 = []
+        constraint_22 = []
 
         # Constraint 19
         for i in range(len(self.taskset)):
-            prob += lpSum([o[i, k] for k in range(self.number_of_cores)]) == 1
+            constraint_19.append(lpSum(
+                [o[i, k] for k in range(self.number_of_cores)]) == 1)
 
         # Constraint 20
         for k in range(self.number_of_cores):
-            prob += lpSum([self.utilization[i] * o[i, k]
-                          for i in range(len(self.taskset))]) == U_M[k]
+            constraint_20.append(lpSum([self.utilization[i] * o[i, k]
+                                        for i in range(len(self.taskset))]) == U_M[k])
 
         # Constraint 21
         for k in range(self.number_of_cores):
-            prob += U_M[k] <= 1
+            constraint_21.append(U_M[k] <= 1)
 
         # Constraint 22
         for k in range(self.number_of_cores):
@@ -56,24 +60,38 @@ class Wmin:
                     for j in range(len(self.taskset)):
                         if i != j and self.single_interference[j] != 0:
                             # Variable pour o[i, k] * (1 - o[j, k]) (s'assurer que i et j comptent l'interference que si coeur diff (que i dans coeur k))
-                            prob += z[i, j, k] <= o[i, k]
-                            prob += z[i, j, k] <= (1 - o[j, k])
-                            prob += z[i, j, k] >= o[i, k] + (1 - o[j, k]) - 1
+                            constraint_22.append(z[i, j, k] <= o[i, k])
+                            constraint_22.append(z[i, j, k] <= (1 - o[j, k]))
+                            constraint_22.append(
+                                z[i, j, k] >= o[i, k] + (1 - o[j, k]) - 1)
 
-            prob += lpSum([self.single_interference[j] * z[i, j, k]
-                           for i in range(len(self.taskset)) if self.single_interference[i] != 0
-                           for j in range(len(self.taskset)) if i != j and self.single_interference[j] != 0
-                           ]) == maxW_k[k]
+            constraint_22.append(lpSum([self.single_interference[j] * z[i, j, k]
+                                        for i in range(len(self.taskset)) if self.single_interference[i] != 0
+                                        for j in range(len(self.taskset)) if i != j and self.single_interference[j] != 0
+                                        ]) == maxW_k[k])
 
-        # Objective function
-        prob += maxW == lpSum([maxW_k[k] for k in range(self.number_of_cores)])
-        prob += maxW
+        return constraint_19, constraint_20, constraint_21, constraint_22
 
     def assign(self):
         prob = LpProblem("Wmin_Assignment", LpMinimize)
 
         o, U_M, maxW_k, maxW, z = self.createLpVariables()
-        self.createLpConstraints(prob, o, U_M, maxW_k, maxW, z)
+        constraint_19, constraint_20, constraint_21, constraint_22 = self.createLpConstraints(
+            o, U_M, maxW_k, maxW, z)
+
+        for constraint in constraint_19:
+            prob += constraint
+        for constraint in constraint_20:
+            prob += constraint
+        for constraint in constraint_21:
+            prob += constraint
+        for constraint in constraint_22:
+            prob += constraint
+
+        # Objective function
+        prob += maxW == lpSum(
+            [maxW_k[k] for k in range(self.number_of_cores)])
+        prob += maxW
 
         # Solving the MILP problem
         options = [("OutputFlag", 0)]

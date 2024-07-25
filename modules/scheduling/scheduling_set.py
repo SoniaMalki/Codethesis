@@ -11,14 +11,23 @@ class SchedulingSet:
         self.scheduling_list = scheduling_list
 
     def __repr__(self):
-        return ("SchedulingSet("
-                f"scheduling_id={self.scheduling_id}, "
-                f"taskset_id={self.taskset_id}, "
-                f"assignment_id={self.assignment_id}, "
-                f"scheduling_algorithms={self.scheduling_algorithm}, "
-                f"scheduling_list={self.scheduling_list}, "
-                ")"
-                )
+        return (
+            f"SchedulingSet(scheduling_id={self.scheduling_id}, taskset_id={self.taskset_id}, "
+            f"assignment_id={self.assignment_id}, scheduling_algorithm={self.scheduling_algorithm}, "
+            f"scheduling_options={self.scheduling_options}, scheduling_list={len(self.scheduling_list)})"
+        )
+
+    def __str__(self):
+        scheduling_str = "\n".join(repr(scheduling)
+                                   for scheduling in self.scheduling_list)
+        return (
+            f"Scheduling ID: {self.scheduling_id}\n"
+            f"Taskset ID: {self.taskset_id}\n"
+            f"Assignment ID: {self.assignment_id}\n"
+            f"Algorithm: {self.scheduling_algorithm}\n"
+            f"Options: {self.scheduling_options}\n"
+            f"Schedulings:\n{scheduling_str}"
+        )
 
     def __len__(self):
         return len(self.scheduling_list)
@@ -31,16 +40,6 @@ class SchedulingSet:
 
     def __getitem__(self, i):
         return self.scheduling_list[i]
-
-    def __str__(self):
-        res = (f"Scheduling id: {self.scheduling_id}\n"
-               f"Taskset ID: {self.taskset_id}\n"
-               f"Assignment ID: {self.assignment_id}\n"
-               f"Scheduling Algorithm: {self.scheduling_algorithm}\n"
-               f"Scheduling List: {self.scheduling_list}\n"
-               )
-
-        return res
 
     def __eq__(self, other):
         if not isinstance(other, SchedulingSet):

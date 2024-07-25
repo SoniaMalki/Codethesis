@@ -69,6 +69,8 @@ class SchedulingGenerator:
 
         scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id,
                                    scheduling_algorithm=self.scheduling_algorithm, scheduling_options=self.scheduling_options, scheduling_list=scheduling_list)  # Store assignments for each taskset
+        print("---------")
+        print(scheduling)
         return scheduling
 
     def generate_scheduling(self, taskset, assignment, scheduler_class, start_time=1, end_time=None):

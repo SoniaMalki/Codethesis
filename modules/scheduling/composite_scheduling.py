@@ -1,5 +1,6 @@
 from modules.scheduling.scheduling import Scheduling
 
+
 class CompositeScheduling:
     def __init__(self, scheduler_name):
         self.scheduler_name = scheduler_name
@@ -12,6 +13,9 @@ class CompositeScheduling:
             self.success = self.success & schedule.success
         else:
             raise TypeError("Only Scheduling objects can be added")
+
+    def __repr__(self):
+        return f"CompositeScheduling(scheduler_name={self.scheduler_name}, success={self.success}, schedules={len(self.schedules)})"
 
     def __str__(self, end_time=None):
         composite_str = f"Composite Scheduling scheduled by: {self.scheduler_name}\n"

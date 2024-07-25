@@ -44,17 +44,11 @@ class Wmin:
             constraint_19.append(lpSum(
                 [o[i, k] for k in range(self.number_of_cores)]) == 1)
 
-        # Constraint 20
+        # Constraint 22
         for k in range(self.number_of_cores):
             constraint_20.append(lpSum([self.utilization[i] * o[i, k]
                                         for i in range(len(self.taskset))]) == U_M[k])
-
-        # Constraint 21
-        for k in range(self.number_of_cores):
             constraint_21.append(U_M[k] <= 1)
-
-        # Constraint 22
-        for k in range(self.number_of_cores):
             for i in range(len(self.taskset)):
                 if self.single_interference[i] != 0:
                     for j in range(len(self.taskset)):

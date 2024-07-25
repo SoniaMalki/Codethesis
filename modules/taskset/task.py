@@ -2,7 +2,6 @@ import math
 import time
 from modules.taskset.job import Job
 
-
 class Task:
     def __init__(self, task_number, wcet, deadline, period, interference, single_interference, utilization, absolute_deadline):
         self.task_number = task_number
@@ -23,18 +22,6 @@ class Task:
             f"utilization={self.utilization}, absolute_deadline={self.absolute_deadline})"
         )
 
-    def __len__(self):
-        return len(self.job_list)
-
-    def __iter__(self):
-        return iter(self.job_list)
-
-    def __next__(self):
-        return next(self.job_list)
-
-    def __getitem__(self, i):
-        return self.job_list[i]
-
     def __str__(self):
         job_str = "\n".join(repr(job) for job in self.job_list)
         return (
@@ -48,6 +35,18 @@ class Task:
             f"Absolute Deadline: {self.absolute_deadline}\n"
             f"Jobs: \n{job_str}"
         )
+
+    def __len__(self):
+        return len(self.job_list)
+
+    def __iter__(self):
+        return iter(self.job_list)
+
+    def __next__(self):
+        return next(self.job_list)
+
+    def __getitem__(self, i):
+        return self.job_list[i]
 
     def create_jobs(self, start_time, end_time):
         self.job_list = []

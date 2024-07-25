@@ -23,15 +23,30 @@ class Taskset:
                                        absolute_deadline=self.absolute_deadline[i]))
 
     def __repr__(self):
-        return ("Taskset("
-                f"taskset_number={self.taskset_number}, "
-                f"wcet={self.wcet}, "
-                f"deadline={self.deadline}, "
-                f"period={self.period}, "
-                f"interference={self.interference}, "
-                f"utilization={self.utilization}"
-                ")"
-                )
+        return (
+            f"Taskset(taskset_number={self.taskset_number}, task_list={len(self.task_list)}, "
+            f"wcet={self.wcet}, deadline={self.deadline}, period={self.period}, "
+            f"interference={self.interference}, single_interference={self.single_interference}, "
+            f"utilization={self.utilization}, hyperperiod={self.hyperperiod}, "
+            f"N={self.N}, activation={self.activation}, absolute_deadline={self.absolute_deadline})"
+        )
+
+    def __str__(self):
+        task_str = "\n".join(repr(task) for task in self.task_list)
+        return (
+            f"Taskset Number: {self.taskset_number}\n"
+            f"WCET: {self.wcet}\n"
+            f"Deadline: {self.deadline}\n"
+            f"Period: {self.period}\n"
+            f"Interference: {self.interference}\n"
+            f"Single Interference: {self.single_interference}\n"
+            f"Utilization: {self.utilization}\n"
+            f"Hyperperiod: {self.hyperperiod}\n"
+            f"N: {self.N}\n"
+            f"Activation: {self.activation}\n"
+            f"Absolute Deadline: {self.absolute_deadline}\n"
+            f"Tasks:\n{task_str}"
+        )
 
     def __len__(self):
         return len(self.task_list)
@@ -44,21 +59,6 @@ class Taskset:
 
     def __getitem__(self, i):
         return self.task_list[i]
-
-    def __str__(self):
-        res = (f"Taskset number: {self.taskset_number}\n"
-               f"WCET: {self.wcet}\n"
-               f"Deadline: {self.deadline}\n"
-               f"Period: {self.period}\n"
-               f"Interference: {self.interference}\n"
-               f"Utilization: {self.utilization}\n")
-        task_str = "Task in the taskset:"
-        for elem in self.task_list:
-            task_str = task_str + "\n" + str(elem)
-        if len(self.task_list) == 0:
-            task_str = task_str + "[]"
-        res = res + task_str
-        return res
 
     def __eq__(self, other):
         if not isinstance(other, Taskset):

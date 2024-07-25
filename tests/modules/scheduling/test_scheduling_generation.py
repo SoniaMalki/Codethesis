@@ -149,8 +149,7 @@ def prepare_input_data_dic(scheduling_algorithm, non_preemption_time_variant_2):
         "scheduling_algorithm": scheduling_algorithm,
         "scheduling_options": {
             "non_preemption_time_variant2": non_preemption_time_variant_2,
-            "test_mode": False,
-            "modify_MPS": False,
+            "test_mode": True,
             "seed": seed
         }
     }

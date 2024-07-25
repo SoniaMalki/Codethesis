@@ -16,7 +16,6 @@ class Rhma:
         self.scheduling_options = scheduling_options
         self.test_mode = self.scheduling_options.get("test_mode", False)
         if self.test_mode:
-            self.modify_MPS = self.scheduling_options.get("modify_MPS", False)
             self.seed = self.scheduling_options.get("seed", 42)
 
         self.solving_time_limit_MILP = self.scheduling_options.get(
@@ -160,6 +159,136 @@ class Rhma:
                 list(range(busy_period.start_time, busy_period.end_time)))
         return T_h
 
+    def createLpVariables(self, h):
+        # Variables
+        x = {}
+        m = {}
+        w = {}
+        for i in range(len(self.taskset)):
+            for a in self.S_i_h[i][h]:
+                w[i, a] = LpVariable(
+                    f"w_{i}_{a}", lowBound=0, cat='Integer')
+                for j in range(self.number_of_cores):
+                    for t in self.T_h[h]:
+                        x[i, a, j, t] = LpVariable(
+                            f"x_{i}_{a}_{j}_{t}", cat='Binary')
+
+                for k in range(len(self.taskset)):
+                    for b in self.S_i_h[k][h]:
+                        m[i, a, k,
+                          b] = LpVariable(f"m_{i}_{a}_{k}_{b}", cat='Binary')
+
+        return x, m, w
+
+    def createLpConstraints(self, h, x, m, w):
+        constraint_16 = []
+        constraint_17 = []
+        constraint_18 = []
+        constraint_19 = []
+        constraint_20 = []
+        constraint_21 = []
+        constraint_22 = []
+        constraint_23 = []
+        constraint_24 = []
+
+        # Constraint 16
+        for i in range(len(self.taskset)):
+            for a in self.S_i_h[i][h]:
+                for j in range(self.number_of_cores):
+                    for t in self.T_h[h]:
+                        if self.o_i_j[i][j] == 0:
+                            constraint_16.append(x[i, a, j, t] == 0)
+
+        # Constraint 17
+        for i in range(len(self.taskset)):
+            for k in range(i + 1, len(self.taskset)):
+                for a in self.S_i_h[i][h]:
+                    for b in self.S_i_h[k][h]:
+                        if not set(self.R_i_a_h[i][a][h]).intersection(self.R_i_a_h[k][b][h]):
+                            constraint_17.append(m[i, a, k, b] == 0)
+
+        # Constraint 18
+        for i in range(len(self.taskset)):
+            for j in range(self.number_of_cores):
+                if len(self.S_i_h[i][h]) > 0:
+                    left_side = lpSum(x[i, a, j, t] for a in self.S_i_h[i][h]
+                                      for t in self.R_i_a_h[i][a][h])
+
+                    right_side = len(
+                        self.S_i_h[i][h]) * self.taskset.wcet[i] * self.o_i_j[i][j]
+
+                    right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
+                                        for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                                        for a in self.S_i_h[i][h]
+                                        for b in self.S_i_h[k][h])
+
+                    constraint_18.append(left_side == right_side)
+
+        # Constraint 19
+        for i in range(len(self.taskset)):
+            for a in self.S_i_h[i][h]:
+                for j in range(self.number_of_cores):
+                    if len(self.S_i_h[i][h]) > 0:
+                        left_side = lpSum(x[i, a, j, t]
+                                          for t in self.R_i_a_h[i][a][h])
+
+                        right_side = self.taskset.wcet[i] * \
+                            self.o_i_j[i][j]
+
+                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
+                                            for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                                            for b in self.S_i_h[k][h])
+
+                        constraint_19.append(left_side == right_side)
+
+        # Constraint 20
+        for i in range(len(self.taskset)):
+            for a in self.S_i_h[i][h]:
+                for t in self.T_h[h]:
+                    left_side = lpSum(t * x[i, a, j, t]
+                                      for j in range(self.number_of_cores))
+
+                    right_side = self.d_i_a[i][a] - 1
+                    constraint_20.append(left_side <= right_side)
+
+        # Constraint 21
+        for j in range(self.number_of_cores):
+            for t in self.T_h[h]:
+                constraint_21.append(lpSum(x[i, a, j, t] for i in range(len(self.taskset))
+                                           for a in self.S_i_h[i][h]) <= 1)
+
+        # Constraint 22
+        for i in range(len(self.taskset)):
+            for k in range(len(self.taskset)):
+                if i != k:
+                    for a in self.S_i_h[i][h]:
+                        for b in self.S_i_h[k][h]:
+                            for j in range(self.number_of_cores):
+                                for l in range(self.number_of_cores):
+                                    if j != l:
+                                        for t in self.T_h[h]:
+                                            constraint_22.append(m[i, a, k, b] >= x[i,
+                                                                                    a, j, t] + x[k, b, l, t] - 1)
+
+        # Constraint 23
+        for i in range(len(self.taskset)):
+            for k in range(len(self.taskset)):
+                if i != k:
+                    for a in self.S_i_h[i][h]:
+                        for b in self.S_i_h[k][h]:
+                            constraint_23.append(
+                                m[i, a, k, b] == m[k, b, i, a])
+
+        # Constraint 24
+        for i in range(len(self.taskset)):
+            for a in self.S_i_h[i][h]:
+                for j in range(self.number_of_cores):
+                    for t in self.T_h[h]:
+                        constraint_24.append(w[i, a] >= (t * x[i, a, j, t]) -
+                                             (a * self.taskset.period[i]) + 1)
+
+        return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24
+
     def schedule(self):
         # print(
         #     f"-------------\nSolving RHMA")
@@ -172,120 +301,28 @@ class Rhma:
             # print(
             #     f"-------------\nCreating variables for BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
 
-            # Variables
-            x = {}
-            m = {}
-            w = {}
-            for i in range(len(self.taskset)):
-                for a in self.S_i_h[i][h]:
-                    w[i, a] = LpVariable(
-                        f"w_{i}_{a}", lowBound=0, cat='Integer')
-                    for j in range(self.number_of_cores):
-                        for t in self.T_h[h]:
-                            x[i, a, j, t] = LpVariable(
-                                f"x_{i}_{a}_{j}_{t}", cat='Binary')
+            x, m, w = self.createLpVariables(h)
+            constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24 = self.createLpConstraints(
+                h, x, m, w)
 
-                    for k in range(len(self.taskset)):
-                        for b in self.S_i_h[k][h]:
-                            m[i, a, k,
-                              b] = LpVariable(f"m_{i}_{a}_{k}_{b}", cat='Binary')
-
-            # Constraints
-
-            # Constraint 16
-            for i in range(len(self.taskset)):
-                for a in self.S_i_h[i][h]:
-                    for j in range(self.number_of_cores):
-                        for t in self.T_h[h]:
-                            if self.o_i_j[i][j] == 0:
-                                prob += x[i, a, j, t] == 0
-
-            # Constraint 17
-            for i in range(len(self.taskset)):
-                for k in range(i + 1, len(self.taskset)):
-                    for a in self.S_i_h[i][h]:
-                        for b in self.S_i_h[k][h]:
-                            if not set(self.R_i_a_h[i][a][h]).intersection(self.R_i_a_h[k][b][h]):
-                                prob += m[i, a, k, b] == 0
-
-            # Constraint 18
-            for i in range(len(self.taskset)):
-                for j in range(self.number_of_cores):
-                    if len(self.S_i_h[i][h]) > 0:
-                        left_side = lpSum(x[i, a, j, t] for a in self.S_i_h[i][h]
-                                          for t in self.R_i_a_h[i][a][h])
-
-                        right_side = len(
-                            self.S_i_h[i][h]) * self.taskset.wcet[i] * self.o_i_j[i][j]
-
-                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
-                                            for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
-                                            for a in self.S_i_h[i][h]
-                                            for b in self.S_i_h[k][h])
-
-                        prob += left_side == right_side
-
-            # Constraint 19
-            for i in range(len(self.taskset)):
-                for a in self.S_i_h[i][h]:
-                    for j in range(self.number_of_cores):
-                        if len(self.S_i_h[i][h]) > 0:
-                            left_side = lpSum(x[i, a, j, t]
-                                              for t in self.R_i_a_h[i][a][h])
-
-                            right_side = self.taskset.wcet[i] * \
-                                self.o_i_j[i][j]
-
-                            right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
-                                                for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
-                                                for b in self.S_i_h[k][h])
-
-                            prob += left_side == right_side
-
-            # Constraint 20
-            for i in range(len(self.taskset)):
-                for a in self.S_i_h[i][h]:
-                    for t in self.T_h[h]:
-                        left_side = lpSum(t * x[i, a, j, t]
-                                          for j in range(self.number_of_cores))
-
-                        right_side = self.d_i_a[i][a] - 1
-                        prob += left_side <= right_side
-
-            # Constraint 21
-            for j in range(self.number_of_cores):
-                for t in self.T_h[h]:
-                    prob += lpSum(x[i, a, j, t] for i in range(len(self.taskset))
-                                  for a in self.S_i_h[i][h]) <= 1
-
-            # Constraint 22
-            for i in range(len(self.taskset)):
-                for k in range(len(self.taskset)):
-                    if i != k:
-                        for a in self.S_i_h[i][h]:
-                            for b in self.S_i_h[k][h]:
-                                for j in range(self.number_of_cores):
-                                    for l in range(self.number_of_cores):
-                                        if j != l:
-                                            for t in self.T_h[h]:
-                                                prob += m[i, a, k, b] >= x[i,
-                                                                           a, j, t] + x[k, b, l, t] - 1
-
-            # Constraint 23
-            for i in range(len(self.taskset)):
-                for k in range(len(self.taskset)):
-                    if i != k:
-                        for a in self.S_i_h[i][h]:
-                            for b in self.S_i_h[k][h]:
-                                prob += m[i, a, k, b] == m[k, b, i, a]
-
-            # Constraint 24
-            for i in range(len(self.taskset)):
-                for a in self.S_i_h[i][h]:
-                    for j in range(self.number_of_cores):
-                        for t in self.T_h[h]:
-                            prob += w[i, a] >= (t * x[i, a, j, t]) - \
-                                (a * self.taskset.period[i]) + 1
+            for constraint in constraint_16:
+                prob += constraint
+            for constraint in constraint_17:
+                prob += constraint
+            for constraint in constraint_18:
+                prob += constraint
+            for constraint in constraint_19:
+                prob += constraint
+            for constraint in constraint_20:
+                prob += constraint
+            for constraint in constraint_21:
+                prob += constraint
+            for constraint in constraint_22:
+                prob += constraint
+            for constraint in constraint_23:
+                prob += constraint
+            for constraint in constraint_24:
+                prob += constraint
 
             # Objective function
             interference_term = lpSum(m[i, a, k, b] for i in range(len(self.taskset)) for k in range(
@@ -306,13 +343,6 @@ class Rhma:
                 ("OutputFlag", 0)
             ]
             if self.test_mode:
-                if self.modify_MPS:
-                    prob = self.modify_MPS(prob)
-                    x = {}
-                    for v in prob.variables():
-                        if v.name.startswith("x_"):
-                            _, i, a, j, t = map(int, v.name[2:].split('_'))
-                            x[i, a, j, t] = v
                 options.append(("Seed", self.seed))
 
             # Solving the MILP problem
@@ -322,7 +352,6 @@ class Rhma:
             # print(f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
             # print(prob)
             prob.solve(GUROBI_CMD(msg=0, options=options))
-
 
             # Checking if a solution is found
             if prob.status == LpStatusOptimal:
@@ -347,12 +376,3 @@ class Rhma:
                 schedule.add_period(scheduling=self.busy_periods[h])
 
         return schedule
-
-    def modify_MPS(self, prob):
-        prob.writeMPS(
-            f"./tests/results_test/RHMA_LP/RHMA_Busy_Period.mps")
-
-        _, prob = LpProblem.fromMPS(
-            f"./tests/results_test/RHMA_LP/RHMA_Busy_Period.mps")
-
-        return prob

@@ -118,14 +118,19 @@ class Citta:
             res = wcet_updated[task_index]
         return res, True
 
-    def compute_upper_bound_cache_interference(self, task_index, core_index, execution_window, task_in_core, task_to_assign):
-        prob = LpProblem("Upper_Bound_on_Cache_Interference", LpMaximize)
+    def createLpVariablesForCacheInterference(self, task_index, execution_window, core_index, task_in_core, task_to_assign):
         N_i_k = {}
         max_N_minus_2 = LpVariable.dicts("max_N_minus_2", list(range(len(
             self.period))), lowBound=0, cat='Integer')  # pour remplacer max(0, N-2) contrainte 1.11
         for task_i in range(len(self.period)):
             N_i_k[task_i] = LpVariable(
                 f"N_{task_i}_{task_index}", lowBound=0, upBound=None, cat='Integer')
+
+        return N_i_k, max_N_minus_2
+
+    def createLpConstraintsForCacheInterference(self, prob, task_index, execution_window, core_index, task_in_core, task_to_assign, N_i_k, max_N_minus_2):
+        # Constraints
+        for task_i in range(len(self.period)):
             prob += max_N_minus_2[task_i] >= 0
             prob += max_N_minus_2[task_i] >= N_i_k[task_i] - 2
             if task_i in task_in_core[core_index] or task_index == task_i:
@@ -149,6 +154,14 @@ class Citta:
         # fonction objective
         prob += lpSum([N_i_k[i] * self.interference[i][task_index]
                       for i in range(len(self.period))])
+
+    def compute_upper_bound_cache_interference(self, task_index, core_index, execution_window, task_in_core, task_to_assign):
+        prob = LpProblem("Upper_Bound_on_Cache_Interference", LpMaximize)
+
+        N_i_k, max_N_minus_2 = self.createLpVariablesForCacheInterference(
+            task_index, execution_window, core_index, task_in_core, task_to_assign)
+        self.createLpConstraintsForCacheInterference(
+            prob, task_index, execution_window, core_index, task_in_core, task_to_assign, N_i_k, max_N_minus_2)
 
         options = [
             ("OutputFlag", 0)

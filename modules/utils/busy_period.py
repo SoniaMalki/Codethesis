@@ -5,10 +5,17 @@ class BusyPeriod:
     def add_period(self, scheduling):
         self.periods.append(scheduling)
 
+    def __repr__(self):
+        return f"BusyPeriod(periods={len(self.periods)})"
+
     def __str__(self):
-        return "\n".join([f"Busy Period {index} from {scheduling.start_time} to {scheduling.end_time}, Schedule: {scheduling.scheduler_name}"
-                          for index, scheduling in enumerate(self.periods)
-                          ])
+        busy_period_str = "Busy Periods:\n"
+        for index, scheduling in enumerate(self.periods):
+            busy_period_str += (
+                f"Period {index}: {scheduling.start_time} - {scheduling.end_time} "
+                f"({scheduling.scheduler_name})\n"
+            )
+        return busy_period_str
 
     def __len__(self):
         return (len(self.periods))

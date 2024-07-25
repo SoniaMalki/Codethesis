@@ -9,7 +9,7 @@ fi
 search_text="$1"
 
 # Find files containing the search text, excluding specified extensions
-files=$(grep -rl --exclude=*.class --exclude=*.json --exclude=*.pack --exclude=*.jar --exclude=esbuild --exclude=*.woff --exclude=*.zip --exclude=*.wasm --exclude=*.png "$search_text" .)
+files=$(grep -rl --exclude=*.pyc --exclude=*.class --exclude=*.json --exclude=*.pack --exclude=*.jar --exclude=esbuild --exclude=*.woff --exclude=*.zip --exclude=*.wasm --exclude=*.png "$search_text" .)
 
 # If no files found, exit
 if [ -z "$files" ]; then

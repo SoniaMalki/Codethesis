@@ -13,9 +13,7 @@ class Wmin:
             "solving_time_limit_MILP", None)
         self.assignment_options = assignment_options
 
-    def assign(self):
-        prob = LpProblem("Wmin_Assignment", LpMinimize)
-
+    def createLpVariables(self):
         # Variables
         o = {}
         for i in range(len(self.taskset)):
@@ -39,6 +37,9 @@ class Wmin:
                     if i != j and self.single_interference[i] != 0 and self.single_interference[j] != 0:
                         z[i, j, k] = LpVariable(f"z_{i}_{j}_{k}", cat='Binary')
 
+        return o, U_M, maxW_k, maxW, z
+
+    def createLpConstraints(self, prob, o, U_M, maxW_k, maxW, z):
         # Constraints
 
         # Constraint 19
@@ -73,6 +74,12 @@ class Wmin:
         # Objective function
         prob += maxW == lpSum([maxW_k[k] for k in range(self.number_of_cores)])
         prob += maxW
+
+    def assign(self):
+        prob = LpProblem("Wmin_Assignment", LpMinimize)
+
+        o, U_M, maxW_k, maxW, z = self.createLpVariables()
+        self.createLpConstraints(prob, o, U_M, maxW_k, maxW, z)
 
         # Solving the MILP problem
         options = [("OutputFlag", 0)]

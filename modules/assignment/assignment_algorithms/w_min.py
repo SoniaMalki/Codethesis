@@ -16,26 +16,20 @@ class Wmin:
     def createLpVariables(self):
         # Variables
         o = {}
-        for i in range(len(self.taskset)):
-            for k in range(self.number_of_cores):
-                o[i, k] = LpVariable(f"o_{i}_{k}", cat='Binary')
-
         U_M = {}
+        maxW_k = {}
+        z = {}
+
         for k in range(self.number_of_cores):
             U_M[k] = LpVariable(f"U_M_{k}", lowBound=0)
-
-        maxW_k = {}
-        for k in range(self.number_of_cores):
             maxW_k[k] = LpVariable(f"maxW_{k}", lowBound=0)
-
-        maxW = LpVariable("maxW", lowBound=0)
-
-        z = {}
-        for i in range(len(self.taskset)):
-            for j in range(len(self.taskset)):
-                for k in range(self.number_of_cores):
+            for i in range(len(self.taskset)):
+                o[i, k] = LpVariable(f"o_{i}_{k}", cat='Binary')
+                for j in range(len(self.taskset)):
                     if i != j and self.single_interference[i] != 0 and self.single_interference[j] != 0:
                         z[i, j, k] = LpVariable(f"z_{i}_{j}_{k}", cat='Binary')
+
+        maxW = LpVariable("maxW", lowBound=0)
 
         return o, U_M, maxW_k, maxW, z
 

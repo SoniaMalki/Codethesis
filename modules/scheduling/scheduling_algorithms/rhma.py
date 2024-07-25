@@ -196,6 +196,8 @@ class Rhma:
             for a in self.S_i_h[i][h]:
                 for j in range(self.number_of_cores):
                     for t in self.T_h[h]:
+                        constraint_24.append(w[i, a] >= (t * x[i, a, j, t]) -
+                                             (a * self.taskset.period[i]) + 1)
                         if self.o_i_j[i][j] == 0:
                             constraint_16.append(x[i, a, j, t] == 0)
 
@@ -241,9 +243,6 @@ class Rhma:
 
                         constraint_19.append(left_side == right_side)
 
-        # Constraint 20
-        for i in range(len(self.taskset)):
-            for a in self.S_i_h[i][h]:
                 for t in self.T_h[h]:
                     left_side = lpSum(t * x[i, a, j, t]
                                       for j in range(self.number_of_cores))
@@ -263,29 +262,14 @@ class Rhma:
                 if i != k:
                     for a in self.S_i_h[i][h]:
                         for b in self.S_i_h[k][h]:
+                            constraint_23.append(
+                                m[i, a, k, b] == m[k, b, i, a])
                             for j in range(self.number_of_cores):
                                 for l in range(self.number_of_cores):
                                     if j != l:
                                         for t in self.T_h[h]:
                                             constraint_22.append(m[i, a, k, b] >= x[i,
                                                                                     a, j, t] + x[k, b, l, t] - 1)
-
-        # Constraint 23
-        for i in range(len(self.taskset)):
-            for k in range(len(self.taskset)):
-                if i != k:
-                    for a in self.S_i_h[i][h]:
-                        for b in self.S_i_h[k][h]:
-                            constraint_23.append(
-                                m[i, a, k, b] == m[k, b, i, a])
-
-        # Constraint 24
-        for i in range(len(self.taskset)):
-            for a in self.S_i_h[i][h]:
-                for j in range(self.number_of_cores):
-                    for t in self.T_h[h]:
-                        constraint_24.append(w[i, a] >= (t * x[i, a, j, t]) -
-                                             (a * self.taskset.period[i]) + 1)
 
         return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24
 

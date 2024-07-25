@@ -45,7 +45,7 @@ class AssignmentGenerator:
             assignment, success = assignment_function(taskset)
             assignment_list.append(Assignment(
                 assignment=assignment, success=success))
-            print(assignment, success)
+            print(assignment_list[-1])
 
         assignment = AssignmentSet(assignment_id=self.assignment_id, taskset_id=self.taskset_id, assignment_method=self.assignment_method,
                                    sorting_criterion=self.sorting_criterion, number_of_cores=self.number_of_cores, assignment_list=assignment_list)  # Store assignments for each taskset

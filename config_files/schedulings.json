@@ -28,5 +28,65 @@
                 }
             }
         }
+    },
+    "scheduling_generate_2_c4": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_2_c4",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_2_c4",
+            "taskset_id": "taskset_generate_2_c4",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_2_c4",
+            "taskset_id": "taskset_generate_2_c4",
+            "assignment_id": "assignment_generate_2_c4",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirst",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_3_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_3_c8",
+            "taskset_id": "taskset_generate_3_c8",
+            "assignment_id": "assignment_generate_3_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirst",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
     }
 }

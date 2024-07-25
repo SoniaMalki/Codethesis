@@ -6,8 +6,15 @@ class Assignment:
         self.assignment = assignment
         self.success = success
 
+    def __repr__(self):
+        return f"Assignment(assignment={self.assignment}, success={self.success})"
+
     def __str__(self):
-        return str(self.assignment)
+        assignment_str = "Assignment: "
+        assignment_str = "Succesfully assigned\n" if self.success else "Not successfully assigned\n"
+        for core_index, tasks in enumerate(self.assignment):
+            assignment_str += f"Core {core_index}: Tasks {tasks}\n"
+        return assignment_str
 
     def __len__(self):
         return (len(self.assignment))

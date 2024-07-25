@@ -23,5 +23,55 @@
         "scheduling": {
             "action": "none"
         }
+    },
+    "assignment_generate_2_c4": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_2_c4",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_2_c4",
+            "taskset_id": "taskset_generate_2_c4",
+            "parameters": {
+                "sorting_criterion": "wcet_ascending",
+                "assignment_method": "CITTA",
+                "number_of_cores": 4,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 2
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_3_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "sorting_criterion": "wcet_ascending",
+                "assignment_method": "CITTA",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 2
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
     }
 }

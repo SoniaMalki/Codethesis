@@ -13,16 +13,25 @@ class TasksetSet:
         self.taskset_list = taskset_list
 
     def __repr__(self):
-        return ("TasksetSet("
-                f"taskset_id={self.taskset_id}, "
-                f"wcet={self.wcet}, "
-                f"deadline={self.deadline}, "
-                f"period={self.period}, "
-                f"interference={self.interference}, "
-                f"utilization={self.utilization}, "
-                f"taskset_list={repr(self.taskset_list)} "
-                ")"
-                )
+        return (
+            f"TasksetSet(taskset_id={self.taskset_id}, taskset_list={len(self.taskset_list)}, "
+            f"wcet={self.wcet}, deadline={self.deadline}, period={self.period}, "
+            f"interference={self.interference}, single_interference={self.single_interference}, "
+            f"utilization={self.utilization})"
+        )
+
+    def __str__(self):
+        taskset_str = "\n".join(repr(taskset) for taskset in self.taskset_list)
+        return (
+            f"TasksetSet ID: {self.taskset_id}\n"
+            f"WCET: {self.wcet}\n"
+            f"Deadline: {self.deadline}\n"
+            f"Period: {self.period}\n"
+            f"Interference: {self.interference}\n"
+            f"Single Interference: {self.single_interference}\n"
+            f"Utilization: {self.utilization}\n"
+            f"Tasksets:\n{taskset_str}"
+        )
 
     def __len__(self):
         return len(self.taskset_list)
@@ -35,21 +44,6 @@ class TasksetSet:
 
     def __getitem__(self, i):
         return self.taskset_list[i]
-
-    def __str__(self):
-        res = (f"TasksetSet id: {self.taskset_id}\n"
-               f"With WCET: {self.wcet}\n"
-               f"Deadline: {self.deadline}\n"
-               f"Period: {self.period}\n"
-               f"Interference: {self.interference}\n"
-               f"Utilization: {self.utilization}\n"
-               f"Taskset in the set:")
-
-        # for elem in self.taskset_list:
-        #     res = res + "\n" + str(elem)
-        # if len(self.taskset_list) == 0:
-        #     res = res + "[]\n"
-        return res
 
     def __eq__(self, other):
         if not isinstance(other, TasksetSet):

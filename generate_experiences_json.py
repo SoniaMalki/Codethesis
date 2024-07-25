@@ -6,7 +6,7 @@ def generate_tasksets():
     tasksets = {}
 
     taskset_repetitions = [1]
-    tasks_per_taskset = [10]
+    tasks_per_taskset = [2]
     interference_factors = [0.2]
     probability_factors = [0.1]
     max_utilization_factors = [0.2]
@@ -14,7 +14,7 @@ def generate_tasksets():
     max_hyperperiods = [10]
     max_primes = [2]
     gen_limit_exponents = [2]
-    number_of_cores_list = [2]
+    number_of_cores_list = [2, 4, 8]
 
     taskset_index = 1
     for repetition, tasks, interference, probability, util_factor, deadline, hyperperiod, prime, exponent in itertools.product(

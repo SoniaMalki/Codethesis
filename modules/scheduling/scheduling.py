@@ -9,8 +9,8 @@ class Scheduling:
             self.end_time = max(
                 time for core_schedule in self.schedule for time, *_ in core_schedule)
 
-    def __strs__(self):
-        return str(self.schedule)
+    def __repr__(self):
+        return f"Scheduling(schedule={self.schedule}, success={self.success}, scheduler_name={self.scheduler_name}, start_time={self.start_time}, end_time={self.end_time})"
 
     def __str__(self, end_time=None):
         # Trouver les variables les plus grandes pour le temps (lignes) et core (colonnes)

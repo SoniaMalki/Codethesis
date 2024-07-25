@@ -49,6 +49,7 @@ class AssignmentGenerator:
 
         assignment = AssignmentSet(assignment_id=self.assignment_id, taskset_id=self.taskset_id, assignment_method=self.assignment_method,
                                    sorting_criterion=self.sorting_criterion, number_of_cores=self.number_of_cores, assignment_list=assignment_list)  # Store assignments for each taskset
+        print(assignment)
         return assignment  # Return a list of assignments, one for each taskset
 
     # Private methods now take a single taskset as input

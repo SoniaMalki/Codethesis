@@ -11,15 +11,23 @@ class AssignmentSet:
         self.assignment_list = assignment_list
 
     def __repr__(self):
-        return ("AssignmentSet("
-                f"assignment_id={self.assignment_id}, "
-                f"taskset_id={self.taskset_id}, "
-                f"assignment_method={self.assignment_method}, "
-                f"sorting_criterion={self.sorting_criterion}, "
-                f"number_of_cores={self.number_of_cores}, "
-                f"assignment_list={self.assignment_list}, "
-                ")"
-                )
+        return (
+            f"AssignmentSet(assignment_id={self.assignment_id}, taskset_id={self.taskset_id}, "
+            f"assignment_method={self.assignment_method}, sorting_criterion={self.sorting_criterion}, "
+            f"number_of_cores={self.number_of_cores}, assignment_list={len(self.assignment_list)})"
+        )
+
+    def __str__(self):
+        assignment_str = "\n".join(repr(assignment)
+                                   for assignment in self.assignment_list)
+        return (
+            f"Assignment ID: {self.assignment_id}\n"
+            f"Taskset ID: {self.taskset_id}\n"
+            f"Method: {self.assignment_method}\n"
+            f"Criterion: {self.sorting_criterion}\n"
+            f"Cores: {self.number_of_cores}\n"
+            f"Assignments:\n{assignment_str}"
+        )
 
     def __len__(self):
         return len(self.assignment_list)
@@ -32,17 +40,6 @@ class AssignmentSet:
 
     def __getitem__(self, i):
         return self.assignment_list[i]
-
-    def __str__(self):
-        res = (f"Assignment id: {self.assignment_id}\n"
-               f"Taskset ID: {self.taskset_id}\n"
-               f"Assignment Method: {self.assignment_method}\n"
-               f"CITTA criteria: {self.sorting_criterion}\n"
-               f"Core Number: {self.number_of_cores}\n"
-               f"Assignment List: {self.assignment_list}\n"
-               )
-
-        return res
 
     def __eq__(self, other):
         if not isinstance(other, AssignmentSet):

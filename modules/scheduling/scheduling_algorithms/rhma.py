@@ -14,6 +14,10 @@ class Rhma:
         self.assignment = assignment
         self.number_of_cores = number_of_cores
         self.scheduling_options = scheduling_options
+        self.test_mode = self.scheduling_options.get("test_mode", False)
+        if self.test_mode:
+            self.modify_MPS = self.scheduling_options.get("modify_MPS", False)
+            self.seed = self.scheduling_options.get("seed", 42)
 
         self.solving_time_limit_MILP = self.scheduling_options.get(
             "solving_time_limit_MILP", None)
@@ -298,27 +302,30 @@ class Rhma:
 
             prob += interference_term + response_time_term
 
-            # print(f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
-            # print(prob)
-            # time.sleep(300)
+            options = [
+                ("OutputFlag", 0)
+            ]
+            if self.test_mode:
+                if self.modify_MPS:
+                    prob = self.modify_MPS(prob)
+                    x = {}
+                    for v in prob.variables():
+                        if v.name.startswith("x_"):
+                            _, i, a, j, t = map(int, v.name[2:].split('_'))
+                            x[i, a, j, t] = v
+                options.append(("Seed", self.seed))
 
             # Solving the MILP problem
-            options = [
-                ("OutputFlag", 0),
-                ("Seed", 42)
-            ]
             if self.solving_time_limit_MILP is not None:
                 options.append(("Timelimit", self.solving_time_limit_MILP))
 
+            # print(f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
+            # print(prob)
             prob.solve(GUROBI_CMD(msg=0, options=options))
 
-            print("Probstatus: ", prob.status, 'for BP: ', h)
 
             # Checking if a solution is found
             if prob.status == LpStatusOptimal:
-
-                busy_period_schedule_empty = [[]
-                                              for _ in range(self.number_of_cores)]
                 busy_period_schedule = [[]
                                         for _ in range(self.number_of_cores)]
 
@@ -340,3 +347,12 @@ class Rhma:
                 schedule.add_period(scheduling=self.busy_periods[h])
 
         return schedule
+
+    def modify_MPS(self, prob):
+        prob.writeMPS(
+            f"./tests/results_test/RHMA_LP/RHMA_Busy_Period.mps")
+
+        _, prob = LpProblem.fromMPS(
+            f"./tests/results_test/RHMA_LP/RHMA_Busy_Period.mps")
+
+        return prob

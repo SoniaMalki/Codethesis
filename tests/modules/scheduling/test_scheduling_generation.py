@@ -16,6 +16,11 @@ from modules.taskset.taskset_set_generator import TasksetSetGenerator
 from modules.taskset.taskset_set_manual import TasksetSetManual
 import tempfile
 
+seed = 42
+save_results = False
+np.random.seed(seed)
+random.seed(seed)
+
 
 @pytest.fixture(scope="function", autouse=True)
 def use_temporary_prime_matrix_path():
@@ -24,10 +29,6 @@ def use_temporary_prime_matrix_path():
         prime_path = Path(temp_dir)
         yield
 
-
-save_results = False
-np.random.seed(42)
-random.seed(42)
 
 scheduling_algorithms_without_combination = [
     "EarliestDeadlineFirst",
@@ -147,7 +148,10 @@ def prepare_input_data_dic(scheduling_algorithm, non_preemption_time_variant_2):
         "scheduling_id": "scheduling",
         "scheduling_algorithm": scheduling_algorithm,
         "scheduling_options": {
-            "non_preemption_time_variant2": non_preemption_time_variant_2
+            "non_preemption_time_variant2": non_preemption_time_variant_2,
+            "test_mode": False,
+            "modify_MPS": False,
+            "seed": seed
         }
     }
     return assignment_parameters, scheduling_parameters

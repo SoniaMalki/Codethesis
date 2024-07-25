@@ -191,26 +191,43 @@ class Rhma:
         constraint_23 = []
         constraint_24 = []
 
-        # Constraint 16
+        # Constraint 21
+        for j in range(self.number_of_cores):
+            for t in self.T_h[h]:
+                constraint_21.append(lpSum(x[i, a, j, t] for i in range(len(self.taskset))
+                                           for a in self.S_i_h[i][h]) <= 1)
+
         for i in range(len(self.taskset)):
             for a in self.S_i_h[i][h]:
+                # Constraint 16, 19, 20 and Constraint 24
                 for j in range(self.number_of_cores):
+                    if len(self.S_i_h[i][h]) > 0:
+                        left_side = lpSum(x[i, a, j, t]
+                                          for t in self.R_i_a_h[i][a][h])
+
+                        right_side = self.taskset.wcet[i] * \
+                            self.o_i_j[i][j]
+
+                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
+                                            for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                                            for b in self.S_i_h[k][h])
+
+                        constraint_19.append(left_side == right_side)
+
                     for t in self.T_h[h]:
-                        constraint_24.append(w[i, a] >= (t * x[i, a, j, t]) -
-                                             (a * self.taskset.period[i]) + 1)
                         if self.o_i_j[i][j] == 0:
                             constraint_16.append(x[i, a, j, t] == 0)
+                        constraint_24.append(w[i, a] >= (t * x[i, a, j, t]) -
+                                             (a * self.taskset.period[i]) + 1)
 
-        # Constraint 17
-        for i in range(len(self.taskset)):
-            for k in range(i + 1, len(self.taskset)):
-                for a in self.S_i_h[i][h]:
-                    for b in self.S_i_h[k][h]:
-                        if not set(self.R_i_a_h[i][a][h]).intersection(self.R_i_a_h[k][b][h]):
-                            constraint_17.append(m[i, a, k, b] == 0)
+                for t in self.T_h[h]:
+                    left_side = lpSum(t * x[i, a, j, t]
+                                      for j in range(self.number_of_cores))
 
-        # Constraint 18
-        for i in range(len(self.taskset)):
+                    right_side = self.d_i_a[i][a] - 1
+                    constraint_20.append(left_side <= right_side)
+
+            # Constraint 18
             for j in range(self.number_of_cores):
                 if len(self.S_i_h[i][h]) > 0:
                     left_side = lpSum(x[i, a, j, t] for a in self.S_i_h[i][h]
@@ -226,38 +243,7 @@ class Rhma:
 
                     constraint_18.append(left_side == right_side)
 
-        # Constraint 19
-        for i in range(len(self.taskset)):
-            for a in self.S_i_h[i][h]:
-                for j in range(self.number_of_cores):
-                    if len(self.S_i_h[i][h]) > 0:
-                        left_side = lpSum(x[i, a, j, t]
-                                          for t in self.R_i_a_h[i][a][h])
-
-                        right_side = self.taskset.wcet[i] * \
-                            self.o_i_j[i][j]
-
-                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
-                                            for k in range(len(self.taskset)) if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and len(self.S_i_h[k][h]) > 0 and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
-                                            for b in self.S_i_h[k][h])
-
-                        constraint_19.append(left_side == right_side)
-
-                for t in self.T_h[h]:
-                    left_side = lpSum(t * x[i, a, j, t]
-                                      for j in range(self.number_of_cores))
-
-                    right_side = self.d_i_a[i][a] - 1
-                    constraint_20.append(left_side <= right_side)
-
-        # Constraint 21
-        for j in range(self.number_of_cores):
-            for t in self.T_h[h]:
-                constraint_21.append(lpSum(x[i, a, j, t] for i in range(len(self.taskset))
-                                           for a in self.S_i_h[i][h]) <= 1)
-
-        # Constraint 22
-        for i in range(len(self.taskset)):
+            # Constraint 22 and Constraint 23
             for k in range(len(self.taskset)):
                 if i != k:
                     for a in self.S_i_h[i][h]:
@@ -270,6 +256,12 @@ class Rhma:
                                         for t in self.T_h[h]:
                                             constraint_22.append(m[i, a, k, b] >= x[i,
                                                                                     a, j, t] + x[k, b, l, t] - 1)
+            # Constraint 17
+            for k in range(i + 1, len(self.taskset)):
+                for a in self.S_i_h[i][h]:
+                    for b in self.S_i_h[k][h]:
+                        if not set(self.R_i_a_h[i][a][h]).intersection(self.R_i_a_h[k][b][h]):
+                            constraint_17.append(m[i, a, k, b] == 0)
 
         return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24
 

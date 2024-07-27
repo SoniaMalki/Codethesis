@@ -7,6 +7,9 @@ class CompositeScheduling:
         self.success = True
         self.schedules = []
 
+        self.computation_time = None
+        self.actual_utilization = None
+
     def add_schedule(self, schedule):
         if isinstance(schedule, Scheduling):
             self.schedules.append(schedule)
@@ -38,3 +41,7 @@ class CompositeScheduling:
         return (self.scheduler_name == other.scheduler_name and
                 self.success == other.success and
                 self.schedules == other.schedules)
+
+    def add_performances(self, computation_time, actual_utilization):
+        self.computation_time = computation_time
+        self.actual_utilization = actual_utilization

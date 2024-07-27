@@ -93,6 +93,7 @@ class SchedulingGenerator:
         return scheduling
 
     def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=1, end_time=None):
+        start_time_compute = perf_counter()
         scheduler = scheduler_class(
             taskset=taskset,
             assignment=assignment,
@@ -102,9 +103,13 @@ class SchedulingGenerator:
             end_time=end_time
         )
         busy_periods = scheduler.schedule()
+        end_time_compute = perf_counter()
+        computation_time = end_time_compute - start_time_compute
+        actual_utilization = scheduler.actual_utilization
         scheduling = CompositeScheduling(scheduler_name=str(scheduler))
         for busy_period in busy_periods:
             scheduling.add_schedule(schedule=busy_period)
-        print(sum(scheduler.actual_utilization))
-        print(scheduling)
+
+        scheduling.add_performances(
+            computation_time=computation_time, actual_utilization=actual_utilization)
         return scheduling

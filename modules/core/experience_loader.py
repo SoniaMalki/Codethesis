@@ -10,7 +10,8 @@ class ExperienceLoader:
         self.config_files = {
             "taskset": "config_files/tasksets.json",
             "assignment": "config_files/assignments.json",
-            "scheduling": "config_files/schedulings.json"
+            "scheduling": "config_files/schedulings.json",
+            "experience": "config_files/experiences.json"  # Ajouter experiences.json
         }
 
     def load(self, experience_parameter_key):
@@ -24,14 +25,17 @@ class ExperienceLoader:
             Experience: An Experience object containing the loaded data.
         """
 
-        # Déterminer le type d'expérience (taskset, assignment ou scheduling)
-        experience_type = experience_parameter_key.split('_')[0]
+        # Vérifier si la clé est un nombre, ce qui indique le fichier experiences.json
+        if experience_parameter_key.isdigit():
+            filename = self.config_files.get("experience")
+        else:
+            # Déterminer le type d'expérience (taskset, assignment ou scheduling)
+            experience_type = experience_parameter_key.split('_')[0]
+            filename = self.config_files.get(experience_type)
 
-        # Charger le fichier JSON correspondant
-        filename = self.config_files.get(experience_type)
         if not filename:
             print(
-                f"Error: Invalid experience type '{experience_type}' in key '{experience_parameter_key}'.")
+                f"Error: Invalid experience type or key '{experience_parameter_key}'.")
             return None
 
         with open(f"{self.main_path}/{filename}", 'r') as f:
@@ -44,6 +48,8 @@ class ExperienceLoader:
 
         # Charger les paramètres de l'expérience
         experience_params = experience_data[experience_parameter_key]
+
+        # Gérer les cas où certains paramètres peuvent être manquants
         taskset_parameters = experience_params.get(
             "taskset", {"action": "none"})
         assignment_parameters = experience_params.get(

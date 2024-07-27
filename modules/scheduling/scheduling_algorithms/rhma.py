@@ -27,8 +27,8 @@ class Rhma:
         self.start_time = start_time
         self.end_time = end_time
         # Parameters generated after assignment
-        self.maxI = self.generate_max_I()
         self.o_i_j = self.generate_o_i_j()
+        self.maxI = self.generate_max_I()
         self.combined_scheduler = CombinedScheduler(taskset=self.taskset, assignment=self.assignment,
                                                     number_of_cores=self.number_of_cores, scheduling_options=self.scheduling_options,
                                                     start_time=self.start_time,
@@ -42,7 +42,7 @@ class Rhma:
         self.d_i_a = self.taskset.absolute_deadline
 
         # Save parameters to file to analyse
-        output_path = f"{Path(__file__).parent.parent.parent.parent}/other_files/output_parameters.txt"
+        # output_path = f"{Path(__file__).parent.parent.parent.parent}/other_files/output_parameters.txt"
         # self.save_parameters_to_file(file_path = output_path)
 
     def output_parameters_to_str(self):
@@ -76,29 +76,22 @@ class Rhma:
         maxI = 0
         for i in range(len(self.taskset)):
             for j in range(len(self.taskset)):
-                if i != j and self.assignment.find_task_core(i) != self.assignment.find_task_core(j):
-                    if self.taskset[i].single_interference > 0 and self.taskset[j].single_interference > 0:
-                        v_j_to_i = self.calculate_activation_pattern(
-                            interfering_task_index=j, receiving_task_index=i)
-                        for a_index, a in enumerate(self.taskset.activation[i]):
-                            maxI += v_j_to_i[a_index] * \
-                                self.taskset[j].single_interference
+                if i != j and self.o_i_j[i] != self.o_i_j[j] and self.taskset.single_interference[i] != 0 and self.taskset.single_interference[j] != 0:
+                    v_j_to_i = self.calculate_activation_pattern(j=j, i=i)
+                    for a_index, a in enumerate(self.taskset.activation[i]):
+                        maxI += v_j_to_i[a_index] * \
+                            self.taskset[j].single_interference
 
         return maxI
 
-    def calculate_activation_pattern(self, interfering_task_index, receiving_task_index):
+    def calculate_activation_pattern(self, j, i):
         v_j_to_i = []
-        for a in self.taskset.activation[receiving_task_index]:
-            # TODO revoir ces parametres dans le papier pour être sure (les 3)
+        for a in self.taskset.activation[i]:
             activation_in_t = 1
-            activation_start = ((
-                a-1) * self.taskset.period[receiving_task_index]) + 1
-            # pas de -1 de la formule car python
-            activation_end = ((a) *
-                              self.taskset.period[receiving_task_index])+1
-
+            activation_start = (a-1) * self.taskset.period[i] + 1
+            activation_end = a * self.taskset.period[i]  # pas -1 car python
             for t in range(activation_start, activation_end):
-                if (t-1) - self.taskset.period[interfering_task_index]+1 * math.floor((t-1) / self.taskset.period[interfering_task_index]+1) == 0:
+                if t % self.taskset.period[j] == 0:
                     activation_in_t += 1
             v_j_to_i.append(activation_in_t)
 

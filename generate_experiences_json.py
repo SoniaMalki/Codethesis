@@ -7,14 +7,14 @@ def generate_tasksets():
 
     taskset_repetitions = [1]
     tasks_per_taskset = [2]
-    interference_factors = [0.2]
-    probability_factors = [0.1]
+    interference_factors = [0]
+    probability_factors = [0]
     max_utilization_factors = [0.2]
     deadline_options = ["eq_period"]
-    max_hyperperiods = [10]
-    max_primes = [2]
-    gen_limit_exponents = [2]
-    number_of_cores_list = [2, 4, 8]
+    max_hyperperiods = [1000]
+    max_primes = [7]
+    gen_limit_exponents = [2, 3]
+    number_of_cores_list = [8]
 
     taskset_index = 1
     for repetition, tasks, interference, probability, util_factor, deadline, hyperperiod, prime, exponent in itertools.product(
@@ -55,9 +55,11 @@ def generate_tasksets():
 def generate_assignments(tasksets):
     assignments = {}
 
-    assignment_methods = ["CITTA"]
-    sorting_criteria = ["wcet_ascending"]
-    solving_time_limit_milp_assignment = [2]
+    assignment_methods = [
+        "Citta", "WorstFitAssigner", "BestFitAssigner", "FirstFitAssigner", "Wmin"]
+    sorting_criteria = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending",
+                        "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
+    solving_time_limit_milp_assignment = [300]
 
     assignment_index = 1
     for taskset_key, taskset_data in tasksets.items():
@@ -98,8 +100,10 @@ def generate_assignments(tasksets):
 def generate_schedulings(assignments):
     schedulings = {}
 
-    scheduling_algorithms = ["EarliestDeadlineFirst", "CombinedScheduler"]
-    non_preemption_time_variant2_options = ["number_of_tasks"]
+    scheduling_algorithms = ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2",
+                             "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]
+    non_preemption_time_variant2_options = [
+        "number_of_tasks", "wcet_of_tasks", "system_utilization"]
     solving_time_limit_milp_scheduling = [1]
 
     scheduling_index = 1

@@ -19,6 +19,9 @@ class EarliestDeadlineFirst:
         self.current_jobs = [None] * self.number_of_cores
         self.schedule_res = [[] for _ in range(self.number_of_cores)]
 
+        self.total_utilization = 0
+        self.actual_utilization = None
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -41,6 +44,7 @@ class EarliestDeadlineFirst:
             current_time += 1
 
         # Return schedule and success because no deadline missed at the end of Hyperperiod
+        self.actual_utilization = self.total_utilization / self.taskset.hyperperiod
         return self.schedule_res, 1
 
     def create_job_list(self, start_time, end_time):
@@ -72,6 +76,7 @@ class EarliestDeadlineFirst:
         if job_to_execute:
             self.schedule_res[core_index].append(
                 (current_time, job_to_execute.task_number, job_to_execute.job_identifier))
+            self.total_utilization += 1
             job_to_execute.execute()
             if job_to_execute.completed:
                 self.ready_queue[core_index].remove(job_to_execute)

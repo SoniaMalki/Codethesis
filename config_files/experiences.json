@@ -42,7 +42,7 @@
     "scheduling_id" : "scheduling_1",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithm" : "DeadlineMonotonicVariant2",
+      "scheduling_algorithm" : "EarliestDeadlineFirst",
       "scheduling_options": {
         "non_preemption_time_variant2": "wcet_of_tasks",
         "solving_time_limit_MILP": 2
@@ -87,7 +87,7 @@
     "scheduling_id" : "scheduling_2",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithm" : "Rhma",
+      "scheduling_algorithm" : "EarliestDeadlineFirst",
       "scheduling_options": {
         "non_preemption_time_variant2": "wcet_of_tasks",
         "solving_time_limit_MILP": 1
@@ -176,7 +176,7 @@
     "scheduling_id" : "scheduling_4",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithm" : "Rhma",
+      "scheduling_algorithm" : "EarliestDeadlineFirst",
       "scheduling_options": {
         "non_preemption_time_variant2": "wcet_of_tasks",
         "solving_time_limit_MILP": 1

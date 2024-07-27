@@ -9,6 +9,9 @@ class Scheduling:
             self.end_time = max(
                 time for core_schedule in self.schedule for time, *_ in core_schedule)
 
+        self.computation_time = None
+        self.actual_utilization = None
+
     def __repr__(self):
         return f"Scheduling(schedule={self.schedule}, success={self.success}, scheduler_name={self.scheduler_name}, start_time={self.start_time}, end_time={self.end_time})"
 
@@ -79,3 +82,7 @@ class Scheduling:
         return (self.schedule == other.schedule and
                 self.success == other.success and
                 self.scheduler_name == other.scheduler_name)
+
+    def add_performances(self, computation_time, actual_utilization):
+        self.computation_time = computation_time
+        self.actual_utilization = actual_utilization

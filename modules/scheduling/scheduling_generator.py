@@ -1,3 +1,5 @@
+from time import perf_counter
+
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.composite_scheduling import CompositeScheduling
 from modules.scheduling.scheduling_set import SchedulingSet
@@ -70,6 +72,7 @@ class SchedulingGenerator:
         return scheduling
 
     def generate_scheduling(self, taskset, assignment, scheduler_class, start_time=1, end_time=None):
+        start_time_compute = perf_counter()
         scheduler = scheduler_class(
             taskset=taskset,
             assignment=assignment,
@@ -79,7 +82,15 @@ class SchedulingGenerator:
             end_time=end_time,
         )
         schedule, success = scheduler.schedule()
-        return Scheduling(schedule=schedule, success=success, scheduler_name=str(scheduler))
+        end_time_compute = perf_counter()
+        computation_time = end_time_compute - start_time_compute
+        actual_utilization = scheduler.actual_utilization
+
+        scheduling = Scheduling(schedule=schedule, success=success, scheduler_name=str(
+            scheduler))
+        scheduling.add_performances(
+            computation_time=computation_time, actual_utilization=actual_utilization)
+        return scheduling
 
     def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=1, end_time=None):
         scheduler = scheduler_class(

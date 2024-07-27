@@ -5,6 +5,7 @@ class Assignment:
     def __init__(self, assignment, success):
         self.assignment = assignment
         self.success = success
+        self.computation_time = None
 
     def __repr__(self):
         return f"Assignment(assignment={self.assignment}, success={self.success})"
@@ -38,3 +39,6 @@ class Assignment:
         if not isinstance(other, Assignment):
             return NotImplemented
         return self.assignment == other.assignment and self.success == other.success
+
+    def add_performances(self, computation_time):
+        self.computation_time = computation_time

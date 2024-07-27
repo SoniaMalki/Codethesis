@@ -6,7 +6,7 @@ from modules.assignment.assignment_algorithms.first_fit_assigner import FirstFit
 from modules.assignment.assignment_algorithms.best_fit_assigner import BestFitAssigner
 from modules.assignment.assignment_algorithms.w_min import Wmin
 
-import time
+from time import perf_counter
 
 
 class AssignmentGenerator:
@@ -57,6 +57,7 @@ class AssignmentGenerator:
         return assignment
 
     def generate_assignment_with_sorting(self, taskset, assignment_class):
+        start_time_compute = perf_counter()
         assigner = assignment_class(
             taskset=taskset,
             number_of_cores=self.number_of_cores,
@@ -64,13 +65,24 @@ class AssignmentGenerator:
             assignment_options=self.assignment_options
         )
         assigned_cores, successfully_assigned = assigner.assign()
-        return Assignment(assignment=assigned_cores, success=successfully_assigned)
+        end_time_compute = perf_counter()
+        computation_time = end_time_compute - start_time_compute
+        assignment = Assignment(assignment=assigned_cores,
+                                success=successfully_assigned)
+        assignment.add_performances(computation_time=computation_time)
+        return assignment
 
     def generate_assignment_without_sorting(self, taskset, assignment_class):
+        start_time_compute = perf_counter()
         assigner = assignment_class(
             taskset=taskset,
             number_of_cores=self.number_of_cores,
             assignment_options=self.assignment_options
         )
         assigned_cores, successfully_assigned = assigner.assign()
-        return Assignment(assignment=assigned_cores, success=successfully_assigned)
+        end_time_compute = perf_counter()
+        computation_time = end_time_compute - start_time_compute
+        assignment = Assignment(assignment=assigned_cores,
+                                success=successfully_assigned)
+        assignment.add_performances(computation_time=computation_time)
+        return assignment

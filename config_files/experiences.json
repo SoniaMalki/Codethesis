@@ -87,7 +87,7 @@
     "scheduling_id" : "scheduling_2",
     "action" : "generate",
     "parameters" : {
-      "scheduling_algorithm" : "EarliestDeadlineFirst",
+      "scheduling_algorithm" : "Rhma",
       "scheduling_options": {
         "non_preemption_time_variant2": "wcet_of_tasks",
         "solving_time_limit_MILP": 1
@@ -147,14 +147,14 @@
     "action": "manual",
     "taskset_id": "taskset_4",
     "parameters": {
-      "wcet": [1, 3],
+      "wcet": [2, 3],
       "deadline": [4, 5],
       "period": [4, 5],
       "interference": [
         [0, 1],
         [1, 0]
       ],
-      "utilization": [0.25, 0.6]
+      "utilization": [0.5, 0.6]
     }
   },
   "assignment" : {

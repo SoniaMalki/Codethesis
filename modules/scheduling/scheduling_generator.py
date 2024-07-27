@@ -105,5 +105,6 @@ class SchedulingGenerator:
         scheduling = CompositeScheduling(scheduler_name=str(scheduler))
         for busy_period in busy_periods:
             scheduling.add_schedule(schedule=busy_period)
-        print(scheduler.actual_utilization)
+        print(sum(scheduler.actual_utilization))
+        print(scheduling)
         return scheduling

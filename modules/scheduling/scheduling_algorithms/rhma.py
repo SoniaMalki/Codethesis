@@ -34,6 +34,7 @@ class Rhma:
                                                     start_time=self.start_time,
                                                     end_time=self.end_time)
         self.busy_periods = self.combined_scheduler.schedule()
+        self.actual_utilization = self.combined_scheduler.actual_utilization
 
         # Parameters generated after busy period generation
         self.S_i_h = self.generate_S_i_h()
@@ -324,6 +325,7 @@ class Rhma:
 
             # Checking if a solution is found
             if prob.status == LpStatusOptimal:
+                total_utilization = 0
                 busy_period_schedule = [[]
                                         for _ in range(self.number_of_cores)]
 
@@ -334,14 +336,20 @@ class Rhma:
                                 if x[i, a, j, t].varValue == 1:
                                     busy_period_schedule[j].append(
                                         (t, i, a))
+                                    total_utilization += 1
 
                 busy_period_schedule = Scheduling(
                     schedule=busy_period_schedule, success=1, scheduler_name="RHMA")
+                busy_period_schedule.add_total_utilization(
+                    total_utilization=total_utilization)
                 schedule.add_period(scheduling=busy_period_schedule)
 
             else:
-                # print(
-                #     f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
+                print(
+                    f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
                 schedule.add_period(scheduling=self.busy_periods[h])
+                total_utilization = self.busy_periods[h].total_utilization
+
+            self.actual_utilization[h] = total_utilization/self.hyperperiod
 
         return schedule

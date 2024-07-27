@@ -163,7 +163,7 @@
     "action" : "generate",
     "parameters" : {
       "sorting_criterion" : "utilization_descending",
-      "assignment_method" : "Wmin",
+      "assignment_method" : "WorstFitAssigner",
       "number_of_cores": 2,
       "assignment_options" : {
           "solving_time_limit_MILP": 90
@@ -180,6 +180,93 @@
       "scheduling_options": {
         "non_preemption_time_variant2": "wcet_of_tasks",
         "solving_time_limit_MILP": 1
+      }
+    }
+  }
+},
+"5":
+{
+  "taskset": {
+    "action": "manual",
+    "taskset_id": "taskset_5",
+    "parameters": {
+      "wcet": [1, 1],
+      "deadline": [2, 6],
+      "period": [3, 7],
+      "interference": [
+        [0, 1],
+        [1, 0]
+      ],
+      "utilization": [0.3333, 0.1428]
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_5",
+    "taskset_id" : "taskset_5",
+    "action" : "generate",
+    "parameters" : {
+      "sorting_criterion" : "utilization_descending",
+      "assignment_method" : "WorstFitAssigner",
+      "number_of_cores": 2,
+      "assignment_options" : {
+          "solving_time_limit_MILP": 90
+      }
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_5",
+    "taskset_id" : "taskset_5",
+    "scheduling_id" : "scheduling_5",
+    "action" : "generate",
+    "parameters" : {
+      "scheduling_algorithm" : "Rhma",
+      "scheduling_options": {
+        "non_preemption_time_variant2": "wcet_of_tasks",
+        "solving_time_limit_MILP": 10
+      }
+    }
+  }
+},
+
+"6":
+{
+  "taskset": {
+    "action": "manual",
+    "taskset_id": "taskset_6",
+    "parameters": {
+      "wcet": [2, 4],
+      "deadline": [4, 5],
+      "period": [5, 6],
+      "interference": [
+        [0, 1],
+        [1, 0]
+      ],
+      "utilization": [0.4, 0.6666]
+    }
+  },
+  "assignment" : {
+    "assignment_id" : "assignment_6",
+    "taskset_id" : "taskset_6",
+    "action" : "generate",
+    "parameters" : {
+      "sorting_criterion" : "utilization_descending",
+      "assignment_method" : "WorstFitAssigner",
+      "number_of_cores": 2,
+      "assignment_options" : {
+          "solving_time_limit_MILP": 90
+      }
+    }
+  },
+  "scheduling" : {
+    "assignment_id" : "assignment_6",
+    "taskset_id" : "taskset_6",
+    "scheduling_id" : "scheduling_6",
+    "action" : "generate",
+    "parameters" : {
+      "scheduling_algorithm" : "Rhma",
+      "scheduling_options": {
+        "non_preemption_time_variant2": "wcet_of_tasks",
+        "solving_time_limit_MILP": 10
       }
     }
   }

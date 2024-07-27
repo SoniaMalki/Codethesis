@@ -51,11 +51,9 @@ class AssignmentGenerator:
             assignment = assignment_function(
                 taskset, assignment_class)
             assignment_list.append(assignment)
-            print(assignment_list[-1])
 
         assignment = AssignmentSet(assignment_id=self.assignment_id, taskset_id=self.taskset_id, assignment_method=self.assignment_method,
                                    sorting_criterion=self.sorting_criterion, number_of_cores=self.number_of_cores, assignment_list=assignment_list)  # Store assignments for each taskset
-        print(assignment)
         return assignment
 
     def generate_assignment_with_sorting(self, taskset, assignment_class):

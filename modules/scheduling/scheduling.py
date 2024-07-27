@@ -11,6 +11,7 @@ class Scheduling:
 
         self.computation_time = None
         self.actual_utilization = None
+        self.total_utilization = None
 
     def __repr__(self):
         return f"Scheduling(schedule={self.schedule}, success={self.success}, scheduler_name={self.scheduler_name}, start_time={self.start_time}, end_time={self.end_time})"
@@ -86,3 +87,6 @@ class Scheduling:
     def add_performances(self, computation_time, actual_utilization):
         self.computation_time = computation_time
         self.actual_utilization = actual_utilization
+
+    def add_total_utilization(self, total_utilization):
+        self.total_utilization = total_utilization

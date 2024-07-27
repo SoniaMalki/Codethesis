@@ -50,6 +50,9 @@ class CombinedScheduler:
         self.busy_periods = BusyPeriodGenerator.generate_busy_periods(
             self.default_schedule)
 
+        self.total_utilization = []
+        self.actual_utilization = []
+
     def __str__(self):
         return self.__class__.__name__
 
@@ -84,6 +87,11 @@ class CombinedScheduler:
                 scheduling=busy_period)
             for bp in shorter_busy_period:
                 final_busy_period.add_period(scheduling=bp)
+                self.total_utilization.append(bp.total_utilization)
+
+        self.actual_utilization = [
+            t_u/self.hyperperiod for t_u in self.total_utilization]
+
         return final_busy_period
 
     def generate_scheduling(self, scheduler_class, start_time=1, end_time=None):
@@ -96,7 +104,8 @@ class CombinedScheduler:
             end_time=end_time,
         )
         schedule, success = scheduler.schedule()
-        return Scheduling(schedule=schedule, success=success, scheduler_name=str(scheduler))
+        return Scheduling(
+            schedule=schedule, success=success, scheduler_name=str(scheduler))
 
     def create_empty_return(self):
         scheduling = [[] for _ in range(self.number_of_cores)]

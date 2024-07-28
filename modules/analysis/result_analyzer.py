@@ -17,9 +17,10 @@ class ResultAnalyzer:
         self.df_schedulings = pd.DataFrame(
             [vars(s) for s in self.scheduling_sets]
         )
+
         self.df = self.df_tasksets.merge(
-            self.df_assignments, on=["taskset_id"]
-        ).merge(self.df_schedulings, on=["taskset_id", "assignment_id"])
+            self.df_assignments, on=["taskset_id"], suffixes=("_taskset", "_assignment")
+        ).merge(self.df_schedulings, on=["taskset_id", "assignment_id"], suffixes=("_assignment", "_scheduling"))
 
     def run_analysis(self):
         self.analyze_allocability()

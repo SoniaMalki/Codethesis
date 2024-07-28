@@ -99,8 +99,7 @@ def generate_assignments(tasksets):
 def generate_schedulings(assignments):
     schedulings = {}
 
-    scheduling_algorithms = ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2",
-                             "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]
+    scheduling_algorithms = ["EarliestDeadlineFirst"]
     non_preemption_time_variant2_options = ["number_of_tasks"]
     solving_time_limit_milp_scheduling = [1]
 

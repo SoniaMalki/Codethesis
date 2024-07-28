@@ -37,6 +37,7 @@ class ResultLoader:
             return None, None
 
     def load_results(self):
+        taskset_sets = []
         assignment_sets = []
         scheduling_sets = []
 
@@ -47,9 +48,11 @@ class ResultLoader:
                     data_obj = self.load_data(file_path)
                     config, exp_type = self.get_experiment_info(filename[:-4])
 
-                    if exp_type == "assignment":
+                    if exp_type == "taskset":
+                        taskset_sets.append(data_obj)
+                    elif exp_type == "assignment":
                         assignment_sets.append(data_obj)
                     elif exp_type == "scheduling":
                         scheduling_sets.append(data_obj)
 
-        return assignment_sets, scheduling_sets
+        return taskset_sets, assignment_sets, scheduling_sets

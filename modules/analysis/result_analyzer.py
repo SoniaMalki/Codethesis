@@ -8,19 +8,18 @@ class ResultAnalyzer:
     def __init__(self, current_path):
         self.current_path = current_path
         self.loader = ResultLoader(current_path=current_path)
-        self.assignment_sets, self.scheduling_sets = self.loader.load_results()
+        self.taskset_sets, self.assignment_sets, self.scheduling_sets = self.loader.load_results()
 
+        self.df_tasksets = pd.DataFrame([vars(t) for t in self.taskset_sets])
         self.df_assignments = pd.DataFrame(
             [vars(a) for a in self.assignment_sets]
         )
         self.df_schedulings = pd.DataFrame(
             [vars(s) for s in self.scheduling_sets]
         )
-        self.df = self.df_assignments.merge(
-            self.df_schedulings,
-            on=["taskset_id", "assignment_id"],
-            suffixes=("_assignment", "_scheduling"),
-        )
+        self.df = self.df_tasksets.merge(
+            self.df_assignments, on=["taskset_id"]
+        ).merge(self.df_schedulings, on=["taskset_id", "assignment_id"])
 
     def run_analysis(self):
         self.analyze_allocability()

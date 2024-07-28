@@ -8,7 +8,7 @@ Le processus de génération de tasksets vise à créer des ensembles de tâches
 
 Les paramètres clés pour la génération de tasksets sont définis dans le fichier `tasksets.json`.  Ils sont ensuite utilisés par la classe `TasksetSetGenerator` pour créer les tasksets. 
 
-- **`taskset_repetition`**:  Nombre de tasksets à générer. Permet de répéter une expérience plusieurs fois avec les même paramètre de génération, pour faire des moyennes. (choix entre : 1, 2, 4, 8 ou 16)
+- **`taskset_repetition`**:  Nombre de tasksets à générer. Permet de répéter une expérience plusieurs fois avec les même paramètre de génération, pour faire des moyennes. (choix entre : 10)
 - **`tasks_per_taskset`**:  Nombre de tâches dans chaque taskset. (choix entre: 10 ou 20)
 - **`interference_factor`**: Facteur utilisé pour calculer l'interférence entre les tâches. L'interférence est défini comme un pourcentage du WCET. (choix entre: 0.2 ou 0.8)
 - **`probability_factor`**: Probabilité qu'une interférence se produise entre deux tâches. (choix entre: 0.1 ou 0.4)
@@ -17,7 +17,7 @@ Les paramètres clés pour la génération de tasksets sont définis dans le fic
     - **`deadline_option`**: Option pour la génération des deadlines.
         - `eq_period`:  La deadline est égale à la période de la tâche.
         - `leq_period`: La deadline est un nombre aléatoire entre le WCET et la période de la tâche.
-    - **`max_hyperperiod`**:  Hyperpériode maximale autorisée pour les tasksets générés. Permet de ne pas avoir une explosion de paramètres. (choix entre: différentes puissances de 10 jusqu'à limite raisonnable)
+    - **`max_hyperperiod`**:  Hyperpériode maximale autorisée pour les tasksets générés. Permet de ne pas avoir une explosion de paramètres. (choix entre: 1000, 10 000, 100 000, 1 000 000, 10 000 000)
     - **`max_prime`**:  Nombre premier maximal utilisé pour générer les périodes des tâches. (choix entre: différents premiers jusque 23)
     - **`gen_limit_exponent`**: Exposant utilisé pour limiter l'hyperpériode maximale lors de la génération de la matrice de nombres premiers. (choix entre: 2, 3, 4 ou 5)
 
@@ -54,7 +54,7 @@ Les paramètres de l'algorithme d'assignation sont définis dans le fichier `ass
     - `random_order`:  Tri aléatoire des tâches.
 - **`number_of_cores`**:  Nombre de processeurs disponibles pour l'assignation des tâches. (choix entre: 2, 4 ou 8). 
 - **`assignment_options`**: Options spécifiques à l'algorithme d'assignation si nécessaire.
-    - `solving_time_limit_MILP`:  Limite de temps imposée au solveur MILP avant d'abandonner la recherche. (choix à définir.) 
+    - `solving_time_limit_MILP`:  Limite de temps imposée au solveur MILP avant d'abandonner la recherche. (300 secondes = 5 minutes) 
 
 
 #### 2.2. Algorithmes d'assignation
@@ -83,7 +83,7 @@ Les paramètres de l'algorithme d'ordonnancement sont définis dans le fichier `
 - **`scheduling_algorithm`**:  Nom de l'algorithme d'ordonnancement à utiliser. (voir 3.2)
 - **`scheduling_options`**: Options spécifiques à l'algorithme d'ordonnancement si nécessaire. 
     - `non_preemption_time_variant_2`: Option disponible pour déterminer le facteur de non-preemption pour les variants 2 de EDF et DM. (choix entre: number_of_tasks, wcet_of_tasks ou system_utilization) définie selon [3] (Aceituno et al., 2022).
-    - `solving_time_limit_MILP`:  Limite de temps imposée au solveur MILP avant d'abandonner la recherche. (choix à définir.) 
+    - `solving_time_limit_MILP`:  Limite de temps imposée au solveur MILP avant d'abandonner la recherche. (300 secondes = 5 minutes) 
 
 #### 3.2. Algorithmes d'ordonnancement
 

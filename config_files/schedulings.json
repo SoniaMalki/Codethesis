@@ -238,5 +238,725 @@
                 }
             }
         }
+    },
+    "scheduling_generate_9_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_9_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_2_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirst",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_10_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_10_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_2_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirstVariant1",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_11_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_11_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_2_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirstVariant2",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_12_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_12_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_2_c8",
+            "parameters": {
+                "scheduling_algorithm": "DeadlineMonotonic",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_13_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_13_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_2_c8",
+            "parameters": {
+                "scheduling_algorithm": "DeadlineMonotonicVariant1",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_14_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_14_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_2_c8",
+            "parameters": {
+                "scheduling_algorithm": "DeadlineMonotonicVariant2",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_15_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_15_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_2_c8",
+            "parameters": {
+                "scheduling_algorithm": "CombinedScheduler",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_16_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_16_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_2_c8",
+            "parameters": {
+                "scheduling_algorithm": "Rhma",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_17_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_17_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_3_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirst",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_18_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_18_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_3_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirstVariant1",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_19_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_19_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_3_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirstVariant2",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_20_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_20_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_3_c8",
+            "parameters": {
+                "scheduling_algorithm": "DeadlineMonotonic",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_21_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_21_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_3_c8",
+            "parameters": {
+                "scheduling_algorithm": "DeadlineMonotonicVariant1",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_22_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_22_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_3_c8",
+            "parameters": {
+                "scheduling_algorithm": "DeadlineMonotonicVariant2",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_23_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_23_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_3_c8",
+            "parameters": {
+                "scheduling_algorithm": "CombinedScheduler",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_24_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_3_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_24_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_3_c8",
+            "parameters": {
+                "scheduling_algorithm": "Rhma",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_25_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_4_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_25_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_4_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirst",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_26_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_4_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_26_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_4_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirstVariant1",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_27_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_4_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_27_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_4_c8",
+            "parameters": {
+                "scheduling_algorithm": "EarliestDeadlineFirstVariant2",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_28_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_4_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_28_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_4_c8",
+            "parameters": {
+                "scheduling_algorithm": "DeadlineMonotonic",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_29_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_4_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_29_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_4_c8",
+            "parameters": {
+                "scheduling_algorithm": "DeadlineMonotonicVariant1",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_30_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_4_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_30_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_4_c8",
+            "parameters": {
+                "scheduling_algorithm": "DeadlineMonotonicVariant2",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_31_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_4_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_31_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_4_c8",
+            "parameters": {
+                "scheduling_algorithm": "CombinedScheduler",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
+    },
+    "scheduling_generate_32_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "open",
+            "assignment_id": "assignment_generate_4_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "scheduling": {
+            "action": "generate",
+            "scheduling_id": "scheduling_generate_32_c8",
+            "taskset_id": "taskset_generate_1_c8",
+            "assignment_id": "assignment_generate_4_c8",
+            "parameters": {
+                "scheduling_algorithm": "Rhma",
+                "scheduling_options": {
+                    "non_preemption_time_variant2": "number_of_tasks",
+                    "solving_time_limit_MILP": 1
+                }
+            }
+        }
     }
 }

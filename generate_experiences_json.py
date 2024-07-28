@@ -5,7 +5,7 @@ import itertools
 def generate_tasksets():
     tasksets = {}
 
-    taskset_repetitions = [1]
+    taskset_repetitions = [10]
     tasks_per_taskset = [2]
     interference_factors = [0]
     probability_factors = [0]
@@ -55,7 +55,8 @@ def generate_tasksets():
 def generate_assignments(tasksets):
     assignments = {}
 
-    assignment_methods = ["Citta"]
+    assignment_methods = ["Citta", "Wmin",
+                          "WorstFitAssigner", "FirstFitAssigner"]
     sorting_criteria = ["wcet_ascending"]
     solving_time_limit_milp_assignment = [300]
 

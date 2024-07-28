@@ -13,7 +13,7 @@ def generate_tasksets():
     deadline_options = ["eq_period"]
     max_hyperperiods = [1000]
     max_primes = [7]
-    gen_limit_exponents = [2, 3]
+    gen_limit_exponents = [3]
     number_of_cores_list = [8]
 
     taskset_index = 1
@@ -55,10 +55,8 @@ def generate_tasksets():
 def generate_assignments(tasksets):
     assignments = {}
 
-    assignment_methods = [
-        "Citta", "WorstFitAssigner", "BestFitAssigner", "FirstFitAssigner", "Wmin"]
-    sorting_criteria = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending",
-                        "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
+    assignment_methods = ["Citta"]
+    sorting_criteria = ["wcet_ascending"]
     solving_time_limit_milp_assignment = [300]
 
     assignment_index = 1
@@ -102,8 +100,7 @@ def generate_schedulings(assignments):
 
     scheduling_algorithms = ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2",
                              "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]
-    non_preemption_time_variant2_options = [
-        "number_of_tasks", "wcet_of_tasks", "system_utilization"]
+    non_preemption_time_variant2_options = ["number_of_tasks"]
     solving_time_limit_milp_scheduling = [1]
 
     scheduling_index = 1

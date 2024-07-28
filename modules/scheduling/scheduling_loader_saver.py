@@ -21,6 +21,9 @@ class SchedulingLoaderSaver:
             os.makedirs(self.scheduling_path, exist_ok=True)
             scheduling_filename = f"{scheduling_id}.pkl"
             with open(self.scheduling_path / scheduling_filename, 'wb') as f:
+                # Supprimer scheduling_list avant la sauvegarde pour économie espace
+                for schedule in scheduling_obj:
+                    schedule.schedule = None
                 pickle.dump(scheduling_obj, f)
 
     def load_test_expected_result(self, scheduling_id, experience, scheduling_algorithm, non_preemption_time_variant2):

@@ -11,6 +11,15 @@ class TasksetSet:
         self.single_interference = single_interference
         self.utilization = utilization
         self.taskset_list = taskset_list
+        self.taskset_repetition = None
+        self.tasks_per_taskset = None
+        self.interference_factor = None
+        self.probability_factor = None
+        self.max_utilization = None
+        self.deadline_option = None
+        self.max_hyperperiod = None
+        self.max_prime = None
+        self.gen_limit_exponent = None
 
     def __repr__(self):
         return (
@@ -56,3 +65,14 @@ class TasksetSet:
                 self.single_interference == other.single_interference and
                 self.utilization == other.utilization and
                 self.taskset_list == other.taskset_list)
+
+    def add_generation_parameters(self, taskset_repetition, tasks_per_taskset, interference_factor, probability_factor, max_utilization, deadline_option, max_hyperperiod, max_prime, gen_limit_exponent):
+        self.taskset_repetition = taskset_repetition
+        self.tasks_per_taskset = tasks_per_taskset
+        self.interference_factor = interference_factor
+        self.probability_factor = probability_factor
+        self.max_utilization = max_utilization
+        self.deadline_option = deadline_option
+        self.max_hyperperiod = max_hyperperiod
+        self.max_prime = max_prime
+        self.gen_limit_exponent = gen_limit_exponent

@@ -121,4 +121,6 @@ class TasksetSetGenerator:
                                          i], single_interference=single_interference[i], utilization=utilizations[i], hyperperiod=hyperperiods[i], N=N[i], activation=activations[i], absolute_deadline=absolute_deadlines[i]))
         res = TasksetSet(taskset_id=self.taskset_id, wcet=wcets, deadline=deadlines, period=periods, single_interference=single_interference,
                          interference=interferences, utilization=utilizations, taskset_list=taskset_set_generated)
+        res.add_generation_parameters(taskset_repetition=self.taskset_repetition, tasks_per_taskset=self.tasks_per_taskset, interference_factor=self.interference_factor, probability_factor=self.probability_factor,
+                                      max_utilization=self.max_utilization, deadline_option=self.deadline_option, max_hyperperiod=self.max_hyperperiod, max_prime=self.max_prime, gen_limit_exponent=self.gen_limit_exponent)
         return res

@@ -11,6 +11,7 @@ class Scheduling:
 
         self.computation_time = None
         self.actual_utilization = None
+        self.theoritical_utilization = None
         self.total_utilization = None
 
     def __repr__(self):
@@ -84,9 +85,10 @@ class Scheduling:
                 self.success == other.success and
                 self.scheduler_name == other.scheduler_name)
 
-    def add_performances(self, computation_time, actual_utilization):
+    def add_performances(self, computation_time, actual_utilization, theoritical_utilization):
         self.computation_time = computation_time
         self.actual_utilization = actual_utilization
+        self.theoritical_utilization = theoritical_utilization
 
     def add_total_utilization(self, total_utilization):
         self.total_utilization = total_utilization

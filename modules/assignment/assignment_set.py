@@ -10,6 +10,9 @@ class AssignmentSet:
         self.number_of_cores = number_of_cores
         self.assignment_list = assignment_list
 
+        self.mean_success = self.calculate_mean_success()
+        self.mean_computation_time = self.calculate_mean_computation_time()
+
     def __repr__(self):
         return (
             f"AssignmentSet(assignment_id={self.assignment_id}, taskset_id={self.taskset_id}, "
@@ -50,3 +53,10 @@ class AssignmentSet:
                 self.sorting_criterion == other.sorting_criterion and
                 self.number_of_cores == other.number_of_cores and
                 self.assignment_list == other.assignment_list)
+    
+
+    def calculate_mean_success(self):
+        return sum(assignment.success for assignment in self.assignment_list) / len(self.assignment_list)
+
+    def calculate_mean_computation_time(self):
+        return sum(assignment.computation_time for assignment in self.assignment_list) / len(self.assignment_list)

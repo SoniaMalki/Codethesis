@@ -1,35 +1,44 @@
-import sys
-import datetime
-import pickle
-import os
-import json
 from pathlib import Path
-import time
+import sys
+import subprocess
 
 from modules.core.experience_loader import ExperienceLoader
-current_path = Path(__file__).parent
+from modules.analysis.result_analyzer import ResultAnalyzer
 
 
-def main(experience_parameter_key="taskset_generate_1_c2"):
+def main(action="run_experience", experience_parameter_key="taskset_generate_1_c2"):
     """
-    Main function to run an experiment based on the configuration files.
+    Fonction principale pour exécuter une expérience ou analyser les résultats.
 
     Args:
-        experience_parameter_key (str, optional): The key of the experience to load. Defaults to "taskset_generate_1_c2".
+        action (str, optional): L'action à effectuer. Peut être "run_experience", "analyze_results" ou "generate_configs". Défaut "run_experience".
+        experience_parameter_key (str, optional): La clé de l'expérience à charger. Défaut "taskset_generate_1_c2".
     """
 
-    # Load the experience
-    experience_loader = ExperienceLoader(Path(__file__).parent)
-    experience = experience_loader.load(experience_parameter_key)
+    if action == "run_experience":
+        experience_loader = ExperienceLoader(Path(__file__).parent)
+        experience = experience_loader.load(experience_parameter_key)
+        experience.process()
 
-    # Process the experience
-    experience.process()
+    elif action == "analyze_results":
+        analyzer = ResultAnalyzer(Path(__file__).parent)
+        analyzer.run_analysis()
+
+    elif action == "generate_configs":
+        subprocess.run(["python3", "./generate_experiences_json.py"])
+
+    else:
+        print(f"Action invalide: {action}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) == 2:
-        experience_parameter_key = sys.argv[1]
-        main(experience_parameter_key)
+    if len(sys.argv) == 3:
+        action = sys.argv[1]
+        experience_parameter_key = sys.argv[2]
+        main(action, experience_parameter_key)
+    elif len(sys.argv) == 2:
+        action = sys.argv[1]
+        main(action)
     else:
         print(
             f"No experience parameter key given. Defaulting to key 'taskset_generate_1_c2'.")

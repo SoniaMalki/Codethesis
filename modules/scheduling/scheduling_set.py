@@ -10,6 +10,12 @@ class SchedulingSet:
         self.scheduling_options = scheduling_options
         self.scheduling_list = scheduling_list
 
+        self.mean_success = self.calculate_mean_success()
+        self.mean_computation_time = self.calculate_mean_computation_time()
+        self.mean_theoritical_utilization = self.calculate_mean_theoritical_utilization()
+        self.mean_actual_utilization = self.calculate_mean_actual_utilization()
+        self.mean_overutilization = self.calculate_mean_overutilization()
+
     def __repr__(self):
         return (
             f"SchedulingSet(scheduling_id={self.scheduling_id}, taskset_id={self.taskset_id}, "
@@ -44,4 +50,19 @@ class SchedulingSet:
     def __eq__(self, other):
         if not isinstance(other, SchedulingSet):
             return NotImplemented
-        return (self.scheduling_list == other.scheduling_list)
+        return self.scheduling_list == other.scheduling_list
+
+    def calculate_mean_success(self):
+        return sum(scheduling.success for scheduling in self.scheduling_list) / len(self.scheduling_list)
+
+    def calculate_mean_computation_time(self):
+        return sum(scheduling.computation_time for scheduling in self.scheduling_list) / len(self.scheduling_list)
+
+    def calculate_mean_actual_utilization(self):
+        return sum(scheduling.actual_utilization for scheduling in self.scheduling_list) / len(self.scheduling_list)
+
+    def calculate_mean_theoritical_utilization(self):
+        return sum(scheduling.theoritical_utilization for scheduling in self.scheduling_list) / len(self.scheduling_list)
+
+    def calculate_mean_overutilization(self):
+        return 1 - (self.mean_theoritical_utilization / self.mean_actual_utilization)

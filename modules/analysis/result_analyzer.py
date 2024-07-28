@@ -1,5 +1,6 @@
 import pandas as pd
 
+from modules.analysis.analyzers.schedulability_analyzer import SchedulabilityAnalyzer
 from modules.analysis.result_loader import ResultLoader
 from modules.analysis.analyzers.allocability_analyzer import AllocabilityAnalyzer
 
@@ -24,7 +25,7 @@ class ResultAnalyzer:
 
     def run_analysis(self):
         self.analyze_allocability()
-        # self.analyze_schedulability()
+        self.analyze_schedulability()
         # self.analyze_overutilization()
         # self.analyze_citta_acceptance_ratio()
         # self.analyze_citta_prediction_accuracy()
@@ -34,9 +35,9 @@ class ResultAnalyzer:
         analyzer = AllocabilityAnalyzer(self.df)
         analyzer.analyze()
 
-    # def analyze_schedulability(self):
-    #     analyzer = SchedulabilityAnalyzer(self.df)
-    #     analyzer.analyze()
+    def analyze_schedulability(self):
+        analyzer = SchedulabilityAnalyzer(self.df)
+        analyzer.analyze()
 
     # def analyze_overutilization(self):
     #     analyzer = OverutilizationAnalyzer(self.df)

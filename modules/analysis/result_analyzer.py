@@ -1,5 +1,6 @@
 import pandas as pd
 
+from modules.analysis.analyzers.overutilization_analyzer import OverutilizationAnalyzer
 from modules.analysis.analyzers.schedulability_analyzer import SchedulabilityAnalyzer
 from modules.analysis.result_loader import ResultLoader
 from modules.analysis.analyzers.allocability_analyzer import AllocabilityAnalyzer
@@ -24,9 +25,9 @@ class ResultAnalyzer:
         ).merge(self.df_schedulings, on=["taskset_id", "assignment_id"], suffixes=("_assignment", "_scheduling"))
 
     def run_analysis(self):
-        self.analyze_allocability()
-        self.analyze_schedulability()
-        # self.analyze_overutilization()
+        # self.analyze_allocability()
+        # self.analyze_schedulability()
+        self.analyze_overutilization()
         # self.analyze_citta_acceptance_ratio()
         # self.analyze_citta_prediction_accuracy()
         # self.analyze_wmin_citta_similarity()
@@ -39,9 +40,9 @@ class ResultAnalyzer:
         analyzer = SchedulabilityAnalyzer(self.df)
         analyzer.analyze()
 
-    # def analyze_overutilization(self):
-    #     analyzer = OverutilizationAnalyzer(self.df)
-    #     analyzer.analyze()
+    def analyze_overutilization(self):
+        analyzer = OverutilizationAnalyzer(self.df)
+        analyzer.analyze()
 
     # def analyze_citta_acceptance_ratio(self):
     #     analyzer = CittaAnalyzer(self.df)

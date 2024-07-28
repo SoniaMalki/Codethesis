@@ -1,7 +1,9 @@
 import pandas as pd
 
+from modules.analysis.analyzers.citta_analyzer import CittaAnalyzer
 from modules.analysis.analyzers.overutilization_analyzer import OverutilizationAnalyzer
 from modules.analysis.analyzers.schedulability_analyzer import SchedulabilityAnalyzer
+from modules.analysis.analyzers.wmin_citta_similarity_analyzer import WminCittaSimilarityAnalyzer
 from modules.analysis.result_loader import ResultLoader
 from modules.analysis.analyzers.allocability_analyzer import AllocabilityAnalyzer
 
@@ -27,10 +29,10 @@ class ResultAnalyzer:
     def run_analysis(self):
         # self.analyze_allocability()
         # self.analyze_schedulability()
-        self.analyze_overutilization()
+        # self.analyze_overutilization()
         # self.analyze_citta_acceptance_ratio()
         # self.analyze_citta_prediction_accuracy()
-        # self.analyze_wmin_citta_similarity()
+        self.analyze_wmin_citta_similarity()
 
     def analyze_allocability(self):
         analyzer = AllocabilityAnalyzer(self.df)
@@ -44,14 +46,14 @@ class ResultAnalyzer:
         analyzer = OverutilizationAnalyzer(self.df)
         analyzer.analyze()
 
-    # def analyze_citta_acceptance_ratio(self):
-    #     analyzer = CittaAnalyzer(self.df)
-    #     analyzer.analyze_acceptance_ratio()
+    def analyze_citta_acceptance_ratio(self):
+        analyzer = CittaAnalyzer(self.df)
+        analyzer.analyze_acceptance_ratio()
 
-    # def analyze_citta_prediction_accuracy(self):
-    #     analyzer = CittaAnalyzer(self.df)
-    #     analyzer.analyze_prediction_accuracy()
+    def analyze_citta_prediction_accuracy(self):
+        analyzer = CittaAnalyzer(self.df)
+        analyzer.analyze_prediction_accuracy()
 
-    # def analyze_wmin_citta_similarity(self):
-    #     analyzer = WminCittaSimilarityAnalyzer(self.df)
-    #     analyzer.analyze()
+    def analyze_wmin_citta_similarity(self):
+        analyzer = WminCittaSimilarityAnalyzer(self.df)
+        analyzer.analyze()

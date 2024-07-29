@@ -10,7 +10,7 @@ class AssignmentAnalyzer:
             "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"]
         self.sorting_criteria = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending",
                                  "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
-        self.taskset_parameters = ["interference_factor", "probability_factor",
+        self.taskset_parameters = ["interference_factor",
                                    "max_utilization", "task_core_ratio"]
         self.current_path = current_path
         self.plots_dir = self.current_path / "plots" / "assignment"
@@ -77,9 +77,8 @@ class AssignmentAnalyzer:
         plt.close()
 
     def plot_success_rate_by_taskset_parameter(self, parameter):
-        if parameter in ["interference_factor", "probability_factor"]:
-            # self.plot_success_rate_heatmap_interference(parameter)
-            pass
+        if parameter == "interference_factor":
+            self.plot_success_rate_heatmap_interference(parameter)
         else:
             self.plot_success_rate_lineplot(parameter)
 
@@ -94,10 +93,26 @@ class AssignmentAnalyzer:
         plt.savefig(self.plots_dir / f'success_rate_by_{parameter}.png')
         plt.close()
 
+    def plot_success_rate_heatmap_interference(self, parameter):
+        for assignment_method in self.assignment_methods:
+            df_subset = self.df[(self.df["assignment_method"] == assignment_method) & (
+                self.df[parameter].notna())]
+            if df_subset.empty:
+                continue
+            plt.figure(figsize=(12, 8))
+            sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_success_assignment"),
+                        annot=True, cmap="coolwarm", fmt=".2f")
+            plt.title(
+                f"Taux de succès de {assignment_method} en fonction de {parameter.replace('_', ' ').capitalize()} et de la probabilité d'interférence")
+            plt.xlabel(parameter.replace("_", " ").capitalize())
+            plt.ylabel("Probabilité d'interférence")
+            plt.savefig(
+                self.plots_dir / f'{assignment_method}_success_rate_by_{parameter}_and_probability.png')
+            plt.close()
+
     def plot_computation_time_by_taskset_parameter(self, parameter):
-        if parameter in ["interference_factor", "probability_factor"]:
-            # self.plot_computation_time_heatmap_interference(parameter)
-            pass
+        if parameter == "interference_factor":
+            self.plot_computation_time_heatmap_interference(parameter)
         else:
             self.plot_computation_time_lineplot(parameter)
 
@@ -112,4 +127,19 @@ class AssignmentAnalyzer:
         plt.savefig(self.plots_dir / f'computation_time_by_{parameter}.png')
         plt.close()
 
-
+    def plot_computation_time_heatmap_interference(self, parameter):
+        for assignment_method in self.assignment_methods:
+            df_subset = self.df[(self.df["assignment_method"] == assignment_method) & (
+                self.df[parameter].notna())]
+            if df_subset.empty:
+                continue
+            plt.figure(figsize=(12, 8))
+            sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_computation_time_assignment"),
+                        annot=True, cmap="coolwarm", fmt=".2f")
+            plt.title(
+                f"Temps de calcul moyen de {assignment_method} en fonction de {parameter.replace('_', ' ').capitalize()} et de la probabilité d'interférence")
+            plt.xlabel(parameter.replace("_", " ").capitalize())
+            plt.ylabel("Probabilité d'interférence")
+            plt.savefig(
+                self.plots_dir / f'{assignment_method}_computation_time_by_{parameter}_and_probability.png')
+            plt.close()

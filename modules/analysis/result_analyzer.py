@@ -5,7 +5,7 @@ from modules.analysis.analyzers.overutilization_analyzer import OverutilizationA
 from modules.analysis.analyzers.schedulability_analyzer import SchedulabilityAnalyzer
 from modules.analysis.analyzers.wmin_citta_similarity_analyzer import WminCittaSimilarityAnalyzer
 from modules.analysis.result_loader import ResultLoader
-from modules.analysis.analyzers.allocability_analyzer import AllocabilityAnalyzer
+from modules.analysis.analyzers.assignment_analyzer import AssignmentAnalyzer
 
 
 class ResultAnalyzer:
@@ -27,15 +27,15 @@ class ResultAnalyzer:
         ).merge(self.df_schedulings, on=["taskset_id", "assignment_id"], suffixes=("_assignment", "_scheduling"))
 
     def run_analysis(self):
-        # self.analyze_allocability()
+        self.analyze_assignment()
         # self.analyze_schedulability()
         # self.analyze_overutilization()
         # self.analyze_citta_acceptance_ratio()
         # self.analyze_citta_prediction_accuracy()
-        self.analyze_wmin_citta_similarity()
+        # self.analyze_wmin_citta_similarity()
 
-    def analyze_allocability(self):
-        analyzer = AllocabilityAnalyzer(self.df)
+    def analyze_assignment(self):
+        analyzer = AssignmentAnalyzer(self.df, self.current_path)
         analyzer.analyze()
 
     def analyze_schedulability(self):

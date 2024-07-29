@@ -111,6 +111,91 @@ Les algorithmes `CombinedScheduler` et `Rhma` utilisent le concept de busy perio
 - **`generate_busy_periods()`**:  Combine les fonctions précédentes pour générer un objet `BusyPeriod` à partir d'un objet `Scheduling`.
 - **`generate_scheduling_length()`**:  Calcule la durée totale des périodes occupées d'un ordonnancement. Cela permet de comparer les Busy Period et choisir l'algorithme qui permet d'obtenir la plus courte BP.
 
+
+## Analyse des résultats
+
+### 1. Analyse de l'assignation seule
+
+#### 1.1 Objectif :
+Evaluer les performances des algorithmes d'assignation (WorstFitAssigner, FirstFitAssigner, BestFitAssigner, CITTA, Wmin) en termes de taux de succès, de temps de calcul et d'impact des paramètres de génération des tasksets et des critères de tri.
+
+#### 1.2 Mesures de performance :
+
+- **Taux de succès :**  Pourcentage de tasksets pour lesquels l'algorithme trouve une assignation réussie.
+- **Temps de calcul :** Temps (en secondes) nécessaire à l'algorithme pour trouver une solution (calculé seulement pour les assignations réussies.)
+
+#### 1.3 Paramètres à analyser :
+
+- **Critères de tri :** WCET (croissant et décroissant), période (croissante et décroissante), utilisation (croissante et décroissante), marge d'éxecution (croissante et décroissante), ordre aléatoire (uniquement pour WorstFitAssigner, FirstFitAssigner, BestFitAssigner et CITTA).
+- **Paramètres de génération des tasksets :**
+    - Facteur d'interférence (`IF`)
+    - Probabilité d'interférence (`P`)
+    - Utilisation du système (`Utot`)
+    - Ratio tâches/cœurs (`n/M`)
+
+#### 1.4 Graphiques :
+
+1.  **Taux de succès global :** Diagramme en barres pour comparer les taux de succès de tous les algorithmes.
+2.  **Temps de calcul global :**  Boxplot pour comparer les distributions des temps de calcul de tous les algorithmes.
+
+**Pour chaque algorithme d'assignation (WorstFitAssigner, FirstFitAssigner, BestFitAssigner, CITTA) :**
+
+3.  **Taux de succès en fonction du critère de tri :** Diagramme en barres groupées pour comparer les taux de succès pour chaque critère de tri.
+4.  **Temps de calcul en fonction du critère de tri :** Boxplots groupées pour comparer les distributions des temps de calcul pour chaque critère de tri.
+
+**Pour chaque paramètre de génération des tasksets :**
+
+5.  **Taux de succès en fonction du paramètre :**
+    - Graphique linéaire (pour `Utot`, `n/M`) avec une courbe pour chaque algorithme d'assignation.
+    - Heatmaps multiples (une pour chaque algorithme) pour `IF` et `P`.
+6.  **Temps de calcul moyen en fonction du paramètre :**
+    - Graphique linéaire (pour `Utot`, `n/M`) avec une courbe pour chaque algorithme d'assignation.
+    - Heatmaps multiples (une pour chaque algorithme) pour `IF` et `P`.
+
+### 2. Analyse du scheduling seul
+
+#### 2.1 Objectif :
+Evaluer les performances des algorithmes de scheduling (EarliestDeadlineFirst, DeadlineMonotonic, variantes, Combined Scheduler, RHMA) en termes de taux de succès, de temps de calcul, d'augmentation d'utilisation et d'impact du paramètre `non_preemptive_time_variant_2` (pour EarliestDeadlineFirstVariant2 et DeadlineMonotonicVariant2).
+
+#### 2.2 Mesures de performance :
+
+- **Taux de succès :** Pourcentage de tasksets jugés "schedulables" par l'algorithme.
+- **Temps de calcul :**  Temps (en secondes) nécessaire à l'algorithme pour générer le planning.
+- **Augmentation d'utilisation :** Différence (en pourcentage) entre l'utilisation réelle du système (en tenant compte de l'interférence) et l'utilisation théorique.
+
+#### 2.3 Paramètres à analyser :
+
+- **Paramètre `non_preemptive_time_variant_2`:** `wcet_of_tasks`, `system_utilization`, `number_of_tasks` (uniquement pour EarliestDeadlineFirstVariant2, DeadlineMonotonicVariant2, Combined Scheduler et RHMA).
+- **Paramètres de génération des tasksets :**
+    - Facteur d'interférence (`IF`)
+    - Probabilité d'interférence (`P`)
+    - Utilisation du système (`Utot`)
+    - Ratio tâches/cœurs (`n/M`)
+
+#### 2.4 Graphiques :
+
+1.  **Taux de succès global :** Diagramme en barres pour comparer les taux de succès de tous les algorithmes.
+2.  **Temps de calcul global :** Boxplot pour comparer les distributions des temps de calcul de tous les algorithmes.
+3.  **Augmentation d'utilisation globale :** Boxplot pour comparer les distributions des augmentations d'utilisation de tous les algorithmes.
+
+**Pour EarliestDeadlineFirstVariant2, DeadlineMonotonicVariant2, Combined Scheduler et RHMA:**
+
+4.  **Taux de succès en fonction de `non_preemptive_time_variant_2`:** Diagramme en barres groupées (un groupe pour chaque algorithme) pour comparer les taux de succès pour chaque valeur du paramètre.
+5.  **Temps de calcul moyen en fonction de `non_preemptive_time_variant_2`:** Boîtes à moustaches groupées pour comparer les temps de calcul moyens pour chaque valeur du paramètre.
+6.  **Augmentation d'utilisation moyenne en fonction de `non_preemptive_time_variant_2`:** Boîtes à moustaches groupées pour comparer les augmentations d'utilisation moyennes pour chaque valeur du paramètre.
+
+**Pour chaque paramètre de génération des tasksets:**
+
+7.  **Taux de succès en fonction
+
+ du paramètre :**
+    - Graphique linéaire (pour `Utot`, `n/M`) avec une courbe pour chaque algorithme de scheduling.
+    - Heatmaps multiples (une pour chaque algorithme) pour `IF` et `P`.
+8.  **Temps de calcul moyen en fonction du paramètre :**
+    - Graphique linéaire (pour `Utot`, `n/M`) avec une courbe pour chaque algorithme de scheduling.
+    - Heatmaps multiples (une pour chaque algorithme) pour `IF` et `P`.
+9.  **Augmentation d'utilisation en fonction du paramètre :** Boxplots groupées pour chaque valeur du paramètre, avec un groupe pour chaque algorithme de scheduling.
+
 ## Références
 
 - [1] Emberson, P., Stafford, R., & Davis, R. I. (2010). Techniques for the synthesis of multiprocessor tasksets. 
@@ -118,4 +203,3 @@ Les algorithmes `CombinedScheduler` et `Rhma` utilisent le concept de busy perio
 - [2] Goossens, J., & Macq, C. (2001). Limitation of the hyper-period in real-time periodic task set generation. In Proceedings of the 9th International Conference on Real-Time Systems (pp. 133–148). Teknea.
 
 - [3] Aceituno, J. M., Guasque Ortega, A., Balbastre Betoret, P., Simó Ten, J., & Crespo Lorente, A. (2022). Planificador combinado: una estrategia para mejorar el rendimiento de los sistemas de tiempo real crítico. In XLIII Jornadas de Automática: libro de actas: 7, 8 y 9 de septiembre de 2022, Logroño (La Rioja) (pp. 870–876). Servizo de Publicacións da UDC. doi:10.17979/spudc.9788497498418.0870
-

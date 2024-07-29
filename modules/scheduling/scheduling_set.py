@@ -56,13 +56,16 @@ class SchedulingSet:
         return sum(scheduling.success for scheduling in self.scheduling_list) / len(self.scheduling_list)
 
     def calculate_mean_computation_time(self):
-        return sum(scheduling.computation_time for scheduling in self.scheduling_list) / len(self.scheduling_list)
+        return sum(scheduling.computation_time for scheduling in self.scheduling_list if scheduling.success) / len(self.scheduling_list)
 
     def calculate_mean_actual_utilization(self):
-        return sum(scheduling.actual_utilization for scheduling in self.scheduling_list) / len(self.scheduling_list)
+        return sum(scheduling.actual_utilization for scheduling in self.scheduling_list if scheduling.success) / len(self.scheduling_list)
 
     def calculate_mean_theoritical_utilization(self):
-        return sum(scheduling.theoritical_utilization for scheduling in self.scheduling_list) / len(self.scheduling_list)
+        return sum(scheduling.theoritical_utilization for scheduling in self.scheduling_list if scheduling.success) / len(self.scheduling_list)
 
     def calculate_mean_overutilization(self):
-        return 1 - (self.mean_theoritical_utilization / self.mean_actual_utilization)
+        if self.mean_actual_utilization == 0:
+            return 0
+        else:
+            return 1 - (self.mean_theoritical_utilization / self.mean_actual_utilization)

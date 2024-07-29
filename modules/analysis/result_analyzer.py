@@ -27,6 +27,9 @@ class ResultAnalyzer:
             self.df_assignments, on=["taskset_id"], suffixes=("_taskset", "_assignment")
         ).merge(self.df_schedulings, on=["taskset_id", "assignment_id"], suffixes=("_assignment", "_scheduling"))
 
+        self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \
+            self.df["number_of_cores"]  # Calcul du ratio tâches/cœurs
+
     def run_analysis(self):
         # self.analyze_assignment()
         self.analyze_scheduling()

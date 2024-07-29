@@ -17,8 +17,6 @@ class AssignmentAnalyzer:
         os.makedirs(self.plots_dir, exist_ok=True)
 
     def analyze(self):
-        self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \
-            self.df["number_of_cores"]  # Calcul du ratio tâches/cœurs
         self.plot_global_success_rate()
         self.plot_global_computation_time()
 

@@ -1,5 +1,4 @@
 import os
-import time
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -12,12 +11,14 @@ class AssignmentAnalyzer:
         self.sorting_criteria = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending",
                                  "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
         self.taskset_parameters = ["interference_factor", "probability_factor",
-                                   "max_utilization", "tasks_per_taskset", "number_of_cores"]
+                                   "max_utilization", "task_core_ratio"]
         self.current_path = current_path
         self.plots_dir = self.current_path / "plots" / "assignment"
         os.makedirs(self.plots_dir, exist_ok=True)
 
     def analyze(self):
+        self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \
+            self.df["number_of_cores"]  # Calcul du ratio tâches/cœurs
         self.plot_global_success_rate()
         self.plot_global_computation_time()
 
@@ -25,6 +26,10 @@ class AssignmentAnalyzer:
         df_subset = self.df[self.df["assignment_method"] != "Wmin"]
         self.plot_success_rate_by_sorting_criteria(df_subset)
         self.plot_computation_time_by_sorting_criteria(df_subset)
+
+        for parameter in self.taskset_parameters:
+            self.plot_success_rate_by_taskset_parameter(parameter)
+            self.plot_computation_time_by_taskset_parameter(parameter)
 
     def plot_global_success_rate(self):
         plt.figure(figsize=(10, 6))
@@ -70,3 +75,41 @@ class AssignmentAnalyzer:
         plt.savefig(self.plots_dir /
                     'computation_time_by_sorting_criteria.png')
         plt.close()
+
+    def plot_success_rate_by_taskset_parameter(self, parameter):
+        if parameter in ["interference_factor", "probability_factor"]:
+            # self.plot_success_rate_heatmap_interference(parameter)
+            pass
+        else:
+            self.plot_success_rate_lineplot(parameter)
+
+    def plot_success_rate_lineplot(self, parameter):
+        plt.figure(figsize=(10, 6))
+        sns.lineplot(x=parameter, y="mean_success_assignment",
+                     hue="assignment_method", data=self.df, marker="o")
+        plt.title(
+            f"Taux de succès en fonction de {parameter.replace('_', ' ').capitalize()}")
+        plt.xlabel(parameter.replace("_", " ").capitalize())
+        plt.ylabel("Taux de succès")
+        plt.savefig(self.plots_dir / f'success_rate_by_{parameter}.png')
+        plt.close()
+
+    def plot_computation_time_by_taskset_parameter(self, parameter):
+        if parameter in ["interference_factor", "probability_factor"]:
+            # self.plot_computation_time_heatmap_interference(parameter)
+            pass
+        else:
+            self.plot_computation_time_lineplot(parameter)
+
+    def plot_computation_time_lineplot(self, parameter):
+        plt.figure(figsize=(10, 6))
+        sns.lineplot(x=parameter, y="mean_computation_time_assignment",
+                     hue="assignment_method", data=self.df, marker="o")
+        plt.title(
+            f"Temps de calcul moyen en fonction de {parameter.replace('_', ' ').capitalize()}")
+        plt.xlabel(parameter.replace("_", " ").capitalize())
+        plt.ylabel("Temps de calcul moyen (s)")
+        plt.savefig(self.plots_dir / f'computation_time_by_{parameter}.png')
+        plt.close()
+
+

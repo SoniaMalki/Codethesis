@@ -3,6 +3,7 @@ import pandas as pd
 from modules.analysis.analyzers.citta_analyzer import CittaAnalyzer
 from modules.analysis.analyzers.overutilization_analyzer import OverutilizationAnalyzer
 from modules.analysis.analyzers.schedulability_analyzer import SchedulabilityAnalyzer
+from modules.analysis.analyzers.scheduling_analyzer import SchedulingAnalyzer
 from modules.analysis.analyzers.wmin_citta_similarity_analyzer import WminCittaSimilarityAnalyzer
 from modules.analysis.result_loader import ResultLoader
 from modules.analysis.analyzers.assignment_analyzer import AssignmentAnalyzer
@@ -27,7 +28,8 @@ class ResultAnalyzer:
         ).merge(self.df_schedulings, on=["taskset_id", "assignment_id"], suffixes=("_assignment", "_scheduling"))
 
     def run_analysis(self):
-        self.analyze_assignment()
+        # self.analyze_assignment()
+        self.analyze_scheduling()
         # self.analyze_schedulability()
         # self.analyze_overutilization()
         # self.analyze_citta_acceptance_ratio()
@@ -36,6 +38,10 @@ class ResultAnalyzer:
 
     def analyze_assignment(self):
         analyzer = AssignmentAnalyzer(self.df, self.current_path)
+        analyzer.analyze()
+
+    def analyze_scheduling(self):
+        analyzer = SchedulingAnalyzer(self.df, self.current_path)
         analyzer.analyze()
 
     def analyze_schedulability(self):

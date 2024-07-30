@@ -4,7 +4,7 @@ from pulp import *
 
 
 class Citta:
-    def __init__(self, taskset, number_of_cores, sorting_criterion, assignment_options):
+    def __init__(self, taskset, number_of_cores, sorting_criterion, assignment_options, solver_name="cbc"):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.period = self.taskset.period
@@ -17,6 +17,17 @@ class Citta:
 
         self.solving_time_limit_MILP = self.assignment_options.get(
             "solving_time_limit_MILP", None)
+
+        self.solver_name = solver_name
+        if self.solver_name == "gurobi":
+            self.solver = GUROBI_CMD(msg=0, options=[
+                ("OutputFlag", 0)
+            ])
+        elif self.solver_name == "cbc":
+            self.solver = PULP_CBC_CMD(msg=0)
+        else:
+            raise ValueError(
+                f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi' ou 'cbc'.")
 
     def sort_task(self):
         # Trie les tâches selon certains critères
@@ -163,13 +174,14 @@ class Citta:
         self.createLpConstraintsForCacheInterference(
             prob, task_index, execution_window, core_index, task_in_core, task_to_assign, N_i_k, max_N_minus_2)
 
-        options = [
-            ("OutputFlag", 0)
-        ]
         if self.solving_time_limit_MILP is not None:
-            options.append(("Timelimit", self.solving_time_limit_MILP))
-
-        prob.solve(GUROBI_CMD(msg=0, options=options))
+            if self.solver_name == "gurobi":
+                self.solver.options.append(
+                    ("TimeLimit", self.solving_time_limit_MILP))
+            elif self.solver_name == "cbc":
+                self.solver.options.extend(
+                    ["sec", str(self.solving_time_limit_MILP)])
+        prob.solve(self.solver)
         solution = pulp.value(prob.objective)
 
         # Check if the time limit was hit

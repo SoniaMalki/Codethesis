@@ -4,7 +4,7 @@ from pulp import *
 
 
 class Citta:
-    def __init__(self, taskset, number_of_cores, sorting_criterion, assignment_options, solver_name="cbc"):
+    def __init__(self, taskset, number_of_cores, sorting_criterion, assignment_options):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.period = self.taskset.period
@@ -18,7 +18,7 @@ class Citta:
         self.solving_time_limit_MILP = self.assignment_options.get(
             "solving_time_limit_MILP", None)
 
-        self.solver_name = solver_name
+        self.solver_name = self.assignment_options.get("solver_name", "cbc")
         if self.solver_name == "gurobi":
             self.solver = GUROBI_CMD(msg=0, options=[
                 ("OutputFlag", 0)

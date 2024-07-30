@@ -3,7 +3,7 @@ import time
 
 
 class Wmin:
-    def __init__(self, taskset, number_of_cores, assignment_options, solver_name="cbc"):
+    def __init__(self, taskset, number_of_cores, assignment_options):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.utilization = self.taskset.utilization
@@ -12,7 +12,7 @@ class Wmin:
         self.solving_time_limit_MILP = assignment_options.get(
             "solving_time_limit_MILP", None)
         self.assignment_options = assignment_options
-        self.solver_name = solver_name
+        self.solver_name = self.assignment_options.get("solver_name", "cbc")
         if self.solver_name == "gurobi":
             self.solver = GUROBI_CMD(msg=0, options=[
                 ("OutputFlag", 0)

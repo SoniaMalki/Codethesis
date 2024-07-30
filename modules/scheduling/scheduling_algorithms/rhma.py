@@ -8,7 +8,7 @@ from modules.utils.busy_period import BusyPeriod
 
 
 class Rhma:
-    def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=0, end_time=None, solver_name="cbc"):
+    def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=0, end_time=None):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
         self.assignment = assignment
@@ -46,12 +46,12 @@ class Rhma:
         # output_path = f"{Path(__file__).parent.parent.parent.parent}/other_files/output_parameters.txt"
         # self.save_parameters_to_file(file_path = output_path)
 
-        self.solver_name = solver_name
+        self.solver_name = self.scheduling_options.get("solver_name", "cbc")
         if self.solver_name == "gurobi":
             self.solver = GUROBI_CMD(msg=0, options=[
                 ("OutputFlag", 0),
-                ("Seed", self.seed) if self.test_mode else None,
-            ])
+                ("Seed", self.seed)
+            ] if self.test_mode else [("OutputFlag", 0)])
         elif self.solver_name == "cbc":
             self.solver = PULP_CBC_CMD(msg=0)
         else:
@@ -323,10 +323,8 @@ class Rhma:
 
             if self.solving_time_limit_MILP is not None:
                 if self.solver_name == "gurobi":
-                    self.solver = GUROBI_CMD(msg=0, options=[
-                        ("OutputFlag", 0),
-                        ("Seed", self.seed)
-                    ] if self.test_mode else [("OutputFlag", 0)])
+                    self.solver.options.append(
+                        ("TimeLimit", self.solving_time_limit_MILP))
                 elif self.solver_name == "cbc":
                     self.solver.options.extend(
                         ["sec", str(self.solving_time_limit_MILP)])

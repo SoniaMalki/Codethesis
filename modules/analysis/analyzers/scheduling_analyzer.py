@@ -22,21 +22,21 @@ class SchedulingAnalyzer:
         )
 
     def analyze(self):
-        # self.plot_global_success_rate()
-        # self.plot_global_computation_time()
-        # self.plot_global_overutilization()
+        self.plot_global_success_rate()
+        self.plot_global_computation_time()
+        self.plot_global_overutilization()
 
-        # # Garder que algos qui utilisent non_preemption_time
-        # df_subset = self.df[self.df["scheduling_algorithm"].isin(
-        #     ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"])]
-        # self.plot_success_rate_by_non_preemptive_option(df_subset)
-        # self.plot_computation_time_by_non_preemptive_option(df_subset)
-        # self.plot_overutilization_by_non_preemptive_option(df_subset)
+        # Garder que algos qui utilisent non_preemption_time
+        df_subset = self.df[self.df["scheduling_algorithm"].isin(
+            ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"])]
+        self.plot_success_rate_by_non_preemptive_option(df_subset)
+        self.plot_computation_time_by_non_preemptive_option(df_subset)
+        self.plot_overutilization_by_non_preemptive_option(df_subset)
 
         for parameter in self.taskset_parameters:
             self.plot_success_rate_by_taskset_parameter(parameter)
             self.plot_computation_time_by_taskset_parameter(parameter)
-            # self.plot_overutilization_by_taskset_parameter(parameter)
+            self.plot_overutilization_by_taskset_parameter(parameter)
 
     def plot_global_success_rate(self):
         plt.figure(figsize=(10, 6))
@@ -179,4 +179,39 @@ class SchedulingAnalyzer:
             plt.ylabel("Probabilité d'interférence")
             plt.savefig(
                 self.plots_dir / f'{scheduling_algorithm}_computation_time_by_{parameter}_and_probability.png')
+            plt.close()
+
+    def plot_overutilization_by_taskset_parameter(self, parameter):
+        if parameter == "interference_factor":
+            self.plot_overutilization_heatmap_interference(parameter)
+        else:
+            self.plot_overutilization_lineplot(parameter)
+
+    def plot_overutilization_lineplot(self, parameter):
+        plt.figure(figsize=(10, 6))
+        sns.lineplot(x=parameter, y="mean_overutilization", hue="scheduling_algorithm",
+                     data=self.df, marker="o")
+        plt.title(
+            f"Augmentation d'utilisation moyenne en fonction de {parameter.replace('_', ' ').capitalize()}")
+        plt.xlabel(parameter.replace("_", " ").capitalize())
+        plt.ylabel("Augmentation d'utilisation (%)")
+        plt.savefig(self.plots_dir /
+                    f'overutilization_by_{parameter}.png')
+        plt.close()
+
+    def plot_overutilization_heatmap_interference(self, parameter):
+        for scheduling_algorithm in self.scheduling_algorithms:
+            df_subset = self.df[(self.df["scheduling_algorithm"] == scheduling_algorithm) & (
+                self.df[parameter].notna())]
+            if df_subset.empty:
+                continue
+            plt.figure(figsize=(12, 8))
+            sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor",
+                        values="mean_overutilization"), annot=True, cmap="coolwarm", fmt=".2f")
+            plt.title(
+                f"Augmentation d'utilisation moyenne de {scheduling_algorithm} en fonction de {parameter.replace('_', ' ').capitalize()} et de la probabilité d'interférence")
+            plt.xlabel(parameter.replace("_", " ").capitalize())
+            plt.ylabel("Probabilité d'interférence")
+            plt.savefig(
+                self.plots_dir / f'{scheduling_algorithm}_overutilization_by_{parameter}_and_probability.png')
             plt.close()

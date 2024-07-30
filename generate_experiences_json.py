@@ -6,12 +6,12 @@ def generate_tasksets():
     tasksets = {}
 
     taskset_repetitions = [10]
-    tasks_per_taskset = [2]
-    interference_factors = [0]
-    probability_factors = [0]
-    max_utilization_factors = [0.2]
+    tasks_per_taskset = [10]
+    interference_factors = [0.2]
+    probability_factors = [0.4]
+    max_utilization_factors = [0.3]
     deadline_options = ["eq_period"]
-    max_hyperperiods = [1000]
+    max_hyperperiods = [10000]
     max_primes = [7]
     gen_limit_exponents = [3]
     number_of_cores_list = [8]
@@ -57,7 +57,8 @@ def generate_assignments(tasksets):
 
     assignment_methods = ["Citta", "Wmin",
                           "WorstFitAssigner", "FirstFitAssigner"]
-    sorting_criteria = ["wcet_ascending"]
+    sorting_criteria = ["wcet_ascending",
+                        "random_order", "utilization_descending"]
     solving_time_limit_milp_assignment = [300]
 
     assignment_index = 1
@@ -99,9 +100,10 @@ def generate_assignments(tasksets):
 def generate_schedulings(assignments):
     schedulings = {}
 
-    scheduling_algorithms = ["EarliestDeadlineFirst"]
-    non_preemption_time_variant2_options = ["number_of_tasks"]
-    solving_time_limit_milp_scheduling = [1]
+    scheduling_algorithms = ["EarliestDeadlineFirst",
+                             "EarliestDeadlineFirstVariant1", "Rhma", "CombinedScheduler"]
+    non_preemption_time_variant2_options = ["number_of_tasks", "wcet_of_tasks"]
+    solving_time_limit_milp_scheduling = [300]
 
     scheduling_index = 1
     for assignment_key, assignment_data in assignments.items():

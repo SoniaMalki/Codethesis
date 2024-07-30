@@ -11,15 +11,19 @@ def generate_tasksets():
     probability_factors = [0.4]
     max_utilization_factors = [0.3]
     deadline_options = ["eq_period"]
-    max_hyperperiods = [10000]
-    max_primes = [7]
-    gen_limit_exponents = [3]
+    prime_exponent_hyperperiod_combinations = [
+        (10000, 7, 3),
+        (100000, 11, 4),
+        (1000000, 13, 5),
+        (10000000, 17, 6),
+        (100000000, 19, 7)
+    ]
     number_of_cores_list = [8]
 
     taskset_index = 1
-    for repetition, tasks, interference, probability, util_factor, deadline, hyperperiod, prime, exponent in itertools.product(
+    for repetition, tasks, interference, probability, util_factor, deadline, (hyperperiod, prime, exponent) in itertools.product(
         taskset_repetitions, tasks_per_taskset, interference_factors, probability_factors, max_utilization_factors,
-        deadline_options, max_hyperperiods, max_primes, gen_limit_exponents
+        deadline_options, prime_exponent_hyperperiod_combinations
     ):
         for cores in number_of_cores_list:
             taskset_id = f"taskset_generate_{taskset_index}_c{cores}"
@@ -85,7 +89,8 @@ def generate_assignments(tasksets):
                         "assignment_method": method,
                         "number_of_cores": cores,
                         "assignment_options": {
-                            "solving_time_limit_MILP": solving_time
+                            "solving_time_limit_MILP": solving_time,
+                            "solver_name": "cbc"
                         }
                     }
                 },
@@ -137,7 +142,8 @@ def generate_schedulings(assignments):
                         "scheduling_algorithm": algorithm,
                         "scheduling_options": {
                             "non_preemption_time_variant2": non_preemption,
-                            "solving_time_limit_MILP": solving_time
+                            "solving_time_limit_MILP": solving_time,
+                            "solver_name": "cbc"
                         }
                     }
                 }

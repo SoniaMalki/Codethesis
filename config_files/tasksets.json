@@ -23,5 +23,105 @@
         "scheduling": {
             "action": "none"
         }
+    },
+    "taskset_generate_2_c8": {
+        "taskset": {
+            "action": "generate",
+            "taskset_id": "taskset_generate_2_c8",
+            "parameters": {
+                "taskset_repetition": 10,
+                "tasks_per_taskset": 10,
+                "interference_factor": 0.2,
+                "probability_factor": 0.4,
+                "max_utilization": 2.4,
+                "taskset_options": {
+                    "deadline_option": "eq_period",
+                    "max_hyperperiod": 100000,
+                    "max_prime": 11,
+                    "gen_limit_exponent": 4
+                }
+            }
+        },
+        "assignment": {
+            "action": "none"
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "taskset_generate_3_c8": {
+        "taskset": {
+            "action": "generate",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "taskset_repetition": 10,
+                "tasks_per_taskset": 10,
+                "interference_factor": 0.2,
+                "probability_factor": 0.4,
+                "max_utilization": 2.4,
+                "taskset_options": {
+                    "deadline_option": "eq_period",
+                    "max_hyperperiod": 1000000,
+                    "max_prime": 13,
+                    "gen_limit_exponent": 5
+                }
+            }
+        },
+        "assignment": {
+            "action": "none"
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "taskset_generate_4_c8": {
+        "taskset": {
+            "action": "generate",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "taskset_repetition": 10,
+                "tasks_per_taskset": 10,
+                "interference_factor": 0.2,
+                "probability_factor": 0.4,
+                "max_utilization": 2.4,
+                "taskset_options": {
+                    "deadline_option": "eq_period",
+                    "max_hyperperiod": 10000000,
+                    "max_prime": 17,
+                    "gen_limit_exponent": 6
+                }
+            }
+        },
+        "assignment": {
+            "action": "none"
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "taskset_generate_5_c8": {
+        "taskset": {
+            "action": "generate",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "taskset_repetition": 10,
+                "tasks_per_taskset": 10,
+                "interference_factor": 0.2,
+                "probability_factor": 0.4,
+                "max_utilization": 2.4,
+                "taskset_options": {
+                    "deadline_option": "eq_period",
+                    "max_hyperperiod": 100000000,
+                    "max_prime": 19,
+                    "gen_limit_exponent": 7
+                }
+            }
+        },
+        "assignment": {
+            "action": "none"
+        },
+        "scheduling": {
+            "action": "none"
+        }
     }
 }

@@ -3,7 +3,7 @@ import time
 
 
 class Wmin:
-    def __init__(self, taskset, number_of_cores, assignment_options):
+    def __init__(self, taskset, number_of_cores, assignment_options, solver_name="cbc"):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.utilization = self.taskset.utilization
@@ -12,6 +12,16 @@ class Wmin:
         self.solving_time_limit_MILP = assignment_options.get(
             "solving_time_limit_MILP", None)
         self.assignment_options = assignment_options
+        self.solver_name = solver_name
+        if self.solver_name == "gurobi":
+            self.solver = GUROBI_CMD(msg=0, options=[
+                ("OutputFlag", 0)
+            ])
+        elif self.solver_name == "cbc":
+            self.solver = PULP_CBC_CMD(msg=0)
+        else:
+            raise ValueError(
+                f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi' ou 'cbc'.")
 
     def createLpVariables(self):
         # Variables
@@ -88,11 +98,15 @@ class Wmin:
         prob += maxW
 
         # Solving the MILP problem
-        options = [("OutputFlag", 0)]
         if self.solving_time_limit_MILP is not None:
-            options.append(("TimeLimit", self.solving_time_limit_MILP))
+            if self.solver_name == "gurobi":
+                self.solver.options.append(
+                    ("TimeLimit", self.solving_time_limit_MILP))
+            elif self.solver_name == "cbc":
+                self.solver.options.extend(
+                    ["sec", str(self.solving_time_limit_MILP)])
 
-        prob.solve(GUROBI_CMD(msg=0, options=options))
+        prob.solve(self.solver)
 
         task_in_core = [[] for _ in range(self.number_of_cores)]
         # Checking if a solution is found

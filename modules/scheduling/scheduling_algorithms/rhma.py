@@ -8,7 +8,7 @@ from modules.utils.busy_period import BusyPeriod
 
 
 class Rhma:
-    def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=0, end_time=None):
+    def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=0, end_time=None, solver_name="cbc"):
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
         self.assignment = assignment
@@ -45,6 +45,18 @@ class Rhma:
         # Save parameters to file to analyse
         # output_path = f"{Path(__file__).parent.parent.parent.parent}/other_files/output_parameters.txt"
         # self.save_parameters_to_file(file_path = output_path)
+
+        self.solver_name = solver_name
+        if self.solver_name == "gurobi":
+            self.solver = GUROBI_CMD(msg=0, options=[
+                ("OutputFlag", 0),
+                ("Seed", self.seed) if self.test_mode else None,
+            ])
+        elif self.solver_name == "cbc":
+            self.solver = PULP_CBC_CMD(msg=0)
+        else:
+            raise ValueError(
+                f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi' ou 'cbc'.")
 
     def output_parameters_to_str(self):
         output_res = "---------------------\n Parameters \n---------------------\n"
@@ -309,19 +321,19 @@ class Rhma:
 
             prob += interference_term + response_time_term
 
-            options = [
-                ("OutputFlag", 0)
-            ]
-            if self.test_mode:
-                options.append(("Seed", self.seed))
-
-            # Solving the MILP problem
             if self.solving_time_limit_MILP is not None:
-                options.append(("Timelimit", self.solving_time_limit_MILP))
+                if self.solver_name == "gurobi":
+                    self.solver = GUROBI_CMD(msg=0, options=[
+                        ("OutputFlag", 0),
+                        ("Seed", self.seed)
+                    ] if self.test_mode else [("OutputFlag", 0)])
+                elif self.solver_name == "cbc":
+                    self.solver.options.extend(
+                        ["sec", str(self.solving_time_limit_MILP)])
 
             # print(f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
             # print(prob)
-            prob.solve(GUROBI_CMD(msg=0, options=options))
+            prob.solve(self.solver)
 
             # Checking if a solution is found
             if prob.status == LpStatusOptimal:

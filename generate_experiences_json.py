@@ -59,7 +59,7 @@ def generate_tasksets():
 def generate_assignments(tasksets):
     assignments = {}
 
-    assignment_methods = ["Citta"]
+    assignment_methods = ["Citta", "Wmin"]
     sorting_criteria = ["wcet_ascending",
                         "random_order", "utilization_descending"]
     solving_time_limit_milp_assignment = [300]

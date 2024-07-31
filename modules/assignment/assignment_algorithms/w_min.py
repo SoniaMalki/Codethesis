@@ -12,16 +12,17 @@ class Wmin:
         self.solving_time_limit_MILP = assignment_options.get(
             "solving_time_limit_MILP", None)
         self.assignment_options = assignment_options
-        self.solver_name = self.assignment_options.get("solver_name", "cbc")
+        self.solver_name = self.assignment_options.get("solver_name", "glpk")
+        
+        print(f"Wmin utilisant le solveur : {self.solver_name}")
+
         if self.solver_name == "gurobi":
-            self.solver = GUROBI_CMD(msg=0, options=[
-                ("OutputFlag", 0)
-            ])
-        elif self.solver_name == "cbc":
-            self.solver = PULP_CBC_CMD(msg=0)
+            self.solver = GUROBI_CMD(msg=0, options=[("OutputFlag", 0)])
+        elif self.solver_name == "glpk":
+            self.solver = GLPK_CMD(msg=0)
         else:
             raise ValueError(
-                f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi' ou 'cbc'.")
+                f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi' ou 'glpk'.")
 
     def createLpVariables(self):
         # Variables
@@ -102,9 +103,6 @@ class Wmin:
             if self.solver_name == "gurobi":
                 self.solver.options.append(
                     ("TimeLimit", self.solving_time_limit_MILP))
-            elif self.solver_name == "cbc":
-                self.solver.options.extend(
-                    ["sec", str(self.solving_time_limit_MILP)])
 
         prob.solve(self.solver)
 

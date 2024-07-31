@@ -80,7 +80,7 @@
     "assignment_generate_4_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
             "parameters": {
                 "none": "none"
             }
@@ -88,10 +88,10 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_4_c8",
-            "taskset_id": "taskset_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
             "parameters": {
                 "sorting_criterion": "wcet_ascending",
-                "assignment_method": "Citta",
+                "assignment_method": "Wmin",
                 "number_of_cores": 8,
                 "assignment_options": {
                     "solving_time_limit_MILP": 300,
@@ -106,7 +106,7 @@
     "assignment_generate_5_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
             "parameters": {
                 "none": "none"
             }
@@ -114,10 +114,10 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_5_c8",
-            "taskset_id": "taskset_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
             "parameters": {
                 "sorting_criterion": "random_order",
-                "assignment_method": "Citta",
+                "assignment_method": "Wmin",
                 "number_of_cores": 8,
                 "assignment_options": {
                     "solving_time_limit_MILP": 300,
@@ -132,7 +132,7 @@
     "assignment_generate_6_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
             "parameters": {
                 "none": "none"
             }
@@ -140,10 +140,10 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_6_c8",
-            "taskset_id": "taskset_generate_2_c8",
+            "taskset_id": "taskset_generate_1_c8",
             "parameters": {
                 "sorting_criterion": "utilization_descending",
-                "assignment_method": "Citta",
+                "assignment_method": "Wmin",
                 "number_of_cores": 8,
                 "assignment_options": {
                     "solving_time_limit_MILP": 300,
@@ -158,7 +158,7 @@
     "assignment_generate_7_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_3_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "none": "none"
             }
@@ -166,7 +166,7 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_7_c8",
-            "taskset_id": "taskset_generate_3_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "sorting_criterion": "wcet_ascending",
                 "assignment_method": "Citta",
@@ -184,7 +184,7 @@
     "assignment_generate_8_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_3_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "none": "none"
             }
@@ -192,7 +192,7 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_8_c8",
-            "taskset_id": "taskset_generate_3_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "sorting_criterion": "random_order",
                 "assignment_method": "Citta",
@@ -210,7 +210,7 @@
     "assignment_generate_9_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_3_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "none": "none"
             }
@@ -218,7 +218,7 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_9_c8",
-            "taskset_id": "taskset_generate_3_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "sorting_criterion": "utilization_descending",
                 "assignment_method": "Citta",
@@ -236,7 +236,7 @@
     "assignment_generate_10_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_4_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "none": "none"
             }
@@ -244,10 +244,10 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_10_c8",
-            "taskset_id": "taskset_generate_4_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "sorting_criterion": "wcet_ascending",
-                "assignment_method": "Citta",
+                "assignment_method": "Wmin",
                 "number_of_cores": 8,
                 "assignment_options": {
                     "solving_time_limit_MILP": 300,
@@ -262,7 +262,7 @@
     "assignment_generate_11_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_4_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "none": "none"
             }
@@ -270,10 +270,10 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_11_c8",
-            "taskset_id": "taskset_generate_4_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "sorting_criterion": "random_order",
-                "assignment_method": "Citta",
+                "assignment_method": "Wmin",
                 "number_of_cores": 8,
                 "assignment_options": {
                     "solving_time_limit_MILP": 300,
@@ -288,7 +288,7 @@
     "assignment_generate_12_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_4_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "none": "none"
             }
@@ -296,10 +296,10 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_12_c8",
-            "taskset_id": "taskset_generate_4_c8",
+            "taskset_id": "taskset_generate_2_c8",
             "parameters": {
                 "sorting_criterion": "utilization_descending",
-                "assignment_method": "Citta",
+                "assignment_method": "Wmin",
                 "number_of_cores": 8,
                 "assignment_options": {
                     "solving_time_limit_MILP": 300,
@@ -314,7 +314,7 @@
     "assignment_generate_13_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_5_c8",
+            "taskset_id": "taskset_generate_3_c8",
             "parameters": {
                 "none": "none"
             }
@@ -322,7 +322,7 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_13_c8",
-            "taskset_id": "taskset_generate_5_c8",
+            "taskset_id": "taskset_generate_3_c8",
             "parameters": {
                 "sorting_criterion": "wcet_ascending",
                 "assignment_method": "Citta",
@@ -340,7 +340,7 @@
     "assignment_generate_14_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_5_c8",
+            "taskset_id": "taskset_generate_3_c8",
             "parameters": {
                 "none": "none"
             }
@@ -348,7 +348,7 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_14_c8",
-            "taskset_id": "taskset_generate_5_c8",
+            "taskset_id": "taskset_generate_3_c8",
             "parameters": {
                 "sorting_criterion": "random_order",
                 "assignment_method": "Citta",
@@ -366,7 +366,7 @@
     "assignment_generate_15_c8": {
         "taskset": {
             "action": "open",
-            "taskset_id": "taskset_generate_5_c8",
+            "taskset_id": "taskset_generate_3_c8",
             "parameters": {
                 "none": "none"
             }
@@ -374,10 +374,400 @@
         "assignment": {
             "action": "generate",
             "assignment_id": "assignment_generate_15_c8",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "sorting_criterion": "utilization_descending",
+                "assignment_method": "Citta",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_16_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_16_c8",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "sorting_criterion": "wcet_ascending",
+                "assignment_method": "Wmin",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_17_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_17_c8",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "sorting_criterion": "random_order",
+                "assignment_method": "Wmin",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_18_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_18_c8",
+            "taskset_id": "taskset_generate_3_c8",
+            "parameters": {
+                "sorting_criterion": "utilization_descending",
+                "assignment_method": "Wmin",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_19_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_19_c8",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "sorting_criterion": "wcet_ascending",
+                "assignment_method": "Citta",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_20_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_20_c8",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "sorting_criterion": "random_order",
+                "assignment_method": "Citta",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_21_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_21_c8",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "sorting_criterion": "utilization_descending",
+                "assignment_method": "Citta",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_22_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_22_c8",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "sorting_criterion": "wcet_ascending",
+                "assignment_method": "Wmin",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_23_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_23_c8",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "sorting_criterion": "random_order",
+                "assignment_method": "Wmin",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_24_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_24_c8",
+            "taskset_id": "taskset_generate_4_c8",
+            "parameters": {
+                "sorting_criterion": "utilization_descending",
+                "assignment_method": "Wmin",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_25_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_25_c8",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "sorting_criterion": "wcet_ascending",
+                "assignment_method": "Citta",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_26_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_26_c8",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "sorting_criterion": "random_order",
+                "assignment_method": "Citta",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_27_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_27_c8",
             "taskset_id": "taskset_generate_5_c8",
             "parameters": {
                 "sorting_criterion": "utilization_descending",
                 "assignment_method": "Citta",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_28_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_28_c8",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "sorting_criterion": "wcet_ascending",
+                "assignment_method": "Wmin",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_29_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_29_c8",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "sorting_criterion": "random_order",
+                "assignment_method": "Wmin",
+                "number_of_cores": 8,
+                "assignment_options": {
+                    "solving_time_limit_MILP": 300,
+                    "solver_name": "glpk"
+                }
+            }
+        },
+        "scheduling": {
+            "action": "none"
+        }
+    },
+    "assignment_generate_30_c8": {
+        "taskset": {
+            "action": "open",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "none": "none"
+            }
+        },
+        "assignment": {
+            "action": "generate",
+            "assignment_id": "assignment_generate_30_c8",
+            "taskset_id": "taskset_generate_5_c8",
+            "parameters": {
+                "sorting_criterion": "utilization_descending",
+                "assignment_method": "Wmin",
                 "number_of_cores": 8,
                 "assignment_options": {
                     "solving_time_limit_MILP": 300,

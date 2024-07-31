@@ -66,22 +66,11 @@ def generate_slurm_files():
         for config_key in configurations.keys():
             slurm_file = slurm_dir / config_type / f"{config_key}.slurm"
 
-            dependency = None
-            if config_type == "assignment":
-                taskset_id = configurations[config_key]["taskset"]["taskset_id"]
-                dependency = f"afterok:{taskset_id}"
-            elif config_type == "scheduling":
-                assignment_id = configurations[config_key]["assignment"]["assignment_id"]
-                dependency = f"afterok:{assignment_id}"
-
             with open(slurm_file, "w") as f:
                 f.write(f"""#!/bin/bash
 #SBATCH --job-name={config_key}
 #SBATCH --output={output_base_dir / config_type / f"output_{config_key}_%j.txt"}
 """)
-
-                if dependency:
-                    f.write(f"#SBATCH --dependency={dependency}\n")
 
                 f.write(f"""#SBATCH --ntasks=4  # Ajustez si nécessaire
 #SBATCH --time=02:00:00  # Ajustez si nécessaire
@@ -100,6 +89,7 @@ export GRB_LICENSE_FILE=/home/ulb/parts/smalki/gurobi_keys/gurobi.lic
 # Exécuter main.py avec la clé d'expérience en argument
 python3 {Path(__file__).parent.absolute() / "main.py"} run_experience {config_key}
 """)
+
 
 def main(action="run_experience", config_type=None, experience_parameter_key=None):
     """

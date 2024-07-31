@@ -87,6 +87,13 @@ export GRB_LICENSE_FILE=/home/ulb/parts/smalki/gurobi_keys/gurobi.lic
 python3 {self.base_dir / "main.py"} run_experience {config_key}
 """)
 
+    def generate_wait_for_jobs_script(self, job_name, exclude_name):
+        return f"""# Attendre que tous les jobs soient terminés
+while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' | grep -v '{exclude_name}' | wc -l) -gt 0 ]; do
+  sleep 1
+done
+"""
+
     def generate_taskset_master_slurm(self):
         slurm_file = self.master_dir / "all_tasksets.slurm"
         with open(slurm_file, "w") as f:
@@ -101,9 +108,7 @@ for slurm_file in {self.slurm_dir / "taskset"}/*.slurm; do
   sbatch "$slurm_file"
 done
 
-while [ $(squeue -u $USER -h -t RUNNING,PENDING -n all_tasksets | wc -l) -gt 0 ]; do
-  sleep 1
-done
+{self.generate_wait_for_jobs_script("taskset", "all_tasksets")}
 """)
 
     def generate_assignment_master_slurm(self):
@@ -112,7 +117,6 @@ done
             f.write(f"""#!/bin/bash
 #SBATCH --job-name=all_assignments
 #SBATCH --output={self.output_dir / "assignment" / "output_all_assignments_%j.txt"}
-#SBATCH --dependency=afterok:all_tasksets
 #SBATCH --ntasks=1
 #SBATCH --time=04:00:00
 #SBATCH --mem=2G 
@@ -121,9 +125,7 @@ for slurm_file in {self.slurm_dir / "assignment"}/*.slurm; do
   sbatch "$slurm_file"
 done
 
-while [ $(squeue -u $USER -h -t RUNNING,PENDING -n all_assignments | wc -l) -gt 0 ]; do
-  sleep 1
-done
+{self.generate_wait_for_jobs_script("assignment", "all_assignments")}
 """)
 
     def generate_scheduling_master_slurm(self):
@@ -132,7 +134,6 @@ done
             f.write(f"""#!/bin/bash
 #SBATCH --job-name=all_schedulings
 #SBATCH --output={self.output_dir / "scheduling" / "output_all_schedulings_%j.txt"}
-#SBATCH --dependency=afterok:all_assignments
 #SBATCH --ntasks=1
 #SBATCH --time=04:00:00  
 #SBATCH --mem=2G  
@@ -141,9 +142,7 @@ for slurm_file in {self.slurm_dir / "scheduling"}/*.slurm; do
   sbatch "$slurm_file"
 done
 
-while [ $(squeue -u $USER -h -t RUNNING,PENDING -n all_schedulings | wc -l) -gt 0 ]; do
-  sleep 1
-done
+{self.generate_wait_for_jobs_script("scheduling", "all_schedulings")}
 """)
 
     def generate_master_slurm(self):
@@ -156,7 +155,7 @@ done
 #SBATCH --time=12:00:00  
 #SBATCH --mem=2G 
 
-sbatch {self.master_dir / "all_tasksets.slurm"}
-sbatch --dependency=afterok:all_tasksets {self.master_dir / "all_assignments.slurm"} 
-sbatch --dependency=afterok:all_assignments {self.master_dir / "all_schedulings.slurm"}
+taskset_id=$(sbatch {self.master_dir / "all_tasksets.slurm"} | awk '{{print $4}}')
+assignment_id=$(sbatch --dependency=afterok:$taskset_id {self.master_dir / "all_assignments.slurm"} | awk '{{print $4}}')
+sbatch --dependency=afterok:$assignment_id {self.master_dir / "all_schedulings.slurm"}
 """)

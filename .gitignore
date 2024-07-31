@@ -165,6 +165,6 @@ results/
 *.pkl
 plots/
 
-.json
-.slurm
-slurm/slurm_files/
+*.json
+*.slurm
+./slurm

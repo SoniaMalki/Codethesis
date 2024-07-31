@@ -46,17 +46,20 @@ class Rhma:
         # output_path = f"{Path(__file__).parent.parent.parent.parent}/other_files/output_parameters.txt"
         # self.save_parameters_to_file(file_path = output_path)
 
-        self.solver_name = self.scheduling_options.get("solver_name", "cbc")
+        self.solver_name = self.scheduling_options.get("solver_name", "glpk")
+
+        print(f"Rhma utilisant le solveur : {self.solver_name}")
+
         if self.solver_name == "gurobi":
             self.solver = GUROBI_CMD(msg=0, options=[
                 ("OutputFlag", 0),
                 ("Seed", self.seed)
             ] if self.test_mode else [("OutputFlag", 0)])
-        elif self.solver_name == "cbc":
-            self.solver = PULP_CBC_CMD(msg=0)
+        elif self.solver_name == "glpk":
+            self.solver = GLPK_CMD(msg=0)
         else:
             raise ValueError(
-                f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi' ou 'cbc'.")
+                f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi' ou 'glpk'.")
 
     def output_parameters_to_str(self):
         output_res = "---------------------\n Parameters \n---------------------\n"
@@ -325,9 +328,6 @@ class Rhma:
                 if self.solver_name == "gurobi":
                     self.solver.options.append(
                         ("TimeLimit", self.solving_time_limit_MILP))
-                elif self.solver_name == "cbc":
-                    self.solver.options.extend(
-                        ["sec", str(self.solving_time_limit_MILP)])
 
             # print(f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
             # print(prob)

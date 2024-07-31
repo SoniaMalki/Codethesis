@@ -14,6 +14,7 @@ EXCLUDE_ITEMS=(
     'README.md'
     'results'
     'plots'
+    'slurm'
 )
 
 EXCLUDES=()

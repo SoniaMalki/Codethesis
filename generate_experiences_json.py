@@ -59,8 +59,7 @@ def generate_tasksets():
 def generate_assignments(tasksets):
     assignments = {}
 
-    assignment_methods = ["Citta", "Wmin",
-                          "WorstFitAssigner", "FirstFitAssigner"]
+    assignment_methods = ["Citta"]
     sorting_criteria = ["wcet_ascending",
                         "random_order", "utilization_descending"]
     solving_time_limit_milp_assignment = [300]
@@ -90,7 +89,7 @@ def generate_assignments(tasksets):
                         "number_of_cores": cores,
                         "assignment_options": {
                             "solving_time_limit_MILP": solving_time,
-                            "solver_name": "cbc"
+                            "solver_name": "glpk"
                         }
                     }
                 },
@@ -143,7 +142,7 @@ def generate_schedulings(assignments):
                         "scheduling_options": {
                             "non_preemption_time_variant2": non_preemption,
                             "solving_time_limit_MILP": solving_time,
-                            "solver_name": "cbc"
+                            "solver_name": "glpk"
                         }
                     }
                 }

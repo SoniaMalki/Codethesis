@@ -12,6 +12,8 @@ EXCLUDE_ITEMS=(
     '.pytest_cache'
     '.gitignore'
     'README.md'
+    'results'
+    'plots'
 )
 
 EXCLUDES=()

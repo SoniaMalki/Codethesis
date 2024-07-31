@@ -5,18 +5,14 @@ import itertools
 def generate_tasksets():
     tasksets = {}
 
-    taskset_repetitions = [10]
+    taskset_repetitions = [1]
     tasks_per_taskset = [10]
     interference_factors = [0.2]
     probability_factors = [0.4]
     max_utilization_factors = [0.3]
     deadline_options = ["eq_period"]
     prime_exponent_hyperperiod_combinations = [
-        (10000, 7, 3),
-        (100000, 11, 4),
-        (1000000, 13, 5),
-        (10000000, 17, 6),
-        (100000000, 19, 7)
+        (10000, 7, 3)
     ]
     number_of_cores_list = [8]
 
@@ -60,8 +56,7 @@ def generate_assignments(tasksets):
     assignments = {}
 
     assignment_methods = ["Citta", "Wmin"]
-    sorting_criteria = ["wcet_ascending",
-                        "random_order", "utilization_descending"]
+    sorting_criteria = ["wcet_ascending"]
     solving_time_limit_milp_assignment = [300]
 
     assignment_index = 1

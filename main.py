@@ -6,6 +6,7 @@ import threading
 
 from modules.core.experience_loader import ExperienceLoader
 from modules.analysis.result_analyzer import ResultAnalyzer
+from modules.slurm.slurm_generator import SlurmGenerator
 
 
 def run_experience(experience_parameter_key):
@@ -50,45 +51,27 @@ def get_default_key(config_type):
 
 
 def generate_slurm_files():
-
     experience_loader = ExperienceLoader(Path(__file__).parent)
-    slurm_dir = Path(__file__).parent / "slurm" / "slurm_files"
-    output_base_dir = Path(__file__).parent / "slurm" / "output"
+    slurm_generator = SlurmGenerator(Path(__file__).parent)
 
     for config_type in ["taskset", "assignment", "scheduling"]:
         config_file_path = experience_loader.config_files.get(config_type)
         with open(Path(__file__).parent / config_file_path, 'r') as f:
             configurations = json.load(f)
 
-        (slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
-        (output_base_dir / config_type).mkdir(parents=True, exist_ok=True)
-
         for config_key in configurations.keys():
-            slurm_file = slurm_dir / config_type / f"{config_key}.slurm"
+            if config_type == "taskset":
+                slurm_generator.generate_taskset_slurm(config_key)
+            elif config_type == "assignment":
+                slurm_generator.generate_assignment_slurm(config_key)
+            elif config_type == "scheduling":
+                slurm_generator.generate_scheduling_slurm(config_key)
 
-            with open(slurm_file, "w") as f:
-                f.write(f"""#!/bin/bash
-#SBATCH --job-name={config_key}
-#SBATCH --output={output_base_dir / config_type / f"output_{config_key}_%j.txt"}
-""")
-
-                f.write(f"""#SBATCH --ntasks=4  # Ajustez si nécessaire
-#SBATCH --time=02:00:00  # Ajustez si nécessaire
-#SBATCH --mem=8G  # Ajustez si nécessaire
-
-# Charger les modules nécessaires
-module load releases/2023a
-module load Python/3.11.3-GCCcore-12.3.0
-module load GLPK/5.0-GCCcore-12.3.0
-module load tis/2018.01
-module load gurobi/gurobi1102
-
-# Configurer la licence Gurobi
-export GRB_LICENSE_FILE=/home/ulb/parts/smalki/gurobi_keys/gurobi.lic
-
-# Exécuter main.py avec la clé d'expérience en argument
-python3 {Path(__file__).parent.absolute() / "main.py"} run_experience {config_key}
-""")
+    # Générer les fichiers SLURM masters
+    slurm_generator.generate_taskset_master_slurm()
+    slurm_generator.generate_assignment_master_slurm()
+    slurm_generator.generate_scheduling_master_slurm()
+    slurm_generator.generate_master_slurm()
 
 
 def main(action="run_experience", config_type=None, experience_parameter_key=None):

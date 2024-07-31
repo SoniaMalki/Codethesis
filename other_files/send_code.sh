@@ -15,8 +15,8 @@ EXCLUDE_ITEMS=(
     'results'
     'plots'
     '*.slurm'
-    './slurm'
-    './config_files'
+    'slurm'
+    'config_files'
 )
 
 EXCLUDES=()

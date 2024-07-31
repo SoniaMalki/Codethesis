@@ -53,6 +53,7 @@ def generate_slurm_files():
 
     experience_loader = ExperienceLoader(Path(__file__).parent)
     slurm_dir = Path(__file__).parent / "slurm" / "slurm_files"
+    output_base_dir = Path(__file__).parent / "slurm" / "output"
 
     for config_type in ["taskset", "assignment", "scheduling"]:
         config_file_path = experience_loader.config_files.get(config_type)
@@ -60,6 +61,7 @@ def generate_slurm_files():
             configurations = json.load(f)
 
         (slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
+        (output_base_dir / config_type).mkdir(parents=True, exist_ok=True)
 
         for config_key in configurations.keys():
             slurm_file = slurm_dir / config_type / f"{config_key}.slurm"
@@ -75,7 +77,7 @@ def generate_slurm_files():
             with open(slurm_file, "w") as f:
                 f.write(f"""#!/bin/bash
 #SBATCH --job-name={config_key}
-#SBATCH --output=output/{config_type}/output_{config_key}_%j.txt
+#SBATCH --output={output_base_dir / config_type / f"output_{config_key}_%j.txt"}
 """)
 
                 if dependency:
@@ -96,9 +98,8 @@ module load gurobi/gurobi1102
 export GRB_LICENSE_FILE=/home/ulb/parts/smalki/gurobi_keys/gurobi.lic
 
 # Exécuter main.py avec la clé d'expérience en argument
-python3 /home/ulb/parts/smalki/Codethesis/main.py run_experience {config_key}
+python3 {Path(__file__).parent.absolute() / "main.py"} run_experience {config_key}
 """)
-
 
 def main(action="run_experience", config_type=None, experience_parameter_key=None):
     """

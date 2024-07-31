@@ -32,9 +32,6 @@ module load GLPK/5.0-GCCcore-12.3.0
 module load tis/2018.01
 module load gurobi/gurobi1102
 
-# Configurer la licence Gurobi
-export GRB_LICENSE_FILE=/home/ulb/parts/smalki/gurobi_keys/gurobi.lic
-
 # Exécuter main.py avec la clé d'expérience en argument
 python3 {self.base_dir / "main.py"} run_experience {config_key}
 """)
@@ -56,8 +53,6 @@ module load GLPK/5.0-GCCcore-12.3.0
 module load tis/2018.01
 module load gurobi/gurobi1102
 
-# Configurer la licence Gurobi
-export GRB_LICENSE_FILE=/home/ulb/parts/smalki/gurobi_keys/gurobi.lic
 
 # Exécuter main.py avec la clé d'expérience en argument
 python3 {self.base_dir / "main.py"} run_experience {config_key}
@@ -79,9 +74,6 @@ module load Python/3.11.3-GCCcore-12.3.0
 module load GLPK/5.0-GCCcore-12.3.0
 module load tis/2018.01
 module load gurobi/gurobi1102
-
-# Configurer la licence Gurobi
-export GRB_LICENSE_FILE=/home/ulb/parts/smalki/gurobi_keys/gurobi.lic
 
 # Exécuter main.py avec la clé d'expérience en argument
 python3 {self.base_dir / "main.py"} run_experience {config_key}

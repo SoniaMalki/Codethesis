@@ -167,3 +167,4 @@ plots/
 
 .json
 .slurm
+slurm/slurm_files/

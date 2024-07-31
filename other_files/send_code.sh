@@ -15,11 +15,17 @@ EXCLUDE_ITEMS=(
     'results'
     'plots'
     '*.slurm'
+    './slurm'
+    './config_files'
 )
 
 EXCLUDES=()
 for item in "${EXCLUDE_ITEMS[@]}"; do
-    EXCLUDES+=(--exclude="$item")
+    if [[ "$item" == "slurm" || "$item" == "config_files" ]]; then
+        EXCLUDES+=(--exclude=/"$item")
+    else
+        EXCLUDES+=(--exclude="$item")
+    fi
 done
 
 RSYNC_CMD="rsync -av ${EXCLUDES[@]} $SOURCE $DESTINATION"

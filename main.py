@@ -4,6 +4,7 @@ import sys
 import json
 import threading
 
+from modules.config.config_generator import ConfigGenerator
 from modules.core.experience_loader import ExperienceLoader
 from modules.analysis.result_analyzer import ResultAnalyzer
 from modules.slurm.slurm_generator import SlurmGenerator
@@ -98,7 +99,9 @@ def main(action="run_experience", config_type=None, experience_parameter_key=Non
         analyzer.run_analysis()
 
     elif action == "generate_configs":
-        subprocess.run(["python3", "./generate_experiences_json.py"])
+        generator = ConfigGenerator(Path(__file__).parent)
+        generator.generate_all_configs()
+
     elif action == "generate_slurm_files":
         generate_slurm_files()
     else:

@@ -11,7 +11,7 @@ class ConfigGenerator:
     def generate_tasksets(self):
         tasksets = {}
 
-        taskset_repetitions = [1]
+        taskset_repetitions = [10]
         tasks_per_taskset = [10]
         interference_factors = [0.2]
         probability_factors = [0.4]
@@ -60,8 +60,10 @@ class ConfigGenerator:
     def generate_assignments(self, tasksets):
         assignments = {}
 
-        assignment_methods = ["Citta", "Wmin"]
-        sorting_criteria = ["wcet_ascending"]
+        assignment_methods = [
+            "Citta", "Wmin", "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner"]
+        sorting_criteria = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending",
+                            "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
         solving_time_limit_milp_assignment = [300]
 
         assignment_index = 1
@@ -104,9 +106,9 @@ class ConfigGenerator:
         schedulings = {}
 
         scheduling_algorithms = ["EarliestDeadlineFirst",
-                                 "EarliestDeadlineFirstVariant1", "Rhma", "CombinedScheduler"]
+                                 "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "Rhma", "CombinedScheduler"]
         non_preemption_time_variant2_options = [
-            "number_of_tasks", "wcet_of_tasks"]
+            "number_of_tasks", "wcet_of_tasks", "system_utilization"]
         solving_time_limit_milp_scheduling = [300]
 
         scheduling_index = 1

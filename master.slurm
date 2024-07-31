@@ -1,28 +1,15 @@
 #!/bin/bash
 #SBATCH --job-name=master_job
-#SBATCH --output="$slurm_dir"/output/master_job_%j.txt
+#SBATCH --output=/home/sonia/Bureau/Codethesis/slurm/output/master_job_%j.txt
 #SBATCH --ntasks=1
-#SBATCH --time=04:00:00 
-#SBATCH --mem=2G
+#SBATCH --time=12:00:00  
+#SBATCH --mem=2G 
 
-slurm_dir=$1
+taskset_job_id=$(sbatch /home/sonia/Bureau/Codethesis/slurm/slurm_files/taskset/all_tasksets.slurm | awk '{print $4}')
+echo "Taskset job submitted with ID $taskset_job_id"
 
-for slurm_file in "$slurm_dir"/slurm_files/taskset/*.slurm; do
-  sbatch "$slurm_file"
-done
+assignment_job_id=$(sbatch --dependency=afterok:$taskset_job_id /home/sonia/Bureau/Codethesis/slurm/slurm_files/assignment/all_assignments.slurm | awk '{print $4}')
+echo "Assignment job submitted with ID $assignment_job_id"
 
-for slurm_file in "$slurm_dir"/slurm_files/taskset/*.slurm; do
-  sbatch "$slurm_file"
-done
-
-last_taskset_job_id=$(squeue -u $USER -h -o "%A" | tail -n 1)
-
-for slurm_file in "$slurm_dir"/slurm_files/assignment/*.slurm; do
-  sbatch --dependency=afterok:"$last_taskset_job_id" "$slurm_file"
-done
-
-last_assignment_job_id=$(squeue -u $USER -h -o "%A" | tail -n 1)
-
-for slurm_file in "$slurm_dir"/slurm_files/scheduling/*.slurm; do
-  sbatch --dependency=afterok:"$last_assignment_job_id" "$slurm_file"
-done
+scheduling_job_id=$(sbatch --dependency=afterok:$assignment_job_id /home/sonia/Bureau/Codethesis/slurm/slurm_files/scheduling/all_schedulings.slurm | awk '{print $4}')
+echo "Scheduling job submitted with ID $scheduling_job_id"

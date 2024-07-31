@@ -4,9 +4,11 @@ from pathlib import Path
 class SlurmGenerator:
     def __init__(self, base_dir, slurm_dir="slurm", output_dir="output"):
         self.base_dir = Path(base_dir)
+        self.master_dir = self.base_dir / slurm_dir / "master"
         self.slurm_dir = self.base_dir / slurm_dir / "slurm_files"
         self.output_dir = self.base_dir / slurm_dir / output_dir
 
+        self.master_dir.mkdir(parents=True, exist_ok=True)
         self.slurm_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         for config_type in ["taskset", "assignment", "scheduling"]:
@@ -86,7 +88,7 @@ python3 {self.base_dir / "main.py"} run_experience {config_key}
 """)
 
     def generate_taskset_master_slurm(self):
-        slurm_file = self.slurm_dir / "taskset" / "all_tasksets.slurm"
+        slurm_file = self.master_dir / "all_tasksets.slurm"
         with open(slurm_file, "w") as f:
             f.write(f"""#!/bin/bash
 #SBATCH --job-name=all_tasksets
@@ -95,16 +97,17 @@ python3 {self.base_dir / "main.py"} run_experience {config_key}
 #SBATCH --time=04:00:00
 #SBATCH --mem=2G
 
-slurm_dir=$1
-
-# Soumettre tous les jobs de taskset
-for slurm_file in "$slurm_dir"/slurm_files/taskset/*.slurm; do
+for slurm_file in {self.slurm_dir / "taskset"}/*.slurm; do
   sbatch "$slurm_file"
+done
+
+while [ $(squeue -u $USER -h -t RUNNING,PENDING -n all_tasksets | wc -l) -gt 0 ]; do
+  sleep 1
 done
 """)
 
     def generate_assignment_master_slurm(self):
-        slurm_file = self.slurm_dir / "assignment" / "all_assignments.slurm"
+        slurm_file = self.master_dir / "all_assignments.slurm"
         with open(slurm_file, "w") as f:
             f.write(f"""#!/bin/bash
 #SBATCH --job-name=all_assignments
@@ -114,15 +117,17 @@ done
 #SBATCH --time=04:00:00
 #SBATCH --mem=2G 
 
-slurm_dir=$1
-
-for slurm_file in "$slurm_dir"/slurm_files/assignment/*.slurm; do
+for slurm_file in {self.slurm_dir / "assignment"}/*.slurm; do
   sbatch "$slurm_file"
+done
+
+while [ $(squeue -u $USER -h -t RUNNING,PENDING -n all_assignments | wc -l) -gt 0 ]; do
+  sleep 1
 done
 """)
 
     def generate_scheduling_master_slurm(self):
-        slurm_file = self.slurm_dir / "scheduling" / "all_schedulings.slurm"
+        slurm_file = self.master_dir / "all_schedulings.slurm"
         with open(slurm_file, "w") as f:
             f.write(f"""#!/bin/bash
 #SBATCH --job-name=all_schedulings
@@ -132,34 +137,26 @@ done
 #SBATCH --time=04:00:00  
 #SBATCH --mem=2G  
 
-slurm_dir=$1
-
-for slurm_file in "$slurm_dir"/slurm_files/scheduling/*.slurm; do
+for slurm_file in {self.slurm_dir / "scheduling"}/*.slurm; do
   sbatch "$slurm_file"
+done
+
+while [ $(squeue -u $USER -h -t RUNNING,PENDING -n all_schedulings | wc -l) -gt 0 ]; do
+  sleep 1
 done
 """)
 
     def generate_master_slurm(self):
-        slurm_file = self.base_dir / "master.slurm"
+        slurm_file = self.master_dir / "master.slurm"
         with open(slurm_file, "w") as f:
             f.write(f"""#!/bin/bash
 #SBATCH --job-name=master_job
-#SBATCH --output=output/master_job_%j.txt
+#SBATCH --output={self.output_dir / f"master_job_%j.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time=12:00:00  
 #SBATCH --mem=2G 
 
-slurm_dir=$1
-
-# Soumettre taskset.slurm
-taskset_job_id=$(sbatch "$slurm_dir"/slurm_files/taskset/all_tasksets.slurm "$slurm_dir" | awk '{{print $4}}')
-echo "Taskset job submitted with ID $taskset_job_id"
-
-# Soumettre assignment.slurm avec dépendance sur taskset.slurm
-assignment_job_id=$(sbatch --dependency=afterok:$taskset_job_id "$slurm_dir"/slurm_files/assignment/all_assignments.slurm "$slurm_dir" | awk '{{print $4}}')
-echo "Assignment job submitted with ID $assignment_job_id"
-
-# Soumettre scheduling.slurm avec dépendance sur assignment.slurm
-scheduling_job_id=$(sbatch --dependency=afterok:$assignment_job_id "$slurm_dir"/slurm_files/scheduling/all_schedulings.slurm "$slurm_dir" | awk '{{print $4}}')
-echo "Scheduling job submitted with ID $scheduling_job_id"
+sbatch {self.master_dir / "all_tasksets.slurm"}
+sbatch --dependency=afterok:all_tasksets {self.master_dir / "all_assignments.slurm"} 
+sbatch --dependency=afterok:all_assignments {self.master_dir / "all_schedulings.slurm"}
 """)

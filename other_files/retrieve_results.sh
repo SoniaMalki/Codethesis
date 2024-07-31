@@ -7,6 +7,7 @@ DIRECTORIES=(
     'config_files'
     'plots'
     'results'
+    'slurm/output'
 )
 
 for dir in "${DIRECTORIES[@]}"; do

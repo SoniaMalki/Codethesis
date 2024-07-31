@@ -2,12 +2,15 @@
 
 script_dir=$(dirname "$0")
 slurm_dir="$script_dir/slurm"
+master_dir="$slurm_dir/master"
 
 rm -rf $slurm_dir
-mkdir $slurm_dir
+rm -rf "$script_dir/plots"
+rm -rf "$script_dir/results"
+rm -rf "$script_dir/output"
+rm "$master_dir/master.slurm"
 
-mkdir -p "$slurm_dir"/output/taskset "$slurm_dir"/output/assignment "$slurm_dir"/output/scheduling
-
+python3 "$script_dir"/main.py generate_configs
 python3 "$script_dir"/main.py generate_slurm_files
 
-sbatch "$script_dir"/master.slurm "$slurm_dir"
+sbatch "$master_dir"/master.slurm 

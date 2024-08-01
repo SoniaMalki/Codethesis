@@ -14,6 +14,9 @@ class ExperienceLoader:
             "experience": "config_files/experiences.json"  # Ajouter experiences.json
         }
 
+        for file_path in self.config_files.values():
+            (self.main_path / file_path).parent.mkdir(parents=True, exist_ok=True)
+
     def load(self, experience_parameter_key):
         """
         Loads an Experience object from the appropriate JSON configuration file based on the given key.

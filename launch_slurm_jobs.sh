@@ -1,12 +1,19 @@
 #!/bin/bash
 
+# Vérifier si un argument a été fourni
+if [ -z "$1" ]; then
+    echo "Erreur: Aucun nom de dossier fourni."
+    echo "Usage: $0 <nom_du_dossier>"
+    exit 1
+fi
+
 script_dir=$(dirname "$0")
 experience_key=$1
-master_dir="$script_dir/generation/$experience_key/slurm/master"
+experience_dir="$script_dir/generation/$experience_key"
+master_dir="$experience_dir/slurm/master"
 
-echo $script_dir
-echo $master_dir
-echo $experience_key
+
+[ -d "$experience_dir" ] && rm -rf "$experience_dir"
 
 python3 "$script_dir/main.py" $experience_key generate_configs || { echo "Échec de la génération des configurations"; exit 1; }
 python3 "$script_dir/main.py" $experience_key generate_slurm_files || { echo "Échec de la génération des fichiers Slurm"; exit 1; }

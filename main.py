@@ -1,5 +1,4 @@
 from pathlib import Path
-import subprocess
 import sys
 import json
 import threading
@@ -90,12 +89,17 @@ def main(experience_key, action, config_type=None):
     generation_path = Path(__file__).parent / "generation" / experience_key
     generation_path.mkdir(parents=True, exist_ok=True)
 
+    # Charger experience.json depuis la racine
     experience_json_path = Path(__file__).parent / "experience.json"
     with open(experience_json_path, 'r') as f:
         experience_data = json.load(f)
 
     if action == "run_experience":
-        run_experience(experience_key, generation_path)
+        if config_type is None:
+            print("Veuillez fournir un type de configuration (ex: taskset_generate_1_c4)")
+            return
+
+        run_experience(config_type, generation_path)
 
     elif action == "run_batch_experiences":
         if not config_type:
@@ -114,7 +118,8 @@ def main(experience_key, action, config_type=None):
         generator.generate_all_configs()
 
     elif action == "generate_slurm_files":
-        generate_slurm_files(main_path, generation_path, experience_key)
+        generate_slurm_files(
+            main_path=main_path, generation_path=generation_path, experience_key=experience_key)
     else:
         print(f"Action invalide: {action}")
 

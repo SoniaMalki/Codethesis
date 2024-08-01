@@ -63,11 +63,11 @@
       }
     },
     "slurm_parameters": {
-      "taskset_time": "01:00:00",
+      "taskset_time": "00:00:01",
       "taskset_mem": "4G",
-      "assignment_time": "03:00:00",
+      "assignment_time": "00:00:03",
       "assignment_mem": "16G",
-      "scheduling_time": "02:00:00",
+      "scheduling_time": "00:00:10",
       "scheduling_mem": "8G"
     }
   },

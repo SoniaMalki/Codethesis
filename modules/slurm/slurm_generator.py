@@ -1,7 +1,6 @@
 from pathlib import Path
 from datetime import time, timedelta
 import json
-
 from modules.core.experience_loader import ExperienceLoader
 
 
@@ -49,25 +48,27 @@ class SlurmGenerator:
             # Calculer le temps total du master en utilisant timedelta
             total_time = timedelta(
                 hours=job_time.hour, minutes=job_time.minute, seconds=job_time.second
-            ) * int(job_count)
+            ) * job_count
 
-            # Convertir timedelta en objet time
-            total_time_seconds = total_time.total_seconds()
-            total_time_obj = time(
-                hour=int(total_time_seconds // 3600),
-                minute=int((total_time_seconds % 3600) // 60),
-                second=int(total_time_seconds % 60),
-            )
+            # Formater le temps total en format SLURM (jours-heures:minutes:secondes)
+            total_time_slurm = f"{total_time.days}-{total_time.seconds // 3600:02d}:{(total_time.seconds % 3600) // 60:02d}:{total_time.seconds % 60:02d}"
 
-            # Stocker l'objet time du master
-            setattr(self, f"{config_type}_master_time", total_time_obj)
+            # Stocker la chaîne de temps formatée pour SLURM
+            setattr(self, f"{config_type}_master_time", total_time_slurm)
 
     def get_slurm_content(self, config_key, config_type):
+        # Convertir le temps du job en objet time
+        job_time = time.fromisoformat(
+            self.slurm_parameters.get(f"{config_type}_time", "02:00:00")
+        )
+
+        # Formater l'objet time en chaîne HH:MM:SS
+        job_time_slurm = job_time.strftime("%H:%M:%S")
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
 #SBATCH --output={self.output_dir / config_type / f"output_{config_key}_%j.txt"}
 #SBATCH --ntasks=1 
-#SBATCH --time={self.slurm_parameters.get(f"{config_type}_time", "02:00:00")}
+#SBATCH --time={job_time_slurm} 
 #SBATCH --mem={self.slurm_parameters.get(f"{config_type}_mem", "8G")} 
 
 # Charger les modules nécessaires
@@ -94,10 +95,8 @@ while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' |
 done
 """
 
-    def write_master_slurm(self, config_type, total_time_obj):
+    def write_master_slurm(self, config_type, total_time_slurm):
         """Write master SLURM file for a configuration type."""
-        total_time_slurm = total_time_obj.strftime(
-            "%H:%M:%S")  # Formater le temps ici
         slurm_file = self.master_dir / f"all_{config_type}s.slurm"
         with open(slurm_file, "w") as f:
             f.write(
@@ -105,7 +104,7 @@ done
 #SBATCH --job-name=all_{config_type}s
 #SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s_%j.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time={total_time_slurm} 
+#SBATCH --time={total_time_slurm}  # Utiliser le temps formaté pour SLURM
 #SBATCH --mem=2G 
 
 for slurm_file in {self.slurm_dir / config_type}/*.slurm; do
@@ -121,25 +120,25 @@ done
         total_master_time = timedelta()  # Initialiser un timedelta pour le master
 
         for config_type in ["taskset", "assignment", "scheduling"]:
-            total_master_time += timedelta(
-                hours=getattr(self, f"{config_type}_master_time").hour,
-                minutes=getattr(self, f"{config_type}_master_time").minute,
-                seconds=getattr(self, f"{config_type}_master_time").second,
-            )
+            # Extraire le temps du master depuis l'attribut
+            master_time_str = getattr(self, f"{config_type}_master_time")
+
+            # Convertir la chaîne de temps en timedelta (gère les jours)
+            days_str, time_str = master_time_str.split('-')
+            days = int(days_str)
+            hours, minutes, seconds = map(int, time_str.split(':'))
+
+            # Créer un objet timedelta
+            master_time = timedelta(
+                days=days, hours=hours, minutes=minutes, seconds=seconds)
+
+            total_master_time += master_time
             self.write_master_slurm(
-                config_type, getattr(self, f"{config_type}_master_time")
+                config_type, master_time_str  # Passer la chaîne formatée
             )
 
-        # Convertir timedelta en objet time
-        total_master_time_seconds = total_master_time.total_seconds()
-        total_master_time_obj = time(
-            hour=int(total_master_time_seconds // 3600),
-            minute=int((total_master_time_seconds % 3600) // 60),
-            second=int(total_master_time_seconds % 60),
-        )
-
-        # Formater l'objet time en chaîne HH:MM:SS
-        total_master_time_slurm = total_master_time_obj.strftime("%H:%M:%S")
+        # Formater le temps total du master en format SLURM
+        total_master_time_slurm = f"{total_master_time.days}-{total_master_time.seconds // 3600:02d}:{(total_master_time.seconds % 3600) // 60:02d}:{total_master_time.seconds % 60:02d}"
 
         slurm_file = self.master_dir / "master.slurm"
         with open(slurm_file, "w") as f:

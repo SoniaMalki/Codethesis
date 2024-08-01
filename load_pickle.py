@@ -1,5 +1,6 @@
 import pickle
 
+
 def load_pickle_file(filename):
     """Charge et affiche le contenu d'un fichier pickle."""
     try:
@@ -13,6 +14,7 @@ def load_pickle_file(filename):
         print("Erreur : Le fichier est corrompu ou vide.")
     except Exception as e:
         print(f"Une erreur est survenue : {e}")
+
 
 if __name__ == "__main__":
     # Nom du fichier pickle à charger

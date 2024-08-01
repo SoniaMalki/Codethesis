@@ -45,7 +45,7 @@
         "max_utilization_factors": [0.2],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 23, 7]
+          [10000, 23, 7],
         ],
         "number_of_cores_list": [4]
       },

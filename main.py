@@ -102,8 +102,19 @@ def main(experience_key, action, config_type=None):
         generator.generate_all_configs()
 
     elif action == "generate_slurm_files":
-        PrimeMatrixGenerator(
-            main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
+        # Génération de la prime matrix
+        prime_matrix_path = generation_path / "results" / "prime_matrices"
+        prime_matrix_path.mkdir(parents=True, exist_ok=True)
+
+        prime_matrix_combinations = experience_data[experience_key]["config_parameters"][
+            "taskset_parameters"]["prime_exponent_hyperperiod_combinations"]
+        for combination in prime_matrix_combinations:
+            max_hyperperiod, max_prime, gen_limit_exponent = combination
+            prime_matrix_generator = PrimeMatrixGenerator(
+                main_path=generation_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
+            prime_matrix_generator.generate_matrix()
+
+        # Génération des fichiers SLURM
         slurm_generator = SlurmGenerator(
             main_dir=main_path,
             generation_dir=generation_path,

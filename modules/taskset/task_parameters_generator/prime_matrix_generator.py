@@ -14,7 +14,7 @@ class PrimeMatrixGenerator:
         self.max_prime = max_prime
         self.generation_limit = max_hyperperiod**gen_limit_exponent
         self.prime_matrix = self.load_or_generate_matrix()
-        self.calculate_hyperperiod = self.calculate_hyperperiod()
+        self.calculate_hyperperiod_value = self.calculate_hyperperiod()
 
     def load_or_generate_matrix(self):
         try:
@@ -52,7 +52,6 @@ class PrimeMatrixGenerator:
             for j in range(len(prime_matrix)):
                 exponent = len(prime_matrix[j])
                 prime_matrix[j].append(primes[j] ** exponent)
-
                 if self.calculate_hyperperiod(prime_matrix) > self.generation_limit:
                     return prime_matrix
         return prime_matrix
@@ -77,7 +76,7 @@ class PrimeMatrixGenerator:
         print(header_message)
         for row in self.prime_matrix:
             print(row, " | Len row: ", len(row))
-        print("Hyperperiode:", self.calculate_hyperperiod)
+        print("Hyperperiode:", self.calculate_hyperperiod_value)
 
     def add_duplicates_to_matrix(self, max_length, max_duplicates):
         for row in self.prime_matrix:

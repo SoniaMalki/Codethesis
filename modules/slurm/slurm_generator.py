@@ -74,12 +74,12 @@ done
 
     def write_master_slurm(self, config_type):
         """Write master SLURM file for a configuration type."""
-        slurm_file = self.master_dir / f"all_{config_type}s.slurm"
+        slurm_file = self.master_dir / f"all_{config_type}s_master.slurm"
         with open(slurm_file, "w") as f:
             f.write(
                 f"""#!/bin/bash
-#SBATCH --job-name=all_{config_type}s
-#SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s.txt"}
+#SBATCH --job-name=all_{config_type}s_master
+#SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s_master.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time=2-00:00:00
 #SBATCH --mem=2G
@@ -88,7 +88,7 @@ for slurm_file in {self.slurm_dir / config_type}/batch/*.slurm; do
   sbatch "$slurm_file"
 done
 
-{self.get_wait_for_jobs_script(config_type, f"all_{config_type}s")}
+{self.get_wait_for_jobs_script(config_type, f"all_{config_type}s_master")}
 """
             )
 
@@ -107,9 +107,9 @@ done
 #SBATCH --time=00:02:00
 #SBATCH --mem=2G
 
-taskset_id=$(sbatch {self.master_dir / "all_tasksets.slurm"} | awk '{{print $4}}')
-assignment_id=$(sbatch --dependency=afterok:$taskset_id {self.master_dir / "all_assignments.slurm"} | awk '{{print $4}}')
-scheduling_id=$(sbatch --dependency=afterok:$assignment_id {self.master_dir / "all_schedulings.slurm"} | awk '{{print $4}}')
+taskset_id=$(sbatch {self.master_dir / "all_tasksets_master.slurm"} | awk '{{print $4}}')
+assignment_id=$(sbatch --dependency=afterok:$taskset_id {self.master_dir / "all_assignments_master.slurm"} | awk '{{print $4}}')
+scheduling_id=$(sbatch --dependency=afterok:$assignment_id {self.master_dir / "all_schedulings_master.slurm"} | awk '{{print $4}}')
 sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.slurm"}
 """
             )
@@ -163,8 +163,8 @@ python3 {self.main_dir / "main.py"} {self.experience_key} analyze_results
 #SBATCH --time={self.slurm_parameters.get(f"{config_type}_time", "02:00:00")}
 #SBATCH --mem=2G
 
-for config_key in {json.dumps(list(batch_configs.keys()))}; do
-  sbatch {self.slurm_dir / config_type / f"$config_key.slurm"}
+for config_key in {" ".join(batch_configs.keys())}; do  # Séparer par des espaces
+  sbatch {self.slurm_dir / config_type / f"$config_key.slurm"}  # Utiliser le chemin complet
 done
 
 {self.get_wait_for_jobs_script(

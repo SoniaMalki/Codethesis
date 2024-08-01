@@ -40,8 +40,8 @@
       "taskset_parameters": {
         "taskset_repetitions": [1],
         "tasks_per_taskset": [4],
-        "interference_factors": [0],
-        "probability_factors": [0],
+        "interference_factors": [0.1, 0.2],
+        "probability_factors": [0.4, 0.8],
         "max_utilization_factors": [0.2],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
@@ -99,11 +99,11 @@
       }
     },
     "slurm_parameters": {
-      "taskset_time": "00:10:00",
+      "taskset_time": "23:59:00",
       "taskset_mem": "4G",
-      "assignment_time": "00:00:10",
+      "assignment_time": "23:59:00",
       "assignment_mem": "8G",
-      "scheduling_time": "00:00:01",
+      "scheduling_time": "23:59:00",
       "scheduling_mem": "16G"
     }
   }

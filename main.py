@@ -7,6 +7,7 @@ from modules.config.config_generator import ConfigGenerator
 from modules.core.experience_loader import ExperienceLoader
 from modules.analysis.result_analyzer import ResultAnalyzer
 from modules.slurm.slurm_generator import SlurmGenerator
+from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
 
 
 def run_experience(experience_parameter_key, experience_path):
@@ -62,13 +63,19 @@ def main(experience_key, action, config_type=None):
     """
     main_path = Path(__file__).parent
     generation_path = Path(__file__).parent / "generation" / experience_key
-    generation_path.mkdir(parents=True, exist_ok=True)
 
     # Charger experience.json depuis la racine
     experience_json_path = Path(__file__).parent / "experience.json"
 
     with open(experience_json_path, 'r') as f:
         experience_data = json.load(f)
+
+    if experience_key not in experience_data:
+        print(
+            f"La clé d'experience: {experience_key} n'existe pas. Veuillez la créer")
+        return
+
+    generation_path.mkdir(parents=True, exist_ok=True)
 
     if action == "run_experience":
         if config_type is None:
@@ -95,6 +102,8 @@ def main(experience_key, action, config_type=None):
         generator.generate_all_configs()
 
     elif action == "generate_slurm_files":
+        PrimeMatrixGenerator(
+            main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
         slurm_generator = SlurmGenerator(
             main_dir=main_path,
             generation_dir=generation_path,

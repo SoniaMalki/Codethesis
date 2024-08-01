@@ -42,9 +42,9 @@ class SlurmGenerator:
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
 #SBATCH --output={self.output_dir / config_type / f"output_{config_key}.txt"}
-#SBATCH --ntasks=1 
-#SBATCH --time={job_time_slurm} 
-#SBATCH --mem={self.slurm_parameters.get(f"{config_type}_mem", "8G")} 
+#SBATCH --ntasks=1
+#SBATCH --time={job_time_slurm}
+#SBATCH --mem={self.slurm_parameters.get(f"{config_type}_mem", "8G")}
 
 # Charger les modules nécessaires
 module load releases/2023a
@@ -70,17 +70,17 @@ while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' |
 done
 """
 
-    def write_master_slurm(self, config_type, total_time_slurm):
+    def write_master_slurm(self, config_type):
         """Write master SLURM file for a configuration type."""
         slurm_file = self.master_dir / f"all_{config_type}s.slurm"
         with open(slurm_file, "w") as f:
             f.write(
                 f"""#!/bin/bash
 #SBATCH --job-name=all_{config_type}s
-#SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s_%j.txt"}
+#SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time=2-00:00:00
-#SBATCH --mem=2G 
+#SBATCH --mem=2G
 
 for slurm_file in {self.slurm_dir / config_type}/*.slurm; do
   sbatch "$slurm_file"
@@ -92,6 +92,10 @@ done
 
     def generate_master_slurm(self):
         """Generate the main master SLURM file."""
+        for config_type in ["taskset", "assignment", "scheduling"]:
+            self.write_master_slurm(
+                config_type
+            )
         slurm_file = self.master_dir / "master.slurm"
         with open(slurm_file, "w") as f:
             f.write(

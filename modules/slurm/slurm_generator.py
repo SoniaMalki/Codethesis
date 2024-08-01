@@ -83,7 +83,7 @@ class SlurmGenerator:
         job_time_slurm = job_time.strftime("%H:%M:%S")
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
-#SBATCH --output={self.output_dir / config_type / f"output_{config_key}_%j.txt"}
+#SBATCH --output={self.output_dir / config_type / f"output_{config_key}.txt"}
 #SBATCH --ntasks=1 
 #SBATCH --time={job_time_slurm} 
 #SBATCH --mem={self.slurm_parameters.get(f"{config_type}_mem", "8G")} 
@@ -167,14 +167,36 @@ done
             f.write(
                 f"""#!/bin/bash
 #SBATCH --job-name=master_job
-#SBATCH --output={self.output_dir / f"master_job_%j.txt"}
+#SBATCH --output={self.output_dir / f"master_job.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time=01:00:00    
+#SBATCH --time=00:02:00 
 #SBATCH --mem=2G  
 
 taskset_id=$(sbatch {self.master_dir / "all_tasksets.slurm"} | awk '{{print $4}}')
 assignment_id=$(sbatch --dependency=afterok:$taskset_id {self.master_dir / "all_assignments.slurm"} | awk '{{print $4}}')
-sbatch --dependency=afterok:$assignment_id {self.master_dir / "all_schedulings.slurm"}
+scheduling_id=$(sbatch --dependency=afterok:$assignment_id {self.master_dir / "all_schedulings.slurm"} | awk '{{print $4}}')
+sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.slurm"}
+"""
+            )
+
+    def generate_analyze_slurm(self):
+        """Generate the SLURM file for analyzing results."""
+        slurm_file = self.master_dir / "analyze_results.slurm"
+        with open(slurm_file, "w") as f:
+            f.write(
+                f"""#!/bin/bash
+#SBATCH --job-name=analyze_results
+#SBATCH --output={self.output_dir / f"analyze_results.txt"}
+#SBATCH --ntasks=1
+#SBATCH --time=01:00:00  # Temps alloué pour l'analyse
+#SBATCH --mem=4G
+
+# Charger les modules nécessaires
+module load releases/2023a
+module load Python/3.11.3-GCCcore-12.3.0
+
+# Exécuter le script d'analyse
+python3 {self.main_dir / "main.py"} {self.experience_key} analyze_results
 """
             )
 
@@ -190,3 +212,6 @@ sbatch --dependency=afterok:$assignment_id {self.master_dir / "all_schedulings.s
 
         # Générer les fichiers SLURM masters
         self.generate_master_slurm()
+
+        # Générer le fichier SLURM pour l'analyse des résultats
+        self.generate_analyze_slurm()

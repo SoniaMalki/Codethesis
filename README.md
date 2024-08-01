@@ -54,7 +54,8 @@ Les paramètres de l'algorithme d'assignation sont définis dans le fichier `ass
     - `random_order`:  Tri aléatoire des tâches.
 - **`number_of_cores`**:  Nombre de processeurs disponibles pour l'assignation des tâches. (choix entre: 2, 4 ou 8). 
 - **`assignment_options`**: Options spécifiques à l'algorithme d'assignation si nécessaire.
-    - `solving_time_limit_MILP`:  Limite de temps imposée au solveur MILP avant d'abandonner la recherche. (300 secondes = 5 minutes) 
+    - `solving_time_limit_MILP`:  Limite de temps imposée au solveur MILP avant d'abandonner la recherche. (300 secondes = 5 minutes)
+    - `solver_name`: Spécifie le solver utilisé pour résoudre le problème (choix entre: glpk ou gurobi)
 
 
 #### 2.2. Algorithmes d'assignation
@@ -84,7 +85,7 @@ Les paramètres de l'algorithme d'ordonnancement sont définis dans le fichier `
 - **`scheduling_options`**: Options spécifiques à l'algorithme d'ordonnancement si nécessaire. 
     - `non_preemption_time_variant_2`: Option disponible pour déterminer le facteur de non-preemption pour les variants 2 de EDF et DM. (choix entre: number_of_tasks, wcet_of_tasks ou system_utilization) définie selon [3] (Aceituno et al., 2022).
     - `solving_time_limit_MILP`:  Limite de temps imposée au solveur MILP avant d'abandonner la recherche. (300 secondes = 5 minutes) 
-
+    - `solver_name`: Spécifie le solver utilisé pour résoudre le problème (choix entre: glpk ou gurobi)
 #### 3.2. Algorithmes d'ordonnancement
 
 Le code propose plusieurs algorithmes d'ordonnancement qui peuvent être sélectionnés dans le fichier `schedulings.json`.

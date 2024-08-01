@@ -52,14 +52,26 @@ class SlurmGenerator:
 
             # Vérifier si le temps total dépasse la limite de deux jours
             if total_time > timedelta(days=2):
+                hint_limit = (48*3600)/job_count
+                hint_limit = self.seconds_to_slurm_time(hint_limit)
                 raise ValueError(
-                    "Le temps total du master dépasse la limite de deux jours.")
+                    f"Le temps total du master {config_type} dépasse la limite de deux jours (hint mettez la limite à {hint_limit} ).")
 
             # Formater le temps total en format SLURM (jours-heures:minutes:secondes)
             total_time_slurm = f"{total_time.days}-{total_time.seconds // 3600:02d}:{(total_time.seconds % 3600) // 60:02d}:{total_time.seconds % 60:02d}"
 
             # Stocker la chaîne de temps formatée pour SLURM
             setattr(self, f"{config_type}_master_time", total_time_slurm)
+
+    def seconds_to_slurm_time(self, seconds):
+        seconds = int(seconds)
+        days = seconds // 86400
+        seconds = seconds % 86400
+        hours = seconds // 3600
+        seconds = seconds % 3600
+        minutes = seconds // 60
+        seconds = seconds % 60
+        return f"{days}-{hours:02d}:{minutes:02d}:{seconds:02d}"
 
     def get_slurm_content(self, config_key, config_type):
         # Convertir le temps du job en objet time
@@ -109,7 +121,7 @@ done
 #SBATCH --job-name=all_{config_type}s
 #SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s_%j.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time={total_time_slurm}  # Utiliser le temps formaté pour SLURM
+#SBATCH --time=2-00:00:00
 #SBATCH --mem=2G 
 
 for slurm_file in {self.slurm_dir / config_type}/*.slurm; do
@@ -142,13 +154,13 @@ done
                 config_type, master_time_str  # Passer la chaîne formatée
             )
 
-        # Vérifier si le temps total dépasse la limite de deux jours
-        if total_master_time > timedelta(days=2):
-            raise ValueError(
-                "Le temps total du master dépasse la limite de deux jours.")
+        # # Vérifier si le temps total dépasse la limite de deux jours
+        # if total_master_time > timedelta(days=2):
+        #     raise ValueError(
+        #         "Le temps total du master dépasse la limite de deux jours.")
 
-        # Formater le temps total du master en format SLURM
-        total_master_time_slurm = f"{total_master_time.days}-{total_master_time.seconds // 3600:02d}:{(total_master_time.seconds % 3600) // 60:02d}:{total_master_time.seconds % 60:02d}"
+        # # Formater le temps total du master en format SLURM
+        # total_master_time_slurm = f"{total_master_time.days}-{total_master_time.seconds // 3600:02d}:{(total_master_time.seconds % 3600) // 60:02d}:{total_master_time.seconds % 60:02d}"
 
         slurm_file = self.master_dir / "master.slurm"
         with open(slurm_file, "w") as f:
@@ -157,7 +169,7 @@ done
 #SBATCH --job-name=master_job
 #SBATCH --output={self.output_dir / f"master_job_%j.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time={total_master_time_slurm}    
+#SBATCH --time=01:00:00    
 #SBATCH --mem=2G  
 
 taskset_id=$(sbatch {self.master_dir / "all_tasksets.slurm"} | awk '{{print $4}}')

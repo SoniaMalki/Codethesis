@@ -1,3 +1,4 @@
+
 import json
 import itertools
 from pathlib import Path
@@ -48,6 +49,12 @@ class ConfigGenerator:
                 else [""]
                 for method in self.assignment_methods
             },
+            "solver_name_assignment": {
+                method: self.solver_name_assignment
+                if method in ["Wmin", "Citta"]
+                else [""]
+                for method in self.assignment_methods
+            },
             "non_preemption_time_variant2_options": {
                 algorithm: self.non_preemption_time_variant2_options
                 if algorithm
@@ -62,6 +69,12 @@ class ConfigGenerator:
             },
             "solving_time_limit_milp_scheduling": {
                 algorithm: self.solving_time_limit_milp_scheduling
+                if algorithm == "Rhma"
+                else [""]
+                for algorithm in self.scheduling_algorithms
+            },
+            "solver_name_scheduling": {
+                algorithm: self.solver_name_scheduling
                 if algorithm == "Rhma"
                 else [""]
                 for algorithm in self.scheduling_algorithms
@@ -113,77 +126,81 @@ class ConfigGenerator:
 
     def generate_assignments(self, tasksets):
         assignments = {}
-
         assignment_index = 1
         for taskset_key, taskset_data in tasksets.items():
             cores = int(taskset_key.split("_c")[1])
             for method in self.assignment_methods:
-                for solving_time in self.optional_params["solving_time_limit_milp_assignment"][method]:
-                    for sorting in self.optional_params["sorting_criteria"][method]:
-                        assignment_id = f"assignment_generate_{assignment_index}_c{cores}"
-                        assignments[assignment_id] = {
-                            "taskset": {
-                                "action": "open",
-                                "taskset_id": taskset_key,
-                                "parameters": {"none": "none"},
-                            },
-                            "assignment": {
-                                "action": "generate",
-                                "assignment_id": assignment_id,
-                                "taskset_id": taskset_key,
-                                "parameters": {
-                                    "sorting_criterion": sorting,
-                                    "assignment_method": method,
-                                    "number_of_cores": cores,
-                                    "assignment_options": {
-                                        "solving_time_limit_MILP": solving_time,
-                                        "solver_name": "gurobi",
-                                    },
+                for sorting, solving_time, solver_name in itertools.product(  # Boucles pour sorting, solving_time, solver_name
+                    self.optional_params["sorting_criteria"][method],
+                    self.optional_params["solving_time_limit_milp_assignment"][method],
+                    self.optional_params["solver_name_assignment"][method],
+                ):
+                    assignment_id = f"assignment_generate_{assignment_index}_c{cores}"
+                    assignments[assignment_id] = {
+                        "taskset": {
+                            "action": "open",
+                            "taskset_id": taskset_key,
+                            "parameters": {"none": "none"},
+                        },
+                        "assignment": {
+                            "action": "generate",
+                            "assignment_id": assignment_id,
+                            "taskset_id": taskset_key,
+                            "parameters": {
+                                "sorting_criterion": sorting,
+                                "assignment_method": method,
+                                "number_of_cores": cores,
+                                "assignment_options": {
+                                    "solving_time_limit_MILP": solving_time,
+                                    "solver_name": solver_name,
                                 },
                             },
-                            "scheduling": {"action": "none"},
-                        }
-                        assignment_index += 1
+                        },
+                        "scheduling": {"action": "none"},
+                    }
+                    assignment_index += 1
         return assignments
 
     def generate_schedulings(self, assignments):
         schedulings = {}
-
         scheduling_index = 1
         for assignment_key, assignment_data in assignments.items():
             cores = assignment_data["assignment"]["parameters"]["number_of_cores"]
             for algorithm in self.scheduling_algorithms:
-                for non_preemption in self.optional_params["non_preemption_time_variant2_options"][algorithm]:
-                    for solving_time in self.optional_params["solving_time_limit_milp_scheduling"][algorithm]:
-                        scheduling_id = f"scheduling_generate_{scheduling_index}_c{cores}"
-                        schedulings[scheduling_id] = {
-                            "taskset": {
-                                "action": "open",
-                                "taskset_id": assignment_data["taskset"]["taskset_id"],
-                                "parameters": {"none": "none"},
-                            },
-                            "assignment": {
-                                "action": "open",
-                                "assignment_id": assignment_key,
-                                "taskset_id": assignment_data["taskset"]["taskset_id"],
-                                "parameters": {"none": "none"},
-                            },
-                            "scheduling": {
-                                "action": "generate",
-                                "scheduling_id": scheduling_id,
-                                "taskset_id": assignment_data["taskset"]["taskset_id"],
-                                "assignment_id": assignment_key,
-                                "parameters": {
-                                    "scheduling_algorithm": algorithm,
-                                    "scheduling_options": {
-                                        "non_preemption_time_variant2": non_preemption,
-                                        "solving_time_limit_MILP": solving_time,
-                                        "solver_name": "gurobi",
-                                    },
+                for non_preemption, solving_time, solver_name in itertools.product(  # Boucles pour non_preemption, solving_time, solver_name
+                    self.optional_params["non_preemption_time_variant2_options"][algorithm],
+                    self.optional_params["solving_time_limit_milp_scheduling"][algorithm],
+                    self.optional_params["solver_name_scheduling"][algorithm],
+                ):
+                    scheduling_id = f"scheduling_generate_{scheduling_index}_c{cores}"
+                    schedulings[scheduling_id] = {
+                        "taskset": {
+                            "action": "open",
+                            "taskset_id": assignment_data["taskset"]["taskset_id"],
+                            "parameters": {"none": "none"},
+                        },
+                        "assignment": {
+                            "action": "open",
+                            "assignment_id": assignment_key,
+                            "taskset_id": assignment_data["taskset"]["taskset_id"],
+                            "parameters": {"none": "none"},
+                        },
+                        "scheduling": {
+                            "action": "generate",
+                            "scheduling_id": scheduling_id,
+                            "taskset_id": assignment_data["taskset"]["taskset_id"],
+                            "assignment_id": assignment_key,
+                            "parameters": {
+                                "scheduling_algorithm": algorithm,
+                                "scheduling_options": {
+                                    "non_preemption_time_variant2": non_preemption,
+                                    "solving_time_limit_MILP": solving_time,
+                                    "solver_name": solver_name,
                                 },
                             },
-                        }
-                        scheduling_index += 1
+                        },
+                    }
+                    scheduling_index += 1
         return schedulings
 
     def save_to_json(self, data, filename):

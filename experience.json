@@ -35,11 +35,13 @@
   "assignment_parameters": {
     "assignment_methods": ["WorstFitAssigner", "Citta", "Wmin"],
     "sorting_criteria": ["wcet_ascending", "random_order"],
-    "solving_time_limit_milp_assignment": [300]
+    "solving_time_limit_milp_assignment": [300, 10],
+    "solver_name_assignment": ["gurobi", "glpk"]
   },
   "scheduling_parameters": {
     "scheduling_algorithms": ["EarliestDeadlineFirst", "Rhma", "EarliestDeadlineFirstVariant2"],
     "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks"],
-    "solving_time_limit_milp_scheduling": [30]
+    "solving_time_limit_milp_scheduling": [30, 20],
+    "solver_name_scheduling": ["gurobi", "glpk"]
   }
 }

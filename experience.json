@@ -101,9 +101,9 @@
     "slurm_parameters": {
       "taskset_time": "00:10:00",
       "taskset_mem": "4G",
-      "assignment_time": "02:00:00",
+      "assignment_time": "00:00:10",
       "assignment_mem": "8G",
-      "scheduling_time": "23:59:00",
+      "scheduling_time": "00:00:01",
       "scheduling_mem": "16G"
     }
   }

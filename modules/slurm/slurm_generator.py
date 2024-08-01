@@ -29,6 +29,8 @@ class SlurmGenerator:
 
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
+            (self.slurm_dir / config_type /
+             "batch/").mkdir(parents=True, exist_ok=True)
             (self.output_dir / config_type).mkdir(parents=True, exist_ok=True)
 
     def get_slurm_content(self, config_key, config_type):
@@ -82,7 +84,7 @@ done
 #SBATCH --time=2-00:00:00
 #SBATCH --mem=2G
 
-for slurm_file in {self.slurm_dir / config_type}/*.slurm; do
+for slurm_file in {self.slurm_dir / config_type}/batch/*.slurm; do
   sbatch "$slurm_file"
 done
 
@@ -93,9 +95,8 @@ done
     def generate_master_slurm(self):
         """Generate the main master SLURM file."""
         for config_type in ["taskset", "assignment", "scheduling"]:
-            self.write_master_slurm(
-                config_type
-            )
+            self.write_master_slurm(config_type)
+
         slurm_file = self.master_dir / "master.slurm"
         with open(slurm_file, "w") as f:
             f.write(
@@ -103,8 +104,8 @@ done
 #SBATCH --job-name=master_job
 #SBATCH --output={self.output_dir / f"master_job.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time=00:02:00 
-#SBATCH --mem=2G  
+#SBATCH --time=00:02:00
+#SBATCH --mem=2G
 
 taskset_id=$(sbatch {self.master_dir / "all_tasksets.slurm"} | awk '{{print $4}}')
 assignment_id=$(sbatch --dependency=afterok:$taskset_id {self.master_dir / "all_assignments.slurm"} | awk '{{print $4}}')
@@ -141,8 +142,41 @@ python3 {self.main_dir / "main.py"} {self.experience_key} analyze_results
             with open(self.generation_dir / config_file_path, "r") as f:
                 configurations = json.load(f)
 
-            for config_key in configurations.keys():
-                self.generate_slurm(config_key, config_type)
+            # Gérer les jobs par batch de 100
+            i = 0
+            while i < len(configurations):
+                # Créer un dictionnaire pour le batch actuel
+                batch_configs = {}
+                for j in range(i, min(i + 100, len(configurations))):
+                    config_key = list(configurations.keys())[j]
+                    batch_configs[config_key] = configurations[config_key]
+
+                # Générer le script SLURM pour le batch actuel
+                slurm_file = self.slurm_dir / config_type / \
+                    f"batch/all_{config_type}s_{i // 100}.slurm"
+                with open(slurm_file, "w") as f:
+                    f.write(
+                        f"""#!/bin/bash
+#SBATCH --job-name=all_{config_type}s_{i // 100}
+#SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s_{i // 100}.txt"}
+#SBATCH --ntasks=1
+#SBATCH --time={self.slurm_parameters.get(f"{config_type}_time", "02:00:00")}
+#SBATCH --mem=2G
+
+for config_key in {json.dumps(list(batch_configs.keys()))}; do
+  sbatch {self.slurm_dir / config_type / f"$config_key.slurm"}
+done
+
+{self.get_wait_for_jobs_script(
+    f"all_{config_type}s_{i // 100}", f"all_{config_type}s_{i // 100}")}
+                    """
+                    )
+
+                # Générer les fichiers SLURM individuels pour le batch
+                for config_key in batch_configs.keys():
+                    self.generate_slurm(config_key, config_type)
+
+                i += 100  # Passer au batch suivant
 
         # Générer les fichiers SLURM masters
         self.generate_master_slurm()

@@ -31,48 +31,6 @@ class SlurmGenerator:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
             (self.output_dir / config_type).mkdir(parents=True, exist_ok=True)
 
-            # Calcul du temps pour chaque master
-            config_file_path = self.experience_loader.config_files.get(
-                config_type
-            )
-            with open(self.generation_dir / config_file_path, "r") as f:
-                configurations = json.load(f)
-
-            job_count = len(configurations)
-
-            # Convertir le temps du job en objet time
-            job_time = time.fromisoformat(
-                self.slurm_parameters.get(f"{config_type}_time", "02:00:00")
-            )
-
-            # Calculer le temps total du master en utilisant timedelta
-            total_time = timedelta(
-                hours=job_time.hour, minutes=job_time.minute, seconds=job_time.second
-            ) * job_count
-
-            # Vérifier si le temps total dépasse la limite de deux jours
-            if total_time > timedelta(days=2):
-                hint_limit = (48*3600)/job_count
-                hint_limit = self.seconds_to_slurm_time(hint_limit)
-                raise ValueError(
-                    f"Le temps total du master {config_type} dépasse la limite de deux jours (hint mettez la limite à {hint_limit} ).")
-
-            # Formater le temps total en format SLURM (jours-heures:minutes:secondes)
-            total_time_slurm = f"{total_time.days}-{total_time.seconds // 3600:02d}:{(total_time.seconds % 3600) // 60:02d}:{total_time.seconds % 60:02d}"
-
-            # Stocker la chaîne de temps formatée pour SLURM
-            setattr(self, f"{config_type}_master_time", total_time_slurm)
-
-    def seconds_to_slurm_time(self, seconds):
-        seconds = int(seconds)
-        days = seconds // 86400
-        seconds = seconds % 86400
-        hours = seconds // 3600
-        seconds = seconds % 3600
-        minutes = seconds // 60
-        seconds = seconds % 60
-        return f"{days}-{hours:02d}:{minutes:02d}:{seconds:02d}"
-
     def get_slurm_content(self, config_key, config_type):
         # Convertir le temps du job en objet time
         job_time = time.fromisoformat(
@@ -134,34 +92,6 @@ done
 
     def generate_master_slurm(self):
         """Generate the main master SLURM file."""
-        total_master_time = timedelta()  # Initialiser un timedelta pour le master
-
-        for config_type in ["taskset", "assignment", "scheduling"]:
-            # Extraire le temps du master depuis l'attribut
-            master_time_str = getattr(self, f"{config_type}_master_time")
-
-            # Convertir la chaîne de temps en timedelta (gère les jours)
-            days_str, time_str = master_time_str.split('-')
-            days = int(days_str)
-            hours, minutes, seconds = map(int, time_str.split(':'))
-
-            # Créer un objet timedelta
-            master_time = timedelta(
-                days=days, hours=hours, minutes=minutes, seconds=seconds)
-
-            total_master_time += master_time
-            self.write_master_slurm(
-                config_type, master_time_str  # Passer la chaîne formatée
-            )
-
-        # # Vérifier si le temps total dépasse la limite de deux jours
-        # if total_master_time > timedelta(days=2):
-        #     raise ValueError(
-        #         "Le temps total du master dépasse la limite de deux jours.")
-
-        # # Formater le temps total du master en format SLURM
-        # total_master_time_slurm = f"{total_master_time.days}-{total_master_time.seconds // 3600:02d}:{(total_master_time.seconds % 3600) // 60:02d}:{total_master_time.seconds % 60:02d}"
-
         slurm_file = self.master_dir / "master.slurm"
         with open(slurm_file, "w") as f:
             f.write(
@@ -188,7 +118,7 @@ sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.s
 #SBATCH --job-name=analyze_results
 #SBATCH --output={self.output_dir / f"analyze_results.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time=01:00:00  # Temps alloué pour l'analyse
+#SBATCH --time=01:00:00
 #SBATCH --mem=4G
 
 # Charger les modules nécessaires

@@ -51,31 +51,6 @@ def get_default_key(config_type, generation_path):
     return next(iter(configurations))
 
 
-def generate_slurm_files(main_path, generation_path, experience_key):
-    experience_loader = ExperienceLoader(generation_path)
-    slurm_generator = SlurmGenerator(
-        main_dir=main_path, generation_dir=generation_path, experience_key=experience_key)
-
-    for config_type in ["taskset", "assignment", "scheduling"]:
-        config_file_path = experience_loader.config_files.get(config_type)
-        with open(generation_path / config_file_path, 'r') as f:
-            configurations = json.load(f)
-
-        for config_key in configurations.keys():
-            if config_type == "taskset":
-                slurm_generator.generate_taskset_slurm(config_key)
-            elif config_type == "assignment":
-                slurm_generator.generate_assignment_slurm(config_key)
-            elif config_type == "scheduling":
-                slurm_generator.generate_scheduling_slurm(config_key)
-
-    # Générer les fichiers SLURM masters
-    slurm_generator.generate_taskset_master_slurm()
-    slurm_generator.generate_assignment_master_slurm()
-    slurm_generator.generate_scheduling_master_slurm()
-    slurm_generator.generate_master_slurm()
-
-
 def main(experience_key, action, config_type=None):
     """
     Fonction principale pour exécuter une expérience ou analyser les résultats.
@@ -91,6 +66,7 @@ def main(experience_key, action, config_type=None):
 
     # Charger experience.json depuis la racine
     experience_json_path = Path(__file__).parent / "experience.json"
+
     with open(experience_json_path, 'r') as f:
         experience_data = json.load(f)
 
@@ -114,12 +90,19 @@ def main(experience_key, action, config_type=None):
         analyzer.run_analysis()
 
     elif action == "generate_configs":
-        generator = ConfigGenerator(generation_path, experience_data)
+        generator = ConfigGenerator(
+            generation_path, experience_data=experience_data[experience_key])
         generator.generate_all_configs()
 
     elif action == "generate_slurm_files":
-        generate_slurm_files(
-            main_path=main_path, generation_path=generation_path, experience_key=experience_key)
+        slurm_generator = SlurmGenerator(
+            main_dir=main_path,
+            generation_dir=generation_path,
+            experience_key=experience_key,
+            experience_data=experience_data[experience_key],
+        )
+        slurm_generator.generate_all_slurm()
+
     else:
         print(f"Action invalide: {action}")
 

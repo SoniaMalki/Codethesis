@@ -8,11 +8,18 @@ class ConfigGenerator:
     def __init__(self, config_dir, experience_data):
         self.config_dir = Path(config_dir) / "config_files"
         self.config_dir.mkdir(parents=True, exist_ok=True)
-        self.experience_data = experience_data
+
+        # Vérifier si config_parameters est présent
+        if "config_parameters" not in experience_data:
+            raise ValueError(
+                "config_parameters dictionary is missing in experience data."
+            )
+
+        self.config_parameters = experience_data["config_parameters"]
 
         # Récupérer tous les paramètres depuis experience_data
         for param_section in ["taskset_parameters", "assignment_parameters", "scheduling_parameters"]:
-            for param_name, param_value in self.experience_data[param_section].items():
+            for param_name, param_value in self.config_parameters[param_section].items():
                 setattr(self, param_name, param_value)
 
         # Vérification de tous les paramètres obligatoires

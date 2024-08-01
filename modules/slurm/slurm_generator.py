@@ -50,6 +50,11 @@ class SlurmGenerator:
                 hours=job_time.hour, minutes=job_time.minute, seconds=job_time.second
             ) * job_count
 
+            # Vérifier si le temps total dépasse la limite de deux jours
+            if total_time > timedelta(days=2):
+                raise ValueError(
+                    "Le temps total du master dépasse la limite de deux jours.")
+
             # Formater le temps total en format SLURM (jours-heures:minutes:secondes)
             total_time_slurm = f"{total_time.days}-{total_time.seconds // 3600:02d}:{(total_time.seconds % 3600) // 60:02d}:{total_time.seconds % 60:02d}"
 
@@ -136,6 +141,11 @@ done
             self.write_master_slurm(
                 config_type, master_time_str  # Passer la chaîne formatée
             )
+
+        # Vérifier si le temps total dépasse la limite de deux jours
+        if total_master_time > timedelta(days=2):
+            raise ValueError(
+                "Le temps total du master dépasse la limite de deux jours.")
 
         # Formater le temps total du master en format SLURM
         total_master_time_slurm = f"{total_master_time.days}-{total_master_time.seconds // 3600:02d}:{(total_master_time.seconds % 3600) // 60:02d}:{total_master_time.seconds % 60:02d}"

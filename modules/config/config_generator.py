@@ -11,16 +11,16 @@ class ConfigGenerator:
     def generate_tasksets(self):
         tasksets = {}
 
-        taskset_repetitions = [10]
-        tasks_per_taskset = [10]
-        interference_factors = [0.2]
-        probability_factors = [0.4]
-        max_utilization_factors = [0.3]
+        taskset_repetitions = [1]
+        tasks_per_taskset = [4, 5]
+        interference_factors = [0.2, 0.8]
+        probability_factors = [0.1, 0.4]
+        max_utilization_factors = [0.2, 0.4, 0.6, 0.8, 1]
         deadline_options = ["eq_period"]
         prime_exponent_hyperperiod_combinations = [
             (10000, 7, 3)
         ]
-        number_of_cores_list = [8]
+        number_of_cores_list = [2, 8]
 
         taskset_index = 1
         for repetition, tasks, interference, probability, util_factor, deadline, (hyperperiod, prime, exponent) in itertools.product(
@@ -91,7 +91,7 @@ class ConfigGenerator:
                             "number_of_cores": cores,
                             "assignment_options": {
                                 "solving_time_limit_MILP": solving_time,
-                                "solver_name": "glpk"
+                                "solver_name": "gurobi"
                             }
                         }
                     },
@@ -109,7 +109,7 @@ class ConfigGenerator:
                                  "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "Rhma", "CombinedScheduler"]
         non_preemption_time_variant2_options = [
             "number_of_tasks", "wcet_of_tasks", "system_utilization"]
-        solving_time_limit_milp_scheduling = [300]
+        solving_time_limit_milp_scheduling = [30]
 
         scheduling_index = 1
         for assignment_key, assignment_data in assignments.items():
@@ -144,7 +144,7 @@ class ConfigGenerator:
                             "scheduling_options": {
                                 "non_preemption_time_variant2": non_preemption,
                                 "solving_time_limit_MILP": solving_time,
-                                "solver_name": "glpk"
+                                "solver_name": "gurobi"
                             }
                         }
                     }

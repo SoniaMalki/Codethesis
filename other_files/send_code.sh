@@ -12,11 +12,7 @@ EXCLUDE_ITEMS=(
     '.pytest_cache'
     '.gitignore'
     'README.md'
-    'results'
-    'plots'
-    '*.slurm'
-    'slurm'
-    'config_files'
+    'generation'
 )
 
 EXCLUDES=()

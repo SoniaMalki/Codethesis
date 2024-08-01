@@ -4,30 +4,85 @@ from pathlib import Path
 
 
 class ConfigGenerator:
-    def __init__(self, config_dir):
+    def __init__(self, config_dir, experience_data):
         self.config_dir = Path(config_dir) / "config_files"
         self.config_dir.mkdir(parents=True, exist_ok=True)
+        self.experience_data = experience_data
+
+        self.taskset_repetitions = self.experience_data.get("taskset_parameters", {}).get(
+            "taskset_repetitions", [1]
+        )
+        self.tasks_per_taskset = self.experience_data.get("taskset_parameters", {}).get(
+            "tasks_per_taskset", [4]
+        )
+        self.interference_factors = self.experience_data.get("taskset_parameters", {}).get(
+            "interference_factors", [0]
+        )
+        self.probability_factors = self.experience_data.get("taskset_parameters", {}).get(
+            "probability_factors", [0]
+        )
+        self.max_utilization_factors = self.experience_data.get("taskset_parameters", {}).get(
+            "max_utilization_factors", [0.2]
+        )
+        self.deadline_options = self.experience_data.get("taskset_parameters", {}).get(
+            "deadline_options", ["eq_period"]
+        )
+        self.prime_exponent_hyperperiod_combinations = self.experience_data.get(
+            "taskset_parameters", {}
+        ).get("prime_exponent_hyperperiod_combinations", [(10000, 7, 3)])
+        self.number_of_cores_list = self.experience_data.get("taskset_parameters", {}).get(
+            "number_of_cores_list", [2]
+        )
+
+        self.assignment_methods = self.experience_data.get("assignment_parameters", {}).get(
+            "assignment_methods",
+            ["WorstFitAssigner"],
+        )
+        self.sorting_criteria = self.experience_data.get("assignment_parameters", {}).get(
+            "sorting_criteria",
+            [
+                "random_order",
+            ],
+        )
+        self.solving_time_limit_milp_assignment = self.experience_data.get(
+            "assignment_parameters", {}
+        ).get("solving_time_limit_milp_assignment", [300])
+
+        # Paramètres des schedulings
+        self.scheduling_algorithms = self.experience_data.get("scheduling_parameters", {}).get(
+            "scheduling_algorithms",
+            [
+                "EarliestDeadlineFirst"
+            ],
+        )
+        self.non_preemption_time_variant2_options = self.experience_data.get(
+            "scheduling_parameters", {}
+        ).get(
+            "non_preemption_time_variant2_options",
+            ["number_of_tasks"],
+        )
+        self.solving_time_limit_milp_scheduling = self.experience_data.get(
+            "scheduling_parameters", {}
+        ).get("solving_time_limit_milp_scheduling", [300])
 
     def generate_tasksets(self):
         tasksets = {}
 
-        taskset_repetitions = [1]
-        tasks_per_taskset = [4, 5]
-        interference_factors = [0.2, 0.8]
-        probability_factors = [0.1, 0.4]
-        max_utilization_factors = [0.2, 0.4, 0.6, 0.8, 1]
-        deadline_options = ["eq_period"]
-        prime_exponent_hyperperiod_combinations = [
-            (10000, 7, 3)
-        ]
-        number_of_cores_list = [2, 8]
-
         taskset_index = 1
-        for repetition, tasks, interference, probability, util_factor, deadline, (hyperperiod, prime, exponent) in itertools.product(
-            taskset_repetitions, tasks_per_taskset, interference_factors, probability_factors, max_utilization_factors,
-            deadline_options, prime_exponent_hyperperiod_combinations
+        for repetition, tasks, interference, probability, util_factor, deadline, (
+            hyperperiod,
+            prime,
+            exponent,
+        ) in itertools.product(
+            self.taskset_repetitions,
+            self.tasks_per_taskset,
+            self.interference_factors,
+            self.probability_factors,
+            self.max_utilization_factors,
+            self.deadline_options,
+            self.prime_exponent_hyperperiod_combinations,
         ):
-            for cores in number_of_cores_list:
+            for cores in self.number_of_cores_list:
                 taskset_id = f"taskset_generate_{taskset_index}_c{cores}"
                 tasksets[taskset_id] = {
                     "taskset": {
@@ -43,16 +98,12 @@ class ConfigGenerator:
                                 "deadline_option": deadline,
                                 "max_hyperperiod": hyperperiod,
                                 "max_prime": prime,
-                                "gen_limit_exponent": exponent
-                            }
-                        }
+                                "gen_limit_exponent": exponent,
+                            },
+                        },
                     },
-                    "assignment": {
-                        "action": "none"
-                    },
-                    "scheduling": {
-                        "action": "none"
-                    }
+                    "assignment": {"action": "none"},
+                    "scheduling": {"action": "none"},
                 }
                 taskset_index += 1
         return tasksets
@@ -60,26 +111,20 @@ class ConfigGenerator:
     def generate_assignments(self, tasksets):
         assignments = {}
 
-        assignment_methods = [
-            "Citta", "Wmin", "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner"]
-        sorting_criteria = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending",
-                            "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
-        solving_time_limit_milp_assignment = [300]
-
         assignment_index = 1
         for taskset_key, taskset_data in tasksets.items():
-            cores = int(taskset_key.split('_c')[1])
+            cores = int(taskset_key.split("_c")[1])
             for method, sorting, solving_time in itertools.product(
-                    assignment_methods, sorting_criteria, solving_time_limit_milp_assignment
+                self.assignment_methods,
+                self.sorting_criteria,
+                self.solving_time_limit_milp_assignment,
             ):
                 assignment_id = f"assignment_generate_{assignment_index}_c{cores}"
                 assignments[assignment_id] = {
                     "taskset": {
                         "action": "open",
                         "taskset_id": taskset_key,
-                        "parameters": {
-                            "none": "none"
-                        }
+                        "parameters": {"none": "none"},
                     },
                     "assignment": {
                         "action": "generate",
@@ -91,13 +136,11 @@ class ConfigGenerator:
                             "number_of_cores": cores,
                             "assignment_options": {
                                 "solving_time_limit_MILP": solving_time,
-                                "solver_name": "gurobi"
-                            }
-                        }
+                                "solver_name": "gurobi",
+                            },
+                        },
                     },
-                    "scheduling": {
-                        "action": "none"
-                    }
+                    "scheduling": {"action": "none"},
                 }
                 assignment_index += 1
         return assignments
@@ -105,16 +148,12 @@ class ConfigGenerator:
     def generate_schedulings(self, assignments):
         schedulings = {}
 
-        scheduling_algorithms = ["EarliestDeadlineFirst",
-                                 "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "Rhma", "CombinedScheduler"]
-        non_preemption_time_variant2_options = [
-            "number_of_tasks", "wcet_of_tasks", "system_utilization"]
-        solving_time_limit_milp_scheduling = [30]
-
         scheduling_index = 1
         for assignment_key, assignment_data in assignments.items():
             for algorithm, non_preemption, solving_time in itertools.product(
-                    scheduling_algorithms, non_preemption_time_variant2_options, solving_time_limit_milp_scheduling
+                self.scheduling_algorithms,
+                self.non_preemption_time_variant2_options,
+                self.solving_time_limit_milp_scheduling,
             ):
                 cores = assignment_data["assignment"]["parameters"]["number_of_cores"]
                 scheduling_id = f"scheduling_generate_{scheduling_index}_c{cores}"
@@ -122,17 +161,13 @@ class ConfigGenerator:
                     "taskset": {
                         "action": "open",
                         "taskset_id": assignment_data["taskset"]["taskset_id"],
-                        "parameters": {
-                            "none": "none"
-                        }
+                        "parameters": {"none": "none"},
                     },
                     "assignment": {
                         "action": "open",
                         "assignment_id": assignment_key,
                         "taskset_id": assignment_data["taskset"]["taskset_id"],
-                        "parameters": {
-                            "none": "none"
-                        }
+                        "parameters": {"none": "none"},
                     },
                     "scheduling": {
                         "action": "generate",
@@ -144,10 +179,10 @@ class ConfigGenerator:
                             "scheduling_options": {
                                 "non_preemption_time_variant2": non_preemption,
                                 "solving_time_limit_MILP": solving_time,
-                                "solver_name": "gurobi"
-                            }
-                        }
-                    }
+                                "solver_name": "gurobi",
+                            },
+                        },
+                    },
                 }
                 scheduling_index += 1
         return schedulings
@@ -169,11 +204,19 @@ class ConfigGenerator:
 
 if __name__ == "__main__":
     import sys
-    if len(sys.argv) != 2:
-        print("Usage: python3 config_generator.py <path_to_config_dir>")
+
+    if len(sys.argv) != 3:
+        print(
+            "Usage: python3 config_generator.py <path_to_config_dir> <experience_json_path>"
+        )
         sys.exit(1)
 
     config_dir = sys.argv[1]
-    generator = ConfigGenerator(config_dir)
+    experience_json_path = sys.argv[2]
+
+    with open(experience_json_path, "r") as f:
+        experience_data = json.load(f)
+
+    generator = ConfigGenerator(config_dir, experience_data)
     generator.generate_all_configs()
     print(f"Configurations generated in {config_dir}")

@@ -4,10 +4,7 @@ SOURCE="lemaitre4:~/Codethesis/"
 DESTINATION="/home/sonia/Bureau/Codethesis/"
 
 DIRECTORIES=(
-    'config_files'
-    'plots'
-    'results'
-    'slurm/output'
+    'generation'
 )
 
 for dir in "${DIRECTORIES[@]}"; do

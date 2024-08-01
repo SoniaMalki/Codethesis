@@ -2,15 +2,19 @@ from pathlib import Path
 
 
 class SlurmGenerator:
-    def __init__(self, base_dir, slurm_dir="slurm", output_dir="output"):
-        self.base_dir = Path(base_dir)
-        self.master_dir = self.base_dir / slurm_dir / "master"
-        self.slurm_dir = self.base_dir / slurm_dir / "slurm_files"
-        self.output_dir = self.base_dir / slurm_dir / output_dir
+    def __init__(self, main_dir, generation_dir, experience_key, slurm_dir="slurm", output_dir="output"):
+        self.main_dir = Path(main_dir)
+        self.generation_dir = Path(generation_dir)
+        self.experience_key = experience_key
+
+        self.master_dir = self.generation_dir / slurm_dir / "master"
+        self.slurm_dir = self.generation_dir / slurm_dir / "slurm_files"
+        self.output_dir = self.generation_dir / slurm_dir / output_dir
 
         self.master_dir.mkdir(parents=True, exist_ok=True)
         self.slurm_dir.mkdir(parents=True, exist_ok=True)
         self.output_dir.mkdir(parents=True, exist_ok=True)
+
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
             (self.output_dir / config_type).mkdir(parents=True, exist_ok=True)
@@ -33,7 +37,7 @@ module load tis/2018.01
 module load gurobi/gurobi1102
 
 # Exécuter main.py avec la clé d'expérience en argument
-python3 {self.base_dir / "main.py"} run_experience {config_key}
+python3 {self.main_dir / "main.py"} {self.experience_key} run_experience {config_key}
 """)
 
     def generate_assignment_slurm(self, config_key):
@@ -55,7 +59,7 @@ module load gurobi/gurobi1102
 
 
 # Exécuter main.py avec la clé d'expérience en argument
-python3 {self.base_dir / "main.py"} run_experience {config_key}
+python3 {self.main_dir / "main.py"} {self.experience_key} run_experience {config_key}
 """)
 
     def generate_scheduling_slurm(self, config_key):
@@ -76,7 +80,7 @@ module load tis/2018.01
 module load gurobi/gurobi1102
 
 # Exécuter main.py avec la clé d'expérience en argument
-python3 {self.base_dir / "main.py"} run_experience {config_key}
+python3 {self.main_dir / "main.py"} {self.experience_key} run_experience {config_key}
 """)
 
     def generate_wait_for_jobs_script(self, job_name, exclude_name):

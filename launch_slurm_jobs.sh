@@ -1,16 +1,15 @@
 #!/bin/bash
 
 script_dir=$(dirname "$0")
-slurm_dir="$script_dir/slurm"
-master_dir="$slurm_dir/master"
+experience_key=$1
+master_dir="$script_dir/generation/$experience_key/slurm/master"
 
-[ -d "$slurm_dir" ] && rm -rf "$slurm_dir"
-[ -d "$script_dir/plots" ] && rm -rf "$script_dir/plots"
-[ -d "$script_dir/results" ] && rm -rf "$script_dir/results"
-[ -d "$script_dir/output" ] && rm -rf "$script_dir/output"
+echo $script_dir
+echo $master_dir
+echo $experience_key
 
-python3 "$script_dir/main.py" generate_configs || { echo "Échec de la génération des configurations"; exit 1; }
-python3 "$script_dir/main.py" generate_slurm_files || { echo "Échec de la génération des fichiers Slurm"; exit 1; }
+python3 "$script_dir/main.py" $experience_key generate_configs || { echo "Échec de la génération des configurations"; exit 1; }
+python3 "$script_dir/main.py" $experience_key generate_slurm_files || { echo "Échec de la génération des fichiers Slurm"; exit 1; }
 
 if [ -f "$master_dir/master.slurm" ]; then
     sbatch "$master_dir/master.slurm" || { echo "Échec de la soumission du job master.slurm"; exit 1; }

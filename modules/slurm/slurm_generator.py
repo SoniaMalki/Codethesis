@@ -1,6 +1,6 @@
-import json
-import math
 from pathlib import Path
+from datetime import time, timedelta
+import json
 
 from modules.core.experience_loader import ExperienceLoader
 
@@ -26,23 +26,41 @@ class SlurmGenerator:
         for dir_path in [self.master_dir, self.slurm_dir, self.output_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
+        self.experience_loader = ExperienceLoader(self.generation_dir)
+
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
             (self.output_dir / config_type).mkdir(parents=True, exist_ok=True)
 
             # Calcul du temps pour chaque master
-            job_count = len(
-                list((self.slurm_dir / config_type).glob("*.slurm")))
-            job_time_minutes = int(
-                self.slurm_parameters.get(
-                    f"{config_type}_time", "02:00:00").split(":")[1]
+            config_file_path = self.experience_loader.config_files.get(
+                config_type
             )
-            total_time_minutes = job_count * job_time_minutes
-            total_time_slurm = (
-                f"{math.floor(total_time_minutes / 60):02d}:{total_time_minutes % 60:02d}:00"
+            with open(self.generation_dir / config_file_path, "r") as f:
+                configurations = json.load(f)
+
+            job_count = len(configurations)
+
+            # Convertir le temps du job en objet time
+            job_time = time.fromisoformat(
+                self.slurm_parameters.get(f"{config_type}_time", "02:00:00")
             )
 
-            setattr(self, f"{config_type}_master_time", total_time_slurm)
+            # Calculer le temps total du master en utilisant timedelta
+            total_time = timedelta(
+                hours=job_time.hour, minutes=job_time.minute, seconds=job_time.second
+            ) * int(job_count)
+
+            # Convertir timedelta en objet time
+            total_time_seconds = total_time.total_seconds()
+            total_time_obj = time(
+                hour=int(total_time_seconds // 3600),
+                minute=int((total_time_seconds % 3600) // 60),
+                second=int(total_time_seconds % 60),
+            )
+
+            # Stocker l'objet time du master
+            setattr(self, f"{config_type}_master_time", total_time_obj)
 
     def get_slurm_content(self, config_key, config_type):
         return f"""#!/bin/bash
@@ -76,8 +94,10 @@ while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' |
 done
 """
 
-    def write_master_slurm(self, config_type, total_time_slurm):
+    def write_master_slurm(self, config_type, total_time_obj):
         """Write master SLURM file for a configuration type."""
+        total_time_slurm = total_time_obj.strftime(
+            "%H:%M:%S")  # Formater le temps ici
         slurm_file = self.master_dir / f"all_{config_type}s.slurm"
         with open(slurm_file, "w") as f:
             f.write(
@@ -98,22 +118,28 @@ done
 
     def generate_master_slurm(self):
         """Generate the main master SLURM file."""
-        total_master_time_minutes = 0
+        total_master_time = timedelta()  # Initialiser un timedelta pour le master
 
         for config_type in ["taskset", "assignment", "scheduling"]:
-            print('here')
-            print(getattr(self, f"{config_type}_master_time").split(":")[1])
-            total_master_time_minutes += int(
-                getattr(self, f"{config_type}_master_time").split(":")[1]
+            total_master_time += timedelta(
+                hours=getattr(self, f"{config_type}_master_time").hour,
+                minutes=getattr(self, f"{config_type}_master_time").minute,
+                seconds=getattr(self, f"{config_type}_master_time").second,
             )
             self.write_master_slurm(
                 config_type, getattr(self, f"{config_type}_master_time")
             )
 
-        # Convertir le temps total en format HH:MM:SS pour le master principal
-        total_master_time_slurm = (
-            f"{math.floor(total_master_time_minutes / 60):02d}:{total_master_time_minutes % 60:02d}:00"
+        # Convertir timedelta en objet time
+        total_master_time_seconds = total_master_time.total_seconds()
+        total_master_time_obj = time(
+            hour=int(total_master_time_seconds // 3600),
+            minute=int((total_master_time_seconds % 3600) // 60),
+            second=int(total_master_time_seconds % 60),
         )
+
+        # Formater l'objet time en chaîne HH:MM:SS
+        total_master_time_slurm = total_master_time_obj.strftime("%H:%M:%S")
 
         slurm_file = self.master_dir / "master.slurm"
         with open(slurm_file, "w") as f:
@@ -122,7 +148,7 @@ done
 #SBATCH --job-name=master_job
 #SBATCH --output={self.output_dir / f"master_job_%j.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time={total_master_time_slurm}   
+#SBATCH --time={total_master_time_slurm}    
 #SBATCH --mem=2G  
 
 taskset_id=$(sbatch {self.master_dir / "all_tasksets.slurm"} | awk '{{print $4}}')

@@ -9,61 +9,64 @@ class ConfigGenerator:
         self.config_dir.mkdir(parents=True, exist_ok=True)
         self.experience_data = experience_data
 
-        self.taskset_repetitions = self.experience_data.get("taskset_parameters", {}).get(
-            "taskset_repetitions", [1]
-        )
-        self.tasks_per_taskset = self.experience_data.get("taskset_parameters", {}).get(
-            "tasks_per_taskset", [4]
-        )
-        self.interference_factors = self.experience_data.get("taskset_parameters", {}).get(
-            "interference_factors", [0]
-        )
-        self.probability_factors = self.experience_data.get("taskset_parameters", {}).get(
-            "probability_factors", [0]
-        )
-        self.max_utilization_factors = self.experience_data.get("taskset_parameters", {}).get(
-            "max_utilization_factors", [0.2]
-        )
-        self.deadline_options = self.experience_data.get("taskset_parameters", {}).get(
-            "deadline_options", ["eq_period"]
-        )
-        self.prime_exponent_hyperperiod_combinations = self.experience_data.get(
-            "taskset_parameters", {}
-        ).get("prime_exponent_hyperperiod_combinations", [(10000, 7, 3)])
-        self.number_of_cores_list = self.experience_data.get("taskset_parameters", {}).get(
-            "number_of_cores_list", [2]
-        )
+        # Récupérer tous les paramètres depuis experience_data
+        for param_section in ["taskset_parameters", "assignment_parameters", "scheduling_parameters"]:
+            for param_name, param_value in self.experience_data[param_section].items():
+                setattr(self, param_name, param_value)
 
-        self.assignment_methods = self.experience_data.get("assignment_parameters", {}).get(
+        # Vérification de tous les paramètres obligatoires
+        required_params = [
+            "taskset_repetitions",
+            "tasks_per_taskset",
+            "interference_factors",
+            "probability_factors",
+            "max_utilization_factors",
+            "deadline_options",
+            "prime_exponent_hyperperiod_combinations",
+            "number_of_cores_list",
             "assignment_methods",
-            ["WorstFitAssigner"],
-        )
-        self.sorting_criteria = self.experience_data.get("assignment_parameters", {}).get(
             "sorting_criteria",
-            [
-                "random_order",
-            ],
-        )
-        self.solving_time_limit_milp_assignment = self.experience_data.get(
-            "assignment_parameters", {}
-        ).get("solving_time_limit_milp_assignment", [300])
-
-        # Paramètres des schedulings
-        self.scheduling_algorithms = self.experience_data.get("scheduling_parameters", {}).get(
             "scheduling_algorithms",
-            [
-                "EarliestDeadlineFirst"
-            ],
-        )
-        self.non_preemption_time_variant2_options = self.experience_data.get(
-            "scheduling_parameters", {}
-        ).get(
             "non_preemption_time_variant2_options",
-            ["number_of_tasks"],
-        )
-        self.solving_time_limit_milp_scheduling = self.experience_data.get(
-            "scheduling_parameters", {}
-        ).get("solving_time_limit_milp_scheduling", [300])
+            "solving_time_limit_milp_assignment",
+            "solving_time_limit_milp_scheduling"
+        ]
+        for param_name in required_params:
+            if getattr(self, param_name) is None:
+                raise ValueError(
+                    f"Paramètre obligatoire manquant dans experience.json: {param_name}")
+
+        # Dictionnaire pour les paramètres optionnels
+        self.optional_params = {
+            "sorting_criteria": {
+                method: self.sorting_criteria if method != "Wmin" else [""]
+                for method in self.assignment_methods
+            },
+            "solving_time_limit_milp_assignment": {
+                method: self.solving_time_limit_milp_assignment
+                if method in ["Wmin", "Citta"]
+                else [""]
+                for method in self.assignment_methods
+            },
+            "non_preemption_time_variant2_options": {
+                algorithm: self.non_preemption_time_variant2_options
+                if algorithm
+                in [
+                    "EarliestDeadlineFirstVariant2",
+                    "DeadlineMonotonicVariant2",
+                    "CombinedScheduler",
+                    "Rhma",
+                ]
+                else [""]
+                for algorithm in self.scheduling_algorithms
+            },
+            "solving_time_limit_milp_scheduling": {
+                algorithm: self.solving_time_limit_milp_scheduling
+                if algorithm == "Rhma"
+                else [""]
+                for algorithm in self.scheduling_algorithms
+            },
+        }
 
     def generate_tasksets(self):
         tasksets = {}
@@ -114,35 +117,33 @@ class ConfigGenerator:
         assignment_index = 1
         for taskset_key, taskset_data in tasksets.items():
             cores = int(taskset_key.split("_c")[1])
-            for method, sorting, solving_time in itertools.product(
-                self.assignment_methods,
-                self.sorting_criteria,
-                self.solving_time_limit_milp_assignment,
-            ):
-                assignment_id = f"assignment_generate_{assignment_index}_c{cores}"
-                assignments[assignment_id] = {
-                    "taskset": {
-                        "action": "open",
-                        "taskset_id": taskset_key,
-                        "parameters": {"none": "none"},
-                    },
-                    "assignment": {
-                        "action": "generate",
-                        "assignment_id": assignment_id,
-                        "taskset_id": taskset_key,
-                        "parameters": {
-                            "sorting_criterion": sorting,
-                            "assignment_method": method,
-                            "number_of_cores": cores,
-                            "assignment_options": {
-                                "solving_time_limit_MILP": solving_time,
-                                "solver_name": "gurobi",
+            for method in self.assignment_methods:
+                for solving_time in self.optional_params["solving_time_limit_milp_assignment"][method]:
+                    for sorting in self.optional_params["sorting_criteria"][method]:
+                        assignment_id = f"assignment_generate_{assignment_index}_c{cores}"
+                        assignments[assignment_id] = {
+                            "taskset": {
+                                "action": "open",
+                                "taskset_id": taskset_key,
+                                "parameters": {"none": "none"},
                             },
-                        },
-                    },
-                    "scheduling": {"action": "none"},
-                }
-                assignment_index += 1
+                            "assignment": {
+                                "action": "generate",
+                                "assignment_id": assignment_id,
+                                "taskset_id": taskset_key,
+                                "parameters": {
+                                    "sorting_criterion": sorting,
+                                    "assignment_method": method,
+                                    "number_of_cores": cores,
+                                    "assignment_options": {
+                                        "solving_time_limit_MILP": solving_time,
+                                        "solver_name": "gurobi",
+                                    },
+                                },
+                            },
+                            "scheduling": {"action": "none"},
+                        }
+                        assignment_index += 1
         return assignments
 
     def generate_schedulings(self, assignments):
@@ -150,41 +151,39 @@ class ConfigGenerator:
 
         scheduling_index = 1
         for assignment_key, assignment_data in assignments.items():
-            for algorithm, non_preemption, solving_time in itertools.product(
-                self.scheduling_algorithms,
-                self.non_preemption_time_variant2_options,
-                self.solving_time_limit_milp_scheduling,
-            ):
-                cores = assignment_data["assignment"]["parameters"]["number_of_cores"]
-                scheduling_id = f"scheduling_generate_{scheduling_index}_c{cores}"
-                schedulings[scheduling_id] = {
-                    "taskset": {
-                        "action": "open",
-                        "taskset_id": assignment_data["taskset"]["taskset_id"],
-                        "parameters": {"none": "none"},
-                    },
-                    "assignment": {
-                        "action": "open",
-                        "assignment_id": assignment_key,
-                        "taskset_id": assignment_data["taskset"]["taskset_id"],
-                        "parameters": {"none": "none"},
-                    },
-                    "scheduling": {
-                        "action": "generate",
-                        "scheduling_id": scheduling_id,
-                        "taskset_id": assignment_data["taskset"]["taskset_id"],
-                        "assignment_id": assignment_key,
-                        "parameters": {
-                            "scheduling_algorithm": algorithm,
-                            "scheduling_options": {
-                                "non_preemption_time_variant2": non_preemption,
-                                "solving_time_limit_MILP": solving_time,
-                                "solver_name": "gurobi",
+            cores = assignment_data["assignment"]["parameters"]["number_of_cores"]
+            for algorithm in self.scheduling_algorithms:
+                for non_preemption in self.optional_params["non_preemption_time_variant2_options"][algorithm]:
+                    for solving_time in self.optional_params["solving_time_limit_milp_scheduling"][algorithm]:
+                        scheduling_id = f"scheduling_generate_{scheduling_index}_c{cores}"
+                        schedulings[scheduling_id] = {
+                            "taskset": {
+                                "action": "open",
+                                "taskset_id": assignment_data["taskset"]["taskset_id"],
+                                "parameters": {"none": "none"},
                             },
-                        },
-                    },
-                }
-                scheduling_index += 1
+                            "assignment": {
+                                "action": "open",
+                                "assignment_id": assignment_key,
+                                "taskset_id": assignment_data["taskset"]["taskset_id"],
+                                "parameters": {"none": "none"},
+                            },
+                            "scheduling": {
+                                "action": "generate",
+                                "scheduling_id": scheduling_id,
+                                "taskset_id": assignment_data["taskset"]["taskset_id"],
+                                "assignment_id": assignment_key,
+                                "parameters": {
+                                    "scheduling_algorithm": algorithm,
+                                    "scheduling_options": {
+                                        "non_preemption_time_variant2": non_preemption,
+                                        "solving_time_limit_MILP": solving_time,
+                                        "solver_name": "gurobi",
+                                    },
+                                },
+                            },
+                        }
+                        scheduling_index += 1
         return schedulings
 
     def save_to_json(self, data, filename):

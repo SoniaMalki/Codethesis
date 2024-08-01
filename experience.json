@@ -33,13 +33,13 @@
     "number_of_cores_list": [4]
   },
   "assignment_parameters": {
-    "assignment_methods": ["WorstFitAssigner"],
-    "sorting_criteria": ["wcet_ascending"],
+    "assignment_methods": ["WorstFitAssigner", "Citta", "Wmin"],
+    "sorting_criteria": ["wcet_ascending", "random_order"],
     "solving_time_limit_milp_assignment": [300]
   },
   "scheduling_parameters": {
-    "scheduling_algorithms": ["EarliestDeadlineFirst"],
-    "non_preemption_time_variant2_options": ["number_of_tasks"],
+    "scheduling_algorithms": ["EarliestDeadlineFirst", "Rhma", "EarliestDeadlineFirstVariant2"],
+    "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks"],
     "solving_time_limit_milp_scheduling": [30]
   }
 }

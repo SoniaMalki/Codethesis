@@ -1,14 +1,15 @@
 from pathlib import Path
-from datetime import time, timedelta
+from datetime import time
 import json
 from modules.core.experience_loader import ExperienceLoader
 
 
 class SlurmGenerator:
-    def __init__(self, main_dir, generation_dir, experience_key, experience_data):
+    def __init__(self, main_dir, generation_dir, experience_key, experience_data, batch_size=100):
         self.main_dir = Path(main_dir)
         self.generation_dir = Path(generation_dir)
         self.experience_key = experience_key
+        self.batch_size = batch_size
 
         # Vérifier si slurm_parameters est présent
         if "slurm_parameters" not in experience_data:
@@ -30,22 +31,19 @@ class SlurmGenerator:
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
             (self.slurm_dir / config_type /
-             "batch/").mkdir(parents=True, exist_ok=True)
+             "batch").mkdir(parents=True, exist_ok=True)
             (self.output_dir / config_type).mkdir(parents=True, exist_ok=True)
 
     def get_slurm_content(self, config_key, config_type):
         # Convertir le temps du job en objet time
         job_time = time.fromisoformat(
             self.slurm_parameters.get(f"{config_type}_time", "02:00:00")
-        )
-
-        # Formater l'objet time en chaîne HH:MM:SS
-        job_time_slurm = job_time.strftime("%H:%M:%S")
+        ).strftime("%H:%M:%S")
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
 #SBATCH --output={self.output_dir / config_type / f"output_{config_key}.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time={job_time_slurm}
+#SBATCH --time={job_time}
 #SBATCH --mem={self.slurm_parameters.get(f"{config_type}_mem", "8G")}
 
 # Charger les modules nécessaires
@@ -170,17 +168,17 @@ python3 {self.main_dir / "main.py"} {self.experience_key} analyze_results
             with open(self.generation_dir / config_file_path, "r") as f:
                 configurations = json.load(f)
 
-            # Gérer les jobs par batch de 100
+            # Gérer les jobs par batch de batch_size
             i = 0
             while i < len(configurations):
                 # Créer un dictionnaire pour le batch actuel
                 batch_configs = {}
-                for j in range(i, min(i + 100, len(configurations))):
+                for j in range(i, min(i + self.batch_size, len(configurations))):
                     config_key = list(configurations.keys())[j]
                     batch_configs[config_key] = configurations[config_key]
 
                 # Nom du batch actuel
-                batch_name = f"batch_{config_type}_{i // 100}"
+                batch_name = f"batch_{config_type}_{i // self.batch_size}"
 
                 # Générer le script SLURM pour le batch actuel
                 slurm_file = self.slurm_dir / config_type / \
@@ -208,7 +206,7 @@ done
                 for config_key in batch_configs.keys():
                     self.generate_slurm(config_key, config_type)
 
-                i += 100  # Passer au batch suivant
+                i += self.batch_size
 
         # Générer les fichiers SLURM masters
         self.generate_master_slurm()

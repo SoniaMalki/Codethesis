@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=batch_assignment
-#SBATCH --output=/home/smalki/Codethesis/generation/estimation_experience/slurm/output/assignment/assignment_output_%A_%a.txt
+#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/batch_assignment.txt
 #SBATCH --ntasks=1
 #SBATCH --time=2:00:00
 #SBATCH --mem=4G

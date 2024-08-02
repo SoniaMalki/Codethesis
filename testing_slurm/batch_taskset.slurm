@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=batch_taskset
-#SBATCH --output=/home/smalki/Codethesis/generation/estimation_experience/slurm/output/taskset/batch_taskset_output.txt
+#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/batch_taskset.txt
 #SBATCH --ntasks=1
 #SBATCH --time=1:00:00
 #SBATCH --mem=2G

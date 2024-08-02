@@ -14,15 +14,35 @@ script_dir=$(dirname "$0")
 
 # Chemin vers le dossier de sortie
 output_dir="$script_dir/generation/$experience_number/slurm/output"
+error_dir="$script_dir/output_error"
 
-# Fonction pour afficher le chemin d'un fichier
-echo_file_path() {
+# Créer le dossier de sortie pour les erreurs s'il n'existe pas
+mkdir -p "$error_dir"
+
+# Fonction pour afficher le chemin d'un fichier et trier par type d'erreur
+process_file() {
   local file_path="$1"
-  echo "$file_path"
+  local error_type
+
+  # Déterminer le type d'erreur
+  if grep -q "ZeroDivisionError" "$file_path"; then
+    error_type="ZeroDivisionError"
+  elif grep -q "TypeError" "$file_path"; then
+    error_type="TypeError"
+  else
+    error_type="UnknownError"
+  fi
+
+  # Créer le dossier pour le type d'erreur s'il n'existe pas
+  mkdir -p "$error_dir/$error_type"
+
+  # Copier le fichier dans le dossier correspondant
+  cp "$file_path" "$error_dir/$error_type/"
 }
 
 # Exporter la fonction pour qu'elle soit utilisable par xargs
-export -f echo_file_path
+export -f process_file
+export error_dir
 
 # Boucle sur les types de configuration
 if [ "$config_type" == "all" ]; then
@@ -38,7 +58,7 @@ for type in "${config_types[@]}"; do
   # Vérifier si le dossier existe
   if [ -d "$output_path" ]; then
     # Trouver les fichiers contenant "Traceback"
-    find "$output_path" -type f -exec grep -q "Traceback" {} \; -print0 | xargs -0 -I {} bash -c 'echo_file_path "$@"' _ {}
+    find "$output_path" -type f -exec grep -q "Traceback" {} \; -print0 | xargs -0 -I {} bash -c 'process_file "$@"' _ {}
   else
     echo "Dossier '$output_path' introuvable."
   fi

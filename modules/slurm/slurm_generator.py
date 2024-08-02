@@ -66,8 +66,15 @@ python3 {self.main_dir / "main.py"} {self.experience_key} run_experience {config
             f.write(self.get_slurm_content(config_key, config_type))
 
     def get_wait_for_jobs_script(self, job_name, exclude_name):
+        if type(exclude_name) != list:
+            exclude_name = [exclude_name]
+
+        grep_command = [
+            f"| grep -v '{ex_name}'" for ex_name in exclude_name]
+        grep_command = ''.join(grep_command)
+
         return f"""# Attendre que tous les jobs soient terminés
-while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' | grep -v '{exclude_name}' | wc -l) -gt 0 ]; do
+while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' {grep_command} | wc -l) -gt 0 ]; do
   sleep 1
 done
 """
@@ -178,6 +185,7 @@ python3 {self.main_dir / "main.py"} {self.experience_key} analyze_results
                 # Générer le script SLURM pour le batch actuel
                 slurm_file = self.slurm_dir / config_type / \
                     f"batch/{batch_name}.slurm"
+                param_exclude = [batch_name, f"all_{config_type}s_master"]
                 with open(slurm_file, "w") as f:
                     f.write(
                         f"""#!/bin/bash
@@ -191,7 +199,7 @@ for config_key in {" ".join(batch_configs.keys())}; do  # Séparer par des espac
   sbatch {self.slurm_dir / config_type / f"$config_key.slurm"}  # Utiliser le chemin complet
 done
 
-{self.get_wait_for_jobs_script(batch_name, batch_name)}
+{self.get_wait_for_jobs_script(config_type, param_exclude)}
                     """
                     )
 

@@ -213,3 +213,136 @@ done
 
         # Générer le fichier SLURM pour l'analyse des résultats
         self.generate_analyze_slurm()
+
+    def generate_estimation(self):
+        # Define the base path for the estimation files
+        estimation_dir = self.main_dir / "estimation_slurm"
+        estimation_dir.mkdir(parents=True, exist_ok=True)
+
+        # File paths for the slurm scripts
+        master_file = estimation_dir / "master.slurm"
+        batch_taskset_file = estimation_dir / "batch_taskset.slurm"
+        batch_assignment_file = estimation_dir / "batch_assignment.slurm"
+        batch_scheduling_file = estimation_dir / "batch_scheduling.slurm"
+
+        # Content for master.slurm
+        master_content = """#!/bin/bash
+#SBATCH --job-name=master
+#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/master.txt
+#SBATCH --ntasks=1
+#SBATCH --time=00:02:00
+#SBATCH --mem=2G
+
+taskset_id=$(sbatch /home/smalki/Codethesis/estimation_slurm/batch_taskset.slurm | awk '{print $4}')
+assignment_id=$(sbatch --dependency=afterok:$taskset_id /home/smalki/Codethesis/estimation_slurm/batch_assignment.slurm | awk '{print $4}')
+scheduling_id=$(sbatch --dependency=afterok:$assignment_id /home/smalki/Codethesis/estimation_slurm/batch_scheduling.slurm | awk '{print $4}')
+"""
+
+        # Content for batch_taskset.slurm
+        batch_taskset_content = """#!/bin/bash
+#SBATCH --job-name=batch_taskset
+#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/batch_taskset.txt
+#SBATCH --ntasks=1
+#SBATCH --time=1:00:00
+#SBATCH --mem=2G
+
+# Define experience IDs
+exp_ids=(
+    "taskset_generate_3_c8"
+    "taskset_generate_53_c4"
+    "taskset_generate_7_c2"
+    "taskset_generate_60_c8"
+    "taskset_generate_11_c4"
+    "taskset_generate_67_c2"
+    "taskset_generate_18_c8"
+    "taskset_generate_62_c4"
+    "taskset_generate_22_c2"
+    "taskset_generate_72_c8"
+)
+
+# Execute experiences in sequence
+for exp_id in "${exp_ids[@]}"; do
+    sbatch /home/smalki/Codethesis/generation/estimation_experience/slurm/slurm_files/taskset/${exp_id}.slurm
+done
+
+# Wait for all jobs to finish
+while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep 'taskset' | grep -v 'batch_taskset' | wc -l) -gt 0 ]; do
+    sleep 1
+done
+"""
+
+        # Content for batch_assignment.slurm
+        batch_assignment_content = """#!/bin/bash
+#SBATCH --job-name=batch_assignment
+#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/batch_assignment.txt
+#SBATCH --ntasks=1
+#SBATCH --time=2:00:00
+#SBATCH --mem=4G
+
+# Define experience IDs
+exp_ids=(
+    "assignment_generate_75_c8"
+    "assignment_generate_1935_c4"
+    "assignment_generate_243_c2"
+    "assignment_generate_2214_c8"
+    "assignment_generate_407_c4"
+    "assignment_generate_2479_c2"
+    "assignment_generate_646_c8"
+    "assignment_generate_2283_c4"
+    "assignment_generate_813_c2"
+    "assignment_generate_2664_c8"
+)
+
+# Execute experiences in sequence
+for exp_id in "${exp_ids[@]}"; do
+    sbatch /home/smalki/Codethesis/generation/estimation_experience/slurm/slurm_files/assignment/${exp_id}.slurm
+done
+
+# Wait for all jobs to finish
+while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep 'assignment' | grep -v 'batch_assignment' | wc -l) -gt 0 ]; do
+    sleep 1
+done
+"""
+
+        # Content for batch_scheduling.slurm
+        batch_scheduling_content = """#!/bin/bash
+#SBATCH --job-name=batch_scheduling
+#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/batch_scheduling.txt
+#SBATCH --ntasks=1
+#SBATCH --time=4:00:00
+#SBATCH --mem=16G
+
+# Define experience IDs
+exp_ids=(
+    "scheduling_generate_519_c8"
+    "scheduling_generate_13543_c4"
+    "scheduling_generate_1701_c2"
+    "scheduling_generate_15493_c8"
+    "scheduling_generate_2846_c4"
+    "scheduling_generate_17353_c2"
+    "scheduling_generate_4518_c8"
+    "scheduling_generate_15979_c4"
+    "scheduling_generate_5691_c2"
+    "scheduling_generate_18643_c8"
+)
+
+# Execute experiences in sequence
+for exp_id in "${exp_ids[@]}"; do
+    sbatch /home/smalki/Codethesis/generation/estimation_experience/slurm/slurm_files/scheduling/${exp_id}.slurm
+done
+
+# Wait for all jobs to finish
+while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep 'scheduling' | grep -v 'batch_scheduling' | wc -l) -gt 0 ]; do
+    sleep 1
+done
+"""
+
+        # Write the content to files
+        with open(master_file, 'w') as f:
+            f.write(master_content)
+        with open(batch_taskset_file, 'w') as f:
+            f.write(batch_taskset_content)
+        with open(batch_assignment_file, 'w') as f:
+            f.write(batch_assignment_content)
+        with open(batch_scheduling_file, 'w') as f:
+            f.write(batch_scheduling_content)

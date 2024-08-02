@@ -122,7 +122,14 @@ def main(experience_key, action, config_type=None):
             experience_data=experience_data[experience_key],
         )
         slurm_generator.generate_all_slurm()
-
+    elif action == "generate_estimation":
+        slurm_generator = SlurmGenerator(
+            main_dir=main_path,
+            generation_dir=generation_path,
+            experience_key=experience_key,
+            experience_data=experience_data[experience_key],
+        )
+        slurm_generator.generate_estimation()
     else:
         print(f"Action invalide: {action}")
 

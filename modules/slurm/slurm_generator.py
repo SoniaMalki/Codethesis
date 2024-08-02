@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import time
 import json
+import socket
 from modules.core.experience_loader import ExperienceLoader
 
 
@@ -28,6 +29,25 @@ class SlurmGenerator:
 
         self.experience_loader = ExperienceLoader(self.generation_dir)
 
+        # Dictionnaire des modules pour chaque cluster
+        self.cluster_modules = {
+            "lemaitre4": """
+module load releases/2023a
+module load Python/3.11.3-GCCcore-12.3.0
+module load GLPK/5.0-GCCcore-12.3.0
+module load tis/2018.01
+module load gurobi/gurobi1102
+""",
+            "hercules": """
+module load Python/3.9.6-GCCcore-11.2.0
+module load GLPK/5.0-GCCcore-11.2.0
+module load Gurobi-Optimizer/9.5.1
+""",
+        }
+        # Récupérer le hostname de la machine
+        hostname = socket.gethostname()
+        # Charger les modules en fonction du cluster
+        self.modules = self.cluster_modules.get(hostname, "")
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
             (self.slurm_dir / config_type /
@@ -47,11 +67,7 @@ class SlurmGenerator:
 #SBATCH --mem={self.slurm_parameters.get(f"{config_type}_mem", "8G")}
 
 # Charger les modules nécessaires
-module load releases/2023a
-module load Python/3.11.3-GCCcore-12.3.0
-module load GLPK/5.0-GCCcore-12.3.0
-module load tis/2018.01
-module load gurobi/gurobi1102
+{self.modules}
 
 # Exécuter main.py avec la clé d'expérience en argument
 python3 {self.main_dir / "main.py"} {self.experience_key} run_experience {config_key}
@@ -153,8 +169,7 @@ sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.s
 #SBATCH --mem=4G
 
 # Charger les modules nécessaires
-module load releases/2023a
-module load Python/3.11.3-GCCcore-12.3.0
+{self.modules}
 
 # Exécuter le script d'analyse
 python3 {self.main_dir / "main.py"} {self.experience_key} analyze_results

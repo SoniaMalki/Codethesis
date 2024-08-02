@@ -170,22 +170,23 @@ python3 {self.main_dir / "main.py"} {self.experience_key} analyze_results
             with open(self.generation_dir / config_file_path, "r") as f:
                 configurations = json.load(f)
 
-            # Gérer les jobs par batch de 5
+            # Gérer les jobs par batch de 100
             i = 0
             while i < len(configurations):
                 # Créer un dictionnaire pour le batch actuel
                 batch_configs = {}
-                for j in range(i, min(i + 5, len(configurations))):
+                for j in range(i, min(i + 100, len(configurations))):
                     config_key = list(configurations.keys())[j]
                     batch_configs[config_key] = configurations[config_key]
 
                 # Nom du batch actuel
-                batch_name = f"batch_{config_type}_{i // 5}"
+                batch_name = f"batch_{config_type}_{i // 100}"
 
                 # Générer le script SLURM pour le batch actuel
                 slurm_file = self.slurm_dir / config_type / \
                     f"batch/{batch_name}.slurm"
-                param_exclude = [batch_name, f"all_{config_type}s_master"]
+                param_exclude = [f"batch_{config_type}",
+                                 f"all_{config_type}s_master"]
                 with open(slurm_file, "w") as f:
                     f.write(
                         f"""#!/bin/bash
@@ -207,7 +208,7 @@ done
                 for config_key in batch_configs.keys():
                     self.generate_slurm(config_key, config_type)
 
-                i += 5  # Passer au batch suivant
+                i += 100  # Passer au batch suivant
 
         # Générer les fichiers SLURM masters
         self.generate_master_slurm()

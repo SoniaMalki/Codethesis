@@ -18,8 +18,8 @@ class Citta:
         self.solving_time_limit_MILP = self.assignment_options.get(
             "solving_time_limit_MILP", None)
 
-        self.solver_name = self.assignment_options.get("solver_name", "glpk")
-        
+        self.solver_name = self.assignment_options.get("solver_name", "gurobi")
+
         print(f"Citta utilisant le solveur : {self.solver_name}")
 
         if self.solver_name == "gurobi":

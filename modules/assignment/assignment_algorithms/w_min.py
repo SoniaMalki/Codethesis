@@ -12,8 +12,8 @@ class Wmin:
         self.solving_time_limit_MILP = assignment_options.get(
             "solving_time_limit_MILP", None)
         self.assignment_options = assignment_options
-        self.solver_name = self.assignment_options.get("solver_name", "glpk")
-        
+        self.solver_name = self.assignment_options.get("solver_name", "gurobi")
+
         print(f"Wmin utilisant le solveur : {self.solver_name}")
 
         if self.solver_name == "gurobi":

@@ -75,6 +75,10 @@ done
     def write_master_slurm(self, config_type):
         """Write master SLURM file for a configuration type."""
         slurm_file = self.master_dir / f"all_{config_type}s_master.slurm"
+        batch_files = sorted(
+            (self.slurm_dir / config_type / "batch").glob("*.slurm")
+        )
+
         with open(slurm_file, "w") as f:
             f.write(
                 f"""#!/bin/bash
@@ -84,10 +88,27 @@ done
 #SBATCH --time=2-00:00:00
 #SBATCH --mem=2G
 
-for slurm_file in {self.slurm_dir / config_type}/batch/*.slurm; do
-  sbatch "$slurm_file"
-done
+"""
+            )
 
+            # Lancer les batchs avec dépendances
+            previous_batch_id_var = None
+            for i, batch_file in enumerate(batch_files):
+                batch_name = batch_file.stem
+                current_batch_id_var = f"{batch_name}_ID"
+
+                if previous_batch_id_var:
+                    f.write(
+                        f"""{current_batch_id_var}=$(sbatch --dependency=afterok:${previous_batch_id_var} {batch_file} | awk '{{print $4}}')\n"""
+                    )
+                else:
+                    f.write(
+                        f"""{current_batch_id_var}=$(sbatch {batch_file} | awk '{{print $4}}')\n"""
+                    )
+                previous_batch_id_var = current_batch_id_var
+
+            f.write(
+                f"""
 {self.get_wait_for_jobs_script(config_type, f"all_{config_type}s_master")}
 """
             )
@@ -142,23 +163,26 @@ python3 {self.main_dir / "main.py"} {self.experience_key} analyze_results
             with open(self.generation_dir / config_file_path, "r") as f:
                 configurations = json.load(f)
 
-            # Gérer les jobs par batch de 100
+            # Gérer les jobs par batch de 5
             i = 0
             while i < len(configurations):
                 # Créer un dictionnaire pour le batch actuel
                 batch_configs = {}
-                for j in range(i, min(i + 100, len(configurations))):
+                for j in range(i, min(i + 5, len(configurations))):
                     config_key = list(configurations.keys())[j]
                     batch_configs[config_key] = configurations[config_key]
 
+                # Nom du batch actuel
+                batch_name = f"batch_{config_type}_{i // 5}"
+
                 # Générer le script SLURM pour le batch actuel
                 slurm_file = self.slurm_dir / config_type / \
-                    f"batch/all_{config_type}s_{i // 100}.slurm"
+                    f"batch/{batch_name}.slurm"
                 with open(slurm_file, "w") as f:
                     f.write(
                         f"""#!/bin/bash
-#SBATCH --job-name=all_{config_type}s_{i // 100}
-#SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s_{i // 100}.txt"}
+#SBATCH --job-name={batch_name}
+#SBATCH --output={self.output_dir / config_type / f"output_{batch_name}.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time={self.slurm_parameters.get(f"{config_type}_time", "02:00:00")}
 #SBATCH --mem=2G
@@ -167,8 +191,7 @@ for config_key in {" ".join(batch_configs.keys())}; do  # Séparer par des espac
   sbatch {self.slurm_dir / config_type / f"$config_key.slurm"}  # Utiliser le chemin complet
 done
 
-{self.get_wait_for_jobs_script(
-    f"all_{config_type}s_{i // 100}", f"all_{config_type}s_{i // 100}")}
+{self.get_wait_for_jobs_script(batch_name, batch_name)}
                     """
                     )
 
@@ -176,7 +199,7 @@ done
                 for config_key in batch_configs.keys():
                     self.generate_slurm(config_key, config_type)
 
-                i += 100  # Passer au batch suivant
+                i += 5  # Passer au batch suivant
 
         # Générer les fichiers SLURM masters
         self.generate_master_slurm()

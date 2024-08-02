@@ -46,7 +46,8 @@ class Rhma:
         # output_path = f"{Path(__file__).parent.parent.parent.parent}/other_files/output_parameters.txt"
         # self.save_parameters_to_file(file_path = output_path)
 
-        self.solver_name = self.scheduling_options.get("solver_name", "glpk")
+        self.solver_name = self.scheduling_options.get(
+            "solver_name", "gurobi")
 
         print(f"Rhma utilisant le solveur : {self.solver_name}")
 

@@ -1,7 +1,24 @@
 #!/bin/bash
 
+# Liste des clusters valides
+VALID_CLUSTERS=("lemaitre4" "hercules" "nic5" "dragon2")
+
+# Vérification du nom du cluster
+CLUSTER_NAME=$1
+
+if [[ -z "$CLUSTER_NAME" ]]; then
+    echo "Erreur: Vous devez préciser un nom de cluster parmi les suivants : ${VALID_CLUSTERS[*]}"
+    exit 1
+fi
+
+# Vérification si le cluster fourni est valide
+if [[ ! " ${VALID_CLUSTERS[@]} " =~ " $CLUSTER_NAME " ]]; then
+    echo "Erreur: Cluster invalide. Veuillez choisir parmi les suivants : ${VALID_CLUSTERS[*]}"
+    exit 1
+fi
+
 SOURCE="/home/sonia/Bureau/Codethesis/"
-DESTINATION="lemaitre4:~/Codethesis"
+DESTINATION="$CLUSTER_NAME:~/Codethesis"
 
 EXCLUDE_ITEMS=(
     '.git'

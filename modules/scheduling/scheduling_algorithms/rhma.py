@@ -357,10 +357,15 @@ class Rhma:
                 schedule.add_period(scheduling=busy_period_schedule)
 
             else:
-                print(
-                    f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
-                schedule.add_period(scheduling=self.busy_periods[h])
-                total_utilization = self.busy_periods[h].total_utilization
+                if self.busy_periods[h].success == 0:
+                    print(
+                        f'RHMA failed to find a solution for busy period. Cannot use CombinedScheduler instead, because it did not find one as well.')
+                    return schedule
+                else:
+                    print(
+                        f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
+                    schedule.add_period(scheduling=self.busy_periods[h])
+                    total_utilization = self.busy_periods[h].total_utilization
 
             self.actual_utilization[h] = total_utilization/self.hyperperiod
 

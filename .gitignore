@@ -143,3 +143,4 @@ cython_debug/
 
 # Custom exclusions
 generation/
+output_error/

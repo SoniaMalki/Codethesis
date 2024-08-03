@@ -30,7 +30,7 @@ EXCLUDE_ITEMS=(
     '.gitignore'
     'README.md'
     'generation'
-    'output_error'
+    'permanent_results'
 )
 
 EXCLUDES=()

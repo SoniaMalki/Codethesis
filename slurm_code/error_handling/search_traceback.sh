@@ -13,7 +13,7 @@ config_type="$2"
 script_dir=$(dirname "$0")
 
 # Chemin vers le dossier de sortie
-output_dir="$script_dir/generation/$experience_number/slurm/output"
+output_dir="$script_dir/../../generation/$experience_number/slurm/output"
 error_dir="$script_dir/output_error"
 
 # Créer le dossier de sortie pour les erreurs s'il n'existe pas
@@ -46,19 +46,24 @@ export error_dir
 
 # Boucle sur les types de configuration
 if [ "$config_type" == "all" ]; then
-  config_types=("taskset" "assignment" "scheduling")
+  config_types=("taskset" "assignment" "scheduling" "")
 else
   config_types=("$config_type")
 fi
 
 for type in "${config_types[@]}"; do
-  # Chemin vers le dossier de sortie pour le type de configuration
-  output_path="$output_dir/$type"
+  if [ -n "$type" ]; then
+    # Chemin vers le dossier de sortie pour le type de configuration
+    output_path="$output_dir/$type"
+  else
+    # Si type est vide, c'est la racine du dossier output
+    output_path="$output_dir"
+  fi
 
   # Vérifier si le dossier existe
   if [ -d "$output_path" ]; then
     # Trouver les fichiers contenant "Traceback"
-    find "$output_path" -type f -exec grep -q "Traceback" {} \; -print0 | xargs -0 -I {} bash -c 'process_file "$@"' _ {}
+    find "$output_path" -type f -name "*.txt" -exec grep -q "Traceback" {} \; -print0 | xargs -0 -I {} bash -c 'process_file "$@"' _ {}
   else
     echo "Dossier '$output_path' introuvable."
   fi

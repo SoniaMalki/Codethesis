@@ -13,11 +13,19 @@ if [ -z "$EXPERIENCE" ] || [ -z "$ERROR_TYPE" ]; then
   exit 1
 fi
 
-# Dossier de base pour les fichiers d'erreur
-ERROR_DIR="./output_error/$ERROR_TYPE"
+# Obtenir le chemin du script actuel
+script_dir=$(dirname "$0")
 
-# Dossier de base pour les fichiers sbatch
-SBATCH_DIR="./generation/$EXPERIENCE/slurm/slurm_files/scheduling"
+# Dossier de base pour les fichiers d'erreur
+ERROR_DIR="$script_dir/output_error/$ERROR_TYPE"
+
+# Types de configuration
+CONFIG_TYPES=("scheduling" "taskset" "assignment")
+
+# Fonction pour compter les jobs en cours
+count_jobs() {
+  squeue -u $(whoami) | grep "PD\|R" | wc -l
+}
 
 # Vérifier si le dossier d'erreur existe
 if [ ! -d "$ERROR_DIR" ]; then
@@ -25,21 +33,17 @@ if [ ! -d "$ERROR_DIR" ]; then
   exit 1
 fi
 
-# Fonction pour compter les jobs en cours
-count_jobs() {
-  squeue -u $(whoami) | grep "PD\|R" | wc -l
-}
-
 # Parcourir tous les fichiers dans le dossier d'erreur
 for FILE in $ERROR_DIR/*; do
   # Extraire le nom de base du fichier
   BASENAME=$(basename "$FILE")
   
-  # Extraire l'identifiant du fichier, en supposant qu'il est au format output_scheduling_generate_8302_c4.txt
-  ID=$(echo "$BASENAME" | sed -E 's/output_scheduling_generate_([^.]+)\.txt/\1/')
+  # Extraire l'identifiant du fichier, en supposant qu'il est au format output_{config_type}_generate_8302_c4.txt
+  CONFIG_TYPE=$(echo "$BASENAME" | sed -E 's/^output_([^_]+)_generate_.*$/\1/')
+  ID=$(echo "$BASENAME" | sed -E 's/^output_[^_]+_generate_([^.]+)\.txt$/\1/')
 
   # Construire le chemin complet du fichier sbatch
-  SBATCH_FILE="$SBATCH_DIR/scheduling_generate_$ID.slurm"
+  SBATCH_FILE="$script_dir/../../generation/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/${CONFIG_TYPE}_generate_$ID.slurm"
 
   # Vérifier si le fichier sbatch existe
   if [ -f "$SBATCH_FILE" ]; then

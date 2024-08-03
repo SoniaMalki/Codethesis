@@ -143,4 +143,4 @@ cython_debug/
 
 # Custom exclusions
 generation/
-output_error/
+slurm_code/error_handling/output_error

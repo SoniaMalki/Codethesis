@@ -31,28 +31,42 @@ class SlurmGenerator:
 
         # Dictionnaire des modules pour chaque cluster
         self.cluster_modules = {
-            "lemaitre4": """
+            "lm": """
 module load releases/2023a
 module load Python/3.11.3-GCCcore-12.3.0
 module load GLPK/5.0-GCCcore-12.3.0
 module load tis/2018.01
 module load gurobi/gurobi1102
 """,
-            "hercules": """
+            "her": """
 module load Python/3.9.6-GCCcore-11.2.0
 module load GLPK/5.0-GCCcore-11.2.0
 module load Gurobi-Optimizer/9.5.1
 """,
+            "nic": """
+module load releases/2022b
+module load Python/3.10.8-GCCcore-12.2.0
+module load GLPK/5.0-GCCcore-12.2.0
+module load Gurobi/10.0.3-GCCcore-12.2.0
+""",
         }
         # Récupérer le hostname de la machine
         hostname = socket.gethostname()
+        print(f"hostname: {hostname}")
         # Charger les modules en fonction du cluster
-        self.modules = self.cluster_modules.get(hostname, "")
+        self.modules = self.get_modules_for_hostname(hostname)
+        print(f"self.modules: {self.modules}")
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
             (self.slurm_dir / config_type /
              "batch").mkdir(parents=True, exist_ok=True)
             (self.output_dir / config_type).mkdir(parents=True, exist_ok=True)
+
+    def get_modules_for_hostname(self, hostname):
+        for key in self.cluster_modules.keys():
+            if hostname.startswith(key):
+                return self.cluster_modules[key]
+        return ""
 
     def get_slurm_content(self, config_key, config_type):
         # Convertir le temps du job en objet time

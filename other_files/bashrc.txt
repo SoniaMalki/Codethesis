@@ -1,0 +1,39 @@
+# Si l'interpréteur est interactif, exécuter les commandes suivantes
+if [[ $- == *i* ]]; then
+    if [[ $(hostname) == "hercules" ]]; then
+        cd Codethesis/
+        module load Python/3.9.6-GCCcore-11.2.0
+        module load GLPK/5.0-GCCcore-11.2.0
+        module load Gurobi-Optimizer/9.5.1
+
+    elif [[ $(hostname) == "lm4-f001" ]]; then
+        cd Codethesis/
+        module load releases/2023a
+        module load Python/3.11.3-GCCcore-12.3.0
+        module load GLPK/5.0-GCCcore-12.3.0
+        module load tis/2018.01
+        module load gurobi/gurobi1102
+
+    elif [[ $(hostname) == "nic5-login1" ]]; then
+        cd Codethesis/
+        module load releases/2022b
+        module load Python/3.10.8-GCCcore-12.2.0
+        module load GLPK/5.0-GCCcore-12.2.0
+        module load Gurobi/10.0.3-GCCcore-12.2.0
+    fi
+
+fi
+
+# Alias pour squeue -u $USER
+alias sq='squeue -u $USER'
+
+# Alias pour scancel
+alias sc='scancel -u $USER'
+
+# Alias pour squeue avec nom complet
+alias sqn='squeue -u $USER -h -o "%.30j %.2t %.10M %.6D %.30R" | awk '\''BEGIN { printf "%-30s %-2s %-10s %-6s %-30s\n", "NAME", "ST", "TIME", "NODES", "NODELIST" } { printf "%-30s %-2s %-10s %-6s %-30s\n", $1, $2, $3, $4, $5 }'\'''
+
+# Alias pour squeue avec nom complet des jobs running
+alias sqnr='squeue -u $USER -h -o "%.30j %.2t %.10M %.6D %.30R" | awk '\''BEGIN { printf "%-30s %-2s %-10s %-6s %-30s\n", "NAME", "ST", "TIME", "NODES", "NODELIST" } $2 == "R" { printf "%-30s %-2s %-10s %-6s %-30s\n", $1, $2, $3, $4, $5 }'\'''
+
+

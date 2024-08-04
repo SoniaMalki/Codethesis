@@ -32,7 +32,7 @@ class SchedulingByAssignmentAnalyzer:
             self.df["number_of_cores"]
 
         self.df["assignment_scheduling_combination"] = self.df["scheduling_algorithm"] + \
-            "_" + self.df["assignment_method"]  
+            "_" + self.df["assignment_method"]
 
         self.algorithm_colors = {
             "EarliestDeadlineFirst_FirstFitAssigner": "tab:blue",
@@ -302,8 +302,10 @@ class SchedulingByAssignmentAnalyzer:
 
     def plot_success_rate_by_sorting_criteria(self, df_subset, sorting_criterion):
         plt.figure(figsize=(12, 8))
+        assignment_without_wmin = [
+            assignment for assignment in self.assignment_methods if assignment != "Wmin"]
         ax = sns.barplot(x="assignment_scheduling_combination", y="mean_success_scheduling", data=df_subset, order=[
-                         f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods[:-1]], errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)  # scheduling en premier
+                         f"{s}_{a}" for s in self.scheduling_algorithms for a in assignment_without_wmin], errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)  # scheduling en premier
         ax.set_ylim(-0.01, 1.1)
         plt.title(
             f"Success Rate by Scheduling/Assignment, Sorting Criterion: {sorting_criterion.replace('_',' ').capitalize()}")
@@ -318,8 +320,10 @@ class SchedulingByAssignmentAnalyzer:
 
     def plot_computation_time_by_sorting_criteria(self, df_subset, sorting_criterion):
         plt.figure(figsize=(12, 8))
+        assignment_without_wmin = [
+            assignment for assignment in self.assignment_methods if assignment != "Wmin"]
         ax = sns.boxplot(x="assignment_scheduling_combination", y="mean_computation_time_scheduling", data=df_subset, order=[
-                         f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods[:-1]], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         f"{s}_{a}" for s in self.scheduling_algorithms for a in assignment_without_wmin], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         plt.title(
             f"Computation Time by Scheduling/Assignment, Sorting Criterion: {sorting_criterion.replace('_',' ').capitalize()}")
         plt.xlabel("Scheduling/Assignment Combination")

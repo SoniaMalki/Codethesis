@@ -31,8 +31,8 @@ class ResultAnalyzer:
             self.df["number_of_cores"]  # Calcul du ratio tâches/cœurs
 
     def run_analysis(self):
-        self.analyze_assignment()
-        # self.analyze_scheduling()
+        # self.analyze_assignment()
+        self.analyze_scheduling()
         # self.analyze_schedulability()
         # self.analyze_overutilization()
         # self.analyze_citta_acceptance_ratio()

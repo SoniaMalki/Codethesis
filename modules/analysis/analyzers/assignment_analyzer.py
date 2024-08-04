@@ -141,7 +141,7 @@ class AssignmentAnalyzer:
             plt.ylabel("Probability of Interference")
             plt.gca().invert_yaxis()
             plt.savefig(
-                self.plots_dir / f'by_parameter_success_rate_with_parameter_{parameter}_and_assignment_method_{assignment_method}.png')
+                self.plots_dir / f'by_parameter_success_rate_with_parameter_{parameter}_{assignment_method}.png')
             plt.close()
 
     def plot_computation_time_by_taskset_parameter(self, parameter):
@@ -180,7 +180,7 @@ class AssignmentAnalyzer:
             plt.ylabel("Probability of Interference")
             plt.gca().invert_yaxis()
             plt.savefig(
-                self.plots_dir / f'by_parameter_computation_time_with_parameter_{parameter}_and_assignment_method_{assignment_method}.png')
+                self.plots_dir / f'by_parameter_computation_time_with_parameter_{parameter}_{assignment_method}.png')
             plt.close()
 
     def autolabel_bars(self, ax):

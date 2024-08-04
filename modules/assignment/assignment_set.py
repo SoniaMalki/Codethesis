@@ -1,4 +1,5 @@
 from modules.assignment.assignment import Assignment
+import numpy as np
 
 
 class AssignmentSet:
@@ -53,10 +54,9 @@ class AssignmentSet:
                 self.sorting_criterion == other.sorting_criterion and
                 self.number_of_cores == other.number_of_cores and
                 self.assignment_list == other.assignment_list)
-    
 
     def calculate_mean_success(self):
-        return sum(assignment.success for assignment in self.assignment_list) / len(self.assignment_list)
+        return np.mean([assignment.success for assignment in self.assignment_list])
 
     def calculate_mean_computation_time(self):
-        return sum(assignment.computation_time for assignment in self.assignment_list) / len(self.assignment_list)
+        return np.mean([assignment.computation_time for assignment in self.assignment_list])

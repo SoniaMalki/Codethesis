@@ -1,5 +1,7 @@
 from time import perf_counter
 
+import numpy
+
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.composite_scheduling import CompositeScheduling
 from modules.scheduling.scheduling_set import SchedulingSet
@@ -84,8 +86,13 @@ class SchedulingGenerator:
         schedule, success = scheduler.schedule()
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute
-        actual_utilization = scheduler.actual_utilization
-        theoritical_utilization = sum(taskset.utilization)
+        if not success:
+            computation_time = numpy.nan
+            actual_utilization = numpy.nan
+            theoritical_utilization = numpy.nan
+        else:
+            actual_utilization = scheduler.actual_utilization
+            theoritical_utilization = sum(taskset.utilization)
 
         scheduling = Scheduling(schedule=schedule, success=success, scheduler_name=str(
             scheduler))
@@ -106,13 +113,18 @@ class SchedulingGenerator:
         busy_periods = scheduler.schedule()
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute
-        actual_utilization = sum(scheduler.actual_utilization)
-        theoritical_utilization = sum(taskset.utilization)
 
         scheduling = CompositeScheduling(scheduler_name=str(scheduler))
         for busy_period in busy_periods:
             scheduling.add_schedule(schedule=busy_period)
 
+        if not scheduling.success:
+            computation_time = numpy.nan
+            actual_utilization = numpy.nan
+            theoritical_utilization = numpy.nan
+        else:
+            actual_utilization = sum(scheduler.actual_utilization)
+            theoritical_utilization = sum(taskset.utilization)
         scheduling.add_performances(
             computation_time=computation_time, actual_utilization=actual_utilization, theoritical_utilization=theoritical_utilization)
         return scheduling

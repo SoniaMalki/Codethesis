@@ -1,3 +1,4 @@
+import numpy
 from modules.assignment.assignment import Assignment
 from modules.assignment.assignment_set import AssignmentSet
 from modules.assignment.assignment_algorithms.citta import Citta
@@ -67,6 +68,8 @@ class AssignmentGenerator:
         assigned_cores, successfully_assigned = assigner.assign()
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute
+        if not successfully_assigned:
+            computation_time = numpy.nan
         assignment = Assignment(assignment=assigned_cores,
                                 success=successfully_assigned)
         assignment.add_performances(computation_time=computation_time)
@@ -82,6 +85,8 @@ class AssignmentGenerator:
         assigned_cores, successfully_assigned = assigner.assign()
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute
+        if not successfully_assigned:
+            computation_time = numpy.nan
         assignment = Assignment(assignment=assigned_cores,
                                 success=successfully_assigned)
         assignment.add_performances(computation_time=computation_time)

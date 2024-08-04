@@ -1,5 +1,7 @@
 import copy
 
+import numpy
+
 
 class EarliestDeadlineFirstVariant1:
     def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=1, end_time=None):
@@ -22,7 +24,7 @@ class EarliestDeadlineFirstVariant1:
         self.schedule_res = [[] for _ in range(self.number_of_cores)]
 
         self.total_utilization = 0
-        self.actual_utilization = None
+        self.actual_utilization = numpy.nan
 
     def __str__(self):
         return self.__class__.__name__
@@ -38,8 +40,8 @@ class EarliestDeadlineFirstVariant1:
                 self.update_ready_queue(
                     core_index=core_index, current_time=current_time)
                 if not self.select_job(core_index=core_index, current_time=current_time):
-                    self.total_utilization = None
-                    self.actual_utilization = None
+                    self.total_utilization = numpy.nan
+                    self.actual_utilization = numpy.nan
                     return self.schedule_res, 0
                 self.check_interference(core_index=core_index)
 

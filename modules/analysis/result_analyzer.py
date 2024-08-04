@@ -32,7 +32,7 @@ class ResultAnalyzer:
 
     def run_analysis(self):
         self.analyze_assignment()
-        self.analyze_scheduling()
+        # self.analyze_scheduling()
         # self.analyze_schedulability()
         # self.analyze_overutilization()
         # self.analyze_citta_acceptance_ratio()

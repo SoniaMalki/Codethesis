@@ -182,7 +182,7 @@ class SchedulingAnalyzer:
                 continue
             plt.figure(figsize=(12, 8))
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_success_scheduling"),
-                             annot=True, cmap="viridis", fmt=".2f", vmin=0, vmax=1)
+                             annot=True, cmap="RdYlGn", fmt=".2f", vmin=0, vmax=1)
             plt.title(
                 f"Success Rate of {scheduling_algorithm} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")
@@ -224,7 +224,7 @@ class SchedulingAnalyzer:
             plt.figure(figsize=(12, 8))
             vmin = self.min_computation_time if self.min_computation_time > 0 else 1e-6
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_computation_time_scheduling"),
-                             annot=True, cmap="viridis", fmt=".6f", norm=LogNorm(vmin=vmin, vmax=self.max_computation_time))
+                             annot=True, cmap="RdYlBu_r", fmt=".6f", norm=LogNorm(vmin=vmin, vmax=self.max_computation_time))
             plt.title(
                 f"Computation Time of {scheduling_algorithm} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")
@@ -266,7 +266,7 @@ class SchedulingAnalyzer:
             plt.figure(figsize=(12, 8))
             vmin = self.min_computation_time if self.min_computation_time > 0 else 1e-6
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_overutilization"),
-                             annot=True, cmap="viridis", fmt=".6f", norm=LogNorm(vmin=vmin, vmax=self.max_computation_time))
+                             annot=True, cmap="RdYlBu_r", fmt=".6f", norm=LogNorm(vmin=vmin, vmax=self.max_computation_time))
             plt.title(
                 f"Overutilization of {scheduling_algorithm} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")

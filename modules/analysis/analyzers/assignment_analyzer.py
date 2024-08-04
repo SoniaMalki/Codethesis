@@ -135,7 +135,7 @@ class AssignmentAnalyzer:
                 continue
             plt.figure(figsize=(12, 8))
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_success_assignment"),
-                             annot=True, cmap="viridis", fmt=".2f", vmin=0, vmax=1)
+                             annot=True, cmap="RdYlGn", fmt=".2f", vmin=0, vmax=1)
             plt.title(
                 f"Success Rate of {assignment_method} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")
@@ -174,7 +174,7 @@ class AssignmentAnalyzer:
                 continue
             plt.figure(figsize=(12, 8))
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_computation_time_assignment"),
-                             annot=True, cmap="viridis", fmt=".6f", norm=LogNorm(vmin=self.min_computation_time, vmax=self.max_computation_time))
+                             annot=True, cmap="RdYlBu_r", fmt=".6f", norm=LogNorm(vmin=self.min_computation_time, vmax=self.max_computation_time))
             plt.title(
                 f"Computation Time of {assignment_method} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")

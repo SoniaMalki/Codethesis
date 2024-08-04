@@ -7,8 +7,8 @@ import seaborn as sns
 class AssignmentAnalyzer:
     def __init__(self, df, current_path):
         self.df = df
-        self.assignment_methods = ["FirstFitAssigner", "BestFitAssigner",
-                                   "WorstFitAssigner", "Wmin", "Citta"]
+        self.assignment_methods = [
+            "FirstFitAssigner", "BestFitAssigner", "WorstFitAssigner", "Wmin", "Citta"]
         self.sorting_criteria = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending",
                                  "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
         self.taskset_parameters = ["interference_factor", "max_utilization",
@@ -28,6 +28,11 @@ class AssignmentAnalyzer:
             "Citta": "tab:purple"
         }
 
+        self.max_computation_time = self.df["mean_computation_time_assignment"].max(
+        )
+        self.min_computation_time = self.df["mean_computation_time_assignment"].min(
+        )
+
     def analyze(self):
         self.plot_global_success_rate()
         self.plot_global_computation_time()
@@ -45,6 +50,7 @@ class AssignmentAnalyzer:
         plt.figure(figsize=(10, 6))
         ax = sns.barplot(x="assignment_method", y="mean_success_assignment",
                          data=self.df, order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors, hue="assignment_method", legend=False)
+        ax.set_ylim(-0.01, 1.1)
         plt.title("Global Success Rate by Assignment Method")
         plt.xlabel("Assignment Method")
         plt.ylabel("Success Rate")
@@ -69,6 +75,7 @@ class AssignmentAnalyzer:
             assignment_method for assignment_method in self.assignment_methods if assignment_method != "Wmin"]
         ax = sns.barplot(x="sorting_criterion", y="mean_success_assignment", hue="assignment_method", data=df_subset,
                          order=self.sorting_criteria, hue_order=hue_order, errorbar=None, palette=self.algorithm_colors)
+        ax.set_ylim(-0.01, 1.1)
         plt.title("Success Rate by Sorting Criterion")
         plt.xlabel("Sorting Criterion")
         plt.ylabel("Success Rate")
@@ -108,11 +115,11 @@ class AssignmentAnalyzer:
         plt.figure(figsize=(10, 6))
         ax = sns.lineplot(x=parameter, y="mean_success_assignment",
                           hue="assignment_method", data=self.df.dropna(subset=["mean_success_assignment"]), marker="o", hue_order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors)
+        ax.set_ylim(-0.01, 1.1)
         plt.title(
             f"Success Rate by {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
         plt.ylabel("Success Rate")
-        plt.yscale("log")
         handles, labels = ax.get_legend_handles_labels()
         ax.legend(handles=handles, labels=labels, title="Assignment Method")
         plt.savefig(
@@ -166,7 +173,7 @@ class AssignmentAnalyzer:
                 continue
             plt.figure(figsize=(12, 8))
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_computation_time_assignment"),
-                             annot=True, cmap="viridis", fmt=".2f", norm=LogNorm())
+                             annot=True, cmap="viridis", fmt=".6f", norm=LogNorm(vmin=self.min_computation_time, vmax=self.max_computation_time))
             plt.title(
                 f"Computation Time of {assignment_method} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")

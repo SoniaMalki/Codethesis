@@ -1,4 +1,6 @@
 import time
+
+import numpy
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first import EarliestDeadlineFirst
 from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant1 import EarliestDeadlineFirstVariant1
@@ -32,8 +34,8 @@ class CombinedScheduler:
             DeadlineMonotonicVariant2,
         ]
 
-        self.total_utilization = None
-        self.actual_utilization = None
+        self.total_utilization = numpy.nan
+        self.actual_utilization = numpy.nan
         # Find the scheduling by default
         default_scheduler_class_success = 0
         default_scheduler_class_index = 0
@@ -89,16 +91,16 @@ class CombinedScheduler:
                 scheduling=busy_period)
             for bp in shorter_busy_period:
                 final_busy_period.add_period(scheduling=bp)
-                if bp.total_utilization is not None:
-                    if self.total_utilization is None:
+                if bp.total_utilization is not numpy.nan:
+                    if self.total_utilization is numpy.nan:
                         self.total_utilization = []
                     self.total_utilization.append(bp.total_utilization)
 
-        if self.total_utilization is not None:
+        if self.total_utilization is not numpy.nan:
             self.actual_utilization = [
                 t_u/self.hyperperiod for t_u in self.total_utilization]
         else:
-            self.actual_utilization = None
+            self.actual_utilization = numpy.nan
 
         return final_busy_period
 

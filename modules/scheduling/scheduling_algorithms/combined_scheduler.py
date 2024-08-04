@@ -32,6 +32,8 @@ class CombinedScheduler:
             DeadlineMonotonicVariant2,
         ]
 
+        self.total_utilization = None
+        self.actual_utilization = None
         # Find the scheduling by default
         default_scheduler_class_success = 0
         default_scheduler_class_index = 0
@@ -50,8 +52,8 @@ class CombinedScheduler:
         self.busy_periods = BusyPeriodGenerator.generate_busy_periods(
             self.default_schedule)
 
-        self.total_utilization = []
-        self.actual_utilization = []
+        # self.total_utilization = []
+        # self.actual_utilization = []
 
     def __str__(self):
         return self.__class__.__name__
@@ -87,10 +89,16 @@ class CombinedScheduler:
                 scheduling=busy_period)
             for bp in shorter_busy_period:
                 final_busy_period.add_period(scheduling=bp)
-                self.total_utilization.append(bp.total_utilization)
+                if bp.total_utilization is not None:
+                    if self.total_utilization is None:
+                        self.total_utilization = []
+                    self.total_utilization.append(bp.total_utilization)
 
-        self.actual_utilization = [
-            t_u/self.hyperperiod for t_u in self.total_utilization]
+        if self.total_utilization is not None:
+            self.actual_utilization = [
+                t_u/self.hyperperiod for t_u in self.total_utilization]
+        else:
+            self.actual_utilization = None
 
         return final_busy_period
 

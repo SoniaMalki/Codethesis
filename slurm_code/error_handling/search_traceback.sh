@@ -29,6 +29,8 @@ process_file() {
     error_type="ZeroDivisionError"
   elif grep -q "TypeError" "$file_path"; then
     error_type="TypeError"
+  elif grep -q "PulpSolverError" "$file_path"; then
+    error_type="PulpSolverError"
   else
     error_type="UnknownError"
   fi

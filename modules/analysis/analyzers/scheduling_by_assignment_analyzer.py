@@ -31,50 +31,50 @@ class SchedulingByAssignmentAnalyzer:
         self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \
             self.df["number_of_cores"]
 
-        self.df["assignment_scheduling_combination"] = self.df["assignment_method"] + \
-            "_" + self.df["scheduling_algorithm"]
+        self.df["assignment_scheduling_combination"] = self.df["scheduling_algorithm"] + \
+            "_" + self.df["assignment_method"]  
 
         self.algorithm_colors = {
-            "FirstFitAssigner_EarliestDeadlineFirst": "tab:blue",
-            "BestFitAssigner_EarliestDeadlineFirst": "tab:orange",
-            "WorstFitAssigner_EarliestDeadlineFirst": "tab:green",
-            "Wmin_EarliestDeadlineFirst": "tab:red",
-            "Citta_EarliestDeadlineFirst": "tab:purple",
-            "FirstFitAssigner_EarliestDeadlineFirstVariant1": "tab:cyan",
-            "BestFitAssigner_EarliestDeadlineFirstVariant1": "tab:pink",
-            "WorstFitAssigner_EarliestDeadlineFirstVariant1": "tab:olive",
-            "Wmin_EarliestDeadlineFirstVariant1": "tab:brown",
-            "Citta_EarliestDeadlineFirstVariant1": "tab:gray",
-            "FirstFitAssigner_EarliestDeadlineFirstVariant2": "blue",
-            "BestFitAssigner_EarliestDeadlineFirstVariant2": "orange",
-            "WorstFitAssigner_EarliestDeadlineFirstVariant2": "green",
-            "Wmin_EarliestDeadlineFirstVariant2": "red",
-            "Citta_EarliestDeadlineFirstVariant2": "purple",
-            "FirstFitAssigner_DeadlineMonotonic": "darkblue",
-            "BestFitAssigner_DeadlineMonotonic": "darkorange",
-            "WorstFitAssigner_DeadlineMonotonic": "darkgreen",
-            "Wmin_DeadlineMonotonic": "darkred",
-            "Citta_DeadlineMonotonic": "indigo",
-            "FirstFitAssigner_DeadlineMonotonicVariant1": "teal",
-            "BestFitAssigner_DeadlineMonotonicVariant1": "salmon",
-            "WorstFitAssigner_DeadlineMonotonicVariant1": "lime",
-            "Wmin_DeadlineMonotonicVariant1": "firebrick",
-            "Citta_DeadlineMonotonicVariant1": "dimgray",
-            "FirstFitAssigner_DeadlineMonotonicVariant2": "dodgerblue",
-            "BestFitAssigner_DeadlineMonotonicVariant2": "coral",
-            "WorstFitAssigner_DeadlineMonotonicVariant2": "forestgreen",
-            "Wmin_DeadlineMonotonicVariant2": "crimson",
-            "Citta_DeadlineMonotonicVariant2": "darkslateblue",
-            "FirstFitAssigner_CombinedScheduler": "deepskyblue",
-            "BestFitAssigner_CombinedScheduler": "sandybrown",
-            "WorstFitAssigner_CombinedScheduler": "mediumseagreen",
-            "Wmin_CombinedScheduler": "indianred",
-            "Citta_CombinedScheduler": "mediumpurple",
-            "FirstFitAssigner_Rhma": "lightskyblue",
-            "BestFitAssigner_Rhma": "peru",
-            "WorstFitAssigner_Rhma": "yellowgreen",
-            "Wmin_Rhma": "lightcoral",
-            "Citta_Rhma": "plum",
+            "EarliestDeadlineFirst_FirstFitAssigner": "tab:blue",
+            "EarliestDeadlineFirst_BestFitAssigner": "tab:orange",
+            "EarliestDeadlineFirst_WorstFitAssigner": "tab:green",
+            "EarliestDeadlineFirst_Wmin": "tab:red",
+            "EarliestDeadlineFirst_Citta": "tab:purple",
+            "EarliestDeadlineFirstVariant1_FirstFitAssigner": "tab:cyan",
+            "EarliestDeadlineFirstVariant1_BestFitAssigner": "tab:pink",
+            "EarliestDeadlineFirstVariant1_WorstFitAssigner": "tab:olive",
+            "EarliestDeadlineFirstVariant1_Wmin": "tab:brown",
+            "EarliestDeadlineFirstVariant1_Citta": "tab:gray",
+            "EarliestDeadlineFirstVariant2_FirstFitAssigner": "blue",
+            "EarliestDeadlineFirstVariant2_BestFitAssigner": "orange",
+            "EarliestDeadlineFirstVariant2_WorstFitAssigner": "green",
+            "EarliestDeadlineFirstVariant2_Wmin": "red",
+            "EarliestDeadlineFirstVariant2_Citta": "purple",
+            "DeadlineMonotonic_FirstFitAssigner": "darkblue",
+            "DeadlineMonotonic_BestFitAssigner": "darkorange",
+            "DeadlineMonotonic_WorstFitAssigner": "darkgreen",
+            "DeadlineMonotonic_Wmin": "darkred",
+            "DeadlineMonotonic_Citta": "indigo",
+            "DeadlineMonotonicVariant1_FirstFitAssigner": "teal",
+            "DeadlineMonotonicVariant1_BestFitAssigner": "salmon",
+            "DeadlineMonotonicVariant1_WorstFitAssigner": "lime",
+            "DeadlineMonotonicVariant1_Wmin": "firebrick",
+            "DeadlineMonotonicVariant1_Citta": "dimgray",
+            "DeadlineMonotonicVariant2_FirstFitAssigner": "dodgerblue",
+            "DeadlineMonotonicVariant2_BestFitAssigner": "coral",
+            "DeadlineMonotonicVariant2_WorstFitAssigner": "forestgreen",
+            "DeadlineMonotonicVariant2_Wmin": "crimson",
+            "DeadlineMonotonicVariant2_Citta": "darkslateblue",
+            "CombinedScheduler_FirstFitAssigner": "deepskyblue",
+            "CombinedScheduler_BestFitAssigner": "sandybrown",
+            "CombinedScheduler_WorstFitAssigner": "mediumseagreen",
+            "CombinedScheduler_Wmin": "indianred",
+            "CombinedScheduler_Citta": "mediumpurple",
+            "Rhma_FirstFitAssigner": "lightskyblue",
+            "Rhma_BestFitAssigner": "peru",
+            "Rhma_WorstFitAssigner": "yellowgreen",
+            "Rhma_Wmin": "lightcoral",
+            "Rhma_Citta": "plum",
         }
 
         self.max_computation_time = np.nanmax(
@@ -110,10 +110,11 @@ class SchedulingByAssignmentAnalyzer:
     def plot_global_success_rate(self):
         plt.figure(figsize=(10, 6))
         ax = sns.barplot(x="assignment_scheduling_combination", y="mean_success_scheduling",
-                         data=self.df, order=[f"{a}_{s}" for a in self.assignment_methods for s in self.scheduling_algorithms], errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         data=self.df, order=[
+                             f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods], errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         ax.set_ylim(-0.01, 1.1)
         plt.title("Global Success Rate")
-        plt.xlabel("Assignment/Scheduling Combination")
+        plt.xlabel("Scheduling/Assignment Combination")
         plt.xticks(rotation=90, ha="right")
         plt.ylabel("Success Rate")
         self.autolabel_bars(ax)
@@ -124,9 +125,10 @@ class SchedulingByAssignmentAnalyzer:
     def plot_global_computation_time(self):
         plt.figure(figsize=(10, 6))
         ax = sns.boxplot(x="assignment_scheduling_combination", y="mean_computation_time_scheduling", data=self.df,
-                         order=[f"{a}_{s}" for a in self.assignment_methods for s in self.scheduling_algorithms], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         order=[
+                             f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         plt.title("Global Computation Time")
-        plt.xlabel("Assignment/Scheduling Combination")
+        plt.xlabel("Scheduling/Assignment Combination")
         plt.ylabel("Computation Time (s)")
         plt.xticks(rotation=90, ha="right")
         plt.yscale("log")
@@ -137,9 +139,10 @@ class SchedulingByAssignmentAnalyzer:
     def plot_global_overutilization(self):
         plt.figure(figsize=(10, 6))
         ax = sns.boxplot(x="assignment_scheduling_combination", y="mean_overutilization", data=self.df,
-                         order=[f"{a}_{s}" for a in self.assignment_methods for s in self.scheduling_algorithms], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         order=[
+                             f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         plt.title("Global Overutilization")
-        plt.xlabel("Assignment/Scheduling Combination")
+        plt.xlabel("Scheduling/Assignment Combination")
         plt.ylabel("Overutilization (%)")
         plt.xticks(rotation=90, ha="right")
         plt.tight_layout()
@@ -151,14 +154,13 @@ class SchedulingByAssignmentAnalyzer:
         ax = sns.barplot(x="non_preemption_option", y="mean_success_scheduling", hue="assignment_scheduling_combination", data=df_subset,
                          order=self.non_preemptive_options, errorbar=None, palette=self.algorithm_colors)
         ax.set_ylim(-0.01, 1.1)
-        plt.title(
-            "Success Rate by Non-Preemption Option")
+        plt.title("Success Rate by Non-Preemption Option")
         plt.xlabel("Non-Preemption Option")
         plt.ylabel("Success Rate")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
         self.autolabel_bars(ax)
-        plt.legend(title="Assignment/Scheduling Combination",
+        plt.legend(title="Scheduling/Assignment Combination",
                    bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.savefig(
             self.plots_dir / 'by_non_preemption_option_success_rate.png', bbox_inches='tight')
@@ -174,7 +176,7 @@ class SchedulingByAssignmentAnalyzer:
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
         plt.yscale("log")
-        plt.legend(title="Assignment/Scheduling Combination",
+        plt.legend(title="Scheduling/Assignment Combination",
                    bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.savefig(
             self.plots_dir / 'by_non_preemption_option_computation_time.png', bbox_inches='tight')
@@ -189,7 +191,7 @@ class SchedulingByAssignmentAnalyzer:
         plt.ylabel("Overutilization (%)")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
-        plt.legend(title="Assignment/Scheduling Combination",
+        plt.legend(title="Scheduling/Assignment Combination",
                    bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.savefig(
             self.plots_dir / 'by_non_preemption_option_overutilization.png', bbox_inches='tight')
@@ -209,7 +211,7 @@ class SchedulingByAssignmentAnalyzer:
             f"Success Rate by {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
         plt.ylabel("Success Rate")
-        plt.legend(title="Assignment/Scheduling Combination",
+        plt.legend(title="Scheduling/Assignment Combination",
                    bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.savefig(
             self.plots_dir / f'by_parameter_success_rate_with_parameter_{parameter}.png', bbox_inches='tight')
@@ -243,7 +245,7 @@ class SchedulingByAssignmentAnalyzer:
         plt.xlabel(parameter.replace("_", " ").capitalize())
         plt.ylabel("Computation Time (s)")
         plt.yscale("log")
-        plt.legend(title="Assignment/Scheduling Combination",
+        plt.legend(title="Scheduling/Assignment Combination",
                    bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.savefig(
             self.plots_dir / f'by_parameter_computation_time_with_parameter_{parameter}.png', bbox_inches='tight')
@@ -278,10 +280,10 @@ class SchedulingByAssignmentAnalyzer:
         plt.xlabel(parameter.replace("_", " ").capitalize())
         plt.ylabel("Overutilization (%)")
         plt.yscale("log")
-        plt.legend(title="Assignment/Scheduling Combination",
+        plt.legend(title="Scheduling/Assignment Combination",
                    bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.savefig(
-            self.plots_dir / f'by_parameter_overutilization_with_parameter_{parameter}.png', bbox_inches='tight')
+            self.plots_dir / f'by_parameter_overutilization_with_{parameter}.png', bbox_inches='tight')
         plt.close()
 
     def plot_overutilization_heatmap_interference(self, parameter):
@@ -301,11 +303,11 @@ class SchedulingByAssignmentAnalyzer:
     def plot_success_rate_by_sorting_criteria(self, df_subset, sorting_criterion):
         plt.figure(figsize=(12, 8))
         ax = sns.barplot(x="assignment_scheduling_combination", y="mean_success_scheduling", data=df_subset, order=[
-                         f"{a}_{s}" for a in self.assignment_methods[:-1] for s in self.scheduling_algorithms], errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods[:-1]], errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)  # scheduling en premier
         ax.set_ylim(-0.01, 1.1)
         plt.title(
-            f"Success Rate by Assignment/Scheduling, Sorting Criterion: {sorting_criterion.replace('_',' ').capitalize()}")
-        plt.xlabel("Assignment/Scheduling Combination")
+            f"Success Rate by Scheduling/Assignment, Sorting Criterion: {sorting_criterion.replace('_',' ').capitalize()}")
+        plt.xlabel("Scheduling/Assignment Combination")
         plt.xticks(rotation=90, ha="right")
         plt.ylabel("Success Rate")
         self.autolabel_bars(ax)
@@ -317,10 +319,10 @@ class SchedulingByAssignmentAnalyzer:
     def plot_computation_time_by_sorting_criteria(self, df_subset, sorting_criterion):
         plt.figure(figsize=(12, 8))
         ax = sns.boxplot(x="assignment_scheduling_combination", y="mean_computation_time_scheduling", data=df_subset, order=[
-                         f"{a}_{s}" for a in self.assignment_methods[:-1] for s in self.scheduling_algorithms], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods[:-1]], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         plt.title(
-            f"Computation Time by Assignment/Scheduling, Sorting Criterion: {sorting_criterion.replace('_',' ').capitalize()}")
-        plt.xlabel("Assignment/Scheduling Combination")
+            f"Computation Time by Scheduling/Assignment, Sorting Criterion: {sorting_criterion.replace('_',' ').capitalize()}")
+        plt.xlabel("Scheduling/Assignment Combination")
         plt.ylabel("Computation Time (s)")
         plt.xticks(rotation=90, ha="right")
         plt.yscale("log")

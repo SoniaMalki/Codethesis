@@ -1,12 +1,9 @@
 import pandas as pd
 
-from modules.analysis.analyzers.citta_analyzer import CittaAnalyzer
-from modules.analysis.analyzers.overutilization_analyzer import OverutilizationAnalyzer
-from modules.analysis.analyzers.schedulability_analyzer import SchedulabilityAnalyzer
-from modules.analysis.analyzers.scheduling_analyzer import SchedulingAnalyzer
-from modules.analysis.analyzers.wmin_citta_similarity_analyzer import WminCittaSimilarityAnalyzer
 from modules.analysis.result_loader import ResultLoader
 from modules.analysis.analyzers.assignment_analyzer import AssignmentAnalyzer
+from modules.analysis.analyzers.scheduling_analyzer import SchedulingAnalyzer
+from modules.analysis.analyzers.scheduling_by_assignment_analyzer import SchedulingByAssignmentAnalyzer
 
 
 class ResultAnalyzer:
@@ -32,12 +29,8 @@ class ResultAnalyzer:
 
     def run_analysis(self):
         # self.analyze_assignment()
-        self.analyze_scheduling()
-        # self.analyze_schedulability()
-        # self.analyze_overutilization()
-        # self.analyze_citta_acceptance_ratio()
-        # self.analyze_citta_prediction_accuracy()
-        # self.analyze_wmin_citta_similarity()
+        # self.analyze_scheduling()
+        self.analyze_scheduling_by_assignment()
 
     def analyze_assignment(self):
         analyzer = AssignmentAnalyzer(self.df, self.current_path)
@@ -47,22 +40,6 @@ class ResultAnalyzer:
         analyzer = SchedulingAnalyzer(self.df, self.current_path)
         analyzer.analyze()
 
-    def analyze_schedulability(self):
-        analyzer = SchedulabilityAnalyzer(self.df)
-        analyzer.analyze()
-
-    def analyze_overutilization(self):
-        analyzer = OverutilizationAnalyzer(self.df)
-        analyzer.analyze()
-
-    def analyze_citta_acceptance_ratio(self):
-        analyzer = CittaAnalyzer(self.df)
-        analyzer.analyze_acceptance_ratio()
-
-    def analyze_citta_prediction_accuracy(self):
-        analyzer = CittaAnalyzer(self.df)
-        analyzer.analyze_prediction_accuracy()
-
-    def analyze_wmin_citta_similarity(self):
-        analyzer = WminCittaSimilarityAnalyzer(self.df)
+    def analyze_scheduling_by_assignment(self):
+        analyzer = SchedulingByAssignmentAnalyzer(self.df, self.current_path)
         analyzer.analyze()

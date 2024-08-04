@@ -1,5 +1,6 @@
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 from matplotlib.colors import LogNorm
 
@@ -36,10 +37,12 @@ class SchedulingAnalyzer:
             "Rhma": "tab:gray",
         }
 
-        self.max_computation_time = self.df["mean_computation_time_scheduling"].max(
-        )
-        self.min_computation_time = self.df["mean_computation_time_scheduling"].min(
-        )
+        self.max_computation_time = np.nanmax(
+            self.df["mean_computation_time_scheduling"])
+        print(f"self.max_computation_time: {self.max_computation_time}")
+        self.min_computation_time = np.nanmin(
+            self.df["mean_computation_time_scheduling"])
+        print(f"self.min_computation_time: {self.min_computation_time}")
 
     def analyze(self):
         self.plot_global_success_rate()
@@ -174,9 +177,9 @@ class SchedulingAnalyzer:
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_success_scheduling"),
                              annot=True, cmap="viridis", fmt=".2f", vmin=0, vmax=1)
             plt.title(
-                f"Success Rate of {scheduling_algorithm} by Interference Factor and Probability")
+                f"Success Rate of {scheduling_algorithm} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")
-            plt.ylabel("Probability")
+            plt.ylabel("Probability of Interference")
             plt.gca().invert_yaxis()
             plt.savefig(
                 self.plots_dir / f'by_parameter_success_rate_with_parameter_{parameter}_{scheduling_algorithm}.png')
@@ -213,9 +216,9 @@ class SchedulingAnalyzer:
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_computation_time_scheduling"),
                              annot=True, cmap="viridis", fmt=".6f", norm=LogNorm(vmin=self.min_computation_time, vmax=self.max_computation_time))
             plt.title(
-                f"Computation Time of {scheduling_algorithm} by Interference Factor and Probability")
+                f"Computation Time of {scheduling_algorithm} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")
-            plt.ylabel("Probability")
+            plt.ylabel("Probability of Interference")
             plt.gca().invert_yaxis()
             plt.savefig(
                 self.plots_dir / f'by_parameter_computation_time_with_parameter_{parameter}_{scheduling_algorithm}.png')
@@ -252,9 +255,9 @@ class SchedulingAnalyzer:
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_overutilization"),
                              annot=True, cmap="viridis", fmt=".6f", norm=LogNorm(vmin=self.min_computation_time, vmax=self.max_computation_time))
             plt.title(
-                f"Overutilization of {scheduling_algorithm} by Interference Factor and Probability")
+                f"Overutilization of {scheduling_algorithm} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")
-            plt.ylabel("Probability")
+            plt.ylabel("Probability of Interference")
             plt.gca().invert_yaxis()
             plt.savefig(
                 self.plots_dir / f'by_parameter_overutilization_with_parameter_{parameter}_{scheduling_algorithm}.png')

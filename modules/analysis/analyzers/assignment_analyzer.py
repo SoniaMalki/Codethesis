@@ -1,6 +1,7 @@
 import os
 from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 
 
@@ -28,10 +29,10 @@ class AssignmentAnalyzer:
             "Citta": "tab:purple"
         }
 
-        self.max_computation_time = self.df["mean_computation_time_assignment"].max(
-        )
-        self.min_computation_time = self.df["mean_computation_time_assignment"].min(
-        )
+        self.max_computation_time = np.nanmax(
+            self.df["mean_computation_time_assignment"])
+        self.min_computation_time = np.nanmin(
+            self.df["mean_computation_time_assignment"])
 
     def analyze(self):
         self.plot_global_success_rate()

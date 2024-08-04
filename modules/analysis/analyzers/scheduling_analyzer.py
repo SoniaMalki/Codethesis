@@ -11,7 +11,7 @@ class SchedulingAnalyzer:
         self.non_preemptive_options = [
             "number_of_tasks", "wcet_of_tasks", "system_utilization"]
         self.taskset_parameters = ["interference_factor",
-                                   "max_utilization", "task_core_ratio"]
+                                   "max_utilization", "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
         self.current_path = current_path
         self.plots_dir = self.current_path / "plots" / "scheduling"
         os.makedirs(self.plots_dir, exist_ok=True)
@@ -20,6 +20,9 @@ class SchedulingAnalyzer:
             lambda x: x.get("non_preemption_time_variant2") if isinstance(
                 x, dict) else None
         )
+
+        self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \
+            self.df["number_of_cores"]
 
     def analyze(self):
         self.plot_global_success_rate()
@@ -40,32 +43,34 @@ class SchedulingAnalyzer:
 
     def plot_global_success_rate(self):
         plt.figure(figsize=(10, 6))
-        sns.barplot(x="scheduling_algorithm",
-                    y="mean_success_scheduling", data=self.df)
+        ax = sns.barplot(x="scheduling_algorithm", y="mean_success_scheduling",
+                         data=self.df, order=self.scheduling_algorithms)
         plt.title("Taux de succès global par algorithme de scheduling")
         plt.xlabel("Algorithme de scheduling")
         plt.ylabel("Taux de succès")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
+        self.autolabel_bars(ax)
         plt.savefig(self.plots_dir / 'global_success_rate.png')
         plt.close()
 
     def plot_global_computation_time(self):
         plt.figure(figsize=(10, 6))
-        sns.boxplot(x="scheduling_algorithm",
-                    y="mean_computation_time_scheduling", data=self.df)
+        ax = sns.boxplot(x="scheduling_algorithm",
+                         y="mean_computation_time_scheduling", data=self.df, order=self.scheduling_algorithms, showfliers=False)
         plt.title("Temps de calcul global par algorithme de scheduling")
         plt.xlabel("Algorithme de scheduling")
         plt.ylabel("Temps de calcul (s)")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
+        plt.yscale("log")
         plt.savefig(self.plots_dir / 'global_computation_time.png')
         plt.close()
 
     def plot_global_overutilization(self):
         plt.figure(figsize=(10, 6))
-        sns.boxplot(x="scheduling_algorithm",
-                    y="mean_overutilization", data=self.df)
+        ax = sns.boxplot(x="scheduling_algorithm",
+                         y="mean_overutilization", data=self.df, order=self.scheduling_algorithms, showfliers=False)
         plt.title(
             "Augmentation d'utilisation globale par algorithme de scheduling")
         plt.xlabel("Algorithme de scheduling")
@@ -77,32 +82,34 @@ class SchedulingAnalyzer:
 
     def plot_success_rate_by_non_preemptive_option(self, df_subset):
         plt.figure(figsize=(12, 8))
-        sns.barplot(x="non_preemption_option",
-                    y="mean_success_scheduling", hue="scheduling_algorithm", data=df_subset)
+        ax = sns.barplot(x="non_preemption_option",
+                         y="mean_success_scheduling", hue="scheduling_algorithm", data=df_subset, hue_order=self.scheduling_algorithms)
         plt.title(
             "Taux de succès en fonction de non_preemptive_time_variant_2")
         plt.xlabel("non_preemption_time_variant_2")
         plt.ylabel("Taux de succès")
+        self.autolabel_bars(ax)
         plt.savefig(
             self.plots_dir / 'success_rate_by_non_preemptive_option.png')
         plt.close()
 
     def plot_computation_time_by_non_preemptive_option(self, df_subset):
         plt.figure(figsize=(12, 8))
-        sns.boxplot(x="non_preemption_option",
-                    y="mean_computation_time_scheduling", hue="scheduling_algorithm", data=df_subset)
+        ax = sns.boxplot(x="non_preemption_option",
+                         y="mean_computation_time_scheduling", hue="scheduling_algorithm", data=df_subset, hue_order=self.scheduling_algorithms, showfliers=False)
         plt.title(
             "Temps de calcul moyen en fonction de non_preemptive_time_variant_2")
         plt.xlabel("non_preemption_time_variant_2")
         plt.ylabel("Temps de calcul (s)")
+        plt.yscale("log")
         plt.savefig(
             self.plots_dir / 'computation_time_by_non_preemptive_option.png')
         plt.close()
 
     def plot_overutilization_by_non_preemptive_option(self, df_subset):
         plt.figure(figsize=(12, 8))
-        sns.boxplot(x="non_preemption_option",
-                    y="mean_overutilization", hue="scheduling_algorithm", data=df_subset)
+        ax = sns.boxplot(x="non_preemption_option",
+                         y="mean_overutilization", hue="scheduling_algorithm", data=df_subset, hue_order=self.scheduling_algorithms, showfliers=False)
         plt.title(
             "Augmentation d'utilisation moyenne en fonction de non_preemptive_time_variant_2")
         plt.xlabel("non_preemption_time_variant_2")
@@ -119,8 +126,8 @@ class SchedulingAnalyzer:
 
     def plot_success_rate_lineplot(self, parameter):
         plt.figure(figsize=(10, 6))
-        sns.lineplot(x=parameter, y="mean_success_scheduling",
-                     hue="scheduling_algorithm", data=self.df, marker="o")
+        ax = sns.lineplot(x=parameter, y="mean_success_scheduling",
+                          hue="scheduling_algorithm", data=self.df, marker="o", hue_order=self.scheduling_algorithms, errorbar=None)
         plt.title(
             f"Taux de succès en fonction de {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
@@ -136,12 +143,13 @@ class SchedulingAnalyzer:
             if df_subset.empty:
                 continue
             plt.figure(figsize=(12, 8))
-            sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor",
-                        values="mean_success_scheduling"), annot=True, cmap="coolwarm", fmt=".2f")
+            ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor",
+                                                   values="mean_success_scheduling"), annot=True, cmap="coolwarm", fmt=".2f")
             plt.title(
                 f"Taux de succès de {scheduling_algorithm} en fonction de {parameter.replace('_', ' ').capitalize()} et de la probabilité d'interférence")
             plt.xlabel(parameter.replace("_", " ").capitalize())
             plt.ylabel("Probabilité d'interférence")
+            plt.gca().invert_yaxis()
             plt.savefig(
                 self.plots_dir / f'{scheduling_algorithm}_success_rate_by_{parameter}_and_probability.png')
             plt.close()
@@ -154,8 +162,8 @@ class SchedulingAnalyzer:
 
     def plot_computation_time_lineplot(self, parameter):
         plt.figure(figsize=(10, 6))
-        sns.lineplot(x=parameter, y="mean_computation_time_scheduling",
-                     hue="scheduling_algorithm", data=self.df, marker="o")
+        ax = sns.lineplot(x=parameter, y="mean_computation_time_scheduling",
+                          hue="scheduling_algorithm", data=self.df, marker="o", hue_order=self.scheduling_algorithms, errorbar=None)
         plt.title(
             f"Temps de calcul moyen en fonction de {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
@@ -171,12 +179,13 @@ class SchedulingAnalyzer:
             if df_subset.empty:
                 continue
             plt.figure(figsize=(12, 8))
-            sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor",
-                        values="mean_computation_time_scheduling"), annot=True, cmap="coolwarm", fmt=".2f")
+            ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor",
+                                                   values="mean_computation_time_scheduling"), annot=True, cmap="coolwarm", fmt=".2f")
             plt.title(
                 f"Temps de calcul moyen de {scheduling_algorithm} en fonction de {parameter.replace('_', ' ').capitalize()} et de la probabilité d'interférence")
             plt.xlabel(parameter.replace("_", " ").capitalize())
             plt.ylabel("Probabilité d'interférence")
+            plt.gca().invert_yaxis()
             plt.savefig(
                 self.plots_dir / f'{scheduling_algorithm}_computation_time_by_{parameter}_and_probability.png')
             plt.close()
@@ -189,8 +198,8 @@ class SchedulingAnalyzer:
 
     def plot_overutilization_lineplot(self, parameter):
         plt.figure(figsize=(10, 6))
-        sns.lineplot(x=parameter, y="mean_overutilization", hue="scheduling_algorithm",
-                     data=self.df, marker="o")
+        ax = sns.lineplot(x=parameter, y="mean_overutilization", hue="scheduling_algorithm",
+                          data=self.df, marker="o", hue_order=self.scheduling_algorithms, errorbar=None)
         plt.title(
             f"Augmentation d'utilisation moyenne en fonction de {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
@@ -206,12 +215,19 @@ class SchedulingAnalyzer:
             if df_subset.empty:
                 continue
             plt.figure(figsize=(12, 8))
-            sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor",
-                        values="mean_overutilization"), annot=True, cmap="coolwarm", fmt=".2f")
+            ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor",
+                                                   values="mean_overutilization"), annot=True, cmap="coolwarm", fmt=".2f")
             plt.title(
                 f"Augmentation d'utilisation moyenne de {scheduling_algorithm} en fonction de {parameter.replace('_', ' ').capitalize()} et de la probabilité d'interférence")
             plt.xlabel(parameter.replace("_", " ").capitalize())
             plt.ylabel("Probabilité d'interférence")
+            plt.gca().invert_yaxis()
             plt.savefig(
                 self.plots_dir / f'{scheduling_algorithm}_overutilization_by_{parameter}_and_probability.png')
             plt.close()
+
+    def autolabel_bars(self, ax):
+        for p in ax.patches:
+            height = p.get_height()
+            ax.text(p.get_x() + p.get_width() / 2., height / 2, f"{height:.2f}",
+                    ha="center", va="center", rotation=90, color='white')

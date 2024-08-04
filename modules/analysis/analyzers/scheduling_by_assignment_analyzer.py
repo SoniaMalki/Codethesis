@@ -212,7 +212,7 @@ class SchedulingByAssignmentAnalyzer:
         plt.legend(title="Assignment/Scheduling Combination",
                    bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.savefig(
-            self.plots_dir / f'by_parameter_success_rate_with_{parameter}.png', bbox_inches='tight')
+            self.plots_dir / f'by_parameter_success_rate_with_parameter_{parameter}.png', bbox_inches='tight')
         plt.close()
 
     def plot_success_rate_heatmap_interference(self, parameter):
@@ -220,12 +220,12 @@ class SchedulingByAssignmentAnalyzer:
         ax = sns.heatmap(self.df.dropna(subset=["mean_success_scheduling"]).pivot_table(index=parameter, columns="probability_factor", values="mean_success_scheduling", aggfunc='mean', dropna=True),
                          annot=True, cmap="viridis", fmt=".2f", vmin=0, vmax=1)
         plt.title(
-            f"Success Rate by Interference Factor and Probability")
+            f"Success Rate by Interference Factor and Probability of Interference")
         plt.xlabel("Interference Factor")
-        plt.ylabel("Probability")
+        plt.ylabel("Probability of Interference")
         plt.gca().invert_yaxis()
         plt.savefig(
-            self.plots_dir / f'by_parameter_success_rate_with_{parameter}.png')
+            self.plots_dir / f'by_parameter_success_rate_with_parameter_{parameter}.png')
         plt.close()
 
     def plot_computation_time_by_taskset_parameter(self, parameter):
@@ -246,7 +246,7 @@ class SchedulingByAssignmentAnalyzer:
         plt.legend(title="Assignment/Scheduling Combination",
                    bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.savefig(
-            self.plots_dir / f'by_parameter_computation_time_with_{parameter}.png', bbox_inches='tight')
+            self.plots_dir / f'by_parameter_computation_time_with_parameter_{parameter}.png', bbox_inches='tight')
         plt.close()
 
     def plot_computation_time_heatmap_interference(self, parameter):
@@ -255,12 +255,12 @@ class SchedulingByAssignmentAnalyzer:
         ax = sns.heatmap(self.df.dropna(subset=["mean_computation_time_scheduling"]).pivot_table(index=parameter, columns="probability_factor", values="mean_computation_time_scheduling", aggfunc='mean', dropna=True),
                          annot=True, cmap="viridis", fmt=".6f", norm=LogNorm(vmin=vmin, vmax=self.max_computation_time))
         plt.title(
-            f"Computation Time by Interference Factor and Probability")
+            f"Computation Time by Interference Factor and Probability of Interference")
         plt.xlabel("Interference Factor")
-        plt.ylabel("Probability")
+        plt.ylabel("Probability of Interference")
         plt.gca().invert_yaxis()
         plt.savefig(
-            self.plots_dir / f'by_parameter_computation_time_with_{parameter}.png')
+            self.plots_dir / f'by_parameter_computation_time_with_parameter_{parameter}.png')
         plt.close()
 
     def plot_overutilization_by_taskset_parameter(self, parameter):
@@ -281,7 +281,7 @@ class SchedulingByAssignmentAnalyzer:
         plt.legend(title="Assignment/Scheduling Combination",
                    bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.savefig(
-            self.plots_dir / f'by_parameter_overutilization_with_{parameter}.png', bbox_inches='tight')
+            self.plots_dir / f'by_parameter_overutilization_with_parameter_{parameter}.png', bbox_inches='tight')
         plt.close()
 
     def plot_overutilization_heatmap_interference(self, parameter):
@@ -290,12 +290,12 @@ class SchedulingByAssignmentAnalyzer:
         ax = sns.heatmap(self.df.dropna(subset=["mean_overutilization"]).pivot_table(index=parameter, columns="probability_factor", values="mean_overutilization", aggfunc='mean', dropna=True),
                          annot=True, cmap="viridis", fmt=".6f", norm=LogNorm(vmin=vmin, vmax=self.max_computation_time))
         plt.title(
-            f"Overutilization by Interference Factor and Probability")
+            f"Overutilization by Interference Factor and Probability of Interference")
         plt.xlabel("Interference Factor")
-        plt.ylabel("Probability")
+        plt.ylabel("Probability of Interference")
         plt.gca().invert_yaxis()
         plt.savefig(
-            self.plots_dir / f'by_parameter_overutilization_with_{parameter}.png')
+            self.plots_dir / f'by_parameter_overutilization_with_parameter_{parameter}.png')
         plt.close()
 
     def plot_success_rate_by_sorting_criteria(self, df_subset, sorting_criterion):
@@ -311,7 +311,7 @@ class SchedulingByAssignmentAnalyzer:
         self.autolabel_bars(ax)
         plt.tight_layout()
         plt.savefig(self.plots_dir /
-                    f'by_sorting_criterion_{sorting_criterion}_success_rate.png')
+                    f'by_sorting_criterion_success_rate_with_{sorting_criterion}.png')
         plt.close()
 
     def plot_computation_time_by_sorting_criteria(self, df_subset, sorting_criterion):
@@ -326,7 +326,7 @@ class SchedulingByAssignmentAnalyzer:
         plt.yscale("log")
         plt.tight_layout()
         plt.savefig(self.plots_dir /
-                    f'by_sorting_criterion_{sorting_criterion}_computation_time.png')
+                    f'by_sorting_criterion_computation_time_with_{sorting_criterion}.png')
         plt.close()
 
     def autolabel_bars(self, ax):

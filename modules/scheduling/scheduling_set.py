@@ -1,3 +1,4 @@
+import numpy as np
 from modules.scheduling.scheduling import Scheduling
 
 
@@ -53,40 +54,22 @@ class SchedulingSet:
         return self.scheduling_list == other.scheduling_list
 
     def calculate_mean_success(self):
-        sum_success = sum(
-            scheduling.success for scheduling in self.scheduling_list)
-        if sum_success != 0 and len(self.scheduling_list) != 0:
-            return sum_success / len(self.scheduling_list)
-        else:
-            return 0
+        return np.mean([scheduling.success for scheduling in self.scheduling_list])
 
     def calculate_mean_computation_time(self):
-        sum_mean_computation_time = sum(
-            scheduling.computation_time for scheduling in self.scheduling_list if scheduling.success)
-
-        if sum_mean_computation_time != 0 and len(self.scheduling_list) != 0:
-            return sum_mean_computation_time / len(self.scheduling_list)
-        else:
-            return 0
+        return np.mean([scheduling.computation_time for scheduling in self.scheduling_list])
 
     def calculate_mean_actual_utilization(self):
-        sum_mean_actual_utilization = sum(
-            scheduling.actual_utilization for scheduling in self.scheduling_list if scheduling.success)
-        if sum_mean_actual_utilization != 0 and len(self.scheduling_list) != 0:
-            return sum_mean_actual_utilization / len(self.scheduling_list)
-        else:
-            return 0
+        return np.mean([scheduling.actual_utilization for scheduling in self.scheduling_list])
 
     def calculate_mean_theoritical_utilization(self):
-        sum_mean_theoritical_utilization = sum(
-            scheduling.theoritical_utilization for scheduling in self.scheduling_list if scheduling.success)
-        if sum_mean_theoritical_utilization != 0 and len(self.scheduling_list) != 0:
-            return sum_mean_theoritical_utilization / len(self.scheduling_list)
-        else:
-            return 0
+        return np.mean([scheduling.theoritical_utilization for scheduling in self.scheduling_list])
 
     def calculate_mean_overutilization(self):
-        if self.mean_actual_utilization == 0:
-            return 0
-        else:
-            return 1 - (self.mean_theoritical_utilization / self.mean_actual_utilization)
+        return (
+            (
+                self.mean_actual_utilization
+                - self.mean_theoritical_utilization
+            )
+            / self.mean_theoritical_utilization
+        ) * 100

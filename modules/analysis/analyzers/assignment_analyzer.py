@@ -110,7 +110,7 @@ class AssignmentAnalyzer:
         if parameter == "interference_factor":
             self.plot_success_rate_heatmap_interference(parameter)
         else:
-            self.plot_success_rate_lineplot(parameter)
+            self.plot_success_rate_by_taskset_parameter_barplot(parameter)
 
     def plot_success_rate_lineplot(self, parameter):
         plt.figure(figsize=(10, 6))
@@ -149,7 +149,7 @@ class AssignmentAnalyzer:
         if parameter == "interference_factor":
             self.plot_computation_time_heatmap_interference(parameter)
         else:
-            self.plot_computation_time_lineplot(parameter)
+            self.plot_computation_time_by_taskset_parameter_barplot(parameter)
 
     def plot_computation_time_lineplot(self, parameter):
         plt.figure(figsize=(10, 6))
@@ -173,8 +173,9 @@ class AssignmentAnalyzer:
             if df_subset.empty:
                 continue
             plt.figure(figsize=(12, 8))
+            vmin = self.min_computation_time if self.min_computation_time > 0 else 1e-6
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_computation_time_assignment"),
-                             annot=True, cmap="RdYlBu_r", fmt=".6f", norm=LogNorm(vmin=self.min_computation_time, vmax=self.max_computation_time))
+                             annot=True, cmap="RdYlBu_r", fmt=".6f", norm=LogNorm(vmin=vmin, vmax=self.max_computation_time))
             plt.title(
                 f"Computation Time of {assignment_method} by Interference Factor and Probability of Interference")
             plt.xlabel("Interference Factor")
@@ -183,6 +184,41 @@ class AssignmentAnalyzer:
             plt.savefig(
                 self.plots_dir / f'by_parameter_computation_time_with_parameter_{parameter}_{assignment_method}.png')
             plt.close()
+
+    def plot_success_rate_by_taskset_parameter_barplot(self, parameter):
+        plt.figure(figsize=(10, 6))
+        ax = sns.barplot(x=parameter, y="mean_success_assignment",
+                         hue="assignment_method", data=self.df.dropna(subset=["mean_success_assignment"]), hue_order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors)
+        plt.title(
+            f"Success Rate by {parameter.replace('_', ' ').capitalize()}")
+        plt.xlabel(parameter.replace("_", " ").capitalize())
+        plt.ylabel("Success Rate")
+        plt.xticks(rotation=45, ha="right")
+        plt.tight_layout()
+        self.autolabel_bars(ax)
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles=handles, labels=labels, title="Assignment Method")
+        plt.savefig(
+            self.plots_dir / f'by_parameter_success_rate_with_parameter_{parameter}.png')
+        plt.close()
+
+    def plot_computation_time_by_taskset_parameter_barplot(self, parameter):
+        plt.figure(figsize=(10, 6))
+        ax = sns.barplot(x=parameter, y="mean_computation_time_assignment",
+                         hue="assignment_method", data=self.df.dropna(subset=["mean_computation_time_assignment"]), hue_order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors)
+        plt.title(
+            f"Computation Time by {parameter.replace('_', ' ').capitalize()}")
+        plt.xlabel(parameter.replace("_", " ").capitalize())
+        plt.ylabel("Computation Time (s)")
+        plt.yscale("log")
+        plt.xticks(rotation=45, ha="right")
+        plt.tight_layout()
+        self.autolabel_bars(ax)
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles=handles, labels=labels, title="Assignment Method")
+        plt.savefig(
+            self.plots_dir / f'by_parameter_computation_time_with_parameter_{parameter}.png')
+        plt.close()
 
     def autolabel_bars(self, ax):
         for p in ax.patches:

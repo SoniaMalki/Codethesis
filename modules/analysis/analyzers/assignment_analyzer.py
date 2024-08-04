@@ -1,4 +1,5 @@
 import os
+from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -19,6 +20,14 @@ class AssignmentAnalyzer:
         self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \
             self.df["number_of_cores"]
 
+        self.algorithm_colors = {
+            "FirstFitAssigner": "tab:blue",
+            "BestFitAssigner": "tab:orange",
+            "WorstFitAssigner": "tab:green",
+            "Wmin": "tab:red",
+            "Citta": "tab:purple"
+        }
+
     def analyze(self):
         self.plot_global_success_rate()
         self.plot_global_computation_time()
@@ -35,7 +44,7 @@ class AssignmentAnalyzer:
     def plot_global_success_rate(self):
         plt.figure(figsize=(10, 6))
         ax = sns.barplot(x="assignment_method", y="mean_success_assignment",
-                         data=self.df, order=self.assignment_methods, errorbar=None)
+                         data=self.df, order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors, hue="assignment_method", legend=False)
         plt.title("Global Success Rate by Assignment Method")
         plt.xlabel("Assignment Method")
         plt.ylabel("Success Rate")
@@ -46,7 +55,7 @@ class AssignmentAnalyzer:
     def plot_global_computation_time(self):
         plt.figure(figsize=(10, 6))
         ax = sns.boxplot(x="assignment_method", y="mean_computation_time_assignment", data=self.df,
-                         order=self.assignment_methods, showfliers=False)
+                         order=self.assignment_methods, showfliers=False, palette=self.algorithm_colors, hue="assignment_method", legend=False)
         plt.title("Global Computation Time by Assignment Method")
         plt.xlabel("Assignment Method")
         plt.ylabel("Computation Time (s)")
@@ -59,13 +68,15 @@ class AssignmentAnalyzer:
         hue_order = [
             assignment_method for assignment_method in self.assignment_methods if assignment_method != "Wmin"]
         ax = sns.barplot(x="sorting_criterion", y="mean_success_assignment", hue="assignment_method", data=df_subset,
-                         order=self.sorting_criteria, hue_order=hue_order, errorbar=None)
+                         order=self.sorting_criteria, hue_order=hue_order, errorbar=None, palette=self.algorithm_colors)
         plt.title("Success Rate by Sorting Criterion")
         plt.xlabel("Sorting Criterion")
         plt.ylabel("Success Rate")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
         self.autolabel_bars(ax)
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles=handles, labels=labels, title="Assignment Method")
         plt.savefig(self.plots_dir / 'by_sorting_criterion_success_rate.png')
         plt.close()
 
@@ -74,13 +85,15 @@ class AssignmentAnalyzer:
         hue_order = [
             assignment_method for assignment_method in self.assignment_methods if assignment_method != "Wmin"]
         ax = sns.boxplot(x="sorting_criterion", y="mean_computation_time_assignment", hue="assignment_method", data=df_subset, order=self.sorting_criteria,
-                         hue_order=hue_order, showfliers=False)
+                         hue_order=hue_order, showfliers=False, palette=self.algorithm_colors)
         plt.title("Computation Time by Sorting Criterion")
         plt.xlabel("Sorting Criterion")
         plt.ylabel("Computation Time (s)")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
         plt.yscale("log")
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles=handles, labels=labels, title="Assignment Method")
         plt.savefig(self.plots_dir /
                     'by_sorting_criterion_computation_time.png')
         plt.close()
@@ -94,12 +107,14 @@ class AssignmentAnalyzer:
     def plot_success_rate_lineplot(self, parameter):
         plt.figure(figsize=(10, 6))
         ax = sns.lineplot(x=parameter, y="mean_success_assignment",
-                          hue="assignment_method", data=self.df.dropna(subset=["mean_success_assignment"]), marker="o", hue_order=self.assignment_methods, errorbar=None)
+                          hue="assignment_method", data=self.df.dropna(subset=["mean_success_assignment"]), marker="o", hue_order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors)
         plt.title(
             f"Success Rate by {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
         plt.ylabel("Success Rate")
         plt.yscale("log")
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles=handles, labels=labels, title="Assignment Method")
         plt.savefig(
             self.plots_dir / f'by_parameter_success_rate_with_parameter_{parameter}.png')
         plt.close()
@@ -112,10 +127,10 @@ class AssignmentAnalyzer:
                 continue
             plt.figure(figsize=(12, 8))
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_success_assignment"),
-                             annot=True, cmap="coolwarm", fmt=".2f")
+                             annot=True, cmap="viridis", fmt=".2f", vmin=0, vmax=1)
             plt.title(
-                f"Success Rate of {assignment_method} by {parameter.replace('_', ' ').capitalize()} and Probability of Interference")
-            plt.xlabel(parameter.replace("_", " ").capitalize())
+                f"Success Rate of {assignment_method} by Interference Factor and Probability of Interference")
+            plt.xlabel("Interference Factor")
             plt.ylabel("Probability of Interference")
             plt.gca().invert_yaxis()
             plt.savefig(
@@ -131,14 +146,16 @@ class AssignmentAnalyzer:
     def plot_computation_time_lineplot(self, parameter):
         plt.figure(figsize=(10, 6))
         ax = sns.lineplot(x=parameter, y="mean_computation_time_assignment",
-                          hue="assignment_method", data=self.df.dropna(subset=["mean_computation_time_assignment"]), marker="o", hue_order=self.assignment_methods, errorbar=None)
+                          hue="assignment_method", data=self.df.dropna(subset=["mean_computation_time_assignment"]), marker="o", hue_order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors)
         plt.title(
             f"Computation Time by {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
         plt.ylabel("Computation Time (s)")
         plt.yscale("log")
+        handles, labels = ax.get_legend_handles_labels()
+        ax.legend(handles=handles, labels=labels, title="Assignment Method")
         plt.savefig(
-            self.plots_dir / f'by_parameter_computation_time_with_parameter_{parameter}.png')
+            self.plots_dir / f'by_parameter_computation_time_{parameter}.png')
         plt.close()
 
     def plot_computation_time_heatmap_interference(self, parameter):
@@ -149,10 +166,10 @@ class AssignmentAnalyzer:
                 continue
             plt.figure(figsize=(12, 8))
             ax = sns.heatmap(df_subset.pivot_table(index=parameter, columns="probability_factor", values="mean_computation_time_assignment"),
-                             annot=True, cmap="coolwarm", fmt=".2f")
+                             annot=True, cmap="viridis", fmt=".2f", norm=LogNorm())
             plt.title(
-                f"Computation Time of {assignment_method} by {parameter.replace('_', ' ').capitalize()} and Probability of Interference")
-            plt.xlabel(parameter.replace("_", " ").capitalize())
+                f"Computation Time of {assignment_method} by Interference Factor and Probability of Interference")
+            plt.xlabel("Interference Factor")
             plt.ylabel("Probability of Interference")
             plt.gca().invert_yaxis()
             plt.savefig(

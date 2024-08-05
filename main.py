@@ -65,7 +65,7 @@ def main(experience_key, action, config_type=None):
     """
     main_path = Path(__file__).parent
     generation_path = Path(__file__).parent / "generation" / experience_key
-    db_path = generation_path / "experience.db"
+    db_path = Path(__file__).parent / "generation" / "experience.db"
 
     # Charger experience.json depuis la racine
     experience_json_path = Path(__file__).parent / "experience.json"

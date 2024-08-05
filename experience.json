@@ -132,7 +132,7 @@
         "solver_name_assignment": ["gurobi"]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "DeadlineMonotonicVariant2", "Rhma"],
+        "scheduling_algorithms": ["EarliestDeadlineFirst", "DeadlineMonotonicVariant2", "Rhma", "CombinedScheduler"],
         "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks"],
         "solving_time_limit_milp_scheduling": [30, 40],
         "solver_name_scheduling": ["gurobi"]

@@ -156,7 +156,8 @@ def main(experience_key, action, config_type=None):
         generator = ConfigGeneratorDB(
             db_path=db_path, experience_data=experience_data[experience_key])
 
-        generator.generate_configs_from_json(experience_data)
+        generator.generate_configs_from_json(
+            json_data=experience_data, experience_id=experience_key)
         generator.close_connection()
     else:
         print(f"Action invalide: {action}")

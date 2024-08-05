@@ -115,7 +115,8 @@ class ConfigGeneratorDB:
                 max_hyperperiod INT,
                 max_prime INT,
                 gen_limit_exponent INT,
-                number_of_cores INT
+                number_of_cores INT,
+                result_file_path TEXT
             )
         """)
         self.cursor.execute("""
@@ -137,6 +138,7 @@ class ConfigGeneratorDB:
                 number_of_cores INT,
                 solving_time_limit_MILP INT,
                 solver_name VARCHAR,
+                result_file_path TEXT,
                 FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id)
             )
         """)
@@ -159,6 +161,7 @@ class ConfigGeneratorDB:
                 non_preemption_time_variant2 VARCHAR,
                 solving_time_limit_MILP INT,
                 solver_name VARCHAR,
+                result_file_path TEXT,
                 FOREIGN KEY (assignment_id) REFERENCES Assignments(assignment_id),
                 FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id)
             )
@@ -253,8 +256,8 @@ class ConfigGeneratorDB:
                         INSERT INTO Tasksets (
                             taskset_id, action, taskset_repetition, tasks_per_taskset, interference_factor,
                             probability_factor, max_utilization, deadline_option, max_hyperperiod,
-                            max_prime, gen_limit_exponent, number_of_cores
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            max_prime, gen_limit_exponent, number_of_cores, result_file_path
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                         (
                             taskset_id,
@@ -268,7 +271,8 @@ class ConfigGeneratorDB:
                             hyperperiod,
                             prime,
                             exponent,
-                            cores
+                            cores,
+                            "",
                         ),
                     )
                     self.taskset_index += 1
@@ -327,8 +331,8 @@ class ConfigGeneratorDB:
                             """
                             INSERT INTO Assignments (
                                 assignment_id, taskset_id, action, sorting_criterion,
-                                assignment_method, number_of_cores, solving_time_limit_MILP, solver_name
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                                assignment_method, number_of_cores, solving_time_limit_MILP, solver_name, result_file_path
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
                                 assignment_id,
@@ -339,6 +343,7 @@ class ConfigGeneratorDB:
                                 cores,
                                 solving_time,
                                 solver_name,
+                                "",
                             )
                         )
                         self.assignment_index += 1  # Incrémenter l'index global
@@ -372,8 +377,6 @@ class ConfigGeneratorDB:
         return self.cursor.fetchone()
 
     def generate_schedulings(self, experience_id):
-        print(self.get_assignment_ids_for_experience(experience_id))
-        print("hey")
         for assignment_id in self.get_assignment_ids_for_experience(experience_id):
             taskset_id = self.get_taskset_id_from_assignment(assignment_id)
             for algorithm in self.scheduling_algorithms:
@@ -399,8 +402,8 @@ class ConfigGeneratorDB:
                             """
                             INSERT INTO Schedulings (
                                 scheduling_id, assignment_id, taskset_id, action, scheduling_algorithm,
-                                non_preemption_time_variant2, solving_time_limit_MILP, solver_name
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                                non_preemption_time_variant2, solving_time_limit_MILP, solver_name, result_file_path
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
                                 scheduling_id,
@@ -410,7 +413,8 @@ class ConfigGeneratorDB:
                                 algorithm,
                                 non_preemption,
                                 solving_time,
-                                solver_name
+                                solver_name,
+                                "",
                             )
                         )
                         self.scheduling_index += 1  # Incrémenter l'index global

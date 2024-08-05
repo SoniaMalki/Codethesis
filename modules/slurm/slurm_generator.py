@@ -6,10 +6,11 @@ from modules.core.experience_loader import ExperienceLoader
 
 
 class SlurmGenerator:
-    def __init__(self, main_dir, generation_dir, experience_key, experience_data, batch_size=100):
-        self.main_dir = Path(main_dir)
-        self.generation_dir = Path(generation_dir)
-        self.experience_key = experience_key
+    def __init__(self, main_path, generation_path, db_path, experience_id, experience_data, batch_size=100):
+        self.main_path = Path(main_path)
+        self.generation_path = Path(generation_path)
+        self.db_path = db_path
+        self.experience_id = experience_id
         self.batch_size = batch_size
 
         # Vérifier si slurm_parameters est présent
@@ -20,14 +21,15 @@ class SlurmGenerator:
 
         self.slurm_parameters = experience_data["slurm_parameters"]
 
-        self.master_dir = self.generation_dir / "slurm" / "master"
-        self.slurm_dir = self.generation_dir / "slurm" / "slurm_files"
-        self.output_dir = self.generation_dir / "slurm" / "output"
+        self.master_dir = self.generation_path / "slurm" / "master"
+        self.slurm_dir = self.generation_path / "slurm" / "slurm_files"
+        self.output_dir = self.generation_path / "slurm" / "output"
+        print(self.db_path)
 
         for dir_path in [self.master_dir, self.slurm_dir, self.output_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
-        self.experience_loader = ExperienceLoader(self.generation_dir)
+        self.experience_loader = ExperienceLoader(self.db_path)
 
         # Dictionnaire des modules pour chaque cluster
         self.cluster_modules = {
@@ -56,10 +58,9 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
         # Charger les modules en fonction du cluster
         self.modules = self.get_modules_for_hostname(hostname)
         print(f"self.modules: {self.modules}")
+
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
-            (self.slurm_dir / config_type /
-             "batch").mkdir(parents=True, exist_ok=True)
             (self.output_dir / config_type).mkdir(parents=True, exist_ok=True)
 
     def get_modules_for_hostname(self, hostname):
@@ -84,7 +85,7 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 {self.modules}
 
 # Exécuter main.py avec la clé d'expérience en argument
-python3 {self.main_dir / "main.py"} {self.experience_key} run_experience {config_key}
+python3 {self.main_path} / "main.py" {self.experience_key} run_experience {config_key}
 """
 
     def generate_slurm(self, config_key, config_type):
@@ -110,9 +111,6 @@ done
     def write_master_slurm(self, config_type):
         """Write master SLURM file for a configuration type."""
         slurm_file = self.master_dir / f"all_{config_type}s_master.slurm"
-        batch_files = sorted(
-            (self.slurm_dir / config_type / "batch").glob("*.slurm")
-        )
 
         with open(slurm_file, "w") as f:
             f.write(
@@ -126,19 +124,24 @@ done
 """
             )
 
-            # Lancer les batchs avec dépendances
+            # Récupérer la liste des fichiers SLURM du dossier correspondant
+            slurm_files = sorted(
+                (self.slurm_dir / config_type).glob("*.slurm")
+            )
+
+            # Lancer les fichiers SLURM en séquence avec dépendances
             previous_batch_id_var = None
-            for i, batch_file in enumerate(batch_files):
-                batch_name = batch_file.stem
+            for i, slurm_file in enumerate(slurm_files):
+                batch_name = slurm_file.stem
                 current_batch_id_var = f"{batch_name}_ID"
 
                 if previous_batch_id_var:
                     f.write(
-                        f"""{current_batch_id_var}=$(sbatch --dependency=afterok:${previous_batch_id_var} {batch_file} | awk '{{print $4}}')\n"""
+                        f"""{current_batch_id_var}=$(sbatch --dependency=afterok:${previous_batch_id_var} {slurm_file} | awk '{{print $4}}')\n"""
                     )
                 else:
                     f.write(
-                        f"""{current_batch_id_var}=$(sbatch {batch_file} | awk '{{print $4}}')\n"""
+                        f"""{current_batch_id_var}=$(sbatch {slurm_file} | awk '{{print $4}}')\n"""
                     )
                 previous_batch_id_var = current_batch_id_var
 
@@ -186,66 +189,26 @@ sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.s
 {self.modules}
 
 # Exécuter le script d'analyse
-python3 {self.main_dir / "main.py"} {self.experience_key} analyze_results
+python3 {self.main_path} / "main.py" {self.experience_id} analyze_results_db
 """
             )
 
     def generate_all_slurm(self):
-        experience_loader = ExperienceLoader(self.generation_dir)
         for config_type in ["taskset", "assignment", "scheduling"]:
-            config_file_path = experience_loader.config_files.get(config_type)
-            with open(self.generation_dir / config_file_path, "r") as f:
-                configurations = json.load(f)
+            # Générer les fichiers SLURM individuels
+            config_ids = self.experience_loader.get_config_ids(config_type)
+            for config_id in config_ids:
+                self.generate_slurm(config_id, config_type)
 
-            # Gérer les jobs par batch de batch_size
-            i = 0
-            while i < len(configurations):
-                # Créer un dictionnaire pour le batch actuel
-                batch_configs = {}
-                for j in range(i, min(i + self.batch_size, len(configurations))):
-                    config_key = list(configurations.keys())[j]
-                    batch_configs[config_key] = configurations[config_key]
-
-                # Nom du batch actuel
-                batch_name = f"batch_{config_type}_{i // self.batch_size}"
-
-                # Générer le script SLURM pour le batch actuel
-                slurm_file = self.slurm_dir / config_type / \
-                    f"batch/{batch_name}.slurm"
-                param_exclude = [f"batch_{config_type}",
-                                 f"all_{config_type}s_master"]
-                with open(slurm_file, "w") as f:
-                    f.write(
-                        f"""#!/bin/bash
-#SBATCH --job-name={batch_name}
-#SBATCH --output={self.output_dir / config_type / f"output_{batch_name}.txt"}
-#SBATCH --ntasks=1
-#SBATCH --time={self.slurm_parameters.get(f"{config_type}_time", "02:00:00")}
-#SBATCH --mem=2G
-
-for config_key in {" ".join(batch_configs.keys())}; do  # Séparer par des espaces
-  sbatch {self.slurm_dir / config_type / f"$config_key.slurm"}  # Utiliser le chemin complet
-done
-
-{self.get_wait_for_jobs_script(config_type, param_exclude)}
-                    """
-                    )
-
-                # Générer les fichiers SLURM individuels pour le batch
-                for config_key in batch_configs.keys():
-                    self.generate_slurm(config_key, config_type)
-
-                i += self.batch_size
-
-        # Générer les fichiers SLURM masters
-        self.generate_master_slurm()
+            # Générer les fichiers SLURM masters
+            self.generate_master_slurm()
 
         # Générer le fichier SLURM pour l'analyse des résultats
         self.generate_analyze_slurm()
 
     def generate_estimation(self):
         # Define the base path for the estimation files
-        estimation_dir = self.main_dir / "estimation_slurm"
+        estimation_dir = self.main_path / "estimation_slurm"
         estimation_dir.mkdir(parents=True, exist_ok=True)
 
         # File paths for the slurm scripts

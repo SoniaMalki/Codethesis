@@ -116,8 +116,8 @@
       "taskset_parameters": {
         "taskset_repetitions": [1],
         "tasks_per_taskset": [4],
-        "interference_factors": [0.1, 0.2],
-        "probability_factors": [0.4, 0.8],
+        "interference_factors": [0.1],
+        "probability_factors": [0.4],
         "max_utilization_factors": [0.2],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
@@ -132,7 +132,7 @@
         "solver_name_assignment": ["gurobi"]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "DeadlineMonotonicVariant2", "Rhma", "CombinedScheduler"],
+        "scheduling_algorithms": ["EarliestDeadlineFirst", "DeadlineMonotonicVariant2"],
         "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks"],
         "solving_time_limit_milp_scheduling": [30, 40],
         "solver_name_scheduling": ["gurobi"]

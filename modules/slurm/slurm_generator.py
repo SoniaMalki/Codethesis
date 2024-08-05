@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import time
 import json
 import socket
+
 from modules.core.experience_loader import ExperienceLoader
 
 
@@ -29,7 +30,8 @@ class SlurmGenerator:
         for dir_path in [self.master_dir, self.slurm_dir, self.output_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
-        self.experience_loader = ExperienceLoader(self.db_path)
+        self.experience_loader = ExperienceLoader(
+            self.db_path, self.experience_id)
 
         # Dictionnaire des modules pour chaque cluster
         self.cluster_modules = {
@@ -85,7 +87,7 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 {self.modules}
 
 # Exécuter main.py avec la clé d'expérience en argument
-python3 {self.main_path} / "main.py" {self.experience_key} run_experience {config_key}
+python3 {self.main_path} / "main.py" run_experience {config_key} {self.experience_id}
 """
 
     def generate_slurm(self, config_key, config_type):
@@ -189,7 +191,7 @@ sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.s
 {self.modules}
 
 # Exécuter le script d'analyse
-python3 {self.main_path} / "main.py" {self.experience_id} analyze_results_db
+python3 {self.main_path} / "main.py" analyze_results {self.experience_id}
 """
             )
 

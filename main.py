@@ -12,28 +12,23 @@ from modules.slurm.slurm_generator import SlurmGenerator
 from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
 
 
-def run_experience(experience_parameter_key, experience_path):
-    experience_loader = ExperienceLoader(experience_path)
+def run_experience(experience_parameter_key, experience_loader):
     experience = experience_loader.load(experience_parameter_key)
     if experience:
         experience.process()
 
 
-def run_batch_experiences(config_type, generation_path):
-    experience_loader = ExperienceLoader(generation_path)
-    config_file_path = experience_loader.config_files.get(config_type)
+def run_batch_experiences(experience_loader, config_type):
+    config_ids = experience_loader.get_config_ids(config_type)
 
-    if not config_file_path:
-        print(f"Invalid config type: {config_type}")
+    if not config_ids:
+        print(f"Aucun ID de configuration trouvé pour le type: {config_type}")
         return
 
-    with open(generation_path / config_file_path, 'r') as f:
-        configurations = json.load(f)
-
     threads = []
-    for config_key in configurations.keys():
+    for config_id in config_ids:
         thread = threading.Thread(
-            target=run_experience, args=(config_key, generation_path))
+            target=run_experience, args=(config_id, experience_loader))
         threads.append(thread)
         thread.start()
 
@@ -41,20 +36,7 @@ def run_batch_experiences(config_type, generation_path):
         thread.join()
 
 
-def get_default_key(config_type, generation_path):
-    experience_loader = ExperienceLoader(generation_path)
-    config_file_path = experience_loader.config_files.get(config_type)
-
-    if not config_file_path:
-        config_file_path = "config_files/tasksets.json"
-
-    with open(generation_path / config_file_path, 'r') as f:
-        configurations = json.load(f)
-
-    return next(iter(configurations))
-
-
-def main(experience_key, action, config_type=None):
+def main(experience_id=None, action=None, config_type=None):
     """
     Fonction principale pour exécuter une expérience ou analyser les résultats.
 
@@ -64,114 +46,146 @@ def main(experience_key, action, config_type=None):
         config_type (str, optional): Le type de configuration pour run_batch_experiences.
     """
     main_path = Path(__file__).parent
-    generation_path = Path(__file__).parent / "generation" / experience_key
-    db_path = Path(__file__).parent / "generation" / "experience.db"
+    generation_path = Path(__file__).parent / "generation"
+    db_path = generation_path / "experience.db"
 
-    # Charger experience.json depuis la racine
+    # Charger experience.json depuis la racine (pour les actions qui utilisent JSON)
     experience_json_path = Path(__file__).parent / "experience.json"
-
     with open(experience_json_path, 'r') as f:
         experience_data = json.load(f)
 
-    if experience_key not in experience_data:
-        print(
-            f"La clé d'experience: {experience_key} n'existe pas. Veuillez la créer")
-        return
-
-    generation_path.mkdir(parents=True, exist_ok=True)
-
+    # 1. Actions utilisant le fichier JSON (anciennes actions)
     if action == "run_experience":
         if config_type is None:
             print("Veuillez fournir un type de configuration (ex: taskset_generate_1_c4)")
             return
-
-        run_experience(config_type, generation_path)
+        run_experience(config_type, experience_loader=ExperienceLoader(
+            generation_path / experience_id))
 
     elif action == "run_batch_experiences":
         if not config_type:
             print(
-                "Veuillez fournir un type de configuration (taskset, assignment, scheduling)"
-            )
+                "Veuillez fournir un type de configuration (taskset, assignment, scheduling)")
             return
-        run_batch_experiences(config_type, generation_path)
+        run_batch_experiences(experience_loader=ExperienceLoader(
+            generation_path / experience_id), config_type=config_type)
 
     elif action == "analyze_results":
-        analyzer = ResultAnalyzer(generation_path)
+        if not experience_id:
+            print("Veuillez fournir une ID d'expérience.")
+            return
+        analyzer = ResultAnalyzer(generation_path / experience_id)
         analyzer.run_analysis()
 
     elif action == "generate_configs":
+        if experience_id not in experience_data:
+            print(
+                f"L'ID d'experience: {experience_id} n'existe pas. Veuillez la créer")
+            return
         generator = ConfigGenerator(
-            generation_path, experience_data=experience_data[experience_key])
+            generation_path / experience_id, experience_data=experience_data[experience_id])
         generator.generate_all_configs()
 
     elif action == "generate_slurm_files":
+        if experience_id not in experience_data:
+            print(
+                f"L'ID d'experience: {experience_id} n'existe pas. Veuillez la créer")
+            return
+
         # Génération de la prime matrix
-        prime_matrix_path = generation_path / "results" / "prime_matrices"
+        prime_matrix_path = generation_path / \
+            experience_id / "results" / "prime_matrices"
         prime_matrix_path.mkdir(parents=True, exist_ok=True)
 
-        prime_matrix_combinations = experience_data[experience_key]["config_parameters"][
+        prime_matrix_combinations = experience_data[experience_id]["config_parameters"][
             "taskset_parameters"]["prime_exponent_hyperperiod_combinations"]
         for combination in prime_matrix_combinations:
             max_hyperperiod, max_prime, gen_limit_exponent = combination
             prime_matrix_generator = PrimeMatrixGenerator(
-                main_path=generation_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
+                main_path=generation_path / experience_id, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
             prime_matrix_generator.generate_matrix()
 
         # Génération des fichiers SLURM
         slurm_generator = SlurmGenerator(
             main_dir=main_path,
-            generation_dir=generation_path,
-            experience_key=experience_key,
-            experience_data=experience_data[experience_key],
+            generation_dir=generation_path / experience_id,
+            experience_key=experience_id,
+            experience_data=experience_data[experience_id],
         )
         slurm_generator.generate_all_slurm()
+
     elif action == "generate_estimation":
+        if experience_id not in experience_data:
+            print(
+                f"L'ID d'experience: {experience_id} n'existe pas. Veuillez la créer")
+            return
         slurm_generator = SlurmGenerator(
             main_dir=main_path,
-            generation_dir=generation_path,
-            experience_key=experience_key,
-            experience_data=experience_data[experience_key],
+            generation_dir=generation_path / experience_id,
+            experience_key=experience_id,
+            experience_data=experience_data[experience_id],
         )
         slurm_generator.generate_estimation()
 
-    # Actions utilisant la base de données
+    # 2. Actions utilisant la base de données (nouvelles actions)
     elif action == "run_experience_db":
         if config_type is None:
             print("Veuillez fournir un ID de configuration (ex: taskset_1)")
             return
 
-        experience_loader_db = ExperienceLoaderDB(db_path, experience_key)
+        experience_loader_db = ExperienceLoaderDB(db_path, experience_id)
         run_experience(config_type, experience_loader_db)
 
     elif action == "run_batch_experiences_db":
         if not config_type:
             print(
-                "Veuillez fournir un type de configuration (taskset, assignment, scheduling)"
-            )
+                "Veuillez fournir un type de configuration (taskset, assignment, scheduling)")
             return
-        experience_loader_db = ExperienceLoaderDB(db_path, experience_key)
+        experience_loader_db = ExperienceLoaderDB(db_path, experience_id)
         run_batch_experiences(experience_loader_db, config_type)
 
     elif action == "generate_configs_db":
         generator = ConfigGeneratorDB(
-            db_path=db_path, experience_data=experience_data[experience_key])
-
-        generator.generate_configs_from_json(
-            json_data=experience_data, experience_id=experience_key)
+            db_path=db_path, experience_data=experience_data[experience_id])
+        generator.generate_configs_from_json(experience_data, experience_id)
         generator.close_connection()
+
     else:
         print(f"Action invalide: {action}")
+
+    # 3. Sélection de l'expérience (si experience_id n'est pas fourni en argument)
+    if experience_id is None:
+        experience_loader_db = ExperienceLoaderDB(db_path)
+        available_experiences = experience_loader_db.get_experience_ids()
+        if not available_experiences:
+            print("Aucune expérience disponible dans la base de données.")
+            return
+
+        print("Expériences disponibles :")
+        for i, exp_id in enumerate(available_experiences):
+            print(f"{i+1}. {exp_id}")
+
+        while True:
+            try:
+                choice = int(
+                    input("Choisissez une expérience (entrez le numéro) : "))
+                if 1 <= choice <= len(available_experiences):
+                    experience_id = available_experiences[choice - 1]
+                    break
+                else:
+                    print("Choix invalide. Veuillez entrer un numéro valide.")
+            except ValueError:
+                print("Entrée invalide. Veuillez entrer un numéro.")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print(
-            "Utilisation : python main.py <clé_expérience> <action> [config_type]"
-        )
+            "Utilisation : python main.py <ID_expérience> <action> [config_type]")
         sys.exit(1)
 
-    experience_key = sys.argv[1]
+    experience_id = sys.argv[1]
     action = sys.argv[2]
     config_type = sys.argv[3] if len(sys.argv) > 3 else None
 
-    main(experience_key, action, config_type)
+    main(experience_id, action, config_type)

@@ -153,8 +153,10 @@ def main(experience_key, action, config_type=None):
         run_batch_experiences(experience_loader_db, config_type)
 
     elif action == "generate_configs_db":
-        generator = ConfigGeneratorDB(db_path=db_path)
-        generator.generate_configs_from_json(experience_data, experience_key)
+        generator = ConfigGeneratorDB(
+            db_path=db_path, experience_data=experience_data[experience_key])
+
+        generator.generate_configs_from_json(experience_data)
         generator.close_connection()
     else:
         print(f"Action invalide: {action}")

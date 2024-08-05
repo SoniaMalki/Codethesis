@@ -1,14 +1,94 @@
 import itertools
 from pathlib import Path
 import sqlite3
+import time
 
 
 class ConfigGeneratorDB:
-    def __init__(self, db_path):
+    def __init__(self, db_path, experience_data):
         self.db_path = Path(db_path)
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
         self.create_tables()
+
+        # Vérifier si config_parameters est présent
+        if "config_parameters" not in experience_data:
+            raise ValueError(
+                "config_parameters dictionary is missing in experience data."
+            )
+
+        self.config_parameters = experience_data["config_parameters"]
+
+        # Récupérer tous les paramètres depuis experience_data
+        for param_section in ["taskset_parameters", "assignment_parameters", "scheduling_parameters"]:
+            for param_name, param_value in self.config_parameters[param_section].items():
+                setattr(self, param_name, param_value)
+
+        # Vérification de tous les paramètres obligatoires
+        required_params = [
+            "taskset_repetitions",
+            "tasks_per_taskset",
+            "interference_factors",
+            "probability_factors",
+            "max_utilization_factors",
+            "deadline_options",
+            "prime_exponent_hyperperiod_combinations",
+            "number_of_cores_list",
+            "assignment_methods",
+            "sorting_criteria",
+            "scheduling_algorithms",
+            "non_preemption_time_variant2_options",
+            "solving_time_limit_milp_assignment",
+            "solving_time_limit_milp_scheduling"
+        ]
+        for param_name in required_params:
+            if getattr(self, param_name) is None:
+                raise ValueError(
+                    f"Paramètre obligatoire manquant dans experience.json: {param_name}")
+
+        # Dictionnaire pour les paramètres optionnels
+        self.optional_params = {
+            "sorting_criteria": {
+                method: self.sorting_criteria if method != "Wmin" else [""]
+                for method in self.assignment_methods
+            },
+            "solving_time_limit_milp_assignment": {
+                method: self.solving_time_limit_milp_assignment
+                if method in ["Wmin", "Citta"]
+                else [""]
+                for method in self.assignment_methods
+            },
+            "solver_name_assignment": {
+                method: self.solver_name_assignment
+                if method in ["Wmin", "Citta"]
+                else [""]
+                for method in self.assignment_methods
+            },
+            "non_preemption_time_variant2_options": {
+                algorithm: self.non_preemption_time_variant2_options
+                if algorithm
+                in [
+                    "EarliestDeadlineFirstVariant2",
+                    "DeadlineMonotonicVariant2",
+                    "CombinedScheduler",
+                    "Rhma",
+                ]
+                else [""]
+                for algorithm in self.scheduling_algorithms
+            },
+            "solving_time_limit_milp_scheduling": {
+                algorithm: self.solving_time_limit_milp_scheduling
+                if algorithm == "Rhma"
+                else [""]
+                for algorithm in self.scheduling_algorithms
+            },
+            "solver_name_scheduling": {
+                algorithm: self.solver_name_scheduling
+                if algorithm == "Rhma"
+                else [""]
+                for algorithm in self.scheduling_algorithms
+            },
+        }
         # Initialiser les index globalement
         self.taskset_index = self.get_last_index("Tasksets", "taskset_id") + 1
         self.assignment_index = self.get_last_index(
@@ -139,26 +219,26 @@ class ConfigGeneratorDB:
         )
         return self.cursor.fetchone()
 
-    def generate_tasksets(self, experience_id, taskset_params):
-        for taskset_repetition, tasks_per_taskset, interference_factor, probability_factor, max_utilization_factor, deadline_option, (
-            max_hyperperiod,
-            max_prime,
-            gen_limit_exponent,
+    def generate_tasksets(self, experience_id):
+        for repetition, tasks, interference, probability, util_factor, deadline, (
+            hyperperiod,
+            prime,
+            exponent,
         ) in itertools.product(
-            taskset_params["taskset_repetitions"],
-            taskset_params["tasks_per_taskset"],
-            taskset_params["interference_factors"],
-            taskset_params["probability_factors"],
-            taskset_params["max_utilization_factors"],
-            taskset_params["deadline_options"],
-            taskset_params["prime_exponent_hyperperiod_combinations"],
+            self.taskset_repetitions,
+            self.tasks_per_taskset,
+            self.interference_factors,
+            self.probability_factors,
+            self.max_utilization_factors,
+            self.deadline_options,
+            self.prime_exponent_hyperperiod_combinations,
         ):
-            for number_of_cores in taskset_params["number_of_cores_list"]:
+            for cores in self.number_of_cores_list:
                 # Vérifier si un taskset avec les mêmes paramètres existe déjà
                 existing_taskset = self.taskset_exists(
-                    taskset_repetition, tasks_per_taskset, interference_factor,
-                    probability_factor, max_utilization_factor * number_of_cores, deadline_option,
-                    max_hyperperiod, max_prime, gen_limit_exponent, number_of_cores
+                    repetition, tasks, interference,
+                    probability, util_factor * cores, deadline,
+                    hyperperiod, prime, exponent, cores
                 )
 
                 if existing_taskset:
@@ -179,19 +259,19 @@ class ConfigGeneratorDB:
                         (
                             taskset_id,
                             "generate",
-                            taskset_repetition,
-                            tasks_per_taskset,
-                            interference_factor,
-                            probability_factor,
-                            max_utilization_factor * number_of_cores,
-                            deadline_option,
-                            max_hyperperiod,
-                            max_prime,
-                            gen_limit_exponent,
-                            number_of_cores
+                            repetition,
+                            tasks,
+                            interference,
+                            probability,
+                            util_factor * cores,
+                            deadline,
+                            hyperperiod,
+                            prime,
+                            exponent,
+                            cores
                         ),
                     )
-                    self.taskset_index += 1  # Incrémenter l'index global
+                    self.taskset_index += 1
 
                 # Lier le taskset à l'expérience
                 self.cursor.execute(
@@ -221,56 +301,56 @@ class ConfigGeneratorDB:
         )
         return self.cursor.fetchone()
 
-    def generate_assignments(self, experience_id, assignment_params):
+    def generate_assignments(self, experience_id):
         for taskset_id in self.get_taskset_ids_for_experience(experience_id):
-            for assignment_method, sorting_criterion, solving_time_limit_milp_assignment, solver_name in itertools.product(
-                assignment_params["assignment_methods"],
-                assignment_params["sorting_criteria"],
-                assignment_params["solving_time_limit_milp_assignment"],
-                assignment_params["solver_name_assignment"]
-            ):
-                # Vérifier si un assignment avec les mêmes paramètres existe déjà
-                existing_assignment = self.assignment_exists(
-                    taskset_id, sorting_criterion, assignment_method,
-                    self.get_number_of_cores_from_taskset(taskset_id),
-                    solving_time_limit_milp_assignment, solver_name
-                )
+            cores = self.get_number_of_cores_from_taskset(taskset_id)
+            for method in self.assignment_methods:
+                for sorting, solving_time, solver_name in itertools.product(
+                    self.optional_params["sorting_criteria"][method],
+                    self.optional_params["solving_time_limit_milp_assignment"][method],
+                    self.optional_params["solver_name_assignment"][method]
+                ):
+                    # Vérifier si un assignment avec les mêmes paramètres existe déjà
+                    existing_assignment = self.assignment_exists(
+                        taskset_id, sorting, method, cores, solving_time, solver_name
+                    )
 
-                if existing_assignment:
-                    # Réutiliser l'ID de l'assignment existant
-                    assignment_id = existing_assignment[0]
-                    print(f"Assignment existant réutilisé : {assignment_id}")
-                else:
-                    # Générer un nouvel ID d'assignment
-                    assignment_id = f"assignment_{self.assignment_index}"
+                    if existing_assignment:
+                        # Réutiliser l'ID de l'assignment existant
+                        assignment_id = existing_assignment[0]
+                        print(
+                            f"Assignment existant réutilisé : {assignment_id}")
+                    else:
+                        # Générer un nouvel ID d'assignment
+                        assignment_id = f"assignment_{self.assignment_index}"
+                        self.cursor.execute(
+                            """
+                            INSERT INTO Assignments (
+                                assignment_id, taskset_id, action, sorting_criterion,
+                                assignment_method, number_of_cores, solving_time_limit_MILP, solver_name
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            """,
+                            (
+                                assignment_id,
+                                taskset_id,
+                                "generate",
+                                sorting,
+                                method,
+                                cores,
+                                solving_time,
+                                solver_name,
+                            )
+                        )
+                        self.assignment_index += 1  # Incrémenter l'index global
+
+                    # Lier l'assignment à l'expérience
                     self.cursor.execute(
                         """
-                        INSERT INTO Assignments (
-                            assignment_id, taskset_id, action, sorting_criterion,
-                            assignment_method, number_of_cores, solving_time_limit_MILP, solver_name
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT OR IGNORE INTO ExperienceAssignments (experience_id, assignment_id) 
+                        VALUES (?, ?)
                         """,
-                        (
-                            assignment_id,
-                            taskset_id,
-                            "generate",
-                            sorting_criterion,
-                            assignment_method,
-                            self.get_number_of_cores_from_taskset(taskset_id),
-                            solving_time_limit_milp_assignment,
-                            solver_name,
-                        )
+                        (experience_id, assignment_id)
                     )
-                    self.assignment_index += 1  # Incrémenter l'index global
-
-                # Lier l'assignment à l'expérience
-                self.cursor.execute(
-                    """
-                    INSERT OR IGNORE INTO ExperienceAssignments (experience_id, assignment_id) 
-                    VALUES (?, ?)
-                    """,
-                    (experience_id, assignment_id)
-                )
         self.conn.commit()
 
     def scheduling_exists(self, assignment_id, taskset_id, scheduling_algorithm, non_preemption_time_variant2, solving_time_limit_MILP, solver_name):
@@ -291,59 +371,58 @@ class ConfigGeneratorDB:
         )
         return self.cursor.fetchone()
 
-    def generate_schedulings(self, experience_id, scheduling_params):
+    def generate_schedulings(self, experience_id):
+        print(self.get_assignment_ids_for_experience(experience_id))
+        print("hey")
         for assignment_id in self.get_assignment_ids_for_experience(experience_id):
-            # Obtenir le taskset_id correspondant à l'assignment_id
             taskset_id = self.get_taskset_id_from_assignment(assignment_id)
+            for algorithm in self.scheduling_algorithms:
+                for non_preemption, solving_time, solver_name in itertools.product(
+                    self.optional_params["non_preemption_time_variant2_options"][algorithm],
+                    self.optional_params["solving_time_limit_milp_scheduling"][algorithm],
+                    self.optional_params["solver_name_scheduling"][algorithm],
+                ):
+                    # Vérifier si un scheduling avec les mêmes paramètres existe déjà
+                    existing_scheduling = self.scheduling_exists(
+                        assignment_id, taskset_id, algorithm, non_preemption, solving_time, solver_name
+                    )
 
-            for scheduling_algorithm, non_preemption_time_variant2_options, solving_time_limit_milp_scheduling, solver_name in itertools.product(
-                scheduling_params["scheduling_algorithms"],
-                scheduling_params["non_preemption_time_variant2_options"],
-                scheduling_params["solving_time_limit_milp_scheduling"],
-                scheduling_params["solver_name_scheduling"]
-            ):
-                # Vérifier si un scheduling avec les mêmes paramètres existe déjà
-                existing_scheduling = self.scheduling_exists(
-                    assignment_id, taskset_id, scheduling_algorithm,
-                    non_preemption_time_variant2_options, solving_time_limit_milp_scheduling,
-                    solver_name
-                )
+                    if existing_scheduling:
+                        # Réutiliser l'ID du scheduling existant
+                        scheduling_id = existing_scheduling[0]
+                        print(
+                            f"Scheduling existant réutilisé : {scheduling_id}")
+                    else:
+                        # Générer un nouvel ID de scheduling
+                        scheduling_id = f"scheduling_{self.scheduling_index}"
+                        self.cursor.execute(
+                            """
+                            INSERT INTO Schedulings (
+                                scheduling_id, assignment_id, taskset_id, action, scheduling_algorithm,
+                                non_preemption_time_variant2, solving_time_limit_MILP, solver_name
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                            """,
+                            (
+                                scheduling_id,
+                                assignment_id,
+                                taskset_id,
+                                "generate",
+                                algorithm,
+                                non_preemption,
+                                solving_time,
+                                solver_name
+                            )
+                        )
+                        self.scheduling_index += 1  # Incrémenter l'index global
 
-                if existing_scheduling:
-                    # Réutiliser l'ID du scheduling existant
-                    scheduling_id = existing_scheduling[0]
-                    print(f"Scheduling existant réutilisé : {scheduling_id}")
-                else:
-                    # Générer un nouvel ID de scheduling
-                    scheduling_id = f"scheduling_{self.scheduling_index}"
+                    # Lier le scheduling à l'expérience
                     self.cursor.execute(
                         """
-                        INSERT INTO Schedulings (
-                            scheduling_id, assignment_id, taskset_id, action, scheduling_algorithm,
-                            non_preemption_time_variant2, solving_time_limit_MILP, solver_name
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        INSERT OR IGNORE INTO ExperienceSchedulings (experience_id, scheduling_id) 
+                        VALUES (?, ?)
                         """,
-                        (
-                            scheduling_id,
-                            assignment_id,
-                            taskset_id,
-                            "generate",
-                            scheduling_algorithm,
-                            non_preemption_time_variant2_options,
-                            solving_time_limit_milp_scheduling,
-                            solver_name,
-                        )
+                        (experience_id, scheduling_id)
                     )
-                    self.scheduling_index += 1  # Incrémenter l'index global
-
-                # Lier le scheduling à l'expérience
-                self.cursor.execute(
-                    """
-                    INSERT OR IGNORE INTO ExperienceSchedulings (experience_id, scheduling_id) 
-                    VALUES (?, ?)
-                    """,
-                    (experience_id, scheduling_id)
-                )
         self.conn.commit()
 
     def get_taskset_ids_for_experience(self, experience_id):
@@ -356,7 +435,12 @@ class ConfigGeneratorDB:
             """,
             (experience_id,)
         )
-        return [row[0] for row in self.cursor.fetchall()]
+        taskset_ids = [row[0] for row in self.cursor.fetchall()]
+
+        # Trier numériquement les taskset_id
+        taskset_ids.sort(key=lambda x: int(x.split('_')[1]))
+
+        return taskset_ids
 
     def get_assignment_ids_for_experience(self, experience_id):
         self.cursor.execute(
@@ -368,7 +452,12 @@ class ConfigGeneratorDB:
             """,
             (experience_id,)
         )
-        return [row[0] for row in self.cursor.fetchall()]
+        assignment_ids = [row[0] for row in self.cursor.fetchall()]
+
+        # Trier numériquement les assignment_id
+        assignment_ids.sort(key=lambda x: int(x.split('_')[1]))
+
+        return assignment_ids
 
     def get_number_of_cores_from_taskset(self, taskset_id):
         self.cursor.execute(
@@ -411,12 +500,9 @@ class ConfigGeneratorDB:
             # experience_id est maintenant la clé du dictionnaire
             self.add_experience(experience_id)
             config_params = experience_data["config_parameters"]
-            self.generate_tasksets(
-                experience_id, config_params["taskset_parameters"])
-            self.generate_assignments(
-                experience_id, config_params["assignment_parameters"])
-            self.generate_schedulings(
-                experience_id, config_params["scheduling_parameters"])
+            self.generate_tasksets(experience_id)
+            self.generate_assignments(experience_id)
+            self.generate_schedulings(experience_id)
 
     def close_connection(self):
         self.conn.close()

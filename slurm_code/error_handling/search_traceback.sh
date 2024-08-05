@@ -31,6 +31,8 @@ process_file() {
     error_type="TypeError"
   elif grep -q "PulpSolverError" "$file_path"; then
     error_type="PulpSolverError"
+  elif grep -q "FileNotFoundError" "$file_path"; then
+    error_type="FileNotFoundError"
   else
     error_type="UnknownError"
   fi

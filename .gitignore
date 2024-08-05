@@ -142,7 +142,7 @@ cython_debug/
 .idea/
 
 # Exclude the entire generation directory
-generation/
+generation/*
 
 # But not the experience.db file
 !generation/experience.db
@@ -151,6 +151,4 @@ generation/
 !generation/plots/
 !generation/plots/**
 
-# Exclude everything in generation/ except those mentioned above
-generation/**/*
 slurm_code/error_handling/output_error

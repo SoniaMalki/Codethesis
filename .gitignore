@@ -148,7 +148,7 @@ generation/*
 !generation/experience.db
 
 # And not the plots directory and its contents
-!generation/plots/
-!generation/plots/**
+#!generation/plots/
+#!generation/plots/**
 
 slurm_code/error_handling/output_error

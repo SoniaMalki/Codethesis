@@ -16,9 +16,9 @@ estimation_dir="$script_dir/estimation_slurm"
 [ -d "$experience_dir" ] && rm -rf "$experience_dir"
 [ -d "$estimation_dir" ] && rm -rf "$estimation_dir"
 
-python3 "$script_dir/main.py" $experience_key generate_configs || { echo "Échec de la génération des configurations"; exit 1; }
-python3 "$script_dir/main.py" $experience_key generate_slurm_files || { echo "Échec de la génération des fichiers Slurm"; exit 1; }
-python3 "$script_dir/main.py" $experience_key generate_estimation || { echo "Échec de la génération des Slurm d'estimation"; exit 1; }
+python3 "$script_dir/main.py"  generate_configs $experience_key || { echo "Échec de la génération des configurations"; exit 1; }
+python3 "$script_dir/main.py" generate_slurm_files $experience_key  || { echo "Échec de la génération des fichiers Slurm"; exit 1; }
+python3 "$script_dir/main.py" generate_estimation $experience_key  || { echo "Échec de la génération des Slurm d'estimation"; exit 1; }
 
 if [ -f "$estimation_dir/master.slurm" ]; then
     sbatch "$estimation_dir/master.slurm" || { echo "Échec de la soumission du job master.slurm"; exit 1; }

@@ -38,12 +38,12 @@ for FILE in $ERROR_DIR/*; do
   # Extraire le nom de base du fichier
   BASENAME=$(basename "$FILE")
   
-  # Extraire l'identifiant du fichier, en supposant qu'il est au format output_{config_type}_generate_8302_c4.txt
-  CONFIG_TYPE=$(echo "$BASENAME" | sed -E 's/^output_([^_]+)_generate_.*$/\1/')
-  ID=$(echo "$BASENAME" | sed -E 's/^output_[^_]+_generate_([^.]+)\.txt$/\1/')
+  # Extraire le nom du type de configuration et l'ID 
+  CONFIG_TYPE=$(echo "$BASENAME" | sed -E 's/^output_([^_]+)_.*$/\1/')
+  ID=$(echo "$BASENAME" | sed -E 's/^output_([^.]+).txt$/\1/')
 
   # Construire le chemin complet du fichier sbatch
-  SBATCH_FILE="$script_dir/../../generation/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/${CONFIG_TYPE}_generate_$ID.slurm"
+  SBATCH_FILE="$script_dir/../../generation/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/$ID.slurm"
 
   # Vérifier si le fichier sbatch existe
   if [ -f "$SBATCH_FILE" ]; then

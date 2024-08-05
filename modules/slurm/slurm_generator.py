@@ -2,14 +2,13 @@ from pathlib import Path
 from datetime import time
 import json
 import socket
-
 from modules.core.experience_loader import ExperienceLoader
 
 
 class SlurmGenerator:
     def __init__(self, main_path, generation_path, db_path, experience_id, experience_data, batch_size=100):
         self.main_path = Path(main_path)
-        self.generation_path = Path(generation_path)
+        self.generation_path = Path(generation_path) / experience_id
         self.db_path = db_path
         self.experience_id = experience_id
         self.batch_size = batch_size
@@ -63,6 +62,8 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
+            (self.slurm_dir / config_type /
+             "batch").mkdir(parents=True, exist_ok=True)
             (self.output_dir / config_type).mkdir(parents=True, exist_ok=True)
 
     def get_modules_for_hostname(self, hostname):
@@ -87,7 +88,7 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 {self.modules}
 
 # Exécuter main.py avec la clé d'expérience en argument
-python3 {self.main_path} / "main.py" run_experience {config_key} {self.experience_id}
+python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key}
 """
 
     def generate_slurm(self, config_key, config_type):
@@ -113,6 +114,9 @@ done
     def write_master_slurm(self, config_type):
         """Write master SLURM file for a configuration type."""
         slurm_file = self.master_dir / f"all_{config_type}s_master.slurm"
+        batch_files = sorted(
+            (self.slurm_dir / config_type / "batch").glob("*.slurm")
+        )
 
         with open(slurm_file, "w") as f:
             f.write(
@@ -126,24 +130,19 @@ done
 """
             )
 
-            # Récupérer la liste des fichiers SLURM du dossier correspondant
-            slurm_files = sorted(
-                (self.slurm_dir / config_type).glob("*.slurm")
-            )
-
-            # Lancer les fichiers SLURM en séquence avec dépendances
+            # Lancer les batchs avec dépendances
             previous_batch_id_var = None
-            for i, slurm_file in enumerate(slurm_files):
-                batch_name = slurm_file.stem
+            for i, batch_file in enumerate(batch_files):
+                batch_name = batch_file.stem
                 current_batch_id_var = f"{batch_name}_ID"
 
                 if previous_batch_id_var:
                     f.write(
-                        f"""{current_batch_id_var}=$(sbatch --dependency=afterok:${previous_batch_id_var} {slurm_file} | awk '{{print $4}}')\n"""
+                        f"""{current_batch_id_var}=$(sbatch --dependency=afterok:${previous_batch_id_var} {batch_file} | awk '{{print $4}}')\n"""
                     )
                 else:
                     f.write(
-                        f"""{current_batch_id_var}=$(sbatch {slurm_file} | awk '{{print $4}}')\n"""
+                        f"""{current_batch_id_var}=$(sbatch {batch_file} | awk '{{print $4}}')\n"""
                     )
                 previous_batch_id_var = current_batch_id_var
 
@@ -191,152 +190,60 @@ sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.s
 {self.modules}
 
 # Exécuter le script d'analyse
-python3 {self.main_path} / "main.py" analyze_results {self.experience_id}
+python3 {self.main_path}/main.py analyze_results {self.experience_id}
 """
             )
 
     def generate_all_slurm(self):
-        for config_type in ["taskset", "assignment", "scheduling"]:
-            # Générer les fichiers SLURM individuels
-            config_ids = self.experience_loader.get_config_ids(config_type)
-            for config_id in config_ids:
-                self.generate_slurm(config_id, config_type)
+        """Generate all the SLURM files for a given experience."""
 
-            # Générer les fichiers SLURM masters
-            self.generate_master_slurm()
+        # Pour chaque type de configuration (taskset, assignment, scheduling)
+        for config_type in ["taskset", "assignment", "scheduling"]:
+            # Récupérer les IDs de configuration pour ce type
+            config_ids = self.experience_loader.get_config_ids(config_type)
+
+            # Gérer les jobs par batch de batch_size
+            i = 0
+            while i < len(config_ids):
+                # Créer un dictionnaire pour le batch actuel
+                batch_configs = {}
+                for j in range(i, min(i + self.batch_size, len(config_ids))):
+                    config_key = config_ids[j]
+                    batch_configs[config_key] = config_key
+
+                # Nom du batch actuel
+                batch_name = f"batch_{config_type}_{i // self.batch_size}"
+
+                # Générer le script SLURM pour le batch actuel
+                slurm_file = self.slurm_dir / config_type / \
+                    f"batch/{batch_name}.slurm"
+                param_exclude = [f"batch_{config_type}",
+                                 f"all_{config_type}s_master"]
+                with open(slurm_file, "w") as f:
+                    f.write(
+                        f"""#!/bin/bash
+#SBATCH --job-name={batch_name}
+#SBATCH --output={self.output_dir / config_type / f"output_{batch_name}.txt"}
+#SBATCH --ntasks=1
+#SBATCH --time={self.slurm_parameters.get(f"{config_type}_time", "02:00:00")}
+#SBATCH --mem=2G
+
+for config_key in {" ".join(batch_configs.keys())}; do  # Séparer par des espaces
+  sbatch {self.slurm_dir / config_type / f"$config_key.slurm"}  # Utiliser le chemin complet
+done
+
+{self.get_wait_for_jobs_script(config_type, param_exclude)}
+                    """
+                    )
+
+                # Générer les fichiers SLURM individuels pour le batch
+                for config_key in batch_configs.keys():
+                    self.generate_slurm(config_key, config_type)
+
+                i += self.batch_size
+
+        # Générer les fichiers SLURM masters
+        self.generate_master_slurm()
 
         # Générer le fichier SLURM pour l'analyse des résultats
         self.generate_analyze_slurm()
-
-    def generate_estimation(self):
-        # Define the base path for the estimation files
-        estimation_dir = self.main_path / "estimation_slurm"
-        estimation_dir.mkdir(parents=True, exist_ok=True)
-
-        # File paths for the slurm scripts
-        master_file = estimation_dir / "master.slurm"
-        batch_taskset_file = estimation_dir / "batch_taskset.slurm"
-        batch_assignment_file = estimation_dir / "batch_assignment.slurm"
-        batch_scheduling_file = estimation_dir / "batch_scheduling.slurm"
-
-        # Content for master.slurm
-        master_content = """#!/bin/bash
-#SBATCH --job-name=master
-#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/master.txt
-#SBATCH --ntasks=1
-#SBATCH --time=00:02:00
-#SBATCH --mem=2G
-
-taskset_id=$(sbatch /home/smalki/Codethesis/estimation_slurm/batch_taskset.slurm | awk '{print $4}')
-assignment_id=$(sbatch --dependency=afterok:$taskset_id /home/smalki/Codethesis/estimation_slurm/batch_assignment.slurm | awk '{print $4}')
-scheduling_id=$(sbatch --dependency=afterok:$assignment_id /home/smalki/Codethesis/estimation_slurm/batch_scheduling.slurm | awk '{print $4}')
-"""
-
-        # Content for batch_taskset.slurm
-        batch_taskset_content = """#!/bin/bash
-#SBATCH --job-name=batch_taskset
-#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/batch_taskset.txt
-#SBATCH --ntasks=1
-#SBATCH --time=1:00:00
-#SBATCH --mem=2G
-
-# Define experience IDs
-exp_ids=(
-    "taskset_generate_3_c8"
-    "taskset_generate_53_c4"
-    "taskset_generate_7_c2"
-    "taskset_generate_60_c8"
-    "taskset_generate_11_c4"
-    "taskset_generate_67_c2"
-    "taskset_generate_18_c8"
-    "taskset_generate_62_c4"
-    "taskset_generate_22_c2"
-    "taskset_generate_72_c8"
-)
-
-# Execute experiences in sequence
-for exp_id in "${exp_ids[@]}"; do
-    sbatch /home/smalki/Codethesis/generation/estimation_experience/slurm/slurm_files/taskset/${exp_id}.slurm
-done
-
-# Wait for all jobs to finish
-while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep 'taskset' | grep -v 'batch_taskset' | wc -l) -gt 0 ]; do
-    sleep 1
-done
-"""
-
-        # Content for batch_assignment.slurm
-        batch_assignment_content = """#!/bin/bash
-#SBATCH --job-name=batch_assignment
-#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/batch_assignment.txt
-#SBATCH --ntasks=1
-#SBATCH --time=2:00:00
-#SBATCH --mem=4G
-
-# Define experience IDs
-exp_ids=(
-    "assignment_generate_75_c8"
-    "assignment_generate_1935_c4"
-    "assignment_generate_243_c2"
-    "assignment_generate_2214_c8"
-    "assignment_generate_407_c4"
-    "assignment_generate_2479_c2"
-    "assignment_generate_646_c8"
-    "assignment_generate_2283_c4"
-    "assignment_generate_813_c2"
-    "assignment_generate_2664_c8"
-)
-
-# Execute experiences in sequence
-for exp_id in "${exp_ids[@]}"; do
-    sbatch /home/smalki/Codethesis/generation/estimation_experience/slurm/slurm_files/assignment/${exp_id}.slurm
-done
-
-# Wait for all jobs to finish
-while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep 'assignment' | grep -v 'batch_assignment' | wc -l) -gt 0 ]; do
-    sleep 1
-done
-"""
-
-        # Content for batch_scheduling.slurm
-        batch_scheduling_content = """#!/bin/bash
-#SBATCH --job-name=batch_scheduling
-#SBATCH --output=/home/smalki/Codethesis/estimation_slurm/batch_scheduling.txt
-#SBATCH --ntasks=1
-#SBATCH --time=4:00:00
-#SBATCH --mem=16G
-
-# Define experience IDs
-exp_ids=(
-    "scheduling_generate_519_c8"
-    "scheduling_generate_13543_c4"
-    "scheduling_generate_1701_c2"
-    "scheduling_generate_15493_c8"
-    "scheduling_generate_2846_c4"
-    "scheduling_generate_17353_c2"
-    "scheduling_generate_4518_c8"
-    "scheduling_generate_15979_c4"
-    "scheduling_generate_5691_c2"
-    "scheduling_generate_18643_c8"
-)
-
-# Execute experiences in sequence
-for exp_id in "${exp_ids[@]}"; do
-    sbatch /home/smalki/Codethesis/generation/estimation_experience/slurm/slurm_files/scheduling/${exp_id}.slurm
-done
-
-# Wait for all jobs to finish
-while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep 'scheduling' | grep -v 'batch_scheduling' | wc -l) -gt 0 ]; do
-    sleep 1
-done
-"""
-
-        # Write the content to files
-        with open(master_file, 'w') as f:
-            f.write(master_content)
-        with open(batch_taskset_file, 'w') as f:
-            f.write(batch_taskset_content)
-        with open(batch_assignment_file, 'w') as f:
-            f.write(batch_assignment_content)
-        with open(batch_scheduling_file, 'w') as f:
-            f.write(batch_scheduling_content)

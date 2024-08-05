@@ -17,7 +17,7 @@ master_dir="$experience_dir/slurm/master"
 # Annoncer le début de la génération des configurations
 echo "Début de la génération des configurations pour $experience_key"
 
-python3 "$script_dir/main.py" $experience_key generate_configs
+python3 "$script_dir/main.py" generate_configs $experience_key 
 if [ $? -ne 0 ]; then
     echo "Échec de la génération des configurations"
     exit 1
@@ -28,7 +28,7 @@ fi
 # Annoncer le début de la génération des fichiers Slurm
 echo "Début de la génération des fichiers Slurm pour $experience_key"
 
-python3 "$script_dir/main.py" $experience_key generate_slurm_files
+python3 "$script_dir/main.py" generate_slurm_files $experience_key 
 if [ $? -ne 0 ]; then
     echo "Échec de la génération des fichiers Slurm"
     exit 1

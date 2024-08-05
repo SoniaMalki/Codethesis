@@ -142,6 +142,7 @@ class ExperienceLoaderDB:
             assignment_parameters=assignment_params,
             scheduling_parameters=scheduling_params,
             main_path=Path(self.db_path).parent,
+            db_path=self.db_path
         )
 
     def get_experience_ids(self):

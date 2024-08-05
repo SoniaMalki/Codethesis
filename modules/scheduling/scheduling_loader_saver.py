@@ -30,7 +30,7 @@ class SchedulingLoaderSaver:
                     schedule.schedule = None
                 pickle.dump(scheduling_obj, f)
             self.db_utils.update_result_file_path(config_id=scheduling_id, config_type="scheduling",
-                                                  file_path=str(self.scheduling_path / scheduling_filename))
+                                                  file_path=scheduling_filename)
 
     def load_test_expected_result(self, scheduling_id, experience, scheduling_algorithm, non_preemption_time_variant2):
 

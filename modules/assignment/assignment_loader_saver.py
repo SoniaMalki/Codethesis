@@ -25,4 +25,4 @@ class AssignmentLoaderSaver:
                 pickle.dump(assignment_obj, f)
 
             self.db_utils.update_result_file_path(config_id=assignment_id, config_type="assignment",
-                                                  file_path=str(self.assignment_path / assignment_filename))
+                                                  file_path=assignment_filename)

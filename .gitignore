@@ -141,6 +141,16 @@ cython_debug/
 # PyCharm
 .idea/
 
-# Custom exclusions
+# Exclude the entire generation directory
 generation/
+
+# But not the experience.db file
+!generation/experience.db
+
+# And not the plots directory and its contents
+!generation/plots/
+!generation/plots/**
+
+# Exclude everything in generation/ except those mentioned above
+generation/**/*
 slurm_code/error_handling/output_error

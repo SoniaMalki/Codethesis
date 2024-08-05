@@ -25,4 +25,4 @@ class TasksetSetLoaderSaver:
             with open(self.taskset_path / taskset_filename, 'wb') as f:
                 pickle.dump(taskset_set_obj, f)
             self.db_utils.update_result_file_path(config_id=taskset_set_obj.taskset_id, config_type="taskset",
-                                                  file_path=str(self.taskset_path / taskset_filename))
+                                                  file_path=taskset_filename)

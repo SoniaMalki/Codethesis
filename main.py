@@ -3,8 +3,8 @@ import sys
 import json
 import threading
 
-from modules.config.config_generator_db import ConfigGeneratorDB
-from modules.core.experience_loader_db import ExperienceLoaderDB
+from modules.config.config_generator import ConfigGenerator
+from modules.core.experience_loader import ExperienceLoader
 from modules.analysis.result_analyzer import ResultAnalyzer
 from modules.slurm.slurm_generator import SlurmGenerator
 from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
@@ -98,7 +98,7 @@ def main(experience_id=None, action=None, config_type=None):
             print("Veuillez fournir un ID de configuration (ex: taskset_1)")
             return
 
-        experience_loader_db = ExperienceLoaderDB(db_path, experience_id)
+        experience_loader_db = ExperienceLoader(db_path, experience_id)
         run_experience(config_type, experience_loader_db)
 
     elif action == "run_batch_experiences":
@@ -106,11 +106,11 @@ def main(experience_id=None, action=None, config_type=None):
             print(
                 "Veuillez fournir un type de configuration (taskset, assignment, scheduling)")
             return
-        experience_loader_db = ExperienceLoaderDB(db_path, experience_id)
+        experience_loader_db = ExperienceLoader(db_path, experience_id)
         run_batch_experiences(experience_loader_db, config_type)
 
     elif action == "generate_configs":
-        generator = ConfigGeneratorDB(
+        generator = ConfigGenerator(
             db_path=db_path, experience_data=experience_data[experience_id])
         generator.generate_configs_from_json(experience_data, experience_id)
         generator.close_connection()

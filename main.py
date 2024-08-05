@@ -4,7 +4,9 @@ import json
 import threading
 
 from modules.config.config_generator import ConfigGenerator
+from modules.config.config_generator_db import ConfigGeneratorDB
 from modules.core.experience_loader import ExperienceLoader
+from modules.core.experience_loader_db import ExperienceLoaderDB
 from modules.analysis.result_analyzer import ResultAnalyzer
 from modules.slurm.slurm_generator import SlurmGenerator
 from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
@@ -57,12 +59,13 @@ def main(experience_key, action, config_type=None):
     Fonction principale pour exécuter une expérience ou analyser les résultats.
 
     Args:
-        experience_key (str): La clé (nom du dossier) de l'expérience.
+        experience_id (str, optional): ID de l'expérience. Si None, l'utilisateur devra choisir parmi les disponibles.
         action (str): L'action à effectuer.
         config_type (str, optional): Le type de configuration pour run_batch_experiences.
     """
     main_path = Path(__file__).parent
     generation_path = Path(__file__).parent / "generation" / experience_key
+    db_path = generation_path / "experience.db"
 
     # Charger experience.json depuis la racine
     experience_json_path = Path(__file__).parent / "experience.json"
@@ -130,6 +133,29 @@ def main(experience_key, action, config_type=None):
             experience_data=experience_data[experience_key],
         )
         slurm_generator.generate_estimation()
+
+    # Actions utilisant la base de données
+    elif action == "run_experience_db":
+        if config_type is None:
+            print("Veuillez fournir un ID de configuration (ex: taskset_1)")
+            return
+
+        experience_loader_db = ExperienceLoaderDB(db_path, experience_key)
+        run_experience(config_type, experience_loader_db)
+
+    elif action == "run_batch_experiences_db":
+        if not config_type:
+            print(
+                "Veuillez fournir un type de configuration (taskset, assignment, scheduling)"
+            )
+            return
+        experience_loader_db = ExperienceLoaderDB(db_path, experience_key)
+        run_batch_experiences(experience_loader_db, config_type)
+
+    elif action == "generate_configs_db":
+        generator = ConfigGeneratorDB(db_path=db_path)
+        generator.generate_configs_from_json(experience_data, experience_key)
+        generator.close_connection()
     else:
         print(f"Action invalide: {action}")
 

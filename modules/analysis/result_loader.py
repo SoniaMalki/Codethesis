@@ -1,58 +1,80 @@
 import os
+from pathlib import Path
 import pickle
 import json
+import sqlite3
+import time
 
 from modules.scheduling.composite_scheduling import CompositeScheduling
 from modules.scheduling.scheduling import Scheduling
 
 
 class ResultLoader:
-    def __init__(self, current_path):
-        self.current_path = current_path
-
-        self.result_directory = current_path / "results"
-        self.taskset_configs_json_path = current_path / "config_files/tasksets.json"
-        self.assignment_configs_json_path = current_path / "config_files/assignments.json"
-        self.scheduling_configs_json_path = current_path / "config_files/schedulings.json"
-
-        with open(self.taskset_configs_json_path, "r") as f:
-            self.taskset_configs = json.load(f)
-        with open(self.assignment_configs_json_path, "r") as f:
-            self.assignment_configs = json.load(f)
-        with open(self.scheduling_configs_json_path, "r") as f:
-            self.scheduling_configs = json.load(f)
+    def __init__(self, db_path, experience_id):
+        self.db_path = db_path
+        self.experience_id = experience_id
+        self.conn = sqlite3.connect(self.db_path)
+        self.cursor = self.conn.cursor()
 
     def load_data(self, file_path):
         with open(file_path, "rb") as f:
             return pickle.load(f)
 
-    def get_experiment_info(self, experience_id):
-        if experience_id in self.taskset_configs:
-            return self.taskset_configs[experience_id], "taskset"
-        elif experience_id in self.assignment_configs:
-            return self.assignment_configs[experience_id], "assignment"
-        elif experience_id in self.scheduling_configs:
-            return self.scheduling_configs[experience_id], "scheduling"
+    def get_config_ids(self, config_type):
+        if config_type == "taskset":
+            self.cursor.execute(
+                "SELECT taskset_id FROM ExperienceTasksets WHERE experience_id = ?",
+                (self.experience_id,)
+            )
+        elif config_type == "assignment":
+            self.cursor.execute(
+                "SELECT assignment_id FROM ExperienceAssignments WHERE experience_id = ?",
+                (self.experience_id,)
+            )
+        elif config_type == "scheduling":
+            self.cursor.execute(
+                "SELECT scheduling_id FROM ExperienceSchedulings WHERE experience_id = ?",
+                (self.experience_id,)
+            )
         else:
-            return None, None
+            print(f"Erreur : Type de configuration invalide '{config_type}'.")
+            return []
+
+        return [row[0] for row in self.cursor.fetchall()]
 
     def load_results(self):
         taskset_sets = []
         assignment_sets = []
         scheduling_sets = []
 
-        for dirpath, dirnames, filenames in os.walk(self.result_directory):
-            for filename in filenames:
-                if filename.endswith(".pkl"):
-                    file_path = os.path.join(dirpath, filename)
-                    data_obj = self.load_data(file_path)
-                    config, exp_type = self.get_experiment_info(filename[:-4])
+        taskset_ids = self.get_config_ids("taskset")
+        assignment_ids = self.get_config_ids("assignment")
+        scheduling_ids = self.get_config_ids("scheduling")
 
-                    if exp_type == "taskset":
-                        taskset_sets.append(data_obj)
-                    elif exp_type == "assignment":
-                        assignment_sets.append(data_obj)
-                    elif exp_type == "scheduling":
-                        scheduling_sets.append(data_obj)
+        result_directory = Path(self.db_path).parent / "results"
+
+        for taskset_id in taskset_ids:
+
+            file_path = result_directory / "tasksets" / f"{taskset_id}.pkl"
+            if file_path.exists():
+                data_obj = self.load_data(file_path)
+                taskset_sets.append(data_obj)
+
+        for assignment_id in assignment_ids:
+            file_path = result_directory / \
+                "assignments" / f"{assignment_id}.pkl"
+            if file_path.exists():
+                data_obj = self.load_data(file_path)
+                assignment_sets.append(data_obj)
+
+        for scheduling_id in scheduling_ids:
+            file_path = result_directory / \
+                "schedulings" / f"{scheduling_id}.pkl"
+            if file_path.exists():
+                data_obj = self.load_data(file_path)
+                scheduling_sets.append(data_obj)
 
         return taskset_sets, assignment_sets, scheduling_sets
+
+    def close_connection(self):
+        self.conn.close()

@@ -15,7 +15,7 @@ class AssignmentAnalyzer:
         self.taskset_parameters = ["interference_factor", "max_utilization",
                                    "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
         self.current_path = current_path
-        self.plots_dir = self.current_path / "plots" / "assignment"
+        self.plots_dir = self.current_path / "assignment"
         os.makedirs(self.plots_dir, exist_ok=True)
 
         self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \

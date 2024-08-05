@@ -19,8 +19,7 @@ class SchedulingByAssignmentAnalyzer:
         self.sorting_criteria = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending",
                                  "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
         self.current_path = current_path
-        self.plots_dir = self.current_path / \
-            "plots" / "scheduling_by_assignment"
+        self.plots_dir = self.current_path / "scheduling_by_assignment"
         os.makedirs(self.plots_dir, exist_ok=True)
 
         self.df["non_preemption_option"] = self.df["scheduling_options"].apply(

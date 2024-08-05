@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 
 from modules.analysis.result_loader import ResultLoader
@@ -7,9 +8,13 @@ from modules.analysis.analyzers.scheduling_by_assignment_analyzer import Schedul
 
 
 class ResultAnalyzer:
-    def __init__(self, current_path):
-        self.current_path = current_path
-        self.loader = ResultLoader(current_path=current_path)
+    def __init__(self, db_path, experience_id):
+        self.db_path = db_path
+        self.current_path = self.db_path.parent / "plots" / experience_id
+        os.makedirs(self.current_path, exist_ok=True)
+        self.experience_id = experience_id
+        self.loader = ResultLoader(
+            db_path=db_path, experience_id=experience_id)
         self.taskset_sets, self.assignment_sets, self.scheduling_sets = self.loader.load_results()
 
         self.df_tasksets = pd.DataFrame([vars(t) for t in self.taskset_sets])

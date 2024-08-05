@@ -15,7 +15,7 @@ class SchedulingAnalyzer:
         self.taskset_parameters = ["interference_factor",
                                    "max_utilization", "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
         self.current_path = current_path
-        self.plots_dir = self.current_path / "plots" / "scheduling"
+        self.plots_dir = self.current_path / "scheduling"
         os.makedirs(self.plots_dir, exist_ok=True)
 
         self.df["non_preemption_option"] = self.df["scheduling_options"].apply(

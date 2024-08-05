@@ -49,7 +49,7 @@ def main(experience_id=None, action=None, config_type=None):
         if not experience_id:
             print("Veuillez fournir une ID d'expérience.")
             return
-        analyzer = ResultAnalyzer(generation_path)
+        analyzer = ResultAnalyzer(db_path, experience_id)
         analyzer.run_analysis()
 
     elif action == "generate_slurm_files":

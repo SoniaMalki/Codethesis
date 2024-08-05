@@ -29,7 +29,6 @@ EXCLUDE_ITEMS=(
     '.pytest_cache'
     '.gitignore'
     'README.md'
-    'generation'
     'permanent_results'
     'slurm_code/error_handling/output_error'
 )

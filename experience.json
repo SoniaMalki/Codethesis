@@ -151,7 +151,7 @@
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [1],
-        "tasks_per_taskset": [4, 5],
+        "tasks_per_taskset": [4],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4],
@@ -168,7 +168,7 @@
         "solver_name_assignment": ["gurobi"]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler"],
+        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
         "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"]
@@ -187,7 +187,7 @@
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [1],
-        "tasks_per_taskset": [4, 5],
+        "tasks_per_taskset": [5],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4],
@@ -204,7 +204,7 @@
         "solver_name_assignment": ["gurobi"]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
+        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
         "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"]

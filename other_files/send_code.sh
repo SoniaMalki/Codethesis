@@ -37,14 +37,24 @@ EXCLUDE_ITEMS=(
 
 EXCLUDES=()
 for item in "${EXCLUDE_ITEMS[@]}"; do
-    if [[ "$item" == "slurm" || "$item" == "config_files" ]]; then
-        EXCLUDES+=(--exclude=/"$item")
-    else
-        EXCLUDES+=(--exclude="$item")
-    fi
+    EXCLUDES+=(--exclude="$item")
 done
 
-RSYNC_CMD="rsync -av ${EXCLUDES[@]} $SOURCE $DESTINATION"
+# Simuler le transfert pour estimer la taille des données
+RSYNC_DRY_RUN_CMD="rsync -av --dry-run --stats ${EXCLUDES[@]} $SOURCE $DESTINATION"
+DRY_RUN_OUTPUT=$(eval $RSYNC_DRY_RUN_CMD)
+
+# Extraire la taille totale des données à transférer
+TOTAL_SIZE=$(echo "$DRY_RUN_OUTPUT" | grep "Total transferred file size" | awk '{print $5, $6}')
+echo "The total data size to be transferred is ${TOTAL_SIZE}."
+
+read -p "Do you want to proceed with the transfer? (y/n) " confirm
+if [[ "$confirm" != "y" ]]; then
+    echo "Transfer aborted."
+    exit 1
+fi
+
+RSYNC_CMD="rsync -av --info=progress2 ${EXCLUDES[@]} $SOURCE $DESTINATION"
 
 echo "Executing: $RSYNC_CMD"
 eval $RSYNC_CMD

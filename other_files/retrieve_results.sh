@@ -34,7 +34,21 @@ for dir in "${DIRECTORIES[@]}"; do
             mkdir -p "${DESTINATION}${dir}"
         fi
 
-        RSYNC_CMD="rsync -av ${SOURCE}${dir}/ ${DESTINATION}${dir}/"
+        # Simuler le transfert pour estimer la taille des données
+        RSYNC_DRY_RUN_CMD="rsync -av --dry-run --stats ${SOURCE}${dir}/ ${DESTINATION}${dir}/"
+        DRY_RUN_OUTPUT=$(eval $RSYNC_DRY_RUN_CMD)
+
+        # Extraire la taille totale des données à transférer
+        TOTAL_SIZE=$(echo "$DRY_RUN_OUTPUT" | grep "Total transferred file size" | awk '{print $5, $6}')
+        echo "The total data size to be transferred for ${dir} is ${TOTAL_SIZE}."
+
+        read -p "Do you want to proceed with the transfer? (y/n) " confirm
+        if [[ "$confirm" != "y" ]]; then
+            echo "Transfer aborted."
+            exit 1
+        fi
+
+        RSYNC_CMD="rsync -av --info=progress2 ${SOURCE}${dir}/ ${DESTINATION}${dir}/"
         echo "Executing: $RSYNC_CMD"
         eval $RSYNC_CMD
 

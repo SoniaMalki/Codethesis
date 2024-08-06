@@ -25,6 +25,7 @@ class Experience:
             scheduling_parameters (dict): A dictionary containing scheduling configuration.
             db_path (Path): Chemin vers la base de données.
         """
+        print("Initializing Experience")
         self.taskset_parameters = taskset_parameters
         self.assignment_parameters = assignment_parameters
         self.scheduling_parameters = scheduling_parameters
@@ -37,6 +38,7 @@ class Experience:
         self.scheduling_set_obj = None
 
         self.db_utils = DBUtils(self.db_path)
+        print("Experience initialized successfully")
 
     def process(self):
         """Processes the experience, generating tasksets, assignments, and schedulings as needed."""
@@ -44,9 +46,11 @@ class Experience:
         self.process_taskset()
         self.process_assignment()
         self.process_scheduling()
+        print("Experience processing completed")
 
     def process_taskset(self):
         """Handles the generation or opening of the taskset."""
+        print(f"Taskset Action: {self.taskset_parameters['action']}")
         if self.taskset_parameters["action"] == 'none':
             print(f"Taskset Action : None received. Pass")
 
@@ -68,22 +72,24 @@ class Experience:
 
             if self.taskset_parameters["action"] == 'generate':
                 print("*****")
-                print(f"Generating taskset")
+                print("Generating taskset")
                 taskset_generator = TasksetSetGenerator(
                     self.main_path,
-                    self.taskset_parameters["taskset_id"], **self.taskset_parameters["parameters"])
+                    self.taskset_parameters["taskset_id"], **self.taskset_parameters["parameters"]
+                )
                 self.taskset_set_obj = taskset_generator.generate_taskset_set()
                 taskset_loader_saver.save(self.taskset_set_obj)
 
             elif self.taskset_parameters["action"] == 'open':
                 print("*****")
-                print(f"Opening taskset")
+                print("Opening taskset")
                 self.taskset_set_obj = taskset_loader_saver.load(
-                    self.taskset_parameters["taskset_id"])
+                    self.taskset_parameters["taskset_id"]
+                )
 
             elif self.taskset_parameters["action"] == 'manual':
                 print("*****")
-                print(f"Creating taskset manually")
+                print("Creating taskset manually")
                 taskset_manual = TasksetSetManual(
                     taskset_id=self.taskset_parameters["taskset_id"],
                     wcet_list=self.taskset_parameters["parameters"]["wcet"],
@@ -102,6 +108,7 @@ class Experience:
 
     def process_assignment(self):
         """Handles the generation or opening of the assignment."""
+        print(f"Assignment Action: {self.assignment_parameters['action']}")
         if self.assignment_parameters["action"] == 'none':
             print(f"Assignment Action : None received. Pass")
 
@@ -123,7 +130,7 @@ class Experience:
 
             if self.assignment_parameters["action"] == 'generate':
                 print("*****")
-                print(f"Generating assignment")
+                print("Generating assignment")
                 assignment_generator = AssignmentGenerator(
                     self.taskset_set_obj,
                     self.assignment_parameters["taskset_id"],
@@ -132,13 +139,15 @@ class Experience:
                 )
                 self.assignment_set_obj = assignment_generator.generate_assignment_set()
                 assignment_loader_saver.save(
-                    self.assignment_set_obj, self.assignment_parameters["assignment_id"])
+                    self.assignment_set_obj, self.assignment_parameters["assignment_id"]
+                )
 
             elif self.assignment_parameters["action"] == 'open':
                 print("*****")
-                print(f"Opening assignment")
+                print("Opening assignment")
                 self.assignment_set_obj = assignment_loader_saver.load(
-                    self.assignment_parameters["assignment_id"])
+                    self.assignment_parameters["assignment_id"]
+                )
 
         else:
             print(
@@ -147,6 +156,7 @@ class Experience:
 
     def process_scheduling(self):
         """Handles the generation or opening of the scheduling."""
+        print(f"Scheduling Action: {self.scheduling_parameters['action']}")
         if self.scheduling_parameters["action"] == 'none':
             print(f"Scheduling Action : None received. Pass")
 
@@ -168,7 +178,7 @@ class Experience:
             else:
                 if self.scheduling_parameters["action"] == 'generate':
                     print("*****")
-                    print(f"Generating scheduling")
+                    print("Generating scheduling")
                     scheduling_generator = SchedulingGenerator(
                         self.taskset_set_obj,
                         self.assignment_set_obj,
@@ -179,13 +189,15 @@ class Experience:
                     )
                     self.scheduling_set_obj = scheduling_generator.generate_scheduling_set()
                     scheduling_loader_saver.save(
-                        self.scheduling_set_obj, self.scheduling_parameters["scheduling_id"])
+                        self.scheduling_set_obj, self.scheduling_parameters["scheduling_id"]
+                    )
 
                 elif self.scheduling_parameters["action"] == 'open':
                     print("*****")
-                    print(f"Opening scheduling")
+                    print("Opening scheduling")
                     self.scheduling_set_obj = scheduling_loader_saver.load(
-                        self.scheduling_parameters["scheduling_id"])
+                        self.scheduling_parameters["scheduling_id"]
+                    )
         else:
             print(
                 f"Invalid scheduling action: {self.scheduling_parameters['action']}")

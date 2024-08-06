@@ -5,10 +5,12 @@ from modules.core.experience import Experience
 
 class ExperienceLoader:
     def __init__(self, db_path, experience_id=None):
+        print(f"Initializing ExperienceLoader for experience ID: {experience_id}")
         self.db_path = db_path
         self.experience_id = experience_id
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
+        print("ExperienceLoader initialized successfully")
 
     def load(self, config_id):
         """Charge les données de configuration à partir de la base de données.
@@ -19,13 +21,14 @@ class ExperienceLoader:
         Returns:
             Experience: Un objet Experience contenant les données chargées, ou None si aucune donnée n'est trouvée.
         """
+        print(f"Loading configuration for ID: {config_id}")
         taskset_params, assignment_params, scheduling_params = None, None, None
 
         # Déterminer le type de configuration à partir de config_id
         config_type = config_id.split('_')[0]
 
         if config_type == "taskset":
-            # Charger uniquement les paramètres du taskset
+            print("Loading taskset configuration")
             self.cursor.execute(
                 """
                 SELECT T.taskset_id, T.action, T.taskset_repetition, T.tasks_per_taskset, T.interference_factor, 
@@ -63,7 +66,7 @@ class ExperienceLoader:
                 scheduling_params = {"action": "none"}
 
         elif config_type == "assignment":
-            # Charger uniquement les paramètres d'assignation
+            print("Loading assignment configuration")
             self.cursor.execute(
                 """
                 SELECT A.assignment_id, A.action, A.sorting_criterion, A.assignment_method,
@@ -93,12 +96,11 @@ class ExperienceLoader:
                     "result_file_path": assignment_data[7]
                 }
                 # Ajouter taskset avec action "open" et scheduling avec action "none"
-                taskset_params = {"action": "open",
-                                  "taskset_id": assignment_data[8]}
+                taskset_params = {"action": "open", "taskset_id": assignment_data[8]}
                 scheduling_params = {"action": "none"}
 
         elif config_type == "scheduling":
-            # Charger uniquement les paramètres de planification
+            print("Loading scheduling configuration")
             self.cursor.execute(
                 """
                 SELECT S.scheduling_id, S.action, S.scheduling_algorithm, S.non_preemption_time_variant2,
@@ -128,15 +130,15 @@ class ExperienceLoader:
                     "result_file_path": scheduling_data[6]
                 }
                 # Ajouter taskset et assignment avec action "open"
-                taskset_params = {"action": "open",
-                                  "taskset_id": scheduling_data[7]}
-                assignment_params = {"action": "open",
-                                     "assignment_id": scheduling_data[8]}
+                taskset_params = {"action": "open", "taskset_id": scheduling_data[7]}
+                assignment_params = {"action": "open", "assignment_id": scheduling_data[8]}
 
         # Retourner None si aucun paramètre n'a été chargé
         if taskset_params is None and assignment_params is None and scheduling_params is None:
+            print(f"No configuration found for ID: {config_id}")
             return None
 
+        print(f"Configuration for ID: {config_id} loaded successfully")
         return Experience(
             taskset_parameters=taskset_params,
             assignment_parameters=assignment_params,
@@ -147,8 +149,11 @@ class ExperienceLoader:
 
     def get_experience_ids(self):
         """Récupère la liste des IDs d'expérience disponibles dans la base de données."""
+        print("Fetching experience IDs from database")
         self.cursor.execute("SELECT experience_id FROM Experiences")
-        return [row[0] for row in self.cursor.fetchall()]
+        experience_ids = [row[0] for row in self.cursor.fetchall()]
+        print(f"Experience IDs: {experience_ids}")
+        return experience_ids
 
     def get_taskset_id_from_assignment(self, assignment_id):
         self.cursor.execute(
@@ -184,6 +189,7 @@ class ExperienceLoader:
         Returns:
             list: Une liste d'IDs de configuration.
         """
+        print(f"Fetching configuration IDs for type: {config_type}")
         if not self.experience_id:
             return []
 
@@ -198,6 +204,7 @@ class ExperienceLoader:
             return []
 
     def get_taskset_ids_for_experience(self, experience_id):
+        print(f"Fetching taskset IDs for experience ID: {experience_id}")
         self.cursor.execute(
             """
             SELECT T.taskset_id 
@@ -212,9 +219,11 @@ class ExperienceLoader:
         # Trier numériquement les taskset_id
         taskset_ids.sort(key=lambda x: int(x.split('_')[1]))
 
+        print(f"Taskset IDs for experience ID {experience_id}: {taskset_ids}")
         return taskset_ids
 
     def get_assignment_ids_for_experience(self, experience_id):
+        print(f"Fetching assignment IDs for experience ID: {experience_id}")
         self.cursor.execute(
             """
             SELECT A.assignment_id
@@ -229,9 +238,11 @@ class ExperienceLoader:
         # Trier numériquement les assignment_id
         assignment_ids.sort(key=lambda x: int(x.split('_')[1]))
 
+        print(f"Assignment IDs for experience ID {experience_id}: {assignment_ids}")
         return assignment_ids
 
     def get_scheduling_ids_for_experience(self, experience_id):
+        print(f"Fetching scheduling IDs for experience ID: {experience_id}")
         self.cursor.execute(
             """
             SELECT S.scheduling_id
@@ -246,7 +257,10 @@ class ExperienceLoader:
         # Trier numériquement les scheduling_id
         scheduling_ids.sort(key=lambda x: int(x.split('_')[1]))
 
+        print(f"Scheduling IDs for experience ID {experience_id}: {scheduling_ids}")
         return scheduling_ids
 
     def close_connection(self):
+        print("Closing database connection")
         self.conn.close()
+        print("Database connection closed")

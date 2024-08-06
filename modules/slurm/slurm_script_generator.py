@@ -2,7 +2,7 @@ import os
 
 
 class SlurmScriptGenerator:
-    def __init__(self, main_path, slurm_script_path, output_slurm_path, generation_path, experience_id, check_if_unique=True):
+    def __init__(self, main_path, slurm_script_path, output_slurm_path, generation_path, experience_id):
         print("Initializing SlurmScriptGenerator")
         self.main_path = main_path
         self.slurm_script_path = slurm_script_path
@@ -12,7 +12,6 @@ class SlurmScriptGenerator:
         os.makedirs(self.output_slurm_path, exist_ok=True)
         os.makedirs(self.generation_path, exist_ok=True)
         self.experience_id = experience_id
-        self.check_if_unique = check_if_unique
         print("SlurmScriptGenerator initialized successfully")
 
     def create_script(self, script_name, job_name, output_file, time, mem, command):
@@ -39,7 +38,7 @@ class SlurmScriptGenerator:
             output_file=f"{self.output_slurm_path}/generate_configs_{self.experience_id}.txt",
             time="24:00:00",
             mem="16G",
-            command=f"python3 {self.main_path}/main.py \"generate_configs\" \"{self.experience_id}\" \"{self.check_if_unique}\" "
+            command=f"python3 {self.main_path}/main.py \"generate_configs\" \"{self.experience_id}\""
         )
 
         self.create_script(
@@ -87,7 +86,7 @@ class SlurmScriptGenerator:
             mem="32G",
             command=(
                 f"echo \"Starting full pipeline for {self.experience_id}\"\n"
-                f"python3 {self.main_path}/main.py generate_configs {self.experience_id} {self.check_if_unique}\n"
+                f"python3 {self.main_path}/main.py generate_configs {self.experience_id}\n"
                 "if [ $? -ne 0 ]; then\n"
                 "    echo \"Échec de la génération des configurations\"\n"
                 "    exit 1\n"

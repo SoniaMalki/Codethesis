@@ -11,12 +11,15 @@ from modules.taskset.task_parameters_generator.prime_matrix_generator import Pri
 
 
 def run_experience(experience_parameter_key, experience_loader):
+    print(f"Running experience with parameter key: {experience_parameter_key}")
     experience = experience_loader.load(experience_parameter_key)
     if experience:
+        print(f"Processing experience: {experience_parameter_key}")
         experience.process()
 
 
 def run_batch_experiences(experience_loader, config_type):
+    print(f"Running batch experiences for config type: {config_type}")
     config_ids = experience_loader.get_config_ids(config_type)
 
     if not config_ids:
@@ -24,6 +27,7 @@ def run_batch_experiences(experience_loader, config_type):
         return
 
     for config_id in config_ids:
+        print(f"Running experience for config ID: {config_id}")
         run_experience(config_id, experience_loader)
 
 
@@ -36,12 +40,15 @@ def main(action, experience_id, experience_action=None):
         experience_id (str, optional): ID de l'expérience. Si None, l'utilisateur devra choisir parmi les disponibles.
         experience_action (str, optional): Le type d'action pour run_batch_experiences.
     """
+    print(
+        f"Main function started with action: {action}, experience_id: {experience_id}, experience_action: {experience_action}")
     main_path = Path(__file__).parent
     generation_path = Path(__file__).parent / "generation"
     db_path = generation_path / "experience.db"
     experience_json_path = Path(__file__).parent / "experience.json"
 
     # Charger experience.json
+    print("Loading experience.json")
     with open(experience_json_path, 'r') as f:
         experience_data = json.load(f)
 
@@ -49,6 +56,7 @@ def main(action, experience_id, experience_action=None):
         if not experience_id:
             print("Veuillez fournir une ID d'expérience.")
             return
+        print(f"Analyzing results for experience ID: {experience_id}")
         analyzer = ResultAnalyzer(db_path, experience_id)
         analyzer.run_analysis()
 
@@ -59,6 +67,7 @@ def main(action, experience_id, experience_action=None):
             return
 
         # Génération de la prime matrix
+        print(f"Generating prime matrix for experience ID: {experience_id}")
         prime_matrix_path = generation_path / "results"
         prime_matrix_path.mkdir(parents=True, exist_ok=True)
 
@@ -71,6 +80,7 @@ def main(action, experience_id, experience_action=None):
             prime_matrix_generator.generate_matrix()
 
         # Génération des fichiers SLURM
+        print(f"Generating SLURM files for experience ID: {experience_id}")
         slurm_generator = SlurmGenerator(
             main_path=main_path,
             generation_path=generation_path,
@@ -85,6 +95,7 @@ def main(action, experience_id, experience_action=None):
             print(
                 f"L'ID d'experience: {experience_id} n'existe pas. Veuillez la créer")
             return
+        print(f"Generating estimation for experience ID: {experience_id}")
         slurm_generator = SlurmGenerator(
             main_dir=main_path,
             generation_dir=generation_path / experience_id,
@@ -98,6 +109,7 @@ def main(action, experience_id, experience_action=None):
             print("Veuillez fournir un ID de configuration (ex: taskset_1)")
             return
 
+        print(f"Running experience with action: {experience_action}")
         experience_loader_db = ExperienceLoader(db_path, experience_id)
         run_experience(experience_action, experience_loader_db)
 
@@ -106,10 +118,12 @@ def main(action, experience_id, experience_action=None):
             print(
                 "Veuillez fournir un type de configuration (taskset, assignment, scheduling)")
             return
+        print(f"Running batch experiences with action: {experience_action}")
         experience_loader_db = ExperienceLoader(db_path, experience_id)
         run_batch_experiences(experience_loader_db, experience_action)
 
     elif action == "generate_configs":
+        print(f"Generating configs for experience ID: {experience_id}")
         generator = ConfigGenerator(
             db_path=db_path, experience_data=experience_data[experience_id])
         generator.generate_configs_from_json(experience_data, experience_id)
@@ -129,4 +143,7 @@ if __name__ == "__main__":
     experience_id = sys.argv[2]
     experience_action = sys.argv[3] if len(sys.argv) > 3 else None
 
+    print(
+        f"Script started with action: {action}, experience_id: {experience_id}, experience_action: {experience_action}")
     main(action, experience_id, experience_action)
+    print("Script execution completed")

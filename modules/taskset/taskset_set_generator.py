@@ -17,7 +17,7 @@ from modules.taskset.task import Task
 
 class TasksetSetGenerator:
     def __init__(self, main_path, taskset_id, taskset_repetition, tasks_per_taskset, interference_factor, probability_factor, max_utilization, taskset_options):
-
+        print("Initializing TasksetSetGenerator")
         self.taskset_id = taskset_id
         self.taskset_repetition = taskset_repetition
         self.tasks_per_taskset = tasks_per_taskset
@@ -43,6 +43,7 @@ class TasksetSetGenerator:
         self.deadline_generator = DeadlineGenerator()
         self.interference_generator = InterferenceGenerator(
             self.taskset_repetition, self.tasks_per_taskset, self.interference_factor, self.probability_factor)
+        print("TasksetSetGenerator initialized successfully")
 
     @staticmethod
     def calculate_lcm(period):
@@ -53,21 +54,26 @@ class TasksetSetGenerator:
 
     @staticmethod
     def generate_hyperperiods(periods):
+        print("Generating hyperperiods")
         hyperperiods = numpy.zeros(len(periods), dtype=int)
         for taskset_index, period in enumerate(periods):
             hyperperiods[taskset_index] = TasksetSetGenerator.calculate_lcm(
                 period=period)
+        print("Hyperperiods generated")
         return hyperperiods
 
     @staticmethod
     def generate_N(periods, hyperperiods):
+        print("Generating N")
         N = numpy.zeros((len(periods),), dtype=object)
         for taskset_index, period in enumerate(periods):
             N[taskset_index] = hyperperiods[taskset_index] / period
+        print("N generated")
         return N
 
     @staticmethod
     def generate_activations(periods, N):
+        print("Generating activations")
         activations = numpy.empty(len(periods), dtype=object)
         for taskset_index, period in enumerate(periods):
             tasks_activations = []
@@ -78,10 +84,12 @@ class TasksetSetGenerator:
                     range(1, int(N[taskset_index][task_index - 1]) + 1))
                 tasks_activations.append(temp)
             activations[taskset_index] = tasks_activations
+        print("Activations generated")
         return activations
 
     @staticmethod
     def generate_absolute_deadline(periods, deadlines, activations):
+        print("Generating absolute deadlines")
         absolute_deadlines = [None] * len(periods)
         for taskset_index, period in enumerate(periods):
             tasks_absolute_deadline = []
@@ -92,9 +100,11 @@ class TasksetSetGenerator:
                                deadlines[taskset_index][task_index] + 1)
                 tasks_absolute_deadline.append(temp)
             absolute_deadlines[taskset_index] = tasks_absolute_deadline
+        print("Absolute deadlines generated")
         return absolute_deadlines
 
     def init_taskset_set(self):
+        print("Initializing taskset set")
         utilizations = self.utilization_generator.generate_utilizations()
         periods = self.period_generator.generate_periods()
         wcets = self.wcet_calculator.compute_wcets(periods, utilizations)
@@ -111,16 +121,20 @@ class TasksetSetGenerator:
             periods=periods, N=N)
         absolute_deadlines = TasksetSetGenerator.generate_absolute_deadline(
             periods=periods, deadlines=deadlines, activations=activations)
+        print("Taskset set initialized")
         return [periods, deadlines, utilizations, wcets, interferences, single_interference, hyperperiods, N, activations, absolute_deadlines]
 
     def generate_taskset_set(self):
+        print("Generating taskset set")
         periods, deadlines, utilizations, wcets, interferences, single_interference, hyperperiods, N, activations, absolute_deadlines = self.init_taskset_set()
         taskset_set_generated = []
         for i in range(len(periods)):
+            print(f"Generating taskset {i}")
             taskset_set_generated.append(Taskset(taskset_number=i, wcet=wcets[i], deadline=deadlines[i], period=periods[i], interference=interferences[
                                          i], single_interference=single_interference[i], utilization=utilizations[i], hyperperiod=hyperperiods[i], N=N[i], activation=activations[i], absolute_deadline=absolute_deadlines[i]))
         res = TasksetSet(taskset_id=self.taskset_id, wcet=wcets, deadline=deadlines, period=periods, single_interference=single_interference,
                          interference=interferences, utilization=utilizations, taskset_list=taskset_set_generated)
         res.add_generation_parameters(taskset_repetition=self.taskset_repetition, tasks_per_taskset=self.tasks_per_taskset, interference_factor=self.interference_factor, probability_factor=self.probability_factor,
                                       max_utilization=self.max_utilization, deadline_option=self.deadline_option, max_hyperperiod=self.max_hyperperiod, max_prime=self.max_prime, gen_limit_exponent=self.gen_limit_exponent)
+        print("Taskset set generation completed")
         return res

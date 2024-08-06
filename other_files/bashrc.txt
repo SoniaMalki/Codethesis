@@ -37,3 +37,5 @@ alias sqn='squeue -u $USER -h -o "%.30j %.2t %.10M %.6D %.30R" | awk '\''BEGIN {
 alias sqnr='squeue -u $USER -h -o "%.30j %.2t %.10M %.6D %.30R" | awk '\''BEGIN { printf "%-30s %-2s %-10s %-6s %-30s\n", "NAME", "ST", "TIME", "NODES", "NODELIST" } $2 == "R" { printf "%-30s %-2s %-10s %-6s %-30s\n", $1, $2, $3, $4, $5 }'\'''
 
 
+# Alias pour rm generation & slurm
+alias rmres='rm -rf $HOME/Codethesis/generation/* && rm -rf $HOME/Codethesis/slurm_code/slurm_scripts/* && rm -rf $HOME/Codethesis/slurm_code/output_launch_slurm_jobs/*'

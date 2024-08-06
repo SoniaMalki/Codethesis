@@ -1,9 +1,9 @@
 {
-  "full_experience_10000": {
+  "full_experience": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [10, 20],
+        "taskset_repetitions": [1, 2, 5, 10, 20],
+        "tasks_per_taskset": [4, 5, 6, 7, 8, 9, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
@@ -19,14 +19,14 @@
       "assignment_parameters": {
         "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
         "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": [600],
-        "solver_name_assignment": ["gurobi"] 
+        "solving_time_limit_milp_assignment": ["", 60, 120, 300 , 600, 1200, 1800, 2400],
+        "solver_name_assignment": ["gurobi", "glpk"] 
       },
       "scheduling_parameters": {
         "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
         "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [600],
-        "solver_name_scheduling": ["gurobi"] 
+        "solving_time_limit_milp_scheduling": ["", 60, 120, 300 , 600, 1200, 1800, 2400],
+        "solver_name_scheduling": ["gurobi", "glpk"] 
       }
     },
     "slurm_parameters": {

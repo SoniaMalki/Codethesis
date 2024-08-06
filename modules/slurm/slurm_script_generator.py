@@ -38,7 +38,7 @@ class SlurmScriptGenerator:
             output_file=f"{self.output_slurm_path}/generate_configs_{self.experience_id}.txt",
             time="24:00:00",
             mem="16G",
-            command=f"python3 {self.main_path}/main.py generate_configs {self.experience_id}"
+            command=f"python3 {self.main_path}/main.py \"generate_configs\" \"{self.experience_id}\""
         )
 
         self.create_script(

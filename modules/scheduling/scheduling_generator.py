@@ -68,12 +68,12 @@ class SchedulingGenerator:
         for taskset, assignment in zip(self.taskset_set, self.assignment_set):
             if assignment.success:
                 print(
-                    f"Generating scheduling for taskset: {taskset.taskset_id} and assignment: {assignment.assignment_id}")
+                    f"Generating scheduling for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
                 scheduling = scheduling_function(
                     taskset=taskset, assignment=assignment, scheduler_class=scheduler_class, start_time=1, end_time=None)
                 scheduling_list.append(scheduling)
                 print(
-                    f"Scheduling generated for taskset: {taskset.taskset_id} and assignment: {assignment.assignment_id}")
+                    f"Scheduling generated for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
 
         scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id,
                                    scheduling_algorithm=self.scheduling_algorithm, scheduling_options=self.scheduling_options, scheduling_list=scheduling_list)
@@ -99,12 +99,12 @@ class SchedulingGenerator:
             actual_utilization = numpy.nan
             theoritical_utilization = numpy.nan
             print(
-                f"Scheduling failed for taskset: {taskset.taskset_id} and assignment: {assignment.assignment_id}")
+                f"Scheduling failed for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
         else:
             actual_utilization = scheduler.actual_utilization
             theoritical_utilization = sum(taskset.utilization)
             print(
-                f"Scheduling succeeded for taskset: {taskset.taskset_id} and assignment: {assignment.assignment_id}")
+                f"Scheduling succeeded for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
 
         scheduling = Scheduling(
             schedule=schedule, success=success, scheduler_name=str(scheduler))
@@ -137,12 +137,12 @@ class SchedulingGenerator:
             actual_utilization = numpy.nan
             theoritical_utilization = numpy.nan
             print(
-                f"Composite scheduling failed for taskset: {taskset.taskset_id} and assignment: {assignment.assignment_id}")
+                f"Composite scheduling failed for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
         else:
             actual_utilization = sum(scheduler.actual_utilization)
             theoritical_utilization = sum(taskset.utilization)
             print(
-                f"Composite scheduling succeeded for taskset: {taskset.taskset_id} and assignment: {assignment.assignment_id}")
+                f"Composite scheduling succeeded for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
 
         scheduling.add_performances(
             computation_time=computation_time, actual_utilization=actual_utilization, theoritical_utilization=theoritical_utilization)

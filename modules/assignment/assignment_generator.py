@@ -53,10 +53,10 @@ class AssignmentGenerator:
 
         # Apply the selected assignment function to all tasksets
         for taskset in self.taskset_set_obj.taskset_list:
-            print(f"Generating assignment for taskset: {taskset.taskset_id}")
+            print(f"Generating assignment for taskset: {self.taskset_id}")
             assignment = assignment_function(taskset, assignment_class)
             assignment_list.append(assignment)
-            print(f"Assignment generated for taskset: {taskset.taskset_id}")
+            print(f"Assignment generated for taskset: {self.taskset_id}")
 
         assignment_set = AssignmentSet(assignment_id=self.assignment_id, taskset_id=self.taskset_id, assignment_method=self.assignment_method,
                                        sorting_criterion=self.sorting_criterion, number_of_cores=self.number_of_cores, assignment_list=assignment_list)
@@ -79,10 +79,10 @@ class AssignmentGenerator:
         if not successfully_assigned:
             computation_time = numpy.nan
             print(
-                f"Assignment with sorting failed for taskset: {taskset.taskset_id}")
+                f"Assignment with sorting failed for taskset: {self.taskset_id}")
         else:
             print(
-                f"Assignment with sorting succeeded for taskset: {taskset.taskset_id}")
+                f"Assignment with sorting succeeded for taskset: {self.taskset_id}")
 
         assignment = Assignment(assignment=assigned_cores,
                                 success=successfully_assigned)
@@ -104,10 +104,10 @@ class AssignmentGenerator:
         if not successfully_assigned:
             computation_time = numpy.nan
             print(
-                f"Assignment without sorting failed for taskset: {taskset.taskset_id}")
+                f"Assignment without sorting failed for taskset: {self.taskset_id}")
         else:
             print(
-                f"Assignment without sorting succeeded for taskset: {taskset.taskset_id}")
+                f"Assignment without sorting succeeded for taskset: {self.taskset_id}")
 
         assignment = Assignment(assignment=assigned_cores,
                                 success=successfully_assigned)

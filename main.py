@@ -1,12 +1,13 @@
-from pathlib import Path
+import os
 import sys
 import json
-import threading
+from pathlib import Path
 
 from modules.config.config_generator import ConfigGenerator
 from modules.core.experience_loader import ExperienceLoader
 from modules.analysis.result_analyzer import ResultAnalyzer
 from modules.slurm.slurm_generator import SlurmGenerator
+from modules.slurm.slurm_script_generator import SlurmScriptGenerator
 from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
 
 
@@ -46,6 +47,7 @@ def main(action, experience_id, experience_action=None):
     generation_path = Path(__file__).parent / "generation"
     db_path = generation_path / "experience.db"
     experience_json_path = Path(__file__).parent / "experience.json"
+    slurm_script_path = main_path / "slurm_code"
 
     # Charger experience.json
     print("Loading experience.json")
@@ -128,6 +130,16 @@ def main(action, experience_id, experience_action=None):
             db_path=db_path, experience_data=experience_data[experience_id])
         generator.generate_configs_from_json(experience_data, experience_id)
         generator.close_connection()
+
+    elif action == "generate_slurm_scripts":
+        if not experience_id:
+            print("Veuillez fournir une ID d'expérience.")
+            return
+        print(f"Generating SLURM scripts for experience ID: {experience_id}")
+        generator = SlurmScriptGenerator(main_path=main_path, slurm_script_path=slurm_script_path,
+                                         generation_path=generation_path, experience_id=experience_id)
+        generator.generate_all_scripts()
+        print(f"SLURM scripts generated for experience ID: {experience_id}")
 
     else:
         print(f"Action invalide: {action}")

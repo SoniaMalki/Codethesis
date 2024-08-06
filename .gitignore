@@ -145,7 +145,7 @@ cython_debug/
 generation/*
 
 # But not the experience.db file
-!generation/experience.db
+#!generation/experience.db
 
 # And not the plots directory and its contents
 #!generation/plots/

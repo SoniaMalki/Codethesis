@@ -55,20 +55,21 @@ def main(action, experience_id, experience_action=None):
     with open(experience_json_path, 'r') as f:
         experience_data = json.load(f)
 
+    if not experience_id:
+        print("Veuillez fournir une ID d'expérience.")
+        return
+
+    if experience_id not in experience_data:
+        print(
+            f"L'ID d'experience: {experience_id} n'existe pas. Veuillez la créer")
+        return
+
     if action == "analyze_results":
-        if not experience_id:
-            print("Veuillez fournir une ID d'expérience.")
-            return
         print(f"Analyzing results for experience ID: {experience_id}")
         analyzer = ResultAnalyzer(db_path, experience_id)
         analyzer.run_analysis()
 
     elif action == "generate_slurm_files":
-        if experience_id not in experience_data:
-            print(
-                f"L'ID d'experience: {experience_id} n'existe pas. Veuillez la créer")
-            return
-
         # Génération de la prime matrix
         print(f"Generating prime matrix for experience ID: {experience_id}")
         prime_matrix_path = generation_path / "results"
@@ -93,49 +94,30 @@ def main(action, experience_id, experience_action=None):
         )
         slurm_generator.generate_all_slurm()
 
-    elif action == "generate_estimation":
-        if experience_id not in experience_data:
-            print(
-                f"L'ID d'experience: {experience_id} n'existe pas. Veuillez la créer")
-            return
-        print(f"Generating estimation for experience ID: {experience_id}")
-        slurm_generator = SlurmGenerator(
-            main_dir=main_path,
-            generation_dir=generation_path / experience_id,
-            experience_key=experience_id,
-            experience_data=experience_data[experience_id],
-        )
-        slurm_generator.generate_estimation()
-
     elif action == "run_experience":
-        if experience_action is None:
-            print("Veuillez fournir un ID de configuration (ex: taskset_1)")
-            return
-
         print(f"Running experience with action: {experience_action}")
         experience_loader_db = ExperienceLoader(db_path, experience_id)
         run_experience(experience_action, experience_loader_db)
 
     elif action == "run_batch_experiences":
-        if not experience_action:
-            print(
-                "Veuillez fournir un type de configuration (taskset, assignment, scheduling)")
-            return
         print(f"Running batch experiences with action: {experience_action}")
         experience_loader_db = ExperienceLoader(db_path, experience_id)
         run_batch_experiences(experience_loader_db, experience_action)
 
     elif action == "generate_configs":
         print(f"Generating configs for experience ID: {experience_id}")
+        if not experience_action:
+            print("Cannot generate configuration without the unique flag.\n"
+                  "- True: Will check if the action is unique.\n- False: Will not check.")
+
+            return
+        experience_action = bool(experience_action)
         generator = ConfigGenerator(
-            db_path=db_path, experience_data=experience_data[experience_id])
+            db_path=db_path, experience_data=experience_data[experience_id], unique=experience_action)
         generator.generate_configs_from_json(experience_data, experience_id)
         generator.close_connection()
 
     elif action == "generate_slurm_scripts":
-        if not experience_id:
-            print("Veuillez fournir une ID d'expérience.")
-            return
         print(f"Generating SLURM scripts for experience ID: {experience_id}")
         generator = SlurmScriptGenerator(main_path=main_path, slurm_script_path=slurm_script_path, output_slurm_path=output_slurm_path,
                                          generation_path=generation_path, experience_id=experience_id)

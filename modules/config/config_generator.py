@@ -235,7 +235,7 @@ class ConfigGenerator:
              deadline_option, max_hyperperiod, max_prime, gen_limit_exponent, number_of_cores)
         )
         result = self.cursor.fetchone()
-        print(f"Taskset exists: {result is not None}")
+        print(f"Taskset exists: {result is not None} : {result}")
         return result
 
     def generate_tasksets(self, experience_id):
@@ -270,10 +270,6 @@ class ConfigGenerator:
             self.prime_exponent_hyperperiod_combinations,
         ):
             for cores in self.number_of_cores_list:
-                # Générer l'ID du taskset
-                taskset_id = f"taskset_{self.taskset_index}"
-                self.taskset_index += 1
-
                 # Créer un tuple pour représenter la configuration
                 taskset_config = (
                     repetition,
@@ -288,27 +284,33 @@ class ConfigGenerator:
                     cores,
                 )
 
-                # Vérifier si le taskset_id existe déjà (avec les autres paramètres)
-                while self.taskset_exists(*taskset_config):
-                    self.taskset_index += 1
-                    taskset_id = f"taskset_{self.taskset_index}"
-                    taskset_config = (
-                        repetition,
-                        tasks,
-                        interference,
-                        probability,
-                        util_factor * cores,
-                        deadline,
-                        hyperperiod,
-                        prime,
-                        exponent,
-                        cores,
-                    )
-
                 # Vérifier si la configuration existe déjà
-                if taskset_config not in unique_tasksets:
-                    # Ajouter la configuration unique au dictionnaire
-                    unique_tasksets[taskset_config] = taskset_id
+                if taskset_config in unique_tasksets:
+                    continue  # Passer à la configuration suivante si elle existe déjà
+
+                # Générer l'ID du taskset
+                taskset_id = f"taskset_{self.taskset_index}"
+                self.taskset_index += 1
+
+                # Vérifier si le taskset_id existe déjà (avec les autres paramètres)
+                # while self.taskset_exists(*taskset_config):  # MAUVAIS PLACEMENT !
+                #     self.taskset_index += 1
+                #     taskset_id = f"taskset_{self.taskset_index}"
+                #     taskset_config = (
+                #         repetition,
+                #         tasks,
+                #         interference,
+                #         probability,
+                #         util_factor * cores,
+                #         deadline,
+                #         hyperperiod,
+                #         prime,
+                #         exponent,
+                #         cores,
+                #     )
+
+                # Ajouter la configuration unique au dictionnaire
+                unique_tasksets[taskset_config] = taskset_id
 
         # Insérer les configurations uniques en bloc
         self.cursor.executemany(
@@ -407,9 +409,11 @@ class ConfigGenerator:
                     )
 
                     # Vérifier si la configuration existe déjà
-                    if assignment_config not in unique_assignments:
-                        # Ajouter la configuration unique au dictionnaire
-                        unique_assignments[assignment_config] = assignment_id
+                    if assignment_config in unique_assignments:
+                        continue  # Passer à la configuration suivante si elle existe déjà
+
+                    # Ajouter la configuration unique au dictionnaire
+                    unique_assignments[assignment_config] = assignment_id
 
         # Insérer les configurations uniques en bloc
         self.cursor.executemany(
@@ -508,9 +512,11 @@ class ConfigGenerator:
                     )
 
                     # Vérifier si la configuration existe déjà
-                    if scheduling_config not in unique_schedulings:
-                        # Ajouter la configuration unique au dictionnaire
-                        unique_schedulings[scheduling_config] = scheduling_id
+                    if scheduling_config in unique_schedulings:
+                        continue  # Passer à la configuration suivante si elle existe déjà
+
+                    # Ajouter la configuration unique au dictionnaire
+                    unique_schedulings[scheduling_config] = scheduling_id
 
         # Insérer les configurations uniques en bloc
         self.cursor.executemany(

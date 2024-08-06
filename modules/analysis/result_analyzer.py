@@ -9,14 +9,19 @@ from modules.analysis.analyzers.scheduling_by_assignment_analyzer import Schedul
 
 class ResultAnalyzer:
     def __init__(self, db_path, experience_id):
+        print(
+            f"Initializing ResultAnalyzer for experience ID: {experience_id}")
         self.db_path = db_path
         self.current_path = self.db_path.parent / "plots" / experience_id
         os.makedirs(self.current_path, exist_ok=True)
         self.experience_id = experience_id
         self.loader = ResultLoader(
             db_path=db_path, experience_id=experience_id)
+
+        print("Loading results from database")
         self.taskset_sets, self.assignment_sets, self.scheduling_sets = self.loader.load_results()
 
+        print("Converting results to DataFrame")
         self.df_tasksets = pd.DataFrame([vars(t) for t in self.taskset_sets])
         self.df_assignments = pd.DataFrame(
             [vars(a) for a in self.assignment_sets]
@@ -25,26 +30,38 @@ class ResultAnalyzer:
             [vars(s) for s in self.scheduling_sets]
         )
 
+        print("Merging DataFrames")
         self.df = self.df_tasksets.merge(
             self.df_assignments, on=["taskset_id"], suffixes=("_taskset", "_assignment")
         ).merge(self.df_schedulings, on=["taskset_id", "assignment_id"], suffixes=("_assignment", "_scheduling"))
 
+        print("Calculating task_core_ratio")
         self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \
             self.df["number_of_cores"]  # Calcul du ratio tâches/cœurs
 
+        print("ResultAnalyzer initialized successfully")
+
     def run_analysis(self):
+        print("Running analysis")
         self.analyze_assignment()
         self.analyze_scheduling()
         self.analyze_scheduling_by_assignment()
+        print("Analysis completed")
 
     def analyze_assignment(self):
+        print("Analyzing assignments")
         analyzer = AssignmentAnalyzer(self.df, self.current_path)
         analyzer.analyze()
+        print("Assignment analysis completed")
 
     def analyze_scheduling(self):
+        print("Analyzing scheduling")
         analyzer = SchedulingAnalyzer(self.df, self.current_path)
         analyzer.analyze()
+        print("Scheduling analysis completed")
 
     def analyze_scheduling_by_assignment(self):
+        print("Analyzing scheduling by assignment")
         analyzer = SchedulingByAssignmentAnalyzer(self.df, self.current_path)
         analyzer.analyze()
+        print("Scheduling by assignment analysis completed")

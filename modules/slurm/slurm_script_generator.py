@@ -26,10 +26,9 @@ class SlurmScriptGenerator:
 
             f.write(
                 f"echo \"Starting job: {job_name}_{self.experience_id}\"\n")
-            f.write(f"echo \"Executing: {command}\"\n")
-            f.write(f"{command}\n")
+            f.write(command)
             f.write(
-                f"echo \"Job completed: {job_name}_{self.experience_id}\"\n")
+                f"\necho \"Job completed: {job_name}_{self.experience_id}\"\n")
 
     def generate_all_scripts(self):
         print("Generating all SLURM scripts")
@@ -57,15 +56,17 @@ class SlurmScriptGenerator:
             output_file=f"{self.output_slurm_path}/submit_master_{self.experience_id}.txt",
             time="00:10:00",
             mem="2G",
-            command=f"echo \"Checking for master.slurm file\"\n"
-                    f"MASTER_DIR=\"{self.generation_path}/{self.experience_id}/slurm/master\"\n"
-                    "if [ -f \"$MASTER_DIR/master.slurm\" ]; then\n"
-                    "    echo \"Submitting master.slurm\"\n"
-                    "    sbatch \"$MASTER_DIR/master.slurm\"\n"
-                    "else\n"
-                    "    echo \"Erreur: $MASTER_DIR/master.slurm n'existe pas\"\n"
-                    "    exit 1\n"
-                    "fi\n"
+            command=(
+                "echo \"Checking for master.slurm file\"\n"
+                f"MASTER_DIR=\"{self.generation_path}/{self.experience_id}/slurm/master\"\n"
+                "if [ -f \"$MASTER_DIR/master.slurm\" ]; then\n"
+                "    echo \"Submitting master.slurm\"\n"
+                "    sbatch \"$MASTER_DIR/master.slurm\"\n"
+                "else\n"
+                "    echo \"Erreur: $MASTER_DIR/master.slurm n'existe pas\"\n"
+                "    exit 1\n"
+                "fi\n"
+            )
         )
 
         self.create_script(
@@ -83,32 +84,34 @@ class SlurmScriptGenerator:
             output_file=f"{self.output_slurm_path}/full_pipeline_{self.experience_id}.txt",
             time="24:00:00",
             mem="32G",
-            command=f"echo \"Starting full pipeline for {self.experience_id}\"\n"
-                    f"python3 {self.main_path}/main.py generate_configs {self.experience_id}\n"
-                    "if [ $? -ne 0 ]; then\n"
-                    "    echo \"Échec de la génération des configurations\"\n"
-                    "    exit 1\n"
-                    "fi\n\n"
-                    "echo \"Génération des configurations réussie\"\n"
-                    f"python3 {self.main_path}/main.py generate_slurm_files {self.experience_id}\n"
-                    "if [ $? -ne 0 ]; then\n"
-                    "    echo \"Échec de la génération des fichiers SLURM\"\n"
-                    "    exit 1\n"
-                    "fi\n\n"
-                    "echo \"Génération des fichiers SLURM réussie\"\n"
-                    f"MASTER_DIR=\"{self.generation_path}/{self.experience_id}/slurm/master\"\n"
-                    "if [ -f \"$MASTER_DIR/master.slurm\" ]; then\n"
-                    "    echo \"Soumission du job master.slurm\"\n"
-                    "    sbatch \"$MASTER_DIR/master.slurm\"\n"
-                    "    if [ $? -ne 0 ]; then\n"
-                    "        echo \"Échec de la soumission du job master.slurm\"\n"
-                    "        exit 1\n"
-                    "    fi\n"
-                    "else\n"
-                    "    echo \"Erreur: $MASTER_DIR/master.slurm n'existe pas\"\n"
-                    "    exit 1\n"
-                    "fi\n"
-                    "echo \"Full pipeline completed for {self.experience_id}\"\n"
+            command=(
+                f"echo \"Starting full pipeline for {self.experience_id}\"\n"
+                f"python3 {self.main_path}/main.py generate_configs {self.experience_id}\n"
+                "if [ $? -ne 0 ]; then\n"
+                "    echo \"Échec de la génération des configurations\"\n"
+                "    exit 1\n"
+                "fi\n\n"
+                "echo \"Génération des configurations réussie\"\n"
+                f"python3 {self.main_path}/main.py generate_slurm_files {self.experience_id}\n"
+                "if [ $? -ne 0 ]; then\n"
+                "    echo \"Échec de la génération des fichiers SLURM\"\n"
+                "    exit 1\n"
+                "fi\n\n"
+                "echo \"Génération des fichiers SLURM réussie\"\n"
+                f"MASTER_DIR=\"{self.generation_path}/{self.experience_id}/slurm/master\"\n"
+                "if [ -f \"$MASTER_DIR/master.slurm\" ]; then\n"
+                "    echo \"Soumission du job master.slurm\"\n"
+                "    sbatch \"$MASTER_DIR/master.slurm\"\n"
+                "    if [ $? -ne 0 ]; then\n"
+                "        echo \"Échec de la soumission du job master.slurm\"\n"
+                "        exit 1\n"
+                "    fi\n"
+                "else\n"
+                "    echo \"Erreur: $MASTER_DIR/master.slurm n'existe pas\"\n"
+                "    exit 1\n"
+                "fi\n"
+                f"echo \"Full pipeline completed for {self.experience_id}\"\n"
+            )
         )
         print("SLURM scripts generated successfully")
 

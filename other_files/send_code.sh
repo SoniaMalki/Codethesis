@@ -31,6 +31,8 @@ EXCLUDE_ITEMS=(
     'README.md'
     'permanent_results'
     'slurm_code/error_handling/output_error'
+    'slurm_code/output_launch_slurm_jobs/'
+    'slurm_code/slurm_scripts'
 )
 
 EXCLUDES=()

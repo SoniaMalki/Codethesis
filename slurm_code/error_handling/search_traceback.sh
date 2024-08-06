@@ -42,6 +42,7 @@ process_file() {
 
   # Copier le fichier dans le dossier correspondant
   cp "$file_path" "$error_dir/$error_type/"
+  echo "Processed file: $file_path -> $error_type"
 }
 
 # Exporter la fonction pour qu'elle soit utilisable par xargs
@@ -66,9 +67,12 @@ for type in "${config_types[@]}"; do
 
   # Vérifier si le dossier existe
   if [ -d "$output_path" ]; then
+    echo "Processing directory: $output_path"
     # Trouver les fichiers contenant "Traceback"
     find "$output_path" -type f -name "*.txt" -exec grep -q "Traceback" {} \; -print0 | xargs -0 -I {} bash -c 'process_file "$@"' _ {}
   else
     echo "Dossier '$output_path' introuvable."
   fi
 done
+
+echo "Script execution completed."

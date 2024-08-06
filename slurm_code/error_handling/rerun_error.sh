@@ -33,8 +33,10 @@ if [ ! -d "$ERROR_DIR" ]; then
   exit 1
 fi
 
+echo "Starting job submission for experience: $EXPERIENCE, error type: $ERROR_TYPE"
+
 # Parcourir tous les fichiers dans le dossier d'erreur
-for FILE in $ERROR_DIR/*; do
+for FILE in "$ERROR_DIR"/*; do
   # Extraire le nom de base du fichier
   BASENAME=$(basename "$FILE")
   
@@ -45,17 +47,26 @@ for FILE in $ERROR_DIR/*; do
   # Construire le chemin complet du fichier sbatch
   SBATCH_FILE="$script_dir/../../generation/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/$ID.slurm"
 
+  echo "Processing error file: $FILE"
+  echo "Configuration type: $CONFIG_TYPE, ID: $ID"
+  echo "SBATCH file: $SBATCH_FILE"
+
   # Vérifier si le fichier sbatch existe
   if [ -f "$SBATCH_FILE" ]; then
+    echo "Found SBATCH file: $SBATCH_FILE"
+
     # Attendre que le nombre de jobs actifs soit inférieur à MAX_JOBS
     while [ $(count_jobs) -ge $MAX_JOBS ]; do
+      echo "Maximum number of jobs reached. Waiting..."
       sleep 10
     done
 
     # Lancer le script sbatch
-    echo "Lancement de $SBATCH_FILE"
+    echo "Launching $SBATCH_FILE"
     sbatch "$SBATCH_FILE"
   else
     echo "Le fichier sbatch $SBATCH_FILE n'existe pas."
   fi
 done
+
+echo "Job submission completed for experience: $EXPERIENCE, error type: $ERROR_TYPE"

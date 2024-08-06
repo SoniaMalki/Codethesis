@@ -119,8 +119,11 @@ def main(action, experience_id, experience_action=None):
 
     elif action == "generate_slurm_scripts":
         print(f"Generating SLURM scripts for experience ID: {experience_id}")
+        if not experience_action:
+            print("Cannot generate configuration without the unique flag.\n"
+                  "- True: Will check if the action is unique.\n- False: Will not check.")
         generator = SlurmScriptGenerator(main_path=main_path, slurm_script_path=slurm_script_path, output_slurm_path=output_slurm_path,
-                                         generation_path=generation_path, experience_id=experience_id)
+                                         generation_path=generation_path, experience_id=experience_id, unique=experience_action)
         generator.generate_all_scripts()
         print(f"SLURM scripts generated for experience ID: {experience_id}")
 

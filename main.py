@@ -47,7 +47,8 @@ def main(action, experience_id, experience_action=None):
     generation_path = Path(__file__).parent / "generation"
     db_path = generation_path / "experience.db"
     experience_json_path = Path(__file__).parent / "experience.json"
-    slurm_script_path = main_path / "slurm_code"
+    slurm_script_path = main_path / "slurm_code" / "slurm_scripts"
+    output_slurm_path = main_path / "slurm_code" / "output_launch_slurm_jobs"
 
     # Charger experience.json
     print("Loading experience.json")
@@ -136,7 +137,7 @@ def main(action, experience_id, experience_action=None):
             print("Veuillez fournir une ID d'expérience.")
             return
         print(f"Generating SLURM scripts for experience ID: {experience_id}")
-        generator = SlurmScriptGenerator(main_path=main_path, slurm_script_path=slurm_script_path,
+        generator = SlurmScriptGenerator(main_path=main_path, slurm_script_path=slurm_script_path, output_slurm_path=output_slurm_path,
                                          generation_path=generation_path, experience_id=experience_id)
         generator.generate_all_scripts()
         print(f"SLURM scripts generated for experience ID: {experience_id}")

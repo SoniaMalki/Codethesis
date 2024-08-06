@@ -75,6 +75,42 @@
       "scheduling_mem": "16GB"
     }
   },
+  "small_experience": {
+    "config_parameters": {
+      "taskset_parameters": {
+        "taskset_repetitions": [1],
+        "tasks_per_taskset": [4],
+        "interference_factors": [0],
+        "probability_factors": [0],
+        "max_utilization_factors": [0.2],
+        "deadline_options": ["eq_period"],
+        "prime_exponent_hyperperiod_combinations": [
+          [10000, 23, 7]
+        ],
+        "number_of_cores_list": [4]
+      },
+      "assignment_parameters": {
+        "assignment_methods": ["WorstFitAssigner"],
+        "sorting_criteria": ["wcet_ascending"],
+        "solving_time_limit_milp_assignment": [""],
+        "solver_name_assignment": [""]
+      },
+      "scheduling_parameters": {
+        "scheduling_algorithms": ["EarliestDeadlineFirst"],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [""],
+        "solver_name_scheduling": [""]
+      }
+    },
+    "slurm_parameters": {
+      "taskset_time": "00:00:01",
+      "taskset_mem": "1G",
+      "assignment_time": "00:00:05",
+      "assignment_mem": "1G",
+      "scheduling_time": "00:00:10",
+      "scheduling_mem": "1G"
+    }
+  },
   "testing_experience": {
     "config_parameters": {
       "taskset_parameters": {

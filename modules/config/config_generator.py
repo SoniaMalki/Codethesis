@@ -45,7 +45,8 @@ class ConfigGenerator:
         for param_name in required_params:
             if getattr(self, param_name) is None:
                 raise ValueError(
-                    f"Paramètre obligatoire manquant dans experience.json: {param_name}")
+                    f"Paramètre obligatoire manquant dans experience.json: {param_name}"
+                )
 
         # Dictionnaire pour les paramètres optionnels
         self.optional_params = {
@@ -93,19 +94,26 @@ class ConfigGenerator:
         # Initialiser les index globalement
         self.taskset_index = self.get_last_index("Tasksets", "taskset_id") + 1
         self.assignment_index = self.get_last_index(
-            "Assignments", "assignment_id") + 1
+            "Assignments", "assignment_id"
+        ) + 1
         self.scheduling_index = self.get_last_index(
-            "Schedulings", "scheduling_id") + 1
+            "Schedulings", "scheduling_id"
+        ) + 1
         print("ConfigGenerator initialized successfully")
 
     def create_tables(self):
         print("Creating tables if not exist")
-        self.cursor.execute("""
+        self.cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS Experiences (
                 experience_id TEXT PRIMARY KEY
             )
-        """)
-        self.cursor.execute("""
+        """
+        )
+
+        # Définir la contrainte d'unicité sur les colonnes pertinentes pour Tasksets
+        self.cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS Tasksets (
                 taskset_id TEXT PRIMARY KEY,
                 action TEXT,
@@ -119,19 +127,26 @@ class ConfigGenerator:
                 max_prime INT,
                 gen_limit_exponent INT,
                 number_of_cores INT,
-                result_file_path TEXT
+                result_file_path TEXT,
+                UNIQUE (
+                    taskset_repetition,
+                    tasks_per_taskset,
+                    interference_factor,
+                    probability_factor,
+                    max_utilization,
+                    deadline_option,
+                    max_hyperperiod,
+                    max_prime,
+                    gen_limit_exponent,
+                    number_of_cores
+                ) ON CONFLICT IGNORE
             )
-        """)
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS ExperienceTasksets (
-                experience_id TEXT,
-                taskset_id TEXT,
-                PRIMARY KEY (experience_id, taskset_id),
-                FOREIGN KEY (experience_id) REFERENCES Experiences(experience_id),
-                FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id)
-            )
-        """)
-        self.cursor.execute("""
+        """
+        )
+
+        # Définir la contrainte d'unicité sur les colonnes pertinentes pour Assignments
+        self.cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS Assignments (
                 assignment_id TEXT PRIMARY KEY,
                 taskset_id TEXT,
@@ -142,19 +157,22 @@ class ConfigGenerator:
                 solving_time_limit_MILP INT,
                 solver_name VARCHAR,
                 result_file_path TEXT,
-                FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id)
+                FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id),
+                UNIQUE (
+                    taskset_id,
+                    sorting_criterion,
+                    assignment_method,
+                    number_of_cores,
+                    solving_time_limit_MILP,
+                    solver_name
+                ) ON CONFLICT IGNORE
             )
-        """)
-        self.cursor.execute("""
-            CREATE TABLE IF NOT EXISTS ExperienceAssignments (
-                experience_id TEXT,
-                assignment_id TEXT,
-                PRIMARY KEY (experience_id, assignment_id),
-                FOREIGN KEY (experience_id) REFERENCES Experiences(experience_id),
-                FOREIGN KEY (assignment_id) REFERENCES Assignments(assignment_id)
-            )
-        """)
-        self.cursor.execute("""
+        """
+        )
+
+        # Définir la contrainte d'unicité sur les colonnes pertinentes pour Schedulings
+        self.cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS Schedulings (
                 scheduling_id TEXT PRIMARY KEY,
                 assignment_id TEXT,
@@ -166,10 +184,42 @@ class ConfigGenerator:
                 solver_name VARCHAR,
                 result_file_path TEXT,
                 FOREIGN KEY (assignment_id) REFERENCES Assignments(assignment_id),
+                FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id),
+                UNIQUE (
+                    assignment_id,
+                    taskset_id,
+                    scheduling_algorithm,
+                    non_preemption_time_variant2,
+                    solving_time_limit_MILP,
+                    solver_name
+                ) ON CONFLICT IGNORE
+            )
+        """
+        )
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS ExperienceTasksets (
+                experience_id TEXT,
+                taskset_id TEXT,
+                PRIMARY KEY (experience_id, taskset_id),
+                FOREIGN KEY (experience_id) REFERENCES Experiences(experience_id),
                 FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id)
             )
-        """)
-        self.cursor.execute("""
+        """
+        )
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS ExperienceAssignments (
+                experience_id TEXT,
+                assignment_id TEXT,
+                PRIMARY KEY (experience_id, assignment_id),
+                FOREIGN KEY (experience_id) REFERENCES Experiences(experience_id),
+                FOREIGN KEY (assignment_id) REFERENCES Assignments(assignment_id)
+            )
+        """
+        )
+        self.cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS ExperienceSchedulings (
                 experience_id TEXT,
                 scheduling_id TEXT,
@@ -177,7 +227,8 @@ class ConfigGenerator:
                 FOREIGN KEY (experience_id) REFERENCES Experiences(experience_id),
                 FOREIGN KEY (scheduling_id) REFERENCES Schedulings(scheduling_id)
             )
-        """)
+        """
+        )
         print("Tables created or verified successfully")
 
     def add_experience(self, experience_id):
@@ -188,7 +239,7 @@ class ConfigGenerator:
         try:
             self.cursor.execute(
                 "INSERT INTO Experiences (experience_id) VALUES (?)",
-                (experience_id,)
+                (experience_id,),
             )
             self.conn.commit()
             print(f"Experience {experience_id} added successfully")
@@ -200,18 +251,20 @@ class ConfigGenerator:
     def get_last_index(self, table_name, id_column):
         """Récupère le dernier index utilisé dans une table pour une colonne d'ID donnée."""
         print(f"Getting last index from table {table_name}")
-        self.cursor.execute(f"""
+        self.cursor.execute(
+            f"""
             SELECT MAX(CAST(SUBSTR({id_column}, LENGTH('{id_column.split('_')[0]}_') + 1) AS INT)) 
             FROM {table_name}
-        """)
+        """
+        )
         result = self.cursor.fetchone()
         print(
-            f"Last index for {table_name} is {result[0] if result[0] is not None else 0}")
+            f"Last index for {table_name} is {result[0] if result[0] is not None else 0}"
+        )
         return result[0] if result[0] is not None else 0
 
-    def taskset_exists(self, taskset_repetition, tasks_per_taskset, interference_factor, probability_factor, max_utilization, deadline_option, max_hyperperiod, max_prime, gen_limit_exponent, number_of_cores):
-        """Vérifie si un taskset avec les mêmes paramètres existe déjà."""
-        print("Checking if taskset exists")
+    def get_taskset_id(self, repetition, tasks, interference, probability, max_utilization, deadline, hyperperiod, prime, exponent, cores):
+        """Récupère l'ID d'un taskset existant en fonction de ses paramètres."""
         self.cursor.execute(
             """
             SELECT taskset_id
@@ -227,19 +280,32 @@ class ConfigGenerator:
               AND gen_limit_exponent = ?
               AND number_of_cores = ?
             """,
-            (taskset_repetition, tasks_per_taskset, interference_factor, probability_factor, max_utilization,
-             deadline_option, max_hyperperiod, max_prime, gen_limit_exponent, number_of_cores)
+            (
+                repetition,
+                tasks,
+                interference,
+                probability,
+                max_utilization,
+                deadline,
+                hyperperiod,
+                prime,
+                exponent,
+                cores,
+            ),
         )
         result = self.cursor.fetchone()
-        print(f"Taskset exists: {result is not None}")
-        return result
+        return result[0] if result else None
 
     def generate_tasksets(self, experience_id):
         print(f"Generating taskset config for experience {experience_id}")
-        for repetition, tasks, interference, probability, util_factor, deadline, (
-            hyperperiod,
-            prime,
-            exponent,
+        for (
+            repetition,
+            tasks,
+            interference,
+            probability,
+            util_factor,
+            deadline,
+            (hyperperiod, prime, exponent),
         ) in itertools.product(
             self.taskset_repetitions,
             self.tasks_per_taskset,
@@ -250,30 +316,44 @@ class ConfigGenerator:
             self.prime_exponent_hyperperiod_combinations,
         ):
             for cores in self.number_of_cores_list:
-                # Vérifier si un taskset avec les mêmes paramètres existe déjà
-                existing_taskset = self.taskset_exists(
-                    repetition, tasks, interference,
-                    probability, util_factor * cores, deadline,
-                    hyperperiod, prime, exponent, cores
+                # Vérifier si le taskset existe déjà
+                existing_taskset_id = self.get_taskset_id(
+                    repetition,
+                    tasks,
+                    interference,
+                    probability,
+                    util_factor * cores,
+                    deadline,
+                    hyperperiod,
+                    prime,
+                    exponent,
+                    cores,
                 )
 
-                if existing_taskset:
-                    # Réutiliser l'ID du taskset existant
-                    taskset_id = existing_taskset[0]
-                    print(f"Taskset existant réutilisé : {taskset_id}")
-                else:
-                    # Générer un nouvel ID de taskset
-                    taskset_id = f"taskset_{self.taskset_index}"
+                if existing_taskset_id:
+                    # Lier le taskset existant à l'expérience
+                    taskset_id = existing_taskset_id
                     self.cursor.execute(
                         """
-                        INSERT INTO Tasksets (
+                        INSERT OR IGNORE INTO ExperienceTasksets (experience_id, taskset_id) 
+                        VALUES (?, ?)
+                        """,
+                        (experience_id, taskset_id),
+                    )
+                else:
+                    # Tenter d'insérer le taskset.
+                    # Si un taskset avec les mêmes paramètres existe déjà, il sera ignoré.
+                    self.cursor.execute(
+                        """
+                        INSERT OR IGNORE INTO Tasksets (
                             taskset_id, action, taskset_repetition, tasks_per_taskset, interference_factor,
                             probability_factor, max_utilization, deadline_option, max_hyperperiod,
                             max_prime, gen_limit_exponent, number_of_cores, result_file_path
                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                         (
-                            taskset_id,
+                            # Nouvel ID de taskset
+                            f"taskset_{self.taskset_index}",
                             "generate",
                             repetition,
                             tasks,
@@ -288,24 +368,29 @@ class ConfigGenerator:
                             "",
                         ),
                     )
-                    self.taskset_index += 1
-                    print(f"New taskset generated with id: {taskset_id}")
 
-                # Lier le taskset à l'expérience
-                self.cursor.execute(
-                    """
-                    INSERT OR IGNORE INTO ExperienceTasksets (experience_id, taskset_id) 
-                    VALUES (?, ?)
-                    """,
-                    (experience_id, taskset_id)
-                )
+                    # Récupérer l'ID du taskset inséré (s'il a été inséré)
+                    taskset_id = self.cursor.lastrowid
+                    if taskset_id:
+                        # Incrémenter l'index uniquement si un nouveau taskset a été inséré
+                        self.taskset_index += 1
+                        print(f"New taskset generated with id: {taskset_id}")
+
+                        # Lier le nouveau taskset à l'expérience
+                        self.cursor.execute(
+                            """
+                            INSERT OR IGNORE INTO ExperienceTasksets (experience_id, taskset_id) 
+                            VALUES (?, ?)
+                            """,
+                            (experience_id,
+                             f"taskset_{self.taskset_index - 1}"),
+                        )
         self.conn.commit()
         print(
             f"Taskset config generation for experience {experience_id} completed")
 
-    def assignment_exists(self, taskset_id, sorting_criterion, assignment_method, number_of_cores, solving_time_limit_MILP, solver_name):
-        """Vérifie si un assignment avec les mêmes paramètres existe déjà."""
-        print(f"Checking if assignment exists for taskset_id: {taskset_id}")
+    def get_assignment_id(self, taskset_id, sorting, method, cores, solving_time, solver_name):
+        """Récupère l'ID d'un assignment existant en fonction de ses paramètres."""
         self.cursor.execute(
             """
             SELECT assignment_id
@@ -317,45 +402,61 @@ class ConfigGenerator:
               AND solving_time_limit_MILP = ?
               AND solver_name = ?
             """,
-            (taskset_id, sorting_criterion, assignment_method,
-             number_of_cores, solving_time_limit_MILP, solver_name)
+            (
+                taskset_id,
+                sorting,
+                method,
+                cores,
+                solving_time,
+                solver_name,
+            ),
         )
         result = self.cursor.fetchone()
-        print(f"Assignment exists: {result is not None}")
-        return result
+        return result[0] if result else None
 
     def generate_assignments(self, experience_id):
         print(f"Generating assignment config for experience {experience_id}")
         for taskset_id in self.get_taskset_ids_for_experience(experience_id):
             cores = self.get_number_of_cores_from_taskset(taskset_id)
             for method in self.assignment_methods:
-                for sorting, solving_time, solver_name in itertools.product(
+                for (
+                    sorting,
+                    solving_time,
+                    solver_name,
+                ) in itertools.product(
                     self.optional_params["sorting_criteria"][method],
-                    self.optional_params["solving_time_limit_milp_assignment"][method],
-                    self.optional_params["solver_name_assignment"][method]
+                    self.optional_params[
+                        "solving_time_limit_milp_assignment"
+                    ][method],
+                    self.optional_params["solver_name_assignment"][method],
                 ):
-                    # Vérifier si un assignment avec les mêmes paramètres existe déjà
-                    existing_assignment = self.assignment_exists(
+                    # Vérifier si l'assignment existe déjà
+                    existing_assignment_id = self.get_assignment_id(
                         taskset_id, sorting, method, cores, solving_time, solver_name
                     )
-
-                    if existing_assignment:
-                        # Réutiliser l'ID de l'assignment existant
-                        assignment_id = existing_assignment[0]
-                        print(
-                            f"Assignment existant réutilisé : {assignment_id}")
-                    else:
-                        # Générer un nouvel ID d'assignment
-                        assignment_id = f"assignment_{self.assignment_index}"
+                    if existing_assignment_id:
+                        # Lier l'assignment existant à l'expérience
+                        assignment_id = existing_assignment_id
                         self.cursor.execute(
                             """
-                            INSERT INTO Assignments (
+                            INSERT OR IGNORE INTO ExperienceAssignments (experience_id, assignment_id) 
+                            VALUES (?, ?)
+                            """,
+                            (experience_id, assignment_id),
+                        )
+                    else:
+                        # Tenter d'insérer l'assignment.
+                        # Si un assignment avec les mêmes paramètres existe déjà, il sera ignoré.
+                        self.cursor.execute(
+                            """
+                            INSERT OR IGNORE INTO Assignments (
                                 assignment_id, taskset_id, action, sorting_criterion,
                                 assignment_method, number_of_cores, solving_time_limit_MILP, solver_name, result_file_path
                             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
-                                assignment_id,
+                                # Nouvel ID d'assignment
+                                f"assignment_{self.assignment_index}",
                                 taskset_id,
                                 "generate",
                                 sorting,
@@ -364,28 +465,38 @@ class ConfigGenerator:
                                 solving_time,
                                 solver_name,
                                 "",
-                            )
+                            ),
                         )
-                        self.assignment_index += 1  # Incrémenter l'index global
-                        print(
-                            f"New assignment generated with id: {assignment_id}")
 
-                    # Lier l'assignment à l'expérience
-                    self.cursor.execute(
-                        """
-                        INSERT OR IGNORE INTO ExperienceAssignments (experience_id, assignment_id) 
-                        VALUES (?, ?)
-                        """,
-                        (experience_id, assignment_id)
-                    )
+                        # Récupérer l'ID de l'assignment inséré (s'il a été inséré)
+                        assignment_id = self.cursor.lastrowid
+                        if assignment_id:
+                            # Incrémenter l'index uniquement si un nouvel assignment a été inséré
+                            self.assignment_index += 1
+                            print(
+                                f"New assignment generated with id: {assignment_id}"
+                            )
+
+                            # Lier l'assignment à l'expérience
+                            self.cursor.execute(
+                                """
+                                INSERT OR IGNORE INTO ExperienceAssignments (experience_id, assignment_id) 
+                                VALUES (?, ?)
+                                """,
+                                (
+                                    experience_id,
+                                    # Utiliser l'ID de l'assignment inséré
+                                    f"assignment_{self.assignment_index - 1}",
+                                ),
+                            )
+
         self.conn.commit()
         print(
-            f"Assignment config generation for experience {experience_id} completed")
+            f"Assignment config generation for experience {experience_id} completed"
+        )
 
-    def scheduling_exists(self, assignment_id, taskset_id, scheduling_algorithm, non_preemption_time_variant2, solving_time_limit_MILP, solver_name):
-        """Vérifie si un scheduling avec les mêmes paramètres existe déjà."""
-        print(
-            f"Checking if scheduling exists for assignment_id: {assignment_id}")
+    def get_scheduling_id(self, assignment_id, taskset_id, algorithm, non_preemption, solving_time, solver_name):
+        """Récupère l'ID d'un scheduling existant en fonction de ses paramètres."""
         self.cursor.execute(
             """
             SELECT scheduling_id
@@ -397,45 +508,70 @@ class ConfigGenerator:
               AND solving_time_limit_MILP = ?
               AND solver_name = ?
             """,
-            (assignment_id, taskset_id, scheduling_algorithm,
-             non_preemption_time_variant2, solving_time_limit_MILP, solver_name)
+            (
+                assignment_id,
+                taskset_id,
+                algorithm,
+                non_preemption,
+                solving_time,
+                solver_name,
+            ),
         )
         result = self.cursor.fetchone()
-        print(f"Scheduling exists: {result is not None}")
-        return result
+        return result[0] if result else None
 
     def generate_schedulings(self, experience_id):
         print(f"Generating scheduling config for experience {experience_id}")
-        for assignment_id in self.get_assignment_ids_for_experience(experience_id):
+        for (
+            assignment_id
+        ) in self.get_assignment_ids_for_experience(experience_id):
             taskset_id = self.get_taskset_id_from_assignment(assignment_id)
             for algorithm in self.scheduling_algorithms:
-                for non_preemption, solving_time, solver_name in itertools.product(
-                    self.optional_params["non_preemption_time_variant2_options"][algorithm],
-                    self.optional_params["solving_time_limit_milp_scheduling"][algorithm],
+                for (
+                    non_preemption,
+                    solving_time,
+                    solver_name,
+                ) in itertools.product(
+                    self.optional_params[
+                        "non_preemption_time_variant2_options"
+                    ][algorithm],
+                    self.optional_params["solving_time_limit_milp_scheduling"][
+                        algorithm
+                    ],
                     self.optional_params["solver_name_scheduling"][algorithm],
                 ):
-                    # Vérifier si un scheduling avec les mêmes paramètres existe déjà
-                    existing_scheduling = self.scheduling_exists(
-                        assignment_id, taskset_id, algorithm, non_preemption, solving_time, solver_name
+                    # Vérifier si le scheduling existe déjà
+                    existing_scheduling_id = self.get_scheduling_id(
+                        assignment_id,
+                        taskset_id,
+                        algorithm,
+                        non_preemption,
+                        solving_time,
+                        solver_name,
                     )
-
-                    if existing_scheduling:
-                        # Réutiliser l'ID du scheduling existant
-                        scheduling_id = existing_scheduling[0]
-                        print(
-                            f"Scheduling existant réutilisé : {scheduling_id}")
-                    else:
-                        # Générer un nouvel ID de scheduling
-                        scheduling_id = f"scheduling_{self.scheduling_index}"
+                    if existing_scheduling_id:
+                        # Lier le scheduling existant à l'expérience
+                        scheduling_id = existing_scheduling_id
                         self.cursor.execute(
                             """
-                            INSERT INTO Schedulings (
+                            INSERT OR IGNORE INTO ExperienceSchedulings (experience_id, scheduling_id) 
+                            VALUES (?, ?)
+                            """,
+                            (experience_id, scheduling_id),
+                        )
+                    else:
+                        # Tenter d'insérer le scheduling.
+                        # Si un scheduling avec les mêmes paramètres existe déjà, il sera ignoré.
+                        self.cursor.execute(
+                            """
+                            INSERT OR IGNORE INTO Schedulings (
                                 scheduling_id, assignment_id, taskset_id, action, scheduling_algorithm,
                                 non_preemption_time_variant2, solving_time_limit_MILP, solver_name, result_file_path
                             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
-                                scheduling_id,
+                                # Nouvel ID de scheduling
+                                f"scheduling_{self.scheduling_index}",
                                 assignment_id,
                                 taskset_id,
                                 "generate",
@@ -444,23 +580,35 @@ class ConfigGenerator:
                                 solving_time,
                                 solver_name,
                                 "",
-                            )
+                            ),
                         )
-                        self.scheduling_index += 1  # Incrémenter l'index global
-                        print(
-                            f"New scheduling generated with id: {scheduling_id}")
 
-                    # Lier le scheduling à l'expérience
-                    self.cursor.execute(
-                        """
-                        INSERT OR IGNORE INTO ExperienceSchedulings (experience_id, scheduling_id) 
-                        VALUES (?, ?)
-                        """,
-                        (experience_id, scheduling_id)
-                    )
+                        # Récupérer l'ID du scheduling inséré (s'il a été inséré)
+                        scheduling_id = self.cursor.lastrowid
+                        if scheduling_id:
+                            # Incrémenter l'index uniquement si un nouveau scheduling a été inséré
+                            self.scheduling_index += 1
+                            print(
+                                f"New scheduling generated with id: {scheduling_id}"
+                            )
+
+                            # Lier le scheduling à l'expérience
+                            self.cursor.execute(
+                                """
+                                INSERT OR IGNORE INTO ExperienceSchedulings (experience_id, scheduling_id) 
+                                VALUES (?, ?)
+                                """,
+                                (
+                                    experience_id,
+                                    # Utiliser l'ID du scheduling inséré
+                                    f"scheduling_{self.scheduling_index - 1}",
+                                ),
+                            )
+
         self.conn.commit()
         print(
-            f"Scheduling config generation for experience {experience_id} completed")
+            f"Scheduling config generation for experience {experience_id} completed"
+        )
 
     def get_taskset_ids_for_experience(self, experience_id):
         print(f"Fetching taskset ids for experience {experience_id}")
@@ -471,12 +619,12 @@ class ConfigGenerator:
             JOIN ExperienceTasksets ET ON T.taskset_id = ET.taskset_id 
             WHERE ET.experience_id = ?
             """,
-            (experience_id,)
+            (experience_id,),
         )
         taskset_ids = [row[0] for row in self.cursor.fetchall()]
 
         # Trier numériquement les taskset_id
-        taskset_ids.sort(key=lambda x: int(x.split('_')[1]))
+        taskset_ids.sort(key=lambda x: int(x.split("_")[1]))
 
         print(f"Taskset ids for experience {experience_id}: {taskset_ids}")
         return taskset_ids
@@ -490,22 +638,23 @@ class ConfigGenerator:
             JOIN ExperienceAssignments EA ON A.assignment_id = EA.assignment_id
             WHERE EA.experience_id = ?
             """,
-            (experience_id,)
+            (experience_id,),
         )
         assignment_ids = [row[0] for row in self.cursor.fetchall()]
 
         # Trier numériquement les assignment_id
-        assignment_ids.sort(key=lambda x: int(x.split('_')[1]))
+        assignment_ids.sort(key=lambda x: int(x.split("_")[1]))
 
         print(
-            f"Assignment ids for experience {experience_id}: {assignment_ids}")
+            f"Assignment ids for experience {experience_id}: {assignment_ids}"
+        )
         return assignment_ids
 
     def get_number_of_cores_from_taskset(self, taskset_id):
         print(f"Fetching number of cores for taskset {taskset_id}")
         self.cursor.execute(
             "SELECT number_of_cores FROM Tasksets WHERE taskset_id = ?",
-            (taskset_id,)
+            (taskset_id,),
         )
         result = self.cursor.fetchone()
         cores = result[0] if result else None
@@ -516,7 +665,7 @@ class ConfigGenerator:
         print(f"Fetching taskset id for assignment {assignment_id}")
         self.cursor.execute(
             "SELECT taskset_id FROM Assignments WHERE assignment_id = ?",
-            (assignment_id,)
+            (assignment_id,),
         )
         result = self.cursor.fetchone()
         taskset_id = result[0] if result else None
@@ -539,7 +688,8 @@ class ConfigGenerator:
                 experience_data = {experience_id: json_data[experience_id]}
             else:
                 print(
-                    f"Erreur: La clé d'expérience '{experience_id}' est introuvable dans les données JSON.")
+                    f"Erreur: La clé d'expérience '{experience_id}' est introuvable dans les données JSON."
+                )
                 return
         else:
             # Générer toutes les expériences du JSON

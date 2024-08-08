@@ -175,7 +175,7 @@ class Citta:
         self.createLpConstraintsForCacheInterference(
             prob, task_index, execution_window, core_index, task_in_core, task_to_assign, N_i_k, max_N_minus_2)
 
-        if self.solving_time_limit_MILP is not None:
+        if self.solving_time_limit_MILP is not None and type(self.solving_time_limit_MILP) == int:
             if self.solver_name == "gurobi":
                 self.solver.options.append(
                     ("TimeLimit", self.solving_time_limit_MILP))

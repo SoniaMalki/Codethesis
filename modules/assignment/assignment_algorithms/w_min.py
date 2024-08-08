@@ -99,7 +99,7 @@ class Wmin:
         prob += maxW
 
         # Solving the MILP problem
-        if self.solving_time_limit_MILP is not None:
+        if self.solving_time_limit_MILP is not None and type(self.solving_time_limit_MILP) == int:
             if self.solver_name == "gurobi":
                 self.solver.options.append(
                     ("TimeLimit", self.solving_time_limit_MILP))

@@ -103,8 +103,6 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 # Charger les modules nécessaires
 {self.modules}
 
-export GRB_THREADS={optimal_threads} 
-
 python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key} {optimal_threads} 
 """
 

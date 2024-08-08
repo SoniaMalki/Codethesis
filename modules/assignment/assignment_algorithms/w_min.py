@@ -4,7 +4,7 @@ import sys
 
 
 class Wmin:
-    def __init__(self, taskset, number_of_cores, assignment_options, threads):
+    def __init__(self, taskset, number_of_cores, assignment_options):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.utilization = self.taskset.utilization
@@ -13,7 +13,7 @@ class Wmin:
         self.solving_time_limit_MILP = assignment_options.get(
             "solving_time_limit_MILP", None)
         self.assignment_options = assignment_options
-        self.threads = threads
+        self.threads = self.assignment_options.get("threads", 1)
         self.solver_name = self.assignment_options.get("solver_name", "gurobi")
 
         print(f"Wmin utilisant le solveur : {self.solver_name}")

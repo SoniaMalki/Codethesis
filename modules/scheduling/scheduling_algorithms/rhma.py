@@ -9,6 +9,7 @@ from modules.utils.busy_period import BusyPeriod
 
 class Rhma:
     def __init__(self, taskset, assignment, number_of_cores, scheduling_options, start_time=0, end_time=None):
+        print("----- Initializing RHMA -----")
         self.taskset = taskset
         self.hyperperiod = self.taskset.hyperperiod
         self.assignment = assignment
@@ -48,6 +49,7 @@ class Rhma:
 
         self.solver_name = self.scheduling_options.get(
             "solver_name", "gurobi")
+        self.threads = self.scheduling_options.get("threads", 1)
 
         print(f"Rhma utilisant le solveur : {self.solver_name}")
 
@@ -90,68 +92,107 @@ class Rhma:
         return self.__class__.__name__
 
     def generate_max_I(self):
+        print("----- Generating maxI -----")
         maxI = 0
         for i in range(len(self.taskset)):
+            print(f"   Processing task: {i}")
             for j in range(len(self.taskset)):
                 if i != j and self.o_i_j[i] != self.o_i_j[j] and self.taskset.single_interference[i] != 0 and self.taskset.single_interference[j] != 0:
                     v_j_to_i = self.calculate_activation_pattern(j=j, i=i)
+                    print(
+                        f"      Calculating activation pattern for task {j} to task {i}: {v_j_to_i}")
                     for a_index, a in enumerate(self.taskset.activation[i]):
                         maxI += v_j_to_i[a_index] * \
                             self.taskset[j].single_interference
-
+                        print(
+                            f"         Adding interference for activation {a} of task {i}: {v_j_to_i[a_index]} * {self.taskset[j].single_interference}")
+        print(f"MaxI generated: {maxI}")
         return maxI
 
     def calculate_activation_pattern(self, j, i):
+        print(
+            f"      Calculating activation pattern for task {j} to task {i}")
         v_j_to_i = []
         for a in self.taskset.activation[i]:
             activation_in_t = 1
             activation_start = (a-1) * self.taskset.period[i] + 1
             activation_end = a * self.taskset.period[i]  # pas -1 car python
+            print(
+                f"         Processing activation {a} of task {i}, start: {activation_start}, end: {activation_end}")
             for t in range(activation_start, activation_end):
                 if t % self.taskset.period[j] == 0:
                     activation_in_t += 1
+                    print(
+                        f"            Activation of task {j} found at time {t}, incrementing count.")
             v_j_to_i.append(activation_in_t)
-
+            print(
+                f"         Activation count for activation {a} of task {i}: {activation_in_t}")
+        print(
+            f"      Activation pattern for task {j} to task {i}: {v_j_to_i}")
         return v_j_to_i
 
     def generate_o_i_j(self):
+        print("----- Generating o_i_j -----")
         o_i_j = []
         for task_index, task in enumerate(self.taskset):
+            print(f"   Processing task: {task_index}")
             core_list = []
             for core in range(self.number_of_cores):
                 if task_index in self.assignment[core]:
                     core_list.append(1)
+                    print(
+                        f"      Task {task_index} found on core {core}, adding 1.")
                 else:
                     core_list.append(0)
+                    print(
+                        f"      Task {task_index} not found on core {core}, adding 0.")
             o_i_j.append(core_list)
+            print(f"      Core list for task {task_index}: {core_list}")
+        print(f"o_i_j generated: {o_i_j}")
         return o_i_j
 
     def generate_S_i_h(self):
+        print("----- Generating S_i_h -----")
         S_i_h = [[[] for _ in range(len(self.busy_periods))]
                  for _ in range(len(self.taskset))]
 
         for i, task_period in enumerate(self.taskset.period):
+            print(f"   Processing task: {i}, period: {task_period}")
             for a in self.taskset.activation[i]:
+                print(f"      Processing activation: {a}")
                 activation_start = ((a-1) * task_period)+1
+                print(f"         Activation start: {activation_start}")
                 for h, busy_period in enumerate(self.busy_periods):
+                    print(
+                        f"            Checking busy period: {h}, start: {busy_period.start_time}, end: {busy_period.end_time}")
                     if busy_period.start_time <= activation_start < busy_period.end_time:
                         S_i_h[i][h].append(a)
-
+                        print(
+                            f"               Activation {a} falls within busy period {h}, adding to S_i_h.")
+        print(f"S_i_h generated: {S_i_h}")
         return S_i_h
 
     def generate_R_i_a_h(self, S_i_h):
+        print("----- Generating R_i_a_h -----")
         R_i_a_h = {}
 
         for i, task_period in enumerate(self.taskset.period):
+            print(f"   Processing task: {i}, period: {task_period}")
             R_i_a_h[i] = {}  # Initialiser le dictionnaire pour la tâche i
             for h, activations_in_bp in enumerate(S_i_h[i]):
+                print(f"      Processing busy period {h}: {activations_in_bp}")
                 for a in activations_in_bp:
+                    print(f"         Processing activation {a}")
                     if a not in R_i_a_h[i]:
                         R_i_a_h[i][a] = {}
 
                     activation_start = ((a-1) * task_period) + 1
                     activation_end = ((a) * task_period) + 1
                     busy_period = self.busy_periods[h]
+                    print(
+                        f"            Activation start: {activation_start}, end: {activation_end}")
+                    print(
+                        f"            Busy period start: {busy_period.start_time}, end: {busy_period.end_time}")
 
                     intersection_start = max(
                         activation_start, busy_period.start_time)
@@ -160,37 +201,55 @@ class Rhma:
 
                     R_i_a_h[i][a][h] = list(
                         range(intersection_start, intersection_end))
+                    print(
+                        f"            Intersection start: {intersection_start}, end: {intersection_end}")
+                    print(
+                        f"            R_i_a_h[{i}][{a}][{h}]: {R_i_a_h[i][a][h]}")
+        print(f"R_i_a_h generated: {R_i_a_h}")
         return R_i_a_h
 
     def generate_T_h(self):
+        print("----- Generating T_h -----")
         T_h = []
-        for busy_period in self.busy_periods:
+        for h, busy_period in enumerate(self.busy_periods):
+            print(
+                f"   Busy period {h}: start={busy_period.start_time}, end={busy_period.end_time}")
             T_h.append(
                 list(range(busy_period.start_time, busy_period.end_time)))
+        print(f"T_h generated: {T_h}")
         return T_h
 
     def createLpVariables(self, h):
         # Variables
+
+        print(f"----- Creating LP variables for busy period {h} -----")
         x = {}
         m = {}
         w = {}
         for i in range(len(self.taskset)):
+            print(f"   Task {i}")
             for a in self.S_i_h[i][h]:
+                print(f"      Activation {a}")
                 w[i, a] = LpVariable(
                     f"w_{i}_{a}", lowBound=0, cat='Integer')
                 for j in range(self.number_of_cores):
+                    print(f"         Core {j}")
                     for t in self.T_h[h]:
+                        print(f"            Time {t}")
                         x[i, a, j, t] = LpVariable(
                             f"x_{i}_{a}_{j}_{t}", cat='Binary')
 
                 for k in range(len(self.taskset)):
+                    print(f"         Task {k}")
                     for b in self.S_i_h[k][h]:
+                        print(f"            Activation {b}")
                         m[i, a, k,
                           b] = LpVariable(f"m_{i}_{a}_{k}_{b}", cat='Binary')
-
+        print("LP Variables created.")
         return x, m, w
 
     def createLpConstraints(self, h, x, m, w):
+        print("----- Creating LP constraints -----")
         constraint_16 = []
         constraint_17 = []
         constraint_18 = []
@@ -202,11 +261,13 @@ class Rhma:
         constraint_24 = []
 
         # Constraint 21
+        print("   Creating constraint 21")
         for j in range(self.number_of_cores):
             for t in self.T_h[h]:
                 constraint_21.append(lpSum(x[i, a, j, t] for i in range(len(self.taskset))
                                            for a in self.S_i_h[i][h]) <= 1)
 
+        print("   Creating constraints 16, 18, 19, 20, 22, 23, and 24")
         for i in range(len(self.taskset)):
             for a in self.S_i_h[i][h]:
                 # Constraint 16, 19, 20 and Constraint 24
@@ -267,12 +328,14 @@ class Rhma:
                                             constraint_22.append(m[i, a, k, b] >= x[i,
                                                                                     a, j, t] + x[k, b, l, t] - 1)
             # Constraint 17
+            print("   Creating constraint 17")
             for k in range(i + 1, len(self.taskset)):
                 for a in self.S_i_h[i][h]:
                     for b in self.S_i_h[k][h]:
                         if not set(self.R_i_a_h[i][a][h]).intersection(self.R_i_a_h[k][b][h]):
                             constraint_17.append(m[i, a, k, b] == 0)
 
+        print("LP Constraints created.")
         return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24
 
     def schedule(self):
@@ -330,6 +393,9 @@ class Rhma:
                     self.solver.options.append(
                         ("TimeLimit", self.solving_time_limit_MILP))
 
+            if self.solver_name == "gurobi":
+                self.solver.options.append(("Threads", self.threads))
+
             print(
                 f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
             # print(prob)
@@ -355,6 +421,7 @@ class Rhma:
                 busy_period_schedule.add_total_utilization(
                     total_utilization=total_utilization)
                 schedule.add_period(scheduling=busy_period_schedule)
+                print(f"RHMA solution found for busy period {h}.")
 
             else:
                 if self.busy_periods[h].success == 0:
@@ -369,4 +436,5 @@ class Rhma:
 
             self.actual_utilization[h] = total_utilization/self.hyperperiod
 
+        print("----- RHMA Scheduling Completed -----")
         return schedule

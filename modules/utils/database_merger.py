@@ -1,6 +1,6 @@
 import sqlite3
 from pathlib import Path
-import shutil 
+import shutil
 
 
 class DatabaseMerger:
@@ -85,5 +85,5 @@ class DatabaseMerger:
         print("------------------------------")
         print("Closing database connections")
         self.conn_v2.close()
-        self.conn_merged.close()ddd 
+        self.conn_merged.close()
         print("Database connections closed")

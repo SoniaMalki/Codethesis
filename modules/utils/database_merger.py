@@ -85,5 +85,5 @@ class DatabaseMerger:
         print("------------------------------")
         print("Closing database connections")
         self.conn_v2.close()
-        self.conn_merged.close()
+        self.conn_merged.close()ddd 
         print("Database connections closed")

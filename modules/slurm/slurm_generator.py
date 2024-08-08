@@ -83,25 +83,17 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
                 return self.cluster_modules[key]
         return ""
 
-    def get_slurm_content(self, config_key, config_type):
+    def get_slurm_content(self, config_key, config_type, optimal_threads):
         # Convertir le temps du job en objet time
         job_time = time.fromisoformat(
             self.slurm_parameters.get(f"{config_type}_time", "02:00:00")
         ).strftime("%H:%M:%S")
 
-        optimal_cores, optimal_threads = self.determine_optimal_resources(
-            config_type)
-
-        if config_type == "assignment":
-            self.assignment_parameters['parameters']['assignment_options']['threads'] = optimal_threads
-        elif config_type == "scheduling":
-            self.scheduling_parameters['parameters']['scheduling_options']['threads'] = optimal_threads
-
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
 #SBATCH --output={self.output_dir / config_type / f"output_{config_key}.txt"}
-#SBATCH --ntasks={optimal_cores}  
-#SBATCH --cpus-per-task={optimal_threads} 
+#SBATCH --ntasks={optimal_threads}  
+#SBATCH --cpus-per-task=1 
 #SBATCH --time={job_time}
 #SBATCH --mem={self.slurm_parameters.get(f"{config_type}_mem", "8G")}
 
@@ -111,7 +103,7 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key}
 """
 
-    def determine_optimal_resources(self, config_type):
+    def determine_optimal_resources(self, config_params, config_type):
         hostname = socket.gethostname()
         cluster_name = next(
             (cluster for cluster in self.cluster_cores if cluster in hostname), None
@@ -125,29 +117,45 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
             available_cores = self.cluster_cores[cluster_name]
 
         if config_type == "assignment":
-            if "Wmin" in self.assignment_parameters['parameters'].get('assignment_method', "") or "Citta" in self.assignment_parameters['parameters'].get('assignment_method', ""):
+            if "Wmin" in config_params.get('assignment_method', "") or "Citta" in config_params.get('assignment_method', ""):
                 optimal_cores = min(available_cores, 8)
             else:
                 optimal_cores = min(available_cores, 4)
         elif config_type == "scheduling":
-            if "Rhma" in self.scheduling_parameters['parameters'].get('scheduling_algorithm', ""):
+            if "Rhma" in config_params.get('scheduling_algorithm', ""):
                 optimal_cores = min(available_cores, 8)
             else:
                 optimal_cores = 1
         else:
             optimal_cores = 1
 
-        optimal_threads = 1
+        optimal_threads = optimal_cores
 
-        return optimal_cores, optimal_threads
+        return optimal_threads
 
     def generate_slurm(self, config_key, config_type):
         """Generate SLURM file for a specific configuration."""
         print(f"Generating SLURM file for {config_key} of type {config_type}")
-        slurm_file = self.slurm_dir / config_type / f"{config_key}.slurm"
-        with open(slurm_file, "w") as f:
-            f.write(self.get_slurm_content(config_key, config_type))
-        print(f"SLURM file for {config_key} generated at {slurm_file}")
+
+        experience = self.experience_loader.load(config_key)
+
+        if experience:
+            if config_type == "assignment":
+                config_params = experience.assignment_parameters['parameters']
+            elif config_type == "scheduling":
+                config_params = experience.scheduling_parameters['parameters']
+            else:
+                config_params = {}  # or handle other types if needed
+
+            optimal_threads = self.determine_optimal_resources(
+                config_params, config_type)
+            slurm_file = self.slurm_dir / config_type / f"{config_key}.slurm"
+
+            with open(slurm_file, "w") as f:
+                f.write(self.get_slurm_content(
+                    config_key, config_type, optimal_threads))
+
+            print(f"SLURM file for {config_key} generated at {slurm_file}")
 
     def get_wait_for_jobs_script(self, job_name, exclude_name):
         if type(exclude_name) != list:

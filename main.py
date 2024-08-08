@@ -12,18 +12,16 @@ from modules.taskset.task_parameters_generator.prime_matrix_generator import Pri
 from modules.utils.database_merger import DatabaseMerger
 
 
-def run_experience(experience_parameter_key, experience_loader, threads):  # Added threads argument
-    print(
-        f"Running experience with parameter key: {experience_parameter_key} and {threads} threads")
+def run_experience(experience_parameter_key, experience_loader):
+    print(f"Running experience with parameter key: {experience_parameter_key}")
     experience = experience_loader.load(experience_parameter_key)
     if experience:
         print(f"Processing experience: {experience_parameter_key}")
-        experience.process(threads=threads)
+        experience.process()
 
 
-def run_batch_experiences(experience_loader, config_type, threads):
-    print(
-        f"Running batch experiences for config type: {config_type} with {threads} threads")
+def run_batch_experiences(experience_loader, config_type):
+    print(f"Running batch experiences for config type: {config_type}")
     config_ids = experience_loader.get_config_ids(config_type)
 
     if not config_ids:
@@ -32,10 +30,10 @@ def run_batch_experiences(experience_loader, config_type, threads):
 
     for config_id in config_ids:
         print(f"Running experience for config ID: {config_id}")
-        run_experience(config_id, experience_loader, threads)
+        run_experience(config_id, experience_loader)
 
 
-def main(action, experience_id, experience_action=None, threads=1):
+def main(action, experience_id, experience_action=None):
     """
     Fonction principale pour exécuter une expérience ou analyser les résultats.
 
@@ -43,10 +41,9 @@ def main(action, experience_id, experience_action=None, threads=1):
         action (str): L'action à effectuer.
         experience_id (str, optional): ID de l'expérience. Si None, l'utilisateur devra choisir parmi les disponibles.
         experience_action (str, optional): Le type d'action pour run_batch_experiences.
-        threads (int, optional): Number of threads to use. Defaults to 1.
     """
     print(
-        f"Main function started with action: {action}, experience_id: {experience_id}, experience_action: {experience_action}, threads: {threads}")
+        f"Main function started with action: {action}, experience_id: {experience_id}, experience_action: {experience_action}")
     main_path = Path(__file__).parent
     generation_path = Path(__file__).parent / "generation"
     db_path = generation_path / "experience.db"
@@ -101,14 +98,13 @@ def main(action, experience_id, experience_action=None, threads=1):
     elif action == "run_experience":
         print(f"Running experience with action: {experience_action}")
         experience_loader_db = ExperienceLoader(db_path, experience_id)
-        run_experience(experience_action, experience_loader_db,
-                       threads)
+        run_experience(experience_action, experience_loader_db)
 
     elif action == "run_batch_experiences":
         print(f"Running batch experiences with action: {experience_action}")
         experience_loader_db = ExperienceLoader(db_path, experience_id)
         run_batch_experiences(experience_loader_db,
-                              experience_action, threads)
+                              experience_action)
 
     elif action == "generate_configs":
         print(f"Generating configs for experience ID: {experience_id}")
@@ -141,18 +137,16 @@ def main(action, experience_id, experience_action=None, threads=1):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 4:
+    if len(sys.argv) < 3:
         print(
-            "Utilisation : python main.py <action> <experience_id> [experience_action] [threads]")
+            "Utilisation : python main.py <action> <experience_id> [experience_action]")
         sys.exit(1)
 
     action = sys.argv[1]
     experience_id = sys.argv[2]
     experience_action = sys.argv[3] if len(sys.argv) > 3 else None
 
-    threads = int(sys.argv[4]) if len(sys.argv) > 4 else 1
-
     print(
-        f"Script started with action: {action}, experience_id: {experience_id}, experience_action: {experience_action}, threads: {threads}")
-    main(action, experience_id, experience_action, threads)
+        f"Script started with action: {action}, experience_id: {experience_id}, experience_action: {experience_action}")
+    main(action, experience_id, experience_action)
     print("Script execution completed")

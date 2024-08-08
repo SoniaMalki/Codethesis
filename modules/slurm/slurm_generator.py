@@ -54,6 +54,14 @@ module load GLPK/5.0-GCCcore-12.2.0
 module load Gurobi/10.0.3-GCCcore-12.2.0
 """,
         }
+
+        # Dictionary of available cores per cluster
+        self.cluster_cores = {
+            "lemaitre4": 40,
+            "nic5": 32,
+            "hercules": 32,
+        }
+
         # Récupérer le hostname de la machine
         hostname = socket.gethostname()
         print(f"Hostname: {hostname}")
@@ -80,19 +88,55 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
         job_time = time.fromisoformat(
             self.slurm_parameters.get(f"{config_type}_time", "02:00:00")
         ).strftime("%H:%M:%S")
+
+        optimal_cores, optimal_threads = self.determine_optimal_resources(
+            config_type)
+
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
 #SBATCH --output={self.output_dir / config_type / f"output_{config_key}.txt"}
-#SBATCH --ntasks=1
+#SBATCH --ntasks={optimal_cores}  
+#SBATCH --cpus-per-task={optimal_threads} 
 #SBATCH --time={job_time}
 #SBATCH --mem={self.slurm_parameters.get(f"{config_type}_mem", "8G")}
 
 # Charger les modules nécessaires
 {self.modules}
 
-# Exécuter main.py avec la clé d'expérience en argument
-python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key}
+export GRB_THREADS={optimal_threads} 
+
+python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key} {optimal_threads} 
 """
+
+    def determine_optimal_resources(self, config_type):
+        hostname = socket.gethostname()
+        cluster_name = next(
+            (cluster for cluster in self.cluster_cores if cluster in hostname), None
+        )
+
+        if cluster_name is None:
+            print(
+                f"Warning: Unknown cluster '{hostname}'. Defaulting to 1 core.")
+            available_cores = 1
+        else:
+            available_cores = self.cluster_cores[cluster_name]
+
+        if config_type == "assignment":
+            if "Wmin" in self.assignment_parameters['parameters'].get('assignment_method', "") or "Citta" in self.assignment_parameters['parameters'].get('assignment_method', ""):
+                optimal_cores = min(available_cores, 8)
+            else:
+                optimal_cores = min(available_cores, 4)
+        elif config_type == "scheduling":
+            if "Rhma" in self.scheduling_parameters['parameters'].get('scheduling_algorithm', ""):
+                optimal_cores = min(available_cores, 8)
+            else:
+                optimal_cores = 1
+        else:
+            optimal_cores = 1
+
+        optimal_threads = 1
+
+        return optimal_cores, optimal_threads
 
     def generate_slurm(self, config_key, config_type):
         """Generate SLURM file for a specific configuration."""

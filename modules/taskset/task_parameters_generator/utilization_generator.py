@@ -42,16 +42,30 @@ class UtilizationGenerator:
         product_scalars = numpy.repeat(1, self.taskset_count)
 
         for i in numpy.arange(self.tasks_per_taskset - 1, 0, -1):
-            is_threshold_met = (random_thresholds[(self.tasks_per_taskset - i) - 1, ...] <= transition_probabilities[i - 1, remaining_tasks - 1])
-            scaled_random = random_scalars[(self.tasks_per_taskset - i) - 1, ...] ** (1 / float(i))
-            sum_utilization = sum_utilization + (1 - scaled_random) * product_scalars * remaining_utilization / float(i + 1)
+            valid_index = numpy.clip(remaining_tasks - 1, 0,
+                                  self.tasks_per_taskset - 1)
+
+            # Ensure the index for random_thresholds stays within bounds
+            valid_row_index = numpy.clip(
+                self.tasks_per_taskset - i - 1, 0, self.tasks_per_taskset - 2)
+
+            is_threshold_met = (
+                random_thresholds[valid_row_index, ...] <= transition_probabilities[i - 1, valid_index])
+            scaled_random = random_scalars[(
+                self.tasks_per_taskset - i) - 1, ...] ** (1 / float(i))
+            sum_utilization = sum_utilization + \
+                (1 - scaled_random) * product_scalars * \
+                remaining_utilization / float(i + 1)
             product_scalars = scaled_random * product_scalars
-            utilization_matrix[(self.tasks_per_taskset - i) - 1, ...] = sum_utilization + product_scalars * is_threshold_met
+            utilization_matrix[(self.tasks_per_taskset - i) -
+                               1, ...] = sum_utilization + product_scalars * is_threshold_met
             remaining_utilization = remaining_utilization - is_threshold_met
             remaining_tasks = remaining_tasks - is_threshold_met
 
-        utilization_matrix[self.tasks_per_taskset - 1, ...] = sum_utilization + product_scalars * remaining_utilization
-        
+        utilization_matrix[self.tasks_per_taskset -
+                           1, ...] = sum_utilization + product_scalars * remaining_utilization
+
         for i in range(0, self.taskset_count):
-            utilization_matrix[..., i] = utilization_matrix[numpy.random.permutation(self.tasks_per_taskset), i]
+            utilization_matrix[..., i] = utilization_matrix[numpy.random.permutation(
+                self.tasks_per_taskset), i]
         return numpy.transpose(utilization_matrix)

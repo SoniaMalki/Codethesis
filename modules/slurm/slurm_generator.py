@@ -92,6 +92,11 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
         optimal_cores, optimal_threads = self.determine_optimal_resources(
             config_type)
 
+        if config_type == "assignment":
+            self.assignment_parameters['parameters']['assignment_options']['threads'] = optimal_threads
+        elif config_type == "scheduling":
+            self.scheduling_parameters['parameters']['scheduling_options']['threads'] = optimal_threads
+
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
 #SBATCH --output={self.output_dir / config_type / f"output_{config_key}.txt"}
@@ -103,7 +108,7 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 # Charger les modules nécessaires
 {self.modules}
 
-python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key} {optimal_threads} 
+python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key}
 """
 
     def determine_optimal_resources(self, config_type):

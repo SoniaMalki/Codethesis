@@ -1,9 +1,10 @@
 from pulp import *
 import time
+import sys
 
 
 class Wmin:
-    def __init__(self, taskset, number_of_cores, assignment_options):
+    def __init__(self, taskset, number_of_cores, assignment_options, threads):
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.utilization = self.taskset.utilization
@@ -12,12 +13,14 @@ class Wmin:
         self.solving_time_limit_MILP = assignment_options.get(
             "solving_time_limit_MILP", None)
         self.assignment_options = assignment_options
+        self.threads = threads
         self.solver_name = self.assignment_options.get("solver_name", "gurobi")
 
         print(f"Wmin utilisant le solveur : {self.solver_name}")
 
         if self.solver_name == "gurobi":
-            self.solver = GUROBI_CMD(msg=0, options=[("OutputFlag", 0)])
+            self.solver = GUROBI_CMD(
+                msg=0, options=[("OutputFlag", 0), ("Threads", self.threads)])
         elif self.solver_name == "glpk":
             self.solver = GLPK_CMD(msg=0)
         else:
@@ -25,7 +28,7 @@ class Wmin:
                 f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi' ou 'glpk'.")
 
     def createLpVariables(self):
-        # Variables
+        print("----- Creating LP variables -----")
         o = {}
         U_M = {}
         maxW_k = {}
@@ -41,10 +44,11 @@ class Wmin:
                         z[i, j, k] = LpVariable(f"z_{i}_{j}_{k}", cat='Binary')
 
         maxW = LpVariable("maxW", lowBound=0)
-
+        print("LP Variables created.")
         return o, U_M, maxW_k, maxW, z
 
     def createLpConstraints(self, o, U_M, maxW_k, maxW, z):
+        print("----- Creating LP constraints -----")
         constraint_19 = []
         constraint_20 = []
         constraint_21 = []
@@ -74,10 +78,11 @@ class Wmin:
                                         for i in range(len(self.taskset)) if self.single_interference[i] != 0
                                         for j in range(len(self.taskset)) if i != j and self.single_interference[j] != 0
                                         ]) == maxW_k[k])
-
+        print("LP Constraints created.")
         return constraint_19, constraint_20, constraint_21, constraint_22
 
     def assign(self):
+        print("----- Starting W-Min Assignment -----")
         prob = LpProblem("Wmin_Assignment", LpMinimize)
 
         o, U_M, maxW_k, maxW, z = self.createLpVariables()
@@ -105,6 +110,7 @@ class Wmin:
                     ("TimeLimit", self.solving_time_limit_MILP))
 
         prob.solve(self.solver)
+        print("MILP Problem solved.")
 
         task_in_core = [[] for _ in range(self.number_of_cores)]
         # Checking if a solution is found

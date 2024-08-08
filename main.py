@@ -9,6 +9,7 @@ from modules.analysis.result_analyzer import ResultAnalyzer
 from modules.slurm.slurm_generator import SlurmGenerator
 from modules.slurm.slurm_script_generator import SlurmScriptGenerator
 from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
+from modules.utils.database_merger import DatabaseMerger
 
 
 def run_experience(experience_parameter_key, experience_loader):
@@ -117,6 +118,18 @@ def main(action, experience_id, experience_action=None):
                                          generation_path=generation_path, experience_id=experience_id)
         generator.generate_all_scripts()
         print(f"SLURM scripts generated for experience ID: {experience_id}")
+
+    elif action == "merge_databases":
+        print(
+            f"Merging databases v1 and v2 into merged.db for experience ID: {experience_id}")
+        db_path_v1 = generation_path / "v1.db"
+        db_path_v2 = generation_path / "v2.db"
+        merged_db_path = generation_path / "merged.db"
+        merger = DatabaseMerger(db_path_v1, db_path_v2, merged_db_path)
+        merger.merge_tables()
+        merger.close_connections()
+        print(
+            f"Databases merged successfully for experience ID: {experience_id}")
 
     else:
         print(f"Action invalide: {action}")

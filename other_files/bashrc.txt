@@ -30,12 +30,14 @@ alias sq='squeue -u $USER'
 # Alias pour scancel
 alias sc='scancel -u $USER'
 
-# Alias pour squeue avec nom complet
-alias sqn='squeue -u $USER -h -o "%.30j %.2t %.10M %.6D %.30R" | awk '\''BEGIN { printf "%-30s %-2s %-10s %-6s %-30s\n", "NAME", "ST", "TIME", "NODES", "NODELIST" } { printf "%-30s %-2s %-10s %-6s %-30s\n", $1, $2, $3, $4, $5 }'\'''
+# Alias pour squeue avec nom complet et PID
+alias sqn='squeue -u $USER -h -o "%.50j %.8i %.2t %.10M %.6D %.50R" | awk '\''BEGIN { printf "%-50s %-8s %-2s %-10s %-6s %-50s\n", "NAME", "PID", "ST", "TIME", "NODES", "NODELIST" } { printf "%-50s %-8s %-2s %-10s %-6s %-50s\n", $1, $2, $3, $4, $5, $6 }'\'''
 
-# Alias pour squeue avec nom complet des jobs running
-alias sqnr='squeue -u $USER -h -o "%.30j %.2t %.10M %.6D %.30R" | awk '\''BEGIN { printf "%-30s %-2s %-10s %-6s %-30s\n", "NAME", "ST", "TIME", "NODES", "NODELIST" } $2 == "R" { printf "%-30s %-2s %-10s %-6s %-30s\n", $1, $2, $3, $4, $5 }'\'''
+# Alias pour squeue avec nom complet et PID des jobs running
+alias sqnr='squeue -u $USER -h -o "%.50j %.8i %.2t %.10M %.6D %.50R" | awk '\''BEGIN { printf "%-50s %-8s %-2s %-10s %-6s %-50s\n", "NAME", "PID", "ST", "TIME", "NODES", "NODELIST" } $3 == "R" { printf "%-50s %-8s %-2s %-10s %-6s %-50s\n", $1, $2, $3, $4, $5, $6 }'\'''
 
+# Alias pour squeue avec nom complet et PID des jobs running ou pending pour raison autre que Dependency
+alias sqna='squeue -u $USER -h -o "%.40j %.8i %.2t %.8M %.4D %.40R" | awk '\''BEGIN { printf "%-40s %-8s %-2s %-8s %-4s %-40s\n", "NAME", "PID", "ST", "TIME", "NODES", "NODELIST" } $3 == "R" || ($3 == "PD" && $6 != "Dependency") { printf "%-40s %-8s %-2s %-8s %-4s %-40s\n", $1, $2, $3, $4, $5, $6 }'\'''
 
 # Alias pour rm generation & slurm
 alias rmres='rm -rf $HOME/Codethesis/generation/* && rm -rf $HOME/Codethesis/slurm_code/slurm_scripts/* && rm -rf $HOME/Codethesis/slurm_code/output_launch_slurm_jobs/*'

@@ -54,30 +54,51 @@ SLURM_SCRIPTS_DIR="$HOME/Codethesis/slurm_code/slurm_scripts"
 OUTPUT_LAUNCH_DIR="$HOME/Codethesis/slurm_code/output_launch_slurm_jobs"
 
 # Fonction pour gérer la suppression avec confirmation
+
 rm_res() {
-    # Rechercher les fichiers à supprimer, en excluant certains dossiers et fichiers
-    files_to_delete=$(find "$GENERATION_DIR" -mindepth 1 \
+    # Rechercher les fichiers à supprimer dans le dossier GENERATION
+    files_to_delete_gen=$(find "$GENERATION_DIR" -mindepth 1 \
         ! -name "results" ! -path "$GENERATION_DIR/results/*" \
         ! -name "plots" ! -path "$GENERATION_DIR/plots/*" \
         ! -name "experience.db" -print)
-    
-    # Vérifier si la liste des fichiers à supprimer est vide
-    if [ -z "$files_to_delete" ]; then
+
+    # Rechercher les fichiers à supprimer dans le dossier SLURM_SCRIPTS
+    files_to_delete_slurm=$(find "$SLURM_SCRIPTS_DIR" -mindepth 1 -print)
+
+    # Rechercher les fichiers à supprimer dans le dossier OUTPUT_LAUNCH
+    files_to_delete_output=$(find "$OUTPUT_LAUNCH_DIR" -mindepth 1 -print)
+
+    # Vérifier si les listes des fichiers à supprimer sont vides
+    if [ -z "$files_to_delete_gen" ] && [ -z "$files_to_delete_slurm" ] && [ -z "$files_to_delete_output" ]; then
         echo "No files or directories to delete."
         return
     fi
 
     # Afficher la liste des fichiers à supprimer et demander confirmation
     echo "The following files and directories will be deleted:"
-    echo "$files_to_delete"
+    if [ ! -z "$files_to_delete_gen" ]; then
+        echo "$files_to_delete_gen"
+    fi
+    if [ ! -z "$files_to_delete_slurm" ]; then
+        echo "$files_to_delete_slurm"
+    fi
+    if [ ! -z "$files_to_delete_output" ]; then
+        echo "$files_to_delete_output"
+    fi
     echo "Proceed with deletion? (y/n)"
     read -r answer
 
     # Si l'utilisateur confirme, procéder à la suppression
     if [ "$answer" = "y" ]; then
-        echo "$files_to_delete" | xargs rm -rf
-        rm -rf "$SLURM_SCRIPTS_DIR"/*
-        rm -rf "$OUTPUT_LAUNCH_DIR"/*
+        if [ ! -z "$files_to_delete_gen" ]; then
+            echo "$files_to_delete_gen" | xargs rm -rf
+        fi
+        if [ ! -z "$files_to_delete_slurm" ]; then
+            echo "$files_to_delete_slurm" | xargs rm -rf
+        fi
+        if [ ! -z "$files_to_delete_output" ]; then
+            echo "$files_to_delete_output" | xargs rm -rf
+        fi
         echo "Deletion completed."
     else
         echo "Deletion canceled."

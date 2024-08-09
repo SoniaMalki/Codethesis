@@ -1,7 +1,7 @@
 # Si l'interpréteur est interactif, exécuter les commandes suivantes
 if [[ $- == *i* ]]; then
     if [[ $(hostname) == "hercules" ]]; then
-        cd Codethesis/
+        cd $HOME/Codethesis/
         module load Python/3.9.6-GCCcore-11.2.0
         module load GLPK/5.0-GCCcore-11.2.0
         module load Gurobi-Optimizer/9.5.1
@@ -48,5 +48,44 @@ alias sqnr='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST
 alias sqna='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST_COL_SIZE't %.'$TIME_COL_SIZE'M %.'$NODES_COL_SIZE'D %.'$NODELIST_COL_SIZE'R" | awk '\''BEGIN { printf "%-'$NAME_COL_SIZE's %-'$PID_COL_SIZE's %-'$ST_COL_SIZE's %-'$TIME_COL_SIZE's %-'$NODES_COL_SIZE's %-'$NODELIST_COL_SIZE's\n", "NAME", "PID", "ST", "TIME", "NODES", "NODELIST" } $3 == "R" || ($3 == "PD" && $6 != "Dependency") { printf "%-'$NAME_COL_SIZE's %-'$PID_COL_SIZE's %-'$ST_COL_SIZE's %-'$TIME_COL_SIZE's %-'$NODES_COL_SIZE's %-'$NODELIST_COL_SIZE's\n", $1, $2, $3, $4, $5, $6 }'\'''
 
 # Alias pour rm generation & slurm
-alias rmres='rm -rf $HOME/Codethesis/generation/* && rm -rf $HOME/Codethesis/slurm_code/slurm_scripts/* && rm -rf $HOME/Codethesis/slurm_code/output_launch_slurm_jobs/*'
+# Variables pour les chemins et exclusions
+GENERATION_DIR="$HOME/Codethesis/generation"
+SLURM_SCRIPTS_DIR="$HOME/Codethesis/slurm_code/slurm_scripts"
+OUTPUT_LAUNCH_DIR="$HOME/Codethesis/slurm_code/output_launch_slurm_jobs"
+
+# Fonction pour gérer la suppression avec confirmation
+rm_res() {
+    # Rechercher les fichiers à supprimer, en excluant certains dossiers et fichiers
+    files_to_delete=$(find "$GENERATION_DIR" -mindepth 1 \
+        ! -name "results" ! -path "$GENERATION_DIR/results/*" \
+        ! -name "plots" ! -path "$GENERATION_DIR/plots/*" \
+        ! -name "experience.db" -print)
+    
+    # Vérifier si la liste des fichiers à supprimer est vide
+    if [ -z "$files_to_delete" ]; then
+        echo "No files or directories to delete."
+        return
+    fi
+
+    # Afficher la liste des fichiers à supprimer et demander confirmation
+    echo "The following files and directories will be deleted:"
+    echo "$files_to_delete"
+    echo "Proceed with deletion? (y/n)"
+    read -r answer
+
+    # Si l'utilisateur confirme, procéder à la suppression
+    if [ "$answer" = "y" ]; then
+        echo "$files_to_delete" | xargs rm -rf
+        rm -rf "$SLURM_SCRIPTS_DIR"/*
+        rm -rf "$OUTPUT_LAUNCH_DIR"/*
+        echo "Deletion completed."
+    else
+        echo "Deletion canceled."
+    fi
+}
+
+alias rmres=rm_res
+
+
+
 

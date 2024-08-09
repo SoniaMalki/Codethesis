@@ -83,6 +83,20 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
                 return self.cluster_modules[key]
         return ""
 
+    def get_wait_for_jobs_script(self, job_name, exclude_name):
+        if type(exclude_name) != list:
+            exclude_name = [exclude_name]
+
+        grep_command = [
+            f"| grep -v '{ex_name}'" for ex_name in exclude_name]
+        grep_command = ''.join(grep_command)
+
+        return f"""# Attendre que tous les jobs soient terminés
+while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' {grep_command} | wc -l) -gt 0 ]; do
+  sleep 1
+done
+"""
+
     def get_slurm_content(self, config_key, config_type, optimal_threads):
         # Convertir le temps du job en objet time
         job_time = time.fromisoformat(
@@ -137,18 +151,26 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
         """Generate SLURM file for a specific configuration."""
         print(f"Generating SLURM file for {config_key} of type {config_type}")
 
+        # Load experience to check if a result file exists and get parameters
         experience = self.experience_loader.load(config_key)
 
         if experience and not experience.get_result_file_path(config_type):
             if config_type == "assignment":
                 config_params = experience.assignment_parameters['parameters']
+                optimal_threads = self.determine_optimal_resources(
+                    config_params, config_type)
+                # Set threads in assignment_options
+                config_params['assignment_options']['threads'] = optimal_threads
             elif config_type == "scheduling":
                 config_params = experience.scheduling_parameters['parameters']
+                optimal_threads = self.determine_optimal_resources(
+                    config_params, config_type)
+                # Set threads in scheduling_options
+                config_params['scheduling_options']['threads'] = optimal_threads
             else:
-                config_params = {}  # or handle other types if needed
+                config_params = {}
+                optimal_threads = 1  # Default to 1 if no parameters found
 
-            optimal_threads = self.determine_optimal_resources(
-                config_params, config_type)
             slurm_file = self.slurm_dir / \
                 config_type / f"{config_key}.slurm"
 
@@ -160,20 +182,6 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
         else:
             print(
                 f"Skipping SLURM generation for {config_key} - result file already exists")
-
-    def get_wait_for_jobs_script(self, job_name, exclude_name):
-        if type(exclude_name) != list:
-            exclude_name = [exclude_name]
-
-        grep_command = [
-            f"| grep -v '{ex_name}'" for ex_name in exclude_name]
-        grep_command = ''.join(grep_command)
-
-        return f"""# Attendre que tous les jobs soient terminés
-while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' {grep_command} | wc -l) -gt 0 ]; do
-  sleep 1
-done
-"""
 
     def write_master_slurm(self, config_type):
         """Write master SLURM file for a configuration type."""
@@ -280,7 +288,6 @@ done
                 "Skipping main master SLURM generation - No other master files found")
 
     def generate_analyze_slurm(self):
-        """Generate the SLURM file for analyzing results."""
         print("Generating the SLURM file for analyzing results")
         slurm_file = self.master_dir / "analyze_results.slurm"
         with open(slurm_file, "w") as f:

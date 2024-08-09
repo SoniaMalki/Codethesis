@@ -139,7 +139,7 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
 
         experience = self.experience_loader.load(config_key)
 
-        if experience:
+        if experience and not experience.get_result_file_path(config_type):
             if config_type == "assignment":
                 config_params = experience.assignment_parameters['parameters']
             elif config_type == "scheduling":
@@ -149,13 +149,17 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
 
             optimal_threads = self.determine_optimal_resources(
                 config_params, config_type)
-            slurm_file = self.slurm_dir / config_type / f"{config_key}.slurm"
+            slurm_file = self.slurm_dir / \
+                config_type / f"{config_key}.slurm"
 
             with open(slurm_file, "w") as f:
                 f.write(self.get_slurm_content(
                     config_key, config_type, optimal_threads))
 
             print(f"SLURM file for {config_key} generated at {slurm_file}")
+        else:
+            print(
+                f"Skipping SLURM generation for {config_key} - result file already exists")
 
     def get_wait_for_jobs_script(self, job_name, exclude_name):
         if type(exclude_name) != list:
@@ -179,9 +183,11 @@ done
             (self.slurm_dir / config_type / "batch").glob("*.slurm")
         )
 
-        with open(slurm_file, "w") as f:
-            f.write(
-                f"""#!/bin/bash
+        # Only write the master file if there are batch files
+        if batch_files:
+            with open(slurm_file, "w") as f:
+                f.write(
+                    f"""#!/bin/bash
 #SBATCH --job-name=all_{config_type}s_master
 #SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s_master.txt"}
 #SBATCH --ntasks=1
@@ -189,30 +195,34 @@ done
 #SBATCH --mem=2G
 
 """
-            )
+                )
 
-            # Lancer les batchs avec dépendances
-            previous_batch_id_var = None
-            for i, batch_file in enumerate(batch_files):
-                batch_name = batch_file.stem
-                current_batch_id_var = f"{batch_name}_ID"
+                # Lancer les batchs avec dépendances
+                previous_batch_id_var = None
+                for i, batch_file in enumerate(batch_files):
+                    batch_name = batch_file.stem
+                    current_batch_id_var = f"{batch_name}_ID"
 
-                if previous_batch_id_var:
-                    f.write(
-                        f"""{current_batch_id_var}=$(sbatch --dependency=afterok:${previous_batch_id_var} {batch_file} | awk '{{print $4}}')\n"""
-                    )
-                else:
-                    f.write(
-                        f"""{current_batch_id_var}=$(sbatch {batch_file} | awk '{{print $4}}')\n"""
-                    )
-                previous_batch_id_var = current_batch_id_var
+                    if previous_batch_id_var:
+                        f.write(
+                            f"""{current_batch_id_var}=$(sbatch --dependency=afterok:${previous_batch_id_var} {batch_file} | awk '{{print $4}}')\n"""
+                        )
+                    else:
+                        f.write(
+                            f"""{current_batch_id_var}=$(sbatch {batch_file} | awk '{{print $4}}')\n"""
+                        )
+                    previous_batch_id_var = current_batch_id_var
 
-            f.write(
-                f"""
-{self.get_wait_for_jobs_script(config_type, f"all_{config_type}s_master")}
-"""
-            )
-        print(f"Master SLURM file for {config_type} written at {slurm_file}")
+                f.write(
+                    f"""
+    {self.get_wait_for_jobs_script(config_type, f"all_{config_type}s_master")}
+    """
+                )
+            print(
+                f"Master SLURM file for {config_type} written at {slurm_file}")
+        else:
+            print(
+                f"Skipping master SLURM generation for {config_type} - No batch files found")
 
     def generate_master_slurm(self):
         """Generate the main master SLURM file."""
@@ -220,23 +230,54 @@ done
         for config_type in ["taskset", "assignment", "scheduling"]:
             self.write_master_slurm(config_type)
 
-        slurm_file = self.master_dir / "master.slurm"
-        with open(slurm_file, "w") as f:
-            f.write(
-                f"""#!/bin/bash
+        # Only create master.slurm if at least one other master file exists
+        if any((self.master_dir).glob("*.slurm")):
+            slurm_file = self.master_dir / "master.slurm"
+            with open(slurm_file, "w") as f:
+                f.write(
+                    f"""#!/bin/bash
 #SBATCH --job-name=master_job
 #SBATCH --output={self.output_dir / f"master_job.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time=00:02:00
 #SBATCH --mem=2G
+    """
+                )
+                if (self.master_dir / "all_tasksets_master.slurm").exists():
+                    f.write(
+                        f"""taskset_id=$(sbatch {self.master_dir / "all_tasksets_master.slurm"} | awk '{{print $4}}')\n"""
+                    )
+                if (self.master_dir / "all_assignments_master.slurm").exists():
+                    if 'taskset_id' in locals():
+                        f.write(
+                            f"""assignment_id=$(sbatch --dependency=afterok:$taskset_id {self.master_dir / "all_assignments_master.slurm"} | awk '{{print $4}}')\n"""
+                        )
+                    else:
+                        f.write(
+                            f"""assignment_id=$(sbatch {self.master_dir / "all_assignments_master.slurm"} | awk '{{print $4}}')\n"""
+                        )
+                if (self.master_dir / "all_schedulings_master.slurm").exists():
+                    if 'assignment_id' in locals():
+                        f.write(
+                            f"""scheduling_id=$(sbatch --dependency=afterok:$assignment_id {self.master_dir / "all_schedulings_master.slurm"} | awk '{{print $4}}')\n"""
+                        )
+                    else:
+                        f.write(
+                            f"""scheduling_id=$(sbatch {self.master_dir / "all_schedulings_master.slurm"} | awk '{{print $4}}')\n"""
+                        )
+                if 'scheduling_id' in locals():
+                    f.write(
+                        f"""sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.slurm"}\n"""
+                    )
+                else:
+                    f.write(
+                        f"""sbatch {self.master_dir / "analyze_results.slurm"}\n"""
+                    )
 
-taskset_id=$(sbatch {self.master_dir / "all_tasksets_master.slurm"} | awk '{{print $4}}')
-assignment_id=$(sbatch --dependency=afterok:$taskset_id {self.master_dir / "all_assignments_master.slurm"} | awk '{{print $4}}')
-scheduling_id=$(sbatch --dependency=afterok:$assignment_id {self.master_dir / "all_schedulings_master.slurm"} | awk '{{print $4}}')
-sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.slurm"}
-"""
-            )
-        print(f"Main master SLURM file written at {slurm_file}")
+            print(f"Main master SLURM file written at {slurm_file}")
+        else:
+            print(
+                "Skipping main master SLURM generation - No other master files found")
 
     def generate_analyze_slurm(self):
         """Generate the SLURM file for analyzing results."""
@@ -271,13 +312,21 @@ python3 {self.main_path}/main.py analyze_results {self.experience_id}
             print(f"Fetching config IDs for {config_type}")
             config_ids = self.experience_loader.get_config_ids(config_type)
 
-            # Gérer les jobs par batch de batch_size
+            # 1. Generate Individual SLURM Files (if needed)
+            for config_key in config_ids:
+                self.generate_slurm(config_key, config_type)
+
+            # 2. Read Individual SLURM Directory
+            individual_slurm_dir = self.slurm_dir / config_type
+            generated_slurm_files = list(individual_slurm_dir.glob("*.slurm"))
+
+            # 3. Construct Batch Files
             i = 0
-            while i < len(config_ids):
-                # Créer un dictionnaire pour le batch actuel
+            while i < len(generated_slurm_files):
                 batch_configs = {}
-                for j in range(i, min(i + self.batch_size, len(config_ids))):
-                    config_key = config_ids[j]
+                for j in range(i, min(i + self.batch_size, len(generated_slurm_files))):
+                    slurm_file = generated_slurm_files[j]
+                    config_key = slurm_file.stem
                     batch_configs[config_key] = config_key
 
                 # Nom du batch actuel
@@ -298,21 +347,17 @@ python3 {self.main_path}/main.py analyze_results {self.experience_id}
 #SBATCH --time={self.slurm_parameters.get(f"{config_type}_time", "02:00:00")}
 #SBATCH --mem=2G
 
-for config_key in {" ".join(batch_configs.keys())}; do  # Séparer par des espaces
-  sbatch {self.slurm_dir / config_type / f"$config_key.slurm"}  # Utiliser le chemin complet
+for config_key in {" ".join(batch_configs.keys())}; do # Séparer par des espaces
+  sbatch {individual_slurm_dir / f"$config_key.slurm"} # Utiliser le chemin complet
 done
 
 {self.get_wait_for_jobs_script(config_type, param_exclude)}
                     """
                     )
 
-                # Générer les fichiers SLURM individuels pour le batch
-                for config_key in batch_configs.keys():
-                    self.generate_slurm(config_key, config_type)
-
                 i += self.batch_size
 
-        # Générer les fichiers SLURM masters
+        # 4 & 5. Construct Master Files (per type and main)
         self.generate_master_slurm()
 
         # Générer le fichier SLURM pour l'analyse des résultats

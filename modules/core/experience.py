@@ -40,6 +40,27 @@ class Experience:
         self.db_utils = DBUtils(self.db_path)
         print("Experience initialized successfully")
 
+    def get_result_file_path(self, config_type):
+        """Gets the result file path from the database for the current configuration.
+
+        Args:
+            config_type (str): The type of configuration ("taskset", "assignment", or "scheduling").
+
+        Returns:
+            str: The result file path, or None if not found.
+        """
+        if config_type == "taskset":
+            config_id = self.taskset_parameters.get("taskset_id")
+        elif config_type == "assignment":
+            config_id = self.assignment_parameters.get("assignment_id")
+        elif config_type == "scheduling":
+            config_id = self.scheduling_parameters.get("scheduling_id")
+        else:
+            print(f"Error: Invalid config_type '{config_type}'")
+            return None
+
+        return self.db_utils.get_result_file_path(config_id, config_type)
+
     def process(self):
         """Processes the experience, generating tasksets, assignments, and schedulings as needed."""
         print("Processing Experience")

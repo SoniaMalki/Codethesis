@@ -10,6 +10,7 @@ from modules.slurm.slurm_generator import SlurmGenerator
 from modules.slurm.slurm_script_generator import SlurmScriptGenerator
 from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
 from modules.utils.database_merger import DatabaseMerger
+from modules.utils.db_utils import DBUtils
 
 
 def run_experience(experience_parameter_key, experience_loader):
@@ -65,7 +66,29 @@ def main(action, experience_id, experience_action=None):
             f"L'ID d'experience: {experience_id} n'existe pas. Veuillez la créer")
         return
 
-    if action == "analyze_results":
+    if action == "update_db_schema":
+        print("Updating database schema...")
+        db_utils = DBUtils(db_path)
+        db_utils.add_column(table_name="Assignments",
+                            column_name="cluster", column_type="TEXT")
+        db_utils.add_column(table_name="Assignments",
+                            column_name="threads", column_type="INT")
+        db_utils.add_column(table_name="Assignments",
+                            column_name="slurm_time", column_type="TEXT")
+        db_utils.add_column(table_name="Assignments",
+                            column_name="slurm_memory", column_type="TEXT")
+
+        db_utils.add_column(table_name="Schedulings",
+                            column_name="cluster", column_type="TEXT")
+        db_utils.add_column(table_name="Schedulings",
+                            column_name="threads", column_type="INT")
+        db_utils.add_column(table_name="Schedulings",
+                            column_name="slurm_time", column_type="TEXT")
+        db_utils.add_column(table_name="Schedulings",
+                            column_name="slurm_memory", column_type="TEXT")
+        print("Database schema updated!")
+
+    elif action == "analyze_results":
         print(f"Analyzing results for experience ID: {experience_id}")
         analyzer = ResultAnalyzer(db_path, experience_id)
         analyzer.run_analysis()
@@ -103,8 +126,7 @@ def main(action, experience_id, experience_action=None):
     elif action == "run_batch_experiences":
         print(f"Running batch experiences with action: {experience_action}")
         experience_loader_db = ExperienceLoader(db_path, experience_id)
-        run_batch_experiences(experience_loader_db,
-                              experience_action)
+        run_batch_experiences(experience_loader_db, experience_action)
 
     elif action == "generate_configs":
         print(f"Generating configs for experience ID: {experience_id}")

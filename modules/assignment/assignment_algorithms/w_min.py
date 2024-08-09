@@ -5,22 +5,31 @@ import sys
 
 class Wmin:
     def __init__(self, taskset, number_of_cores, assignment_options):
+        print("----- Initializing W-Min -----")
         self.number_of_cores = number_of_cores
         self.taskset = taskset
         self.utilization = self.taskset.utilization
         self.interference = self.taskset.interference
         self.single_interference = self.taskset.single_interference
-        self.solving_time_limit_MILP = assignment_options.get(
-            "solving_time_limit_MILP", None)
         self.assignment_options = assignment_options
-        self.threads = self.assignment_options.get("threads", 1)
         self.solver_name = self.assignment_options.get("solver_name", "gurobi")
+        self.solving_time_limit_MILP = self.assignment_options.get(
+            "solving_time_limit_MILP", None)
 
-        print(f"Wmin utilisant le solveur : {self.solver_name}")
+        # Get thread count from options or default
+        self.threads = self.assignment_options.get("threads", 1)
+        if 'threads' in self.assignment_options:
+            print(
+                f"Using thread count from assignment_options: {self.threads}")
+        else:
+            print(f"Using default thread count: {self.threads}")
+
+        print(
+            f"Wmin using solver: {self.solver_name} with {self.threads} threads")
 
         if self.solver_name == "gurobi":
             self.solver = GUROBI_CMD(
-                msg=0, options=[("OutputFlag", 0), ("Threads", self.threads)])
+                msg=1, options=[("OutputFlag", 1), ("Threads", self.threads)])
         elif self.solver_name == "glpk":
             self.solver = GLPK_CMD(msg=0)
         else:
@@ -115,6 +124,7 @@ class Wmin:
         task_in_core = [[] for _ in range(self.number_of_cores)]
         # Checking if a solution is found
         if prob.status == 1:
+            print("W-Min found a solution.")
             for i in range(len(self.taskset)):
                 for k in range(self.number_of_cores):
                     if o[i, k].varValue == 1:

@@ -30,5 +30,17 @@ class DBUtils:
         """, (file_path, config_id))
         self.conn.commit()
 
+    def add_column(self, table_name, column_name, column_type):
+        """Adds a column to a table if it doesn't exist."""
+        print(f"Adding column '{column_name}' to table '{table_name}'...")
+        try:
+            self.cursor.execute(
+                f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}"
+            )
+            self.conn.commit()
+            print(f"Column '{column_name}' added successfully!")
+        except sqlite3.OperationalError:
+            print(f"Column '{column_name}' already exists in table '{table_name}'. Skipping.")
+
     def close_connection(self):
         self.conn.close()

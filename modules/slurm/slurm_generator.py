@@ -93,7 +93,7 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 
         return f"""# Attendre que tous les jobs soient terminés
 while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' {grep_command} | wc -l) -gt 0 ]; do
-  sleep 1
+  sleep 15
 done
 """
 
@@ -114,7 +114,7 @@ done
 # Charger les modules nécessaires
 {self.modules}
 
-python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key}
+python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key} 
 """
 
     def determine_optimal_resources(self, config_params, config_type):
@@ -249,7 +249,7 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
 #SBATCH --ntasks=1
 #SBATCH --time=00:02:00
 #SBATCH --mem=2G
-    """
+"""
                 )
                 if (self.master_dir / "all_tasksets_master.slurm").exists():
                     f.write(

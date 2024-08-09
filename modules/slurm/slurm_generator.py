@@ -59,10 +59,16 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
         }
 
         # Dictionary of available cores per cluster
+        # self.cluster_cores = {
+        #     "lm": 40,
+        #     "nic": 32,
+        #     "her": 32,
+        # }
+
         self.cluster_cores = {
-            "lemaitre4": 40,
-            "nic5": 32,
-            "hercules": 32,
+            "lm": 5,
+            "nic": 5,
+            "her": 5,
         }
 
         # Récupérer le hostname de la machine

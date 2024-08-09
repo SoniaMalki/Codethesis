@@ -71,7 +71,7 @@ class ExperienceLoader:
             self.cursor.execute(
                 """
                 SELECT A.assignment_id, A.action, A.sorting_criterion, A.assignment_method,
-                       A.number_of_cores, A.threads, A.solving_time_limit_MILP, A.solver_name, A.result_file_path, A.taskset_id # Load threads
+                       A.number_of_cores, A.threads, A.solving_time_limit_MILP, A.solver_name, A.result_file_path, A.taskset_id
                 FROM Assignments A
                 JOIN ExperienceAssignments EA ON A.assignment_id = EA.assignment_id
                 WHERE EA.experience_id = ? AND A.assignment_id = ?

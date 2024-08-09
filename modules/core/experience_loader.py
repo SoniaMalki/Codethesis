@@ -5,7 +5,8 @@ from modules.core.experience import Experience
 
 class ExperienceLoader:
     def __init__(self, db_path, experience_id=None):
-        print(f"Initializing ExperienceLoader for experience ID: {experience_id}")
+        print(
+            f"Initializing ExperienceLoader for experience ID: {experience_id}")
         self.db_path = db_path
         self.experience_id = experience_id
         self.conn = sqlite3.connect(self.db_path)
@@ -70,7 +71,7 @@ class ExperienceLoader:
             self.cursor.execute(
                 """
                 SELECT A.assignment_id, A.action, A.sorting_criterion, A.assignment_method,
-                       A.number_of_cores, A.solving_time_limit_MILP, A.solver_name, A.result_file_path, A.taskset_id
+                       A.number_of_cores, A.threads, A.solving_time_limit_MILP, A.solver_name, A.result_file_path, A.taskset_id # Load threads
                 FROM Assignments A
                 JOIN ExperienceAssignments EA ON A.assignment_id = EA.assignment_id
                 WHERE EA.experience_id = ? AND A.assignment_id = ?
@@ -89,14 +90,16 @@ class ExperienceLoader:
                         "assignment_method": assignment_data[3],
                         "number_of_cores": assignment_data[4],
                         "assignment_options": {
-                            "solving_time_limit_MILP": assignment_data[5],
-                            "solver_name": assignment_data[6]
+                            "threads": assignment_data[5],
+                            "solving_time_limit_MILP": assignment_data[6],
+                            "solver_name": assignment_data[7]
                         }
                     },
-                    "result_file_path": assignment_data[7]
+                    "result_file_path": assignment_data[8]
                 }
                 # Ajouter taskset avec action "open" et scheduling avec action "none"
-                taskset_params = {"action": "open", "taskset_id": assignment_data[8]}
+                taskset_params = {"action": "open",
+                                  "taskset_id": assignment_data[9]}
                 scheduling_params = {"action": "none"}
 
         elif config_type == "scheduling":
@@ -104,7 +107,7 @@ class ExperienceLoader:
             self.cursor.execute(
                 """
                 SELECT S.scheduling_id, S.action, S.scheduling_algorithm, S.non_preemption_time_variant2,
-                       S.solving_time_limit_MILP, S.solver_name, S.result_file_path, S.taskset_id, S.assignment_id
+                       S.threads, S.solving_time_limit_MILP, S.solver_name, S.result_file_path, S.taskset_id, S.assignment_id # Load threads
                 FROM Schedulings S
                 JOIN ExperienceSchedulings ES ON S.scheduling_id = ES.scheduling_id
                 WHERE ES.experience_id = ? AND S.scheduling_id = ?
@@ -123,15 +126,18 @@ class ExperienceLoader:
                         "scheduling_algorithm": scheduling_data[2],
                         "scheduling_options": {
                             "non_preemption_time_variant2": scheduling_data[3],
-                            "solving_time_limit_MILP": scheduling_data[4],
-                            "solver_name": scheduling_data[5]
+                            "threads": scheduling_data[4],
+                            "solving_time_limit_MILP": scheduling_data[5],
+                            "solver_name": scheduling_data[6]
                         }
                     },
-                    "result_file_path": scheduling_data[6]
+                    "result_file_path": scheduling_data[7]
                 }
                 # Ajouter taskset et assignment avec action "open"
-                taskset_params = {"action": "open", "taskset_id": scheduling_data[7]}
-                assignment_params = {"action": "open", "assignment_id": scheduling_data[8]}
+                taskset_params = {"action": "open",
+                                  "taskset_id": scheduling_data[8]}
+                assignment_params = {"action": "open",
+                                     "assignment_id": scheduling_data[9]}
 
         # Retourner None si aucun paramètre n'a été chargé
         if taskset_params is None and assignment_params is None and scheduling_params is None:
@@ -238,7 +244,8 @@ class ExperienceLoader:
         # Trier numériquement les assignment_id
         assignment_ids.sort(key=lambda x: int(x.split('_')[1]))
 
-        print(f"Assignment IDs for experience ID {experience_id}: {assignment_ids}")
+        print(
+            f"Assignment IDs for experience ID {experience_id}: {assignment_ids}")
         return assignment_ids
 
     def get_scheduling_ids_for_experience(self, experience_id):
@@ -257,7 +264,8 @@ class ExperienceLoader:
         # Trier numériquement les scheduling_id
         scheduling_ids.sort(key=lambda x: int(x.split('_')[1]))
 
-        print(f"Scheduling IDs for experience ID {experience_id}: {scheduling_ids}")
+        print(
+            f"Scheduling IDs for experience ID {experience_id}: {scheduling_ids}")
         return scheduling_ids
 
     def close_connection(self):

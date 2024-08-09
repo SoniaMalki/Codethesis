@@ -94,11 +94,9 @@ class ConfigGenerator:
         # Initialiser les index globalement
         self.taskset_index = self.get_last_index("Tasksets", "taskset_id") + 1
         self.assignment_index = self.get_last_index(
-            "Assignments", "assignment_id"
-        ) + 1
+            "Assignments", "assignment_id") + 1
         self.scheduling_index = self.get_last_index(
-            "Schedulings", "scheduling_id"
-        ) + 1
+            "Schedulings", "scheduling_id") + 1
         print("ConfigGenerator initialized successfully")
 
     def create_tables(self):
@@ -157,6 +155,10 @@ class ConfigGenerator:
                 solving_time_limit_MILP INT,
                 solver_name VARCHAR,
                 result_file_path TEXT,
+                cluster TEXT DEFAULT '',  
+                threads INT DEFAULT 0,     
+                slurm_time TEXT DEFAULT '', 
+                slurm_memory TEXT DEFAULT '',
                 FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id),
                 UNIQUE (
                     taskset_id,
@@ -183,6 +185,10 @@ class ConfigGenerator:
                 solving_time_limit_MILP INT,
                 solver_name VARCHAR,
                 result_file_path TEXT,
+                cluster TEXT DEFAULT '',   
+                threads INT DEFAULT 0,     
+                slurm_time TEXT DEFAULT '', 
+                slurm_memory TEXT DEFAULT '',
                 FOREIGN KEY (assignment_id) REFERENCES Assignments(assignment_id),
                 FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id),
                 UNIQUE (
@@ -387,7 +393,8 @@ class ConfigGenerator:
                         )
         self.conn.commit()
         print(
-            f"Taskset config generation for experience {experience_id} completed")
+            f"Taskset config generation for experience {experience_id} completed"
+        )
 
     def get_assignment_id(self, taskset_id, sorting, method, cores, solving_time, solver_name):
         """Récupère l'ID d'un assignment existant en fonction de ses paramètres."""
@@ -451,8 +458,8 @@ class ConfigGenerator:
                             """
                             INSERT OR IGNORE INTO Assignments (
                                 assignment_id, taskset_id, action, sorting_criterion,
-                                assignment_method, number_of_cores, solving_time_limit_MILP, solver_name, result_file_path
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                assignment_method, number_of_cores, solving_time_limit_MILP, solver_name, result_file_path, cluster, threads, slurm_time, slurm_memory
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
                                 # Nouvel ID d'assignment
@@ -465,6 +472,10 @@ class ConfigGenerator:
                                 solving_time,
                                 solver_name,
                                 "",
+                                '',
+                                0,
+                                '',
+                                ''
                             ),
                         )
 
@@ -566,8 +577,8 @@ class ConfigGenerator:
                             """
                             INSERT OR IGNORE INTO Schedulings (
                                 scheduling_id, assignment_id, taskset_id, action, scheduling_algorithm,
-                                non_preemption_time_variant2, solving_time_limit_MILP, solver_name, result_file_path
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                non_preemption_time_variant2, solving_time_limit_MILP, solver_name, result_file_path, cluster, threads, slurm_time, slurm_memory
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             """,
                             (
                                 # Nouvel ID de scheduling
@@ -580,6 +591,10 @@ class ConfigGenerator:
                                 solving_time,
                                 solver_name,
                                 "",
+                                '',
+                                0,
+                                '',
+                                ''
                             ),
                         )
 

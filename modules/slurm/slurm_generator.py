@@ -69,6 +69,7 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
             "lm": 5,
             "nic": 5,
             "her": 5,
+            "sonia": 3
         }
 
         # Récupérer le hostname de la machine
@@ -111,15 +112,15 @@ done
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
 #SBATCH --output={self.output_dir / config_type / f"output_{config_key}.txt"}
-#SBATCH --ntasks={optimal_threads}  
-#SBATCH --cpus-per-task=1 
+#SBATCH --ntasks={optimal_threads}
+#SBATCH --cpus-per-task=1
 #SBATCH --time={job_time}
-#SBATCH --mem={slurm_memory} 
+#SBATCH --mem={slurm_memory}
 
 # Charger les modules nécessaires
 {self.modules}
 
-python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key} 
+python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key}
 """
 
     def determine_optimal_resources(self, config_params, config_type):
@@ -127,6 +128,9 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
         cluster_name = next(
             (cluster for cluster in self.cluster_cores if cluster in hostname), None
         )
+
+        print(f"Cluster name: {cluster_name}")
+        print(f"Algorithm : {config_params.get('assignment_method', '')}")
 
         if cluster_name is None:
             print(
@@ -139,7 +143,7 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
             if "Wmin" in config_params.get('assignment_method', "") or "Citta" in config_params.get('assignment_method', ""):
                 optimal_cores = min(available_cores, 8)
             else:
-                optimal_cores = min(available_cores, 4)
+                optimal_cores = min(available_cores, 1)
         elif config_type == "scheduling":
             if "Rhma" in config_params.get('scheduling_algorithm', ""):
                 optimal_cores = min(available_cores, 8)
@@ -216,7 +220,8 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
         cluster_mapping = {
             "lm": "lemaitre4",
             "nic": "nic5",
-            "her": "hercules"
+            "her": "hercules",
+            "sonia": "sonia"
         }
 
         for key, value in cluster_mapping.items():
@@ -239,9 +244,9 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
 
         try:
             # Use db_utils.cursor here to execute the SQL command
-            db_utils.cursor.execute(f""" 
+            db_utils.cursor.execute(f"""
                 UPDATE {table_name}
-                SET cluster = ?, 
+                SET cluster = ?,
                     threads = ?,
                     slurm_time = ?,
                     slurm_memory = ?
@@ -424,8 +429,10 @@ python3 {self.main_path}/main.py analyze_results {self.experience_id}
 #SBATCH --time={self.slurm_parameters.get(f"{config_type}_time", "02:00:00")}
 #SBATCH --mem=2G
 
-for config_key in {" ".join(batch_configs.keys())}; do # Séparer par des espaces
-  sbatch {individual_slurm_dir / f"$config_key.slurm"} # Utiliser le chemin complet
+# Séparer par des espaces
+for config_key in {" ".join(batch_configs.keys())}; do
+  # Utiliser le chemin complet
+  sbatch {individual_slurm_dir / f"$config_key.slurm"}
 done
 
 {self.get_wait_for_jobs_script(config_type, param_exclude)}

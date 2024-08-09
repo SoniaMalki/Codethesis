@@ -1,8 +1,11 @@
-from pathlib import Path
-from datetime import time
+import os
 import json
 import socket
+from pathlib import Path
+from datetime import time
+
 from modules.core.experience_loader import ExperienceLoader
+from modules.utils.db_utils import DBUtils
 
 
 class SlurmGenerator:
@@ -97,11 +100,7 @@ while [ $(squeue -u $USER -h -t RUNNING,PENDING -o "%A %j" | grep '{job_name}' {
 done
 """
 
-    def get_slurm_content(self, config_key, config_type, optimal_threads):
-        # Convertir le temps du job en objet time
-        job_time = time.fromisoformat(
-            self.slurm_parameters.get(f"{config_type}_time", "02:00:00")
-        ).strftime("%H:%M:%S")
+    def get_slurm_content(self, config_key, config_type, optimal_threads, job_time, slurm_memory):
 
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
@@ -109,7 +108,7 @@ done
 #SBATCH --ntasks={optimal_threads}  
 #SBATCH --cpus-per-task=1 
 #SBATCH --time={job_time}
-#SBATCH --mem={self.slurm_parameters.get(f"{config_type}_mem", "8G")}
+#SBATCH --mem={slurm_memory} 
 
 # Charger les modules nécessaires
 {self.modules}
@@ -161,27 +160,92 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
                     config_params, config_type)
                 # Set threads in assignment_options
                 config_params['assignment_options']['threads'] = optimal_threads
+
+                # Get Slurm time and memory
+                job_time = self.slurm_parameters.get(
+                    "assignment_time", "02:00:00")
+                slurm_memory = self.slurm_parameters.get(
+                    "assignment_mem", "8G")
             elif config_type == "scheduling":
                 config_params = experience.scheduling_parameters['parameters']
                 optimal_threads = self.determine_optimal_resources(
                     config_params, config_type)
                 # Set threads in scheduling_options
                 config_params['scheduling_options']['threads'] = optimal_threads
+
+                # Get Slurm time and memory
+                job_time = self.slurm_parameters.get(
+                    "scheduling_time", "02:00:00")
+                slurm_memory = self.slurm_parameters.get(
+                    "scheduling_mem", "8G")
             else:
                 config_params = {}
                 optimal_threads = 1  # Default to 1 if no parameters found
+
+                # Get Slurm time and memory (default values)
+                job_time = "02:00:00"
+                slurm_memory = "8G"
 
             slurm_file = self.slurm_dir / \
                 config_type / f"{config_key}.slurm"
 
             with open(slurm_file, "w") as f:
                 f.write(self.get_slurm_content(
-                    config_key, config_type, optimal_threads))
+                    config_key, config_type, optimal_threads, job_time, slurm_memory))
 
             print(f"SLURM file for {config_key} generated at {slurm_file}")
+
+            # Update database with cluster, threads, time, and memory information
+            self.update_database_with_slurm_info(
+                config_key, config_type, optimal_threads, job_time, slurm_memory)
         else:
             print(
                 f"Skipping SLURM generation for {config_key} - result file already exists")
+
+    def update_database_with_slurm_info(self, config_key, config_type, threads, slurm_time, slurm_memory):
+        """Updates the Assignments or Schedulings table with cluster, threads, time limit, and memory."""
+
+        hostname = socket.gethostname()
+
+        cluster_mapping = {
+            "lm": "lemaitre4",
+            "nic": "nic5",
+            "her": "hercules"
+        }
+
+        for key, value in cluster_mapping.items():
+            if hostname.startswith(key):
+                cluster_name = value
+                break
+        else:
+            cluster_name = hostname
+
+        db_utils = DBUtils(self.db_path)  # Create DBUtils instance
+        if config_type == "assignment":
+            table_name = "Assignments"
+            id_column = "assignment_id"
+        elif config_type == "scheduling":
+            table_name = "Schedulings"
+            id_column = "scheduling_id"
+        else:
+            print(f"Error: Invalid config_type: {config_type}")
+            return
+
+        try:
+            # Use db_utils.cursor here to execute the SQL command
+            db_utils.cursor.execute(f""" 
+                UPDATE {table_name}
+                SET cluster = ?, 
+                    threads = ?,
+                    slurm_time = ?,
+                    slurm_memory = ?
+                WHERE {id_column} = ?
+            """, (cluster_name, threads, slurm_time, slurm_memory, config_key))
+            db_utils.conn.commit()  # Commit using the DBUtils connection
+            print(
+                f"Updated {table_name} table with Slurm info for {config_key}")
+        except Exception as e:
+            print(f"Error updating {table_name} table: {e}")
 
     def write_master_slurm(self, config_type):
         """Write master SLURM file for a configuration type."""

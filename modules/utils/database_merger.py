@@ -58,24 +58,60 @@ class DatabaseMerger:
             primary_key_column = columns[0]
             primary_key_value = row[0]
 
-            # Get the index of 'result_file_path' in the v2 row
+            # Get the indices of the relevant columns in the v2 row
             result_file_path_index = columns.index('result_file_path')
+            cluster_index = columns.index('cluster')
+            threads_index = columns.index('threads')
+            slurm_time_index = columns.index('slurm_time')
+            slurm_memory_index = columns.index('slurm_memory')
 
             self.cursor_merged.execute(
-                f"SELECT result_file_path FROM {table_name} WHERE {primary_key_column} = ?",
+                f"SELECT result_file_path, cluster, threads, slurm_time, slurm_memory FROM {table_name} WHERE {primary_key_column} = ?",
                 (primary_key_value,),
             )
-            existing_result_file_path = self.cursor_merged.fetchone()
+            existing_row = self.cursor_merged.fetchone()
 
-            if existing_result_file_path:
-                # Update only if v2 has a non-empty result_file_path and v1 (merged) is empty
-                if row[result_file_path_index] and not existing_result_file_path[0]:
+            if existing_row:
+                # Row exists, update columns with non-empty values from v2
+                merged_result_file_path, merged_cluster, merged_threads, merged_slurm_time, merged_slurm_memory = existing_row
+
+                # Choose the non-empty 'result_file_path', prioritizing v2 if both are non-empty
+                if row[result_file_path_index] and not merged_result_file_path:
                     self.cursor_merged.execute(
                         f"UPDATE {table_name} SET result_file_path = ? WHERE {primary_key_column} = ?",
                         (row[result_file_path_index], primary_key_value),
                     )
+
+                # Update cluster if v2 value is not empty
+                if row[cluster_index]:
+                    self.cursor_merged.execute(
+                        f"UPDATE {table_name} SET cluster = ? WHERE {primary_key_column} = ?",
+                        (row[cluster_index], primary_key_value),
+                    )
+
+                # Update threads if v2 value is not empty
+                if row[threads_index] is not None:  # Use 'is not None' for threads as it can be 0
+                    self.cursor_merged.execute(
+                        f"UPDATE {table_name} SET threads = ? WHERE {primary_key_column} = ?",
+                        (row[threads_index], primary_key_value),
+                    )
+
+                # Update slurm_time if v2 value is not empty
+                if row[slurm_time_index]:
+                    self.cursor_merged.execute(
+                        f"UPDATE {table_name} SET slurm_time = ? WHERE {primary_key_column} = ?",
+                        (row[slurm_time_index], primary_key_value),
+                    )
+
+                # Update slurm_memory if v2 value is not empty
+                if row[slurm_memory_index]:
+                    self.cursor_merged.execute(
+                        f"UPDATE {table_name} SET slurm_memory = ? WHERE {primary_key_column} = ?",
+                        (row[slurm_memory_index], primary_key_value),
+                    )
+
             else:
-                # Insert the new row from v2 if it doesn't exist in the merged database
+                # Row doesn't exist, insert the new row from v2
                 insert_query = (
                     f"INSERT INTO {table_name} ({','.join(columns)}) VALUES ("
                     + ", ".join(["?"] * len(row))

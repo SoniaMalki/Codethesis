@@ -69,6 +69,16 @@ def main(action, experience_id, experience_action=None):
     if action == "update_db_schema":
         print("Updating database schema...")
         db_utils = DBUtils(db_path)
+
+        db_utils.add_column(table_name="Tasksets",
+                            column_name="cluster", column_type="TEXT")
+        db_utils.add_column(table_name="Tasksets",
+                            column_name="threads", column_type="INT")
+        db_utils.add_column(table_name="Tasksets",
+                            column_name="slurm_time", column_type="TEXT")
+        db_utils.add_column(table_name="Tasksets",
+                            column_name="slurm_memory", column_type="TEXT")
+
         db_utils.add_column(table_name="Assignments",
                             column_name="cluster", column_type="TEXT")
         db_utils.add_column(table_name="Assignments",

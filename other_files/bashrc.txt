@@ -29,8 +29,8 @@ export PID_COL_SIZE=8
 export NAME_COL_SIZE=32
 export ST_COL_SIZE=2
 export TIME_COL_SIZE=8
-export NODES_COL_SIZE=4
-export NODELIST_COL_SIZE=40
+export NODES_COL_SIZE=2
+export NODELIST_COL_SIZE=20
 
 # Alias pour squeue -u $USER
 alias sq='squeue -u $USER'

@@ -107,7 +107,7 @@ class ExperienceLoader:
             self.cursor.execute(
                 """
                 SELECT S.scheduling_id, S.action, S.scheduling_algorithm, S.non_preemption_time_variant2,
-                       S.threads, S.solving_time_limit_MILP, S.solver_name, S.result_file_path, S.taskset_id, S.assignment_id # Load threads
+                       S.threads, S.solving_time_limit_MILP, S.solver_name, S.result_file_path, S.taskset_id, S.assignment_id
                 FROM Schedulings S
                 JOIN ExperienceSchedulings ES ON S.scheduling_id = ES.scheduling_id
                 WHERE ES.experience_id = ? AND S.scheduling_id = ?

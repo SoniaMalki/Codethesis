@@ -58,6 +58,9 @@ class DatabaseMerger:
             primary_key_column = columns[0]
             primary_key_value = row[0]
 
+            # Get the index of 'result_file_path' in the v2 row
+            result_file_path_index = columns.index('result_file_path')
+
             self.cursor_merged.execute(
                 f"SELECT result_file_path FROM {table_name} WHERE {primary_key_column} = ?",
                 (primary_key_value,),
@@ -66,10 +69,10 @@ class DatabaseMerger:
 
             if existing_result_file_path:
                 # Update only if v2 has a non-empty result_file_path and v1 (merged) is empty
-                if row[-1] and not existing_result_file_path[0]:
+                if row[result_file_path_index] and not existing_result_file_path[0]:
                     self.cursor_merged.execute(
                         f"UPDATE {table_name} SET result_file_path = ? WHERE {primary_key_column} = ?",
-                        (row[-1], primary_key_value),
+                        (row[result_file_path_index], primary_key_value),
                     )
             else:
                 # Insert the new row from v2 if it doesn't exist in the merged database

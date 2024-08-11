@@ -322,7 +322,7 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
 #SBATCH --job-name=master_job
 #SBATCH --output={self.output_dir / f"master_job.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time=00:02:00
+#SBATCH --time=2-00:00:00
 #SBATCH --mem=2G
 """
                 )
@@ -426,7 +426,7 @@ python3 {self.main_path}/main.py analyze_results {self.experience_id}
 #SBATCH --job-name={batch_name}
 #SBATCH --output={self.output_dir / config_type / f"output_{batch_name}.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time={self.slurm_parameters.get(f"{config_type}_time", "02:00:00")}
+#SBATCH --time={"2-00:00:00"}
 #SBATCH --mem=2G
 
 # Séparer par des espaces

@@ -2273,7 +2273,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_assignment_wmin": {
+  "full_experience_prime_1_reduced_only_assignment_wmin": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2309,7 +2309,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling": {
+  "full_experience_prime_1_reduced_only_scheduling": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2345,7 +2345,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_simple_scheduling": {
+  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2381,7 +2381,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_simple_scheduling_edf": {
+  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling_edf": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2417,7 +2417,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_simple_scheduling_edf_v1": {
+  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling_edf_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2453,7 +2453,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_simple_scheduling_dm": {
+  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling_dm": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2489,7 +2489,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_simple_scheduling_dm_v1": {
+  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling_dm_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2525,7 +2525,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_variant_2": {
+  "full_experience_prime_1_reduced_only_scheduling_variant_2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2561,7 +2561,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_variant_2_edf_v2": {
+  "full_experience_prime_1_reduced_only_scheduling_variant_2_edf_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2597,7 +2597,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_variant_2_dm_v2": {
+  "full_experience_prime_1_reduced_only_scheduling_variant_2_dm_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2633,7 +2633,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_combined": {
+  "full_experience_prime_1_reduced_only_scheduling_combined": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2669,7 +2669,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_combined_sorting_criterion_number_of_tasks": {
+  "full_experience_prime_1_reduced_only_scheduling_combined_sorting_criterion_number_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2705,7 +2705,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_combined_sorting_criterion_wcet_of_tasks": {
+  "full_experience_prime_1_reduced_only_scheduling_combined_sorting_criterion_wcet_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2741,7 +2741,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_combined_sorting_criterion_system_utilization": {
+  "full_experience_prime_1_reduced_only_scheduling_combined_sorting_criterion_system_utilization": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2777,7 +2777,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_rhma": {
+  "full_experience_prime_1_reduced_only_scheduling_rhma": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2813,7 +2813,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_number_of_tasks": {
+  "full_experience_prime_1_reduced_only_scheduling_rhma_sorting_criterion_number_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2849,7 +2849,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_wcet_of_tasks": {
+  "full_experience_prime_1_reduced_only_scheduling_rhma_sorting_criterion_wcet_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2885,7 +2885,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_system_utilization": {
+  "full_experience_prime_1_reduced_only_scheduling_rhma_sorting_criterion_system_utilization": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -2921,6 +2921,4 @@
       "scheduling_mem": "32G"
     }
   }
-
-
 }

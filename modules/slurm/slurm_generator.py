@@ -9,7 +9,7 @@ from modules.utils.db_utils import DBUtils
 
 
 class SlurmGenerator:
-    def __init__(self, main_path, generation_path, db_path, experience_id, experience_data, batch_size=100):
+    def __init__(self, main_path, generation_path, db_path, experience_id, experience_data, batch_size=300):
         print("Initializing SlurmGenerator")
         self.main_path = Path(main_path)
         self.generation_path = Path(generation_path) / experience_id

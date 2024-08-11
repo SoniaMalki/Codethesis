@@ -107,6 +107,7 @@ rm_res() {
 
 alias rmres=rm_res
 
+alias scr=squeue -u $USER -h -t PENDING -o %i | xargs scancel
 
 
 

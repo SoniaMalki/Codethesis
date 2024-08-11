@@ -41,7 +41,7 @@ for item in "${EXCLUDE_ITEMS[@]}"; do
 done
 
 # Simuler le transfert pour estimer la taille des données
-RSYNC_DRY_RUN_CMD="rsync -av --dry-run --stats ${EXCLUDES[@]} $SOURCE $DESTINATION"
+RSYNC_DRY_RUN_CMD="rsync -avz --dry-run --stats ${EXCLUDES[@]} $SOURCE $DESTINATION"
 DRY_RUN_OUTPUT=$(eval $RSYNC_DRY_RUN_CMD)
 
 # Extraire la taille totale des données à transférer
@@ -54,7 +54,7 @@ if [[ "$confirm" != "y" ]]; then
     exit 1
 fi
 
-RSYNC_CMD="rsync -av --info=progress2 ${EXCLUDES[@]} $SOURCE $DESTINATION"
+RSYNC_CMD="rsync -avz --info=progress2 --no-whole-file --no-checksum -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no' ${EXCLUDES[@]} $SOURCE $DESTINATION"
 
 echo "Executing: $RSYNC_CMD"
 eval $RSYNC_CMD

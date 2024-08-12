@@ -41,6 +41,11 @@ class ResultAnalyzer:
                 on=["taskset_id", "assignment_id"],
                 suffixes=("_assignment", "_scheduling"),
             )
+        else:
+            self.df = self.df.rename(columns={
+                "mean_success": "mean_success_assignment",
+                "mean_computation_time": "mean_computation_time_assignment"
+            })
 
         print("Calculating task_core_ratio...")
         self.df["task_core_ratio"] = (
@@ -55,7 +60,7 @@ class ResultAnalyzer:
         if not self.df_schedulings.empty:
             self.analyze_scheduling()
             self.analyze_scheduling_by_assignment()
-        self.analyze_assignment_success()
+            self.analyze_assignment_success()
         print("Analysis completed.")
 
     def analyze_assignment(self):

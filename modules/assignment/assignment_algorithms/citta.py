@@ -26,7 +26,7 @@ class Citta:
             f"Citta utilisant le solveur : {self.solver_name} avec thread {self.threads}")
 
         if self.solver_name == "gurobi":
-            self.solver = GUROBI_CMD(msg=0, options=[("OutputFlag", 0)])
+            self.solver = GUROBI_CMD(msg=1, options=[("OutputFlag", 1)])
         elif self.solver_name == "glpk":
             self.solver = GLPK_CMD(msg=0)
         else:

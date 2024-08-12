@@ -368,13 +368,12 @@ class Rhma:
                                 m[i, a, k, b] >= x[i, a, j, t] + x[k, b, l, t] - 1)
 
             # Constraint 17
-            # print("   Creating constraint 17")
-            for k in range(i + 1, len(self.taskset)):
-                if k in s_i_h_for_h:
-                    for a in activations:
-                        for b in s_i_h_for_h[k]:
-                            if not set(r_i_a_h_for_h[i][a]).intersection(r_i_a_h_for_h[k][b]):
-                                constraint_17.append(m[i, a, k, b] == 0)
+            for k in range(i + 1, len(s_i_h_for_h)):
+                activations_i = s_i_h_for_h[i]
+                activations_k = s_i_h_for_h[k]
+                for a, b in product(activations_i, activations_k):
+                    if not set(r_i_a_h_for_h[i][a]).intersection(r_i_a_h_for_h[k][b]):
+                        constraint_17.append(m[i, a, k, b] == 0)
 
         # print("LP Constraints created.")
         return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24

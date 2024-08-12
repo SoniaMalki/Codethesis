@@ -1,5 +1,6 @@
 import os
 import pickle
+import socket
 
 from modules.utils.db_utils import DBUtils
 
@@ -11,6 +12,8 @@ class SchedulingLoaderSaver:
             "tests" / "results_test" / "expected_schedulings"
 
         self.db_utils = DBUtils(db_path=db_path)
+        self.hostname = socket.gethostname()
+        print(f"Hostname: {self.hostname}")
 
     def load(self, scheduling_id):
         scheduling_filename = f"{scheduling_id}.pkl"
@@ -33,9 +36,9 @@ class SchedulingLoaderSaver:
                                                   file_path=scheduling_filename)
 
     def load_test_expected_result(self, scheduling_id, experience, scheduling_algorithm, non_preemption_time_variant2):
-
-        scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}_{non_preemption_time_variant2}.pklr"
+        scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}_{non_preemption_time_variant2}_{self.hostname}.pklr"
         filepath = self.expected_scheduling_path / scheduling_filename
+        print(f"scheduling_filename: {scheduling_filename}")
         if os.path.exists(filepath):
             with open(filepath, "rb") as f:
                 return pickle.load(f)
@@ -45,6 +48,6 @@ class SchedulingLoaderSaver:
     def save_test_expected_result(self, scheduling_obj, scheduling_id, experience, scheduling_algorithm, non_preemption_time_variant2):
         if scheduling_obj is not None:
             os.makedirs(self.expected_scheduling_path, exist_ok=True)
-            scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}_{non_preemption_time_variant2}.pklr"
+            scheduling_filename = f"expected_scheduling_results_{experience}_{scheduling_algorithm}_{non_preemption_time_variant2}_{self.hostname}.pklr"
             with open(self.expected_scheduling_path / scheduling_filename, 'wb') as f:
                 pickle.dump(scheduling_obj, f)

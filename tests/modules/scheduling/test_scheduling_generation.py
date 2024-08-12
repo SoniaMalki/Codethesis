@@ -275,7 +275,8 @@ def test_scheduling(scheduling_algorithm, experience, non_preemption_time_varian
     input_data = prepare_input_data(
         experience, scheduling_algorithm, non_preemption_time_variant2)
     taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters = input_data
-    scheduling_loader_saver = SchedulingLoaderSaver(Path(os.getcwd()))
+    scheduling_loader_saver = SchedulingLoaderSaver(
+        Path(os.getcwd()), db_path="")
 
     if taskset_action == "manual":
         taskset = create_taskset_manual(taskset_id, taskset_parameters)

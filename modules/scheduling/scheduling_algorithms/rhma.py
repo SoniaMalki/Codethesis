@@ -67,7 +67,7 @@ class Rhma:
             self.solver = GUROBI_CMD(msg=0, options=[
                 ("OutputFlag", 0),
                 ("Seed", self.seed)
-            ] if self.test_mode else [("OutputFlag", 0)])
+            ] if self.test_mode else [("OutputFlag", 0), ("Threads", self.threads)])
         elif self.solver_name == "glpk":
             self.solver = GLPK_CMD(msg=0)
         else:
@@ -396,9 +396,6 @@ class Rhma:
                 if self.solver_name == "gurobi":
                     self.solver.options.append(
                         ("TimeLimit", self.solving_time_limit_MILP))
-
-            if self.solver_name == "gurobi":
-                self.solver.options.append(("Threads", self.threads))
 
             print(
                 f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")

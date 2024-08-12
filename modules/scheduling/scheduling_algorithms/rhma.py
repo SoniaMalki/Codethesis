@@ -105,19 +105,12 @@ class Rhma:
     def generate_max_I(self):
         print("----- Generating maxI -----")
         maxI = 0
-        for i in range(len(self.taskset)):
-            # print(f"   Processing task: {i}")
-            for j in range(len(self.taskset)):
-                if i != j and self.o_i_j[i] != self.o_i_j[j] and self.taskset.single_interference[i] != 0 and self.taskset.single_interference[j] != 0:
-                    v_j_to_i = self.calculate_activation_pattern(j=j, i=i)
-                    # print(
-                    #     f"      Calculating activation pattern for task {j} to task {i}: {v_j_to_i}")
-                    for a_index, a in enumerate(self.taskset.activation[i]):
-                        maxI += v_j_to_i[a_index] * \
-                            self.taskset[j].single_interference
-        #                 print(
-        #                     f"         Adding interference for activation {a} of task {i}: {v_j_to_i[a_index]} * {self.taskset[j].single_interference}")
-        # print(f"MaxI generated: {maxI}")
+        for i, j in itertools.product(range(len(self.taskset)), repeat=2):
+            if i != j and self.o_i_j[i] != self.o_i_j[j] and self.taskset.single_interference[i] != 0 and self.taskset.single_interference[j] != 0:
+                v_j_to_i = self.calculate_activation_pattern(j=j, i=i)
+                for a_index, a in enumerate(self.taskset.activation[i]):
+                    maxI += v_j_to_i[a_index] * \
+                        self.taskset[j].single_interference
         return maxI
 
     def calculate_activation_pattern(self, j, i):

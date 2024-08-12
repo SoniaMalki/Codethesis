@@ -18,7 +18,9 @@ class Wmin:
 
         # Get thread count from options or default
         self.threads = self.assignment_options.get("threads", 1)
-        if 'threads' in self.assignment_options:
+        if self.threads == None:
+            self.threads = 1
+        if 'threads' in self.assignment_options and self.assignment_options.get("threads", 1) != None:
             print(
                 f"Using thread count from assignment_options: {self.threads}")
         else:

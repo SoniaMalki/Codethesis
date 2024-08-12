@@ -20,7 +20,16 @@ class Citta:
             "solving_time_limit_MILP", None)
 
         self.solver_name = self.assignment_options.get("solver_name", "gurobi")
+
+        # Get thread count from options or default
         self.threads = self.assignment_options.get("threads", 1)
+        if self.threads == None:
+            self.threads = 1
+        if 'threads' in self.assignment_options and self.assignment_options.get("threads", 1) != None:
+            print(
+                f"Using thread count from assignment_options: {self.threads}")
+        else:
+            print(f"Using default thread count: {self.threads}")
 
         print(
             f"Citta utilisant le solveur : {self.solver_name} avec thread {self.threads}")

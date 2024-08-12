@@ -49,13 +49,23 @@ class Rhma:
 
         self.solver_name = self.scheduling_options.get(
             "solver_name", "gurobi")
-        self.threads = self.scheduling_options.get("threads", 1)
 
-        print(f"Rhma utilisant le solveur : {self.solver_name}")
+        # Get thread count from options or default
+        self.threads = self.scheduling_options.get("threads", 1)
+        if self.threads == None:
+            self.threads = 1
+        if 'threads' in self.scheduling_options and self.scheduling_options.get("threads", 1) != None:
+            print(
+                f"Using thread count from scheduling_options: {self.threads}")
+        else:
+            print(f"Using default thread count: {self.threads}")
+
+        print(
+            f"Rhma utilisant le solveur : {self.solver_name} avec thread {self.threads}")
 
         if self.solver_name == "gurobi":
-            self.solver = GUROBI_CMD(msg=0, options=[
-                ("OutputFlag", 0),
+            self.solver = GUROBI_CMD(msg=1, options=[
+                ("OutputFlag", 1),
                 ("Seed", self.seed)
             ] if self.test_mode else [("OutputFlag", 0)])
         elif self.solver_name == "glpk":

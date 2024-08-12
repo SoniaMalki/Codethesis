@@ -362,12 +362,14 @@ class Rhma:
                         for b in b_activations:
                             constraint_23.append(
                                 m[i, a, k, b] == m[k, b, i, a])
-                            for j in range(self.number_of_cores):
-                                for l in range(self.number_of_cores):
-                                    if j != l:
-                                        for t in self.T_h[h]:
-                                            constraint_22.append(
-                                                m[i, a, k, b] >= x[i, a, j, t] + x[k, b, l, t] - 1)
+
+            for k, b_activations in s_i_h_for_h.items():
+                if i != k:
+                    for a, b, j, l, t in product(activations, b_activations, range(self.number_of_cores), range(self.number_of_cores), self.T_h[h]):
+                        if j != l:
+                            constraint_22.append(
+                                m[i, a, k, b] >= x[i, a, j, t] + x[k, b, l, t] - 1)
+
             # Constraint 17
             # print("   Creating constraint 17")
             for k in range(i + 1, len(self.taskset)):

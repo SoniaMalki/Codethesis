@@ -355,16 +355,13 @@ class Rhma:
 
                     constraint_18.append(left_side == right_side)
 
-            # Constraint 22 and Constraint 23
+            # Contrainte 23 avec itertools.product pour optimiser la boucle
             for k, b_activations in s_i_h_for_h.items():
                 if i != k:
-                    for a in activations:
-                        for b in b_activations:
-                            constraint_23.append(
-                                m[i, a, k, b] == m[k, b, i, a])
+                    for a, b in product(activations, b_activations):
+                        constraint_23.append(
+                            m[i, a, k, b] == m[k, b, i, a])
 
-            for k, b_activations in s_i_h_for_h.items():
-                if i != k:
                     for a, b, j, l, t in product(activations, b_activations, range(self.number_of_cores), range(self.number_of_cores), self.T_h[h]):
                         if j != l:
                             constraint_22.append(

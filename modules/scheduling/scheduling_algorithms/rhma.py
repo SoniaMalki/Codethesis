@@ -234,22 +234,38 @@ class Rhma:
         # Variables
 
         print(f"----- Creating LP variables for busy period {h} -----")
-        x = {}
-        m = {}
-        w = {}
-        for i in range(len(self.taskset)):
-            for a in self.S_i_h[i][h]:
-                w[i, a] = LpVariable(
-                    f"w_{i}_{a}", lowBound=0, cat='Integer')
-                for j in range(self.number_of_cores):
-                    for t in self.T_h[h]:
-                        x[i, a, j, t] = LpVariable(
-                            f"x_{i}_{a}_{j}_{t}", cat='Binary')
 
-                for k in range(len(self.taskset)):
-                    for b in self.S_i_h[k][h]:
-                        m[i, a, k,
-                          b] = LpVariable(f"m_{i}_{a}_{k}_{b}", cat='Binary')
+        w = LpVariable.dicts(
+            "w",
+            [(i, a) for i in range(len(self.taskset))
+             for a in self.S_i_h[i][h]],
+            lowBound=0,
+            cat='Integer'
+        )
+
+        x = LpVariable.dicts(
+            "x",
+            [(i, a, j, t)
+             for i in range(len(self.taskset))
+             for a in self.S_i_h[i][h]
+             for j, t in product(
+                range(self.number_of_cores),
+                self.T_h[h]
+            )
+            ],
+            cat='Binary'
+        )
+
+        m = LpVariable.dicts(
+            "m",
+            [(i, a, k, b)
+             for i, k in product(range(len(self.taskset)), repeat=2)
+             for a in self.S_i_h[i][h]
+             for b in self.S_i_h[k][h]
+             ],
+            cat='Binary'
+        )
+
         print("LP Variables created.")
         return x, m, w
 

@@ -156,60 +156,37 @@ class Rhma:
         return o_i_j
 
     def generate_S_i_h(self):
-        # print("----- Generating S_i_h -----")
+        print("----- Generating S_i_h -----")
         S_i_h = [[[] for _ in range(len(self.busy_periods))]
                  for _ in range(len(self.taskset))]
 
-        for i, task_period in enumerate(self.taskset.period):
-            # print(f"   Processing task: {i}, period: {task_period}")
+        for i, h in itertools.product(range(len(self.taskset)), range(len(self.busy_periods))):
+            task_period = self.taskset.period[i]
             for a in self.taskset.activation[i]:
-                # print(f"      Processing activation: {a}")
-                activation_start = ((a-1) * task_period)+1
-                # print(f"         Activation start: {activation_start}")
-                for h, busy_period in enumerate(self.busy_periods):
-                    # print(
-                    #     f"            Checking busy period: {h}, start: {busy_period.start_time}, end: {busy_period.end_time}")
-                    if busy_period.start_time <= activation_start < busy_period.end_time:
-                        S_i_h[i][h].append(a)
-        #                 print(
-        #                     f"               Activation {a} falls within busy period {h}, adding to S_i_h.")
-        # print(f"S_i_h generated: {S_i_h}")
+                activation_start = ((a - 1) * task_period) + 1
+                busy_period = self.busy_periods[h]
+                if busy_period.start_time <= activation_start < busy_period.end_time:
+                    S_i_h[i][h].append(a)
         return S_i_h
 
     def generate_R_i_a_h(self, S_i_h):
-        # print("----- Generating R_i_a_h -----")
+        print("----- Generating R_i_a_h -----")
         R_i_a_h = {}
 
-        for i, task_period in enumerate(self.taskset.period):
-            # print(f"   Processing task: {i}, period: {task_period}")
-            R_i_a_h[i] = {}  # Initialiser le dictionnaire pour la tâche i
-            for h, activations_in_bp in enumerate(S_i_h[i]):
-                # print(f"      Processing busy period {h}: {activations_in_bp}")
-                for a in activations_in_bp:
-                    # print(f"         Processing activation {a}")
-                    if a not in R_i_a_h[i]:
-                        R_i_a_h[i][a] = {}
+        for i, h in itertools.product(range(len(self.taskset)), range(len(self.busy_periods))):
+            R_i_a_h[i] = {}
+            task_period = self.taskset.period[i]
+            for a in S_i_h[i][h]:
+                activation_start = ((a - 1) * task_period) + 1
+                activation_end = a * task_period + 1
+                busy_period = self.busy_periods[h]
 
-                    activation_start = ((a-1) * task_period) + 1
-                    activation_end = ((a) * task_period) + 1
-                    busy_period = self.busy_periods[h]
-                    # print(
-                    #     f"            Activation start: {activation_start}, end: {activation_end}")
-                    # print(
-                    #     f"            Busy period start: {busy_period.start_time}, end: {busy_period.end_time}")
+                intersection_start = max(
+                    activation_start, busy_period.start_time)
+                intersection_end = min(activation_end, busy_period.end_time)
 
-                    intersection_start = max(
-                        activation_start, busy_period.start_time)
-                    intersection_end = min(
-                        activation_end, busy_period.end_time)  # +1 pour inclure la borne de fin
-
-                    R_i_a_h[i][a][h] = list(
-                        range(intersection_start, intersection_end))
-        #             print(
-        #                 f"            Intersection start: {intersection_start}, end: {intersection_end}")
-        #             print(
-        #                 f"            R_i_a_h[{i}][{a}][{h}]: {R_i_a_h[i][a][h]}")
-        # print(f"R_i_a_h generated: {R_i_a_h}")
+                R_i_a_h[i].setdefault(a, {})[h] = list(
+                    range(intersection_start, intersection_end))
         return R_i_a_h
 
     def generate_T_h(self):

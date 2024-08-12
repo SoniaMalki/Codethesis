@@ -53,7 +53,7 @@ class Rhma:
         # Get thread count from options or default
         self.threads = self.scheduling_options.get("threads", 1)
         if self.threads == None:
-            self.threads = 1
+            self.threads = 10
         if 'threads' in self.scheduling_options and self.scheduling_options.get("threads", 1) != None:
             print(
                 f"Using thread count from scheduling_options: {self.threads}")
@@ -64,8 +64,8 @@ class Rhma:
             f"Rhma utilisant le solveur : {self.solver_name} avec thread {self.threads}")
 
         if self.solver_name == "gurobi":
-            self.solver = GUROBI_CMD(msg=1, options=[
-                ("OutputFlag", 1),
+            self.solver = GUROBI_CMD(msg=0, options=[
+                ("OutputFlag", 0),
                 ("Seed", self.seed)
             ] if self.test_mode else [("OutputFlag", 0)])
         elif self.solver_name == "glpk":
@@ -237,22 +237,16 @@ class Rhma:
         m = {}
         w = {}
         for i in range(len(self.taskset)):
-            print(f"   Task {i}")
             for a in self.S_i_h[i][h]:
-                print(f"      Activation {a}")
                 w[i, a] = LpVariable(
                     f"w_{i}_{a}", lowBound=0, cat='Integer')
                 for j in range(self.number_of_cores):
-                    print(f"         Core {j}")
                     for t in self.T_h[h]:
-                        print(f"            Time {t}")
                         x[i, a, j, t] = LpVariable(
                             f"x_{i}_{a}_{j}_{t}", cat='Binary')
 
                 for k in range(len(self.taskset)):
-                    print(f"         Task {k}")
                     for b in self.S_i_h[k][h]:
-                        print(f"            Activation {b}")
                         m[i, a, k,
                           b] = LpVariable(f"m_{i}_{a}_{k}_{b}", cat='Binary')
         print("LP Variables created.")

@@ -136,23 +136,19 @@ class Rhma:
         return v_j_to_i
 
     def generate_o_i_j(self):
-        # print("----- Generating o_i_j -----")
-        o_i_j = []
-        for task_index, task in enumerate(self.taskset):
-            # print(f"   Processing task: {task_index}")
-            core_list = []
-            for core in range(self.number_of_cores):
-                if task_index in self.assignment[core]:
-                    core_list.append(1)
-                    # print(
-                    #     f"      Task {task_index} found on core {core}, adding 1.")
-                else:
-                    core_list.append(0)
-                    # print(
-                    #     f"      Task {task_index} not found on core {core}, adding 0.")
-            o_i_j.append(core_list)
-        #     print(f"      Core list for task {task_index}: {core_list}")
-        # print(f"o_i_j generated: {o_i_j}")
+        print("----- Generating o_i_j -----")
+
+        tasks_per_core = {core: set() for core in range(self.number_of_cores)}
+        for core, tasks in self.assignment.items():
+            tasks_per_core[core].update(tasks)
+
+        o_i_j = [
+            [1 if task_index in tasks_per_core[core] else 0
+             for core in range(self.number_of_cores)]
+            for task_index in range(len(self.taskset))
+        ]
+
+        print(f"o_i_j generated: {o_i_j}")
         return o_i_j
 
     def generate_S_i_h(self):

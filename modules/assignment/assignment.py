@@ -42,3 +42,6 @@ class Assignment:
 
     def add_performances(self, computation_time):
         self.computation_time = computation_time
+
+    def items(self):
+        return enumerate(self.assignment)

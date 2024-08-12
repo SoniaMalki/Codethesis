@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 
+from modules.analysis.analyzers.assignment_success_analyzer import AssignmentSuccessAnalyzer
 from modules.analysis.result_loader import ResultLoader
 from modules.analysis.analyzers.assignment_analyzer import AssignmentAnalyzer
 from modules.analysis.analyzers.scheduling_analyzer import SchedulingAnalyzer
@@ -18,50 +19,65 @@ class ResultAnalyzer:
         self.loader = ResultLoader(
             db_path=db_path, experience_id=experience_id)
 
-        print("Loading results from database")
+        print("Loading results from database...")
         self.taskset_sets, self.assignment_sets, self.scheduling_sets = self.loader.load_results()
 
-        print("Converting results to DataFrame")
+        print("Converting results to DataFrame...")
         self.df_tasksets = pd.DataFrame([vars(t) for t in self.taskset_sets])
         self.df_assignments = pd.DataFrame(
-            [vars(a) for a in self.assignment_sets]
-        )
+            [vars(a) for a in self.assignment_sets])
         self.df_schedulings = pd.DataFrame(
-            [vars(s) for s in self.scheduling_sets]
-        )
+            [vars(s) for s in self.scheduling_sets])
 
-        print("Merging DataFrames")
+        print("Merging DataFrames...")
         self.df = self.df_tasksets.merge(
-            self.df_assignments, on=["taskset_id"], suffixes=("_taskset", "_assignment")
-        ).merge(self.df_schedulings, on=["taskset_id", "assignment_id"], suffixes=("_assignment", "_scheduling"))
+            self.df_assignments,
+            on=["taskset_id"],
+            suffixes=("_taskset", "_assignment"),
+        )
+        if not self.df_schedulings.empty:
+            self.df = self.df.merge(
+                self.df_schedulings,
+                on=["taskset_id", "assignment_id"],
+                suffixes=("_assignment", "_scheduling"),
+            )
 
-        print("Calculating task_core_ratio")
-        self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \
-            self.df["number_of_cores"]  # Calcul du ratio tâches/cœurs
+        print("Calculating task_core_ratio...")
+        self.df["task_core_ratio"] = (
+            self.df["tasks_per_taskset"] / self.df["number_of_cores"]
+        )  # Calcul du ratio tâches/cœurs
 
-        print("ResultAnalyzer initialized successfully")
+        print("ResultAnalyzer initialized successfully.")
 
     def run_analysis(self):
-        print("Running analysis")
+        print("Running analysis...")
         self.analyze_assignment()
-        self.analyze_scheduling()
-        self.analyze_scheduling_by_assignment()
-        print("Analysis completed")
+        if not self.df_schedulings.empty:
+            self.analyze_scheduling()
+            self.analyze_scheduling_by_assignment()
+        self.analyze_assignment_success()
+        print("Analysis completed.")
 
     def analyze_assignment(self):
-        print("Analyzing assignments")
+        print("Analyzing assignments...")
         analyzer = AssignmentAnalyzer(self.df, self.current_path)
         analyzer.analyze()
-        print("Assignment analysis completed")
+        print("Assignment analysis completed.")
 
     def analyze_scheduling(self):
-        print("Analyzing scheduling")
+        print("Analyzing scheduling...")
         analyzer = SchedulingAnalyzer(self.df, self.current_path)
         analyzer.analyze()
-        print("Scheduling analysis completed")
+        print("Scheduling analysis completed.")
 
     def analyze_scheduling_by_assignment(self):
-        print("Analyzing scheduling by assignment")
+        print("Analyzing scheduling by assignment...")
         analyzer = SchedulingByAssignmentAnalyzer(self.df, self.current_path)
         analyzer.analyze()
-        print("Scheduling by assignment analysis completed")
+        print("Scheduling by assignment analysis completed.")
+
+    def analyze_assignment_success(self):
+        print("Analyzing assignment success...")
+        analyzer = AssignmentSuccessAnalyzer(self.df, self.current_path)
+        analyzer.analyze()
+        print("Assignment success analysis completed.")

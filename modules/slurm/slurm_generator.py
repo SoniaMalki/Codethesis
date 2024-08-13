@@ -9,21 +9,24 @@ from modules.utils.db_utils import DBUtils
 
 
 class SlurmGenerator:
-    def __init__(self, main_path, generation_path, db_path, experience_id, experience_data, batch_size=300):
+    def __init__(self, main_path, generation_path, db_path, experience_id, experience_data, batch_size=100):
         print("Initializing SlurmGenerator")
         self.main_path = Path(main_path)
         self.generation_path = Path(generation_path) / experience_id
         self.db_path = db_path
         self.experience_id = experience_id
-        self.batch_size = batch_size
 
-        # Vérifier si slurm_parameters est présent
-        if "slurm_parameters" not in experience_data:
-            raise ValueError(
-                "slurm_parameters dictionary is missing in experience data."
-            )
+        # Dictionnaire des paramètres SLURM par défaut
+        self.default_slurm_params = {
+            "taskset": {"time": "01:00:00", "mem": "1G", "batch_size": 500},
+            "assignment_simple": {"time": "00:20:00", "mem": "1G", "batch_size": 500},
+            "assignment_milp": {"time": "00:30:00", "mem": "2G", "batch_size": 100},
+            "scheduling_simple": {"time": "01:00:00", "mem": "4G", "batch_size": 500},
+            "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 100},
+            "scheduling_rhma": {"time": "02:00:00", "mem": "16G", "batch_size": 20},
+        }
 
-        self.slurm_parameters = experience_data["slurm_parameters"]
+        self.slurm_parameters = self.default_slurm_params
 
         self.master_dir = self.generation_path / "slurm" / "master"
         self.slurm_dir = self.generation_path / "slurm" / "slurm_files"
@@ -111,7 +114,7 @@ done
 
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
-#SBATCH --output={self.output_dir / config_type / f"output_{config_key}.txt"}
+#SBATCH --output={self.output_dir / config_type / f"{config_key}.txt"}
 #SBATCH --ntasks={optimal_threads}
 #SBATCH --cpus-per-task=1
 #SBATCH --time={job_time}
@@ -156,6 +159,42 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
 
         return optimal_threads
 
+    def get_job_time_and_memory(self, config_type, config_params):
+        if config_type == "taskset":
+            return self.slurm_parameters["taskset"]["time"], self.slurm_parameters["taskset"]["mem"]
+        elif config_type == "assignment":
+            if "Wmin" in config_params.get('assignment_method', "") or "Citta" in config_params.get('assignment_method', ""):
+                return self.slurm_parameters["assignment_milp"]["time"], self.slurm_parameters["assignment_milp"]["mem"]
+            else:
+                return self.slurm_parameters["assignment_simple"]["time"], self.slurm_parameters["assignment_simple"]["mem"]
+        elif config_type == "scheduling":
+            if "Rhma" in config_params.get('scheduling_algorithm', ""):
+                return self.slurm_parameters["scheduling_rhma"]["time"], self.slurm_parameters["scheduling_rhma"]["mem"]
+            elif "Combined" in config_params.get('scheduling_algorithm', ""):
+                return self.slurm_parameters["scheduling_combined"]["time"], self.slurm_parameters["scheduling_combined"]["mem"]
+            else:
+                return self.slurm_parameters["scheduling_simple"]["time"], self.slurm_parameters["scheduling_simple"]["mem"]
+        else:
+            return "02:00:00", "8G"
+
+    def get_batch_size(self, config_type, config_params):
+        if config_type == "taskset":
+            return self.slurm_parameters["taskset"]["batch_size"]
+        elif config_type == "assignment":
+            if "Wmin" in config_params.get('assignment_method', "") or "Citta" in config_params.get('assignment_method', ""):
+                return self.slurm_parameters["assignment_milp"]["batch_size"]
+            else:
+                return self.slurm_parameters["assignment_simple"]["batch_size"]
+        elif config_type == "scheduling":
+            if "Rhma" in config_params.get('scheduling_algorithm', ""):
+                return self.slurm_parameters["scheduling_rhma"]["batch_size"]
+            elif "Combined" in config_params.get('scheduling_algorithm', ""):
+                return self.slurm_parameters["scheduling_combined"]["batch_size"]
+            else:
+                return self.slurm_parameters["scheduling_simple"]["batch_size"]
+        else:
+            return 100
+
     def generate_slurm(self, config_key, config_type):
         """Generate SLURM file for a specific configuration."""
         print(f"Generating SLURM file for {config_key} of type {config_type}")
@@ -171,11 +210,6 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
                 # Set threads in assignment_options
                 config_params['assignment_options']['threads'] = optimal_threads
 
-                # Get Slurm time and memory
-                job_time = self.slurm_parameters.get(
-                    "assignment_time", "02:00:00")
-                slurm_memory = self.slurm_parameters.get(
-                    "assignment_mem", "8G")
             elif config_type == "scheduling":
                 config_params = experience.scheduling_parameters['parameters']
                 optimal_threads = self.determine_optimal_resources(
@@ -183,18 +217,13 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
                 # Set threads in scheduling_options
                 config_params['scheduling_options']['threads'] = optimal_threads
 
-                # Get Slurm time and memory
-                job_time = self.slurm_parameters.get(
-                    "scheduling_time", "02:00:00")
-                slurm_memory = self.slurm_parameters.get(
-                    "scheduling_mem", "8G")
             else:
                 config_params = {}
                 optimal_threads = 1  # Default to 1 if no parameters found
 
-                # Get Slurm time and memory (default values)
-                job_time = "02:00:00"
-                slurm_memory = "8G"
+            # Get Slurm time and memory based on configuration type
+            job_time, slurm_memory = self.get_job_time_and_memory(
+                config_type, config_params)
 
             slurm_file = self.slurm_dir / \
                 config_type / f"{config_key}.slurm"
@@ -272,7 +301,7 @@ python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key
                 f.write(
                     f"""#!/bin/bash
 #SBATCH --job-name=all_{config_type}s_master
-#SBATCH --output={self.output_dir / config_type / f"output_all_{config_type}s_master.txt"}
+#SBATCH --output={self.output_dir / config_type / f"{config_type}s_master.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time=2-00:00:00
 #SBATCH --mem=2G
@@ -404,15 +433,16 @@ python3 {self.main_path}/main.py analyze_results {self.experience_id}
 
             # 3. Construct Batch Files
             i = 0
+            batch_size = self.get_batch_size(config_type, {})
             while i < len(generated_slurm_files):
                 batch_configs = {}
-                for j in range(i, min(i + self.batch_size, len(generated_slurm_files))):
+                for j in range(i, min(i + batch_size, len(generated_slurm_files))):
                     slurm_file = generated_slurm_files[j]
                     config_key = slurm_file.stem
                     batch_configs[config_key] = config_key
 
                 # Nom du batch actuel
-                batch_name = f"batch_{config_type}_{i // self.batch_size}"
+                batch_name = f"batch_{config_type}_{i // batch_size}"
 
                 # Générer le script SLURM pour le batch actuel
                 print(f"Generating SLURM batch file for {batch_name}")
@@ -424,7 +454,7 @@ python3 {self.main_path}/main.py analyze_results {self.experience_id}
                     f.write(
                         f"""#!/bin/bash
 #SBATCH --job-name={batch_name}
-#SBATCH --output={self.output_dir / config_type / f"output_{batch_name}.txt"}
+#SBATCH --output={self.output_dir / config_type / f"{batch_name}.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time={"2-00:00:00"}
 #SBATCH --mem=2G
@@ -439,7 +469,7 @@ done
                     """
                     )
 
-                i += self.batch_size
+                i += batch_size
 
         # 4 & 5. Construct Master Files (per type and main)
         self.generate_master_slurm()

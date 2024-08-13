@@ -259,6 +259,7 @@ class Rhma:
         return r_i_a_h_for_h
 
     def create_constraint_16(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+        print(f"----- Creating constraint 16 for busy period {h} -----")
         constraint_16 = []
         for i, activations in s_i_h_for_h.items():
             for a in activations:
@@ -266,9 +267,11 @@ class Rhma:
                     for t in self.T_h[h]:
                         if self.o_i_j[i][j] == 0:
                             constraint_16.append(x[i, a, j, t] == 0)
+        print(f"----- Constraint 16 created for busy period {h} -----")
         return constraint_16
 
     def create_constraint_17(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+        print(f"----- Creating constraint 17 for busy period {h} -----")
         constraint_17 = []
         for i, activations in s_i_h_for_h.items():
             for k in range(i + 1, len(s_i_h_for_h)):
@@ -277,9 +280,11 @@ class Rhma:
                 for a, b in product(activations_i, activations_k):
                     if not set(r_i_a_h_for_h[i][a]).intersection(r_i_a_h_for_h[k][b]):
                         constraint_17.append(m[i, a, k, b] == 0)
+        print(f"----- Constraint 17 created for busy period {h} -----")
         return constraint_17
 
     def create_constraint_18(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+        print(f"----- Creating constraint 18 for busy period {h} -----")
         constraint_18 = []
         for i, activations in s_i_h_for_h.items():
             for j in range(self.number_of_cores):
@@ -294,9 +299,11 @@ class Rhma:
                                         for a in activations for b in b_activations)
 
                     constraint_18.append(left_side == right_side)
+        print(f"----- Constraint 18 created for busy period {h} -----")
         return constraint_18
 
     def create_constraint_19(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+        print(f"----- Creating constraint 19 for busy period {h} -----")
         constraint_19 = []
         for i, activations in s_i_h_for_h.items():
             for a in activations:
@@ -311,9 +318,11 @@ class Rhma:
                                             for b in b_activations)
 
                         constraint_19.append(left_side == right_side)
+        print(f"----- Constraint 19 created for busy period {h} -----")
         return constraint_19
 
     def create_constraint_20(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+        print(f"----- Creating constraint 20 for busy period {h} -----")
         constraint_20 = []
         for i, activations in s_i_h_for_h.items():
             for a in activations:
@@ -322,16 +331,20 @@ class Rhma:
                                       for j in range(self.number_of_cores))
                     right_side = self.d_i_a[i][a] - 1
                     constraint_20.append(left_side <= right_side)
+        print(f"----- Constraint 20 created for busy period {h} -----")
         return constraint_20
 
     def create_constraint_21(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+        print(f"----- Creating constraint 21 for busy period {h} -----")
         constraint_21 = []
         for j, t in product(range(self.number_of_cores), self.T_h[h]):
             constraint_21.append(
                 lpSum(x[i, a, j, t] for i in s_i_h_for_h for a in s_i_h_for_h[i]) <= 1)
+        print(f"----- Constraint 21 created for busy period {h} -----")
         return constraint_21
 
     def create_constraint_22(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+        print(f"----- Creating constraint 22 for busy period {h} -----")
         constraint_22 = []
         for i, activations in s_i_h_for_h.items():
             for k, b_activations in s_i_h_for_h.items():
@@ -340,18 +353,22 @@ class Rhma:
                         if j != l:
                             constraint_22.append(
                                 m[i, a, k, b] >= x[i, a, j, t] + x[k, b, l, t] - 1)
+        print(f"----- Constraint 22 created for busy period {h} -----")
         return constraint_22
 
     def create_constraint_23(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+        print(f"----- Creating constraint 23 for busy period {h} -----")
         constraint_23 = []
         for i, activations in s_i_h_for_h.items():
             for k, b_activations in s_i_h_for_h.items():
                 if i != k:
                     for a, b in product(activations, b_activations):
                         constraint_23.append(m[i, a, k, b] == m[k, b, i, a])
+        print(f"----- Constraint 23 created for busy period {h} -----")
         return constraint_23
 
     def create_constraint_24(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+        print(f"----- Creating constraint 24 for busy period {h} -----")
         constraint_24 = []
         for i, activations in s_i_h_for_h.items():
             for a in activations:
@@ -359,6 +376,7 @@ class Rhma:
                     for t in self.T_h[h]:
                         constraint_24.append(w[i, a] >= (
                             t * x[i, a, j, t]) - (a * self.taskset.period[i]) + 1)
+        print(f"----- Constraint 24 created for busy period {h} -----")
         return constraint_24
 
     def createLpConstraints(self, h, x, m, w):

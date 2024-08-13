@@ -24,7 +24,7 @@ class Rhma:
         self.solving_time_limit_MILP = self.scheduling_options.get(
             "solving_time_limit_MILP", None)
 
-        if end_time == None:
+        if end_time is None:
             end_time = self.hyperperiod
 
         self.start_time = start_time
@@ -53,10 +53,10 @@ class Rhma:
             "solver_name", "gurobi")
 
         # Get thread count from options or default
-        self.threads = self.scheduling_options.get("threads", 1)
-        if self.threads == None:
+        self.threads = self.scheduling_options.get("threads", 8)
+        if self.threads is None:
             self.threads = 10
-        if 'threads' in self.scheduling_options and self.scheduling_options.get("threads", 1) != None:
+        if 'threads' in self.scheduling_options and self.scheduling_options.get("threads", 1) is not None:
             print(
                 f"Using thread count from scheduling_options: {self.threads}")
         else:
@@ -258,123 +258,133 @@ class Rhma:
                     intersection_start, intersection_end)
         return r_i_a_h_for_h
 
-    def createLpConstraints(self, h, x, m, w):
-        # Extraction des données pour le busy period 'h'
-        s_i_h_for_h = self.extract_s_i_h_for_h(h)
-        r_i_a_h_for_h = self.extract_r_i_a_h_for_h(h, s_i_h_for_h)
-
-        # Liste pour stocker les contraintes générées
+    def create_constraint_16(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         constraint_16 = []
+        for i, activations in s_i_h_for_h.items():
+            for a in activations:
+                for j in range(self.number_of_cores):
+                    for t in self.T_h[h]:
+                        if self.o_i_j[i][j] == 0:
+                            constraint_16.append(x[i, a, j, t] == 0)
+        return constraint_16
+
+    def create_constraint_17(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         constraint_17 = []
+        for i, activations in s_i_h_for_h.items():
+            for k in range(i + 1, len(s_i_h_for_h)):
+                activations_i = s_i_h_for_h[i]
+                activations_k = s_i_h_for_h[k]
+                for a, b in product(activations_i, activations_k):
+                    if not set(r_i_a_h_for_h[i][a]).intersection(r_i_a_h_for_h[k][b]):
+                        constraint_17.append(m[i, a, k, b] == 0)
+        return constraint_17
+
+    def create_constraint_18(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         constraint_18 = []
+        for i, activations in s_i_h_for_h.items():
+            for j in range(self.number_of_cores):
+                if activations:
+                    left_side = lpSum(x[i, a, j, t]
+                                      for a in activations for t in r_i_a_h_for_h[i][a])
+                    right_side = len(activations) * \
+                        self.taskset.wcet[i] * self.o_i_j[i][j]
+
+                    right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
+                                        for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                                        for a in activations for b in b_activations)
+
+                    constraint_18.append(left_side == right_side)
+        return constraint_18
+
+    def create_constraint_19(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         constraint_19 = []
+        for i, activations in s_i_h_for_h.items():
+            for a in activations:
+                for j in range(self.number_of_cores):
+                    if activations:
+                        left_side = lpSum(x[i, a, j, t]
+                                          for t in r_i_a_h_for_h[i][a])
+                        right_side = self.taskset.wcet[i] * self.o_i_j[i][j]
+
+                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
+                                            for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                                            for b in b_activations)
+
+                        constraint_19.append(left_side == right_side)
+        return constraint_19
+
+    def create_constraint_20(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         constraint_20 = []
-        constraint_21 = []
-        constraint_22 = []
-        constraint_23 = []
-        constraint_24 = []
+        for i, activations in s_i_h_for_h.items():
+            for a in activations:
+                for t in self.T_h[h]:
+                    left_side = lpSum(t * x[i, a, j, t]
+                                      for j in range(self.number_of_cores))
+                    right_side = self.d_i_a[i][a] - 1
+                    constraint_20.append(left_side <= right_side)
+        return constraint_20
 
-        # Parallélisation de la création des contraintes
-        with ThreadPoolExecutor(max_workers=self.threads) as executor:
-            future_to_constraint_21 = executor.submit(
-                self.create_constraint_21, h, x, s_i_h_for_h)
-
-            future_to_constraints_16_to_24 = [
-                executor.submit(
-                    self.create_constraints_16_to_24, i, activations, r_i_a_h_for_h, x, m, w, h, s_i_h_for_h
-                )
-                for i, activations in s_i_h_for_h.items()
-            ]
-
-            constraint_21 = future_to_constraint_21.result()
-
-            for future in as_completed(future_to_constraints_16_to_24):
-                res_16, res_17, res_18, res_19, res_20, res_22, res_23, res_24 = future.result()
-                constraint_16.extend(res_16)
-                constraint_17.extend(res_17)
-                constraint_18.extend(res_18)
-                constraint_19.extend(res_19)
-                constraint_20.extend(res_20)
-                constraint_22.extend(res_22)
-                constraint_23.extend(res_23)
-                constraint_24.extend(res_24)
-
-        return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24
-
-    def create_constraint_21(self, h, x, s_i_h_for_h):
+    def create_constraint_21(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         constraint_21 = []
         for j, t in product(range(self.number_of_cores), self.T_h[h]):
             constraint_21.append(
                 lpSum(x[i, a, j, t] for i in s_i_h_for_h for a in s_i_h_for_h[i]) <= 1)
         return constraint_21
 
-    def create_constraints_16_to_24(self, i, activations, r_i_a_h_for_h, x, m, w, h, s_i_h_for_h):
-        constraint_16 = []
-        constraint_17 = []
-        constraint_18 = []
-        constraint_19 = []
-        constraint_20 = []
+    def create_constraint_22(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         constraint_22 = []
+        for i, activations in s_i_h_for_h.items():
+            for k, b_activations in s_i_h_for_h.items():
+                if i != k:
+                    for a, b, j, l, t in product(activations, b_activations, range(self.number_of_cores), range(self.number_of_cores), self.T_h[h]):
+                        if j != l:
+                            constraint_22.append(
+                                m[i, a, k, b] >= x[i, a, j, t] + x[k, b, l, t] - 1)
+        return constraint_22
+
+    def create_constraint_23(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         constraint_23 = []
+        for i, activations in s_i_h_for_h.items():
+            for k, b_activations in s_i_h_for_h.items():
+                if i != k:
+                    for a, b in product(activations, b_activations):
+                        constraint_23.append(m[i, a, k, b] == m[k, b, i, a])
+        return constraint_23
+
+    def create_constraint_24(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         constraint_24 = []
+        for i, activations in s_i_h_for_h.items():
+            for a in activations:
+                for j in range(self.number_of_cores):
+                    for t in self.T_h[h]:
+                        constraint_24.append(w[i, a] >= (
+                            t * x[i, a, j, t]) - (a * self.taskset.period[i]) + 1)
+        return constraint_24
 
-        for a in activations:
-            for j in range(self.number_of_cores):
-                if activations:
-                    left_side = lpSum(x[i, a, j, t]
-                                      for t in r_i_a_h_for_h[i][a])
-                    right_side = self.taskset.wcet[i] * self.o_i_j[i][j]
+    def createLpConstraints(self, h, x, m, w):
+        # Extraction des données pour le busy period 'h'
+        s_i_h_for_h = self.extract_s_i_h_for_h(h)
+        r_i_a_h_for_h = self.extract_r_i_a_h_for_h(h, s_i_h_for_h)
 
-                    right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
-                                        for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
-                                        for b in b_activations)
+        # Parallélisation de la création des contraintes
+        with ThreadPoolExecutor(max_workers=self.threads) as executor:
+            futures = {
+                executor.submit(self.create_constraint_16, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_16",
+                executor.submit(self.create_constraint_17, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_17",
+                executor.submit(self.create_constraint_18, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_18",
+                executor.submit(self.create_constraint_19, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_19",
+                executor.submit(self.create_constraint_20, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_20",
+                executor.submit(self.create_constraint_21, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_21",
+                executor.submit(self.create_constraint_22, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_22",
+                executor.submit(self.create_constraint_23, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_23",
+                executor.submit(self.create_constraint_24, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_24",
+            }
 
-                    constraint_19.append(left_side == right_side)
+            results = {key: future.result() for future, key in futures.items()}
 
-                for t in self.T_h[h]:
-                    if self.o_i_j[i][j] == 0:
-                        constraint_16.append(x[i, a, j, t] == 0)
-                    constraint_24.append(w[i, a] >= (
-                        t * x[i, a, j, t]) - (a * self.taskset.period[i]) + 1)
-
-            for t in self.T_h[h]:
-                left_side = lpSum(t * x[i, a, j, t]
-                                  for j in range(self.number_of_cores))
-                right_side = self.d_i_a[i][a] - 1
-                constraint_20.append(left_side <= right_side)
-
-        for j in range(self.number_of_cores):
-            if activations:
-                left_side = lpSum(x[i, a, j, t]
-                                  for a in activations for t in r_i_a_h_for_h[i][a])
-                right_side = len(activations) * \
-                    self.taskset.wcet[i] * self.o_i_j[i][j]
-
-                right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
-                                    for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
-                                    for a in activations for b in b_activations)
-
-                constraint_18.append(left_side == right_side)
-
-        for k, b_activations in s_i_h_for_h.items():
-            if i != k:
-                for a, b in product(activations, b_activations):
-                    constraint_23.append(
-                        m[i, a, k, b] == m[k, b, i, a])
-
-                for a, b, j, l, t in product(activations, b_activations, range(self.number_of_cores), range(self.number_of_cores), self.T_h[h]):
-                    if j != l:
-                        constraint_22.append(
-                            m[i, a, k, b] >= x[i, a, j, t] + x[k, b, l, t] - 1)
-
-        for k in range(i + 1, len(s_i_h_for_h)):
-            activations_i = s_i_h_for_h[i]
-            activations_k = s_i_h_for_h[k]
-            for a, b in product(activations_i, activations_k):
-                if not set(r_i_a_h_for_h[i][a]).intersection(r_i_a_h_for_h[k][b]):
-                    constraint_17.append(m[i, a, k, b] == 0)
-
-        return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_22, constraint_23, constraint_24
+        return (results["constraint_16"], results["constraint_17"], results["constraint_18"],
+                results["constraint_19"], results["constraint_20"], results["constraint_21"],
+                results["constraint_22"], results["constraint_23"], results["constraint_24"])
 
     def schedule(self):
         # print(

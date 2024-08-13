@@ -70,9 +70,9 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
         # }
 
         self.cluster_cores = {
-            "lm": 5,
-            "nic": 5,
-            "her": 5,
+            "lm": 10,
+            "nic": 10,
+            "her": 10,
             "sonia": 3
         }
 

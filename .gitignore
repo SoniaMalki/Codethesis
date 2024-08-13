@@ -152,4 +152,5 @@ generation/*
 #!generation/plots/**
 
 slurm_code/error_handling/output_error
+slurm_code/error_handling/filtered_output
 slurm_code/slurm_scripts/

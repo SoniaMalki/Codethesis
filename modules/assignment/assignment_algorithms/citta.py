@@ -147,6 +147,9 @@ class Citta:
         I_run_old = 1
         # copie wcet pour modif temporaire
         wcet_updated = numpy.copy(self.wcet)
+        # Compteur d'oscillations
+        oscillation_count = 0
+        oscillation_threshold = 100
         # si entre deux tours de boucle on arrive à un résultats similaire à l'ancien, on s'arrête.
         while I_run_old != I_run and wcet_updated[task_index] <= self.period[task_index]:
             I_run_old = I_run
@@ -163,6 +166,17 @@ class Citta:
             wcet_updated[task_index] = self.wcet[task_index] + I_run
             print(
                 f"         Updated wcet for task {task_index}: {wcet_updated[task_index]}")
+
+            # Détection d'oscillation
+            if I_run == I_run_old:
+                oscillation_count = 0
+            elif abs(I_run - I_run_old) == 1:
+                oscillation_count += 1
+                if oscillation_count >= oscillation_threshold:
+                    print("----- Oscillation detected! -----")
+                    break
+            else:
+                oscillation_count = 0
 
         if wcet_updated[task_index] > self.period[task_index]:
             # Le wcet trouvé fait qu'on pourra pas atteindre la deadline, on renvoie la période pour faire comprendre ça

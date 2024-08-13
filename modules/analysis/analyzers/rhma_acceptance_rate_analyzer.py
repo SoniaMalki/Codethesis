@@ -15,7 +15,7 @@ class RhmaAcceptanceRateAnalyzer:
         """
         self.df = df
         self.current_path = current_path
-        self.plots_dir = self.current_path / "Rhma_acceptance_rate"
+        self.plots_dir = self.current_path / "rhma_acceptance_rate"
         os.makedirs(self.plots_dir, exist_ok=True)
 
     def analyze(self):
@@ -66,5 +66,5 @@ class RhmaAcceptanceRateAnalyzer:
         ax.set_title('Observed Acceptance Rate by Rhma')
         ax.set_xlabel('Scheduling Algorithm')
         ax.set_ylabel('Observed Acceptance Rate (%)')
-        plt.savefig(self.plots_dir / 'Rhma_observed_acceptance_rate.png')
+        plt.savefig(self.plots_dir / 'rhma_observed_acceptance_rate.png')
         plt.close()

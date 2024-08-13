@@ -3,6 +3,7 @@ from pathlib import Path
 from itertools import product
 from pulp import *
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.scheduling_algorithms.combined_scheduler import CombinedScheduler
 from modules.utils.busy_period import BusyPeriod
@@ -105,7 +106,7 @@ class Rhma:
     def generate_max_I(self):
         print("----- Generating maxI -----")
         maxI = 0
-        for i, j in itertools.product(range(len(self.taskset)), repeat=2):
+        for i, j in product(range(len(self.taskset)), repeat=2):
             if i != j and self.o_i_j[i] != self.o_i_j[j] and self.taskset.single_interference[i] != 0 and self.taskset.single_interference[j] != 0:
                 v_j_to_i = self.calculate_activation_pattern(j=j, i=i)
                 for a_index, a in enumerate(self.taskset.activation[i]):
@@ -156,7 +157,7 @@ class Rhma:
         S_i_h = [[[] for _ in range(len(self.busy_periods))]
                  for _ in range(len(self.taskset))]
 
-        for i, h in itertools.product(range(len(self.taskset)), range(len(self.busy_periods))):
+        for i, h in product(range(len(self.taskset)), range(len(self.busy_periods))):
             task_period = self.taskset.period[i]
             for a in self.taskset.activation[i]:
                 activation_start = ((a - 1) * task_period) + 1
@@ -169,7 +170,7 @@ class Rhma:
         print("----- Generating R_i_a_h -----")
         R_i_a_h = {}
 
-        for i, h in itertools.product(range(len(self.taskset)), range(len(self.busy_periods))):
+        for i, h in product(range(len(self.taskset)), range(len(self.busy_periods))):
             R_i_a_h[i] = {}
             task_period = self.taskset.period[i]
             for a in S_i_h[i][h]:
@@ -273,76 +274,107 @@ class Rhma:
         constraint_23 = []
         constraint_24 = []
 
-        # Constraint 21
-        # print("   Creating constraint 21")
+        # Parallélisation de la création des contraintes
+        with ThreadPoolExecutor(max_workers=self.threads) as executor:
+            future_to_constraint_21 = executor.submit(
+                self.create_constraint_21, h, x, s_i_h_for_h)
+
+            future_to_constraints_16_to_24 = [
+                executor.submit(
+                    self.create_constraints_16_to_24, i, activations, r_i_a_h_for_h, x, m, w, h, s_i_h_for_h
+                )
+                for i, activations in s_i_h_for_h.items()
+            ]
+
+            constraint_21 = future_to_constraint_21.result()
+
+            for future in as_completed(future_to_constraints_16_to_24):
+                res_16, res_17, res_18, res_19, res_20, res_22, res_23, res_24 = future.result()
+                constraint_16.extend(res_16)
+                constraint_17.extend(res_17)
+                constraint_18.extend(res_18)
+                constraint_19.extend(res_19)
+                constraint_20.extend(res_20)
+                constraint_22.extend(res_22)
+                constraint_23.extend(res_23)
+                constraint_24.extend(res_24)
+
+        return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24
+
+    def create_constraint_21(self, h, x, s_i_h_for_h):
+        constraint_21 = []
         for j, t in product(range(self.number_of_cores), self.T_h[h]):
             constraint_21.append(
                 lpSum(x[i, a, j, t] for i in s_i_h_for_h for a in s_i_h_for_h[i]) <= 1)
+        return constraint_21
 
-        # print("   Creating constraints 16, 18, 19, 20, 22, 23, and 24")
-        for i, activations in s_i_h_for_h.items():
-            for a in activations:
-                # Constraint 16, 19, 20 and Constraint 24
-                for j in range(self.number_of_cores):
-                    if activations:
-                        left_side = lpSum(x[i, a, j, t]
-                                          for t in r_i_a_h_for_h[i][a])
-                        right_side = self.taskset.wcet[i] * self.o_i_j[i][j]
+    def create_constraints_16_to_24(self, i, activations, r_i_a_h_for_h, x, m, w, h, s_i_h_for_h):
+        constraint_16 = []
+        constraint_17 = []
+        constraint_18 = []
+        constraint_19 = []
+        constraint_20 = []
+        constraint_22 = []
+        constraint_23 = []
+        constraint_24 = []
 
-                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
-                                            for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
-                                            for b in b_activations)
-
-                        constraint_19.append(left_side == right_side)
-
-                    for t in self.T_h[h]:
-                        if self.o_i_j[i][j] == 0:
-                            constraint_16.append(x[i, a, j, t] == 0)
-                        constraint_24.append(w[i, a] >= (
-                            t * x[i, a, j, t]) - (a * self.taskset.period[i]) + 1)
-
-                for t in self.T_h[h]:
-                    left_side = lpSum(t * x[i, a, j, t]
-                                      for j in range(self.number_of_cores))
-                    right_side = self.d_i_a[i][a] - 1
-                    constraint_20.append(left_side <= right_side)
-
-            # Constraint 18
+        for a in activations:
             for j in range(self.number_of_cores):
                 if activations:
                     left_side = lpSum(x[i, a, j, t]
-                                      for a in activations for t in r_i_a_h_for_h[i][a])
-                    right_side = len(activations) * \
-                        self.taskset.wcet[i] * self.o_i_j[i][j]
+                                      for t in r_i_a_h_for_h[i][a])
+                    right_side = self.taskset.wcet[i] * self.o_i_j[i][j]
 
                     right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
                                         for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
-                                        for a in activations for b in b_activations)
+                                        for b in b_activations)
 
-                    constraint_18.append(left_side == right_side)
+                    constraint_19.append(left_side == right_side)
 
-            # Contrainte 23 avec itertools.product pour optimiser la boucle
-            for k, b_activations in s_i_h_for_h.items():
-                if i != k:
-                    for a, b in product(activations, b_activations):
-                        constraint_23.append(
-                            m[i, a, k, b] == m[k, b, i, a])
+                for t in self.T_h[h]:
+                    if self.o_i_j[i][j] == 0:
+                        constraint_16.append(x[i, a, j, t] == 0)
+                    constraint_24.append(w[i, a] >= (
+                        t * x[i, a, j, t]) - (a * self.taskset.period[i]) + 1)
 
-                    for a, b, j, l, t in product(activations, b_activations, range(self.number_of_cores), range(self.number_of_cores), self.T_h[h]):
-                        if j != l:
-                            constraint_22.append(
-                                m[i, a, k, b] >= x[i, a, j, t] + x[k, b, l, t] - 1)
+            for t in self.T_h[h]:
+                left_side = lpSum(t * x[i, a, j, t]
+                                  for j in range(self.number_of_cores))
+                right_side = self.d_i_a[i][a] - 1
+                constraint_20.append(left_side <= right_side)
 
-            # Constraint 17
-            for k in range(i + 1, len(s_i_h_for_h)):
-                activations_i = s_i_h_for_h[i]
-                activations_k = s_i_h_for_h[k]
-                for a, b in product(activations_i, activations_k):
-                    if not set(r_i_a_h_for_h[i][a]).intersection(r_i_a_h_for_h[k][b]):
-                        constraint_17.append(m[i, a, k, b] == 0)
+        for j in range(self.number_of_cores):
+            if activations:
+                left_side = lpSum(x[i, a, j, t]
+                                  for a in activations for t in r_i_a_h_for_h[i][a])
+                right_side = len(activations) * \
+                    self.taskset.wcet[i] * self.o_i_j[i][j]
 
-        # print("LP Constraints created.")
-        return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24
+                right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
+                                    for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                                    for a in activations for b in b_activations)
+
+                constraint_18.append(left_side == right_side)
+
+        for k, b_activations in s_i_h_for_h.items():
+            if i != k:
+                for a, b in product(activations, b_activations):
+                    constraint_23.append(
+                        m[i, a, k, b] == m[k, b, i, a])
+
+                for a, b, j, l, t in product(activations, b_activations, range(self.number_of_cores), range(self.number_of_cores), self.T_h[h]):
+                    if j != l:
+                        constraint_22.append(
+                            m[i, a, k, b] >= x[i, a, j, t] + x[k, b, l, t] - 1)
+
+        for k in range(i + 1, len(s_i_h_for_h)):
+            activations_i = s_i_h_for_h[i]
+            activations_k = s_i_h_for_h[k]
+            for a, b in product(activations_i, activations_k):
+                if not set(r_i_a_h_for_h[i][a]).intersection(r_i_a_h_for_h[k][b]):
+                    constraint_17.append(m[i, a, k, b] == 0)
+
+        return constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_22, constraint_23, constraint_24
 
     def schedule(self):
         # print(

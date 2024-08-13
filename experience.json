@@ -32,9 +32,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -68,9 +68,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -104,9 +104,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -140,9 +140,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -176,9 +176,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -212,9 +212,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -248,9 +248,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -284,9 +284,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -320,9 +320,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -356,9 +356,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -392,9 +392,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -428,9 +428,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -464,9 +464,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -500,9 +500,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -536,9 +536,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -572,9 +572,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -608,9 +608,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -644,9 +644,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -680,9 +680,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -716,9 +716,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -752,9 +752,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -788,9 +788,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -824,9 +824,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -860,9 +860,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -896,9 +896,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -932,9 +932,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -968,9 +968,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1004,9 +1004,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1040,9 +1040,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1076,9 +1076,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1112,9 +1112,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1148,9 +1148,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1184,9 +1184,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1220,9 +1220,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1256,9 +1256,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1292,9 +1292,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1328,9 +1328,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1364,9 +1364,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1400,9 +1400,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1436,9 +1436,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1472,9 +1472,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1508,9 +1508,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1544,9 +1544,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1580,9 +1580,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1616,9 +1616,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1652,9 +1652,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1688,9 +1688,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1724,9 +1724,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1763,9 +1763,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1799,9 +1799,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1835,9 +1835,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1871,9 +1871,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1907,9 +1907,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1943,9 +1943,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -1979,9 +1979,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2015,9 +2015,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2051,9 +2051,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2087,9 +2087,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2123,9 +2123,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2159,9 +2159,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2195,9 +2195,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2231,9 +2231,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2267,9 +2267,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2303,9 +2303,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2339,9 +2339,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2375,9 +2375,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2411,9 +2411,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2447,9 +2447,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2483,9 +2483,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2519,9 +2519,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2555,9 +2555,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2591,9 +2591,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2627,9 +2627,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2663,9 +2663,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2699,9 +2699,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2735,9 +2735,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2771,9 +2771,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2807,9 +2807,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2843,9 +2843,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2879,9 +2879,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2915,9 +2915,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2954,9 +2954,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -2990,9 +2990,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3026,9 +3026,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3062,9 +3062,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3098,9 +3098,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3134,9 +3134,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3170,9 +3170,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3206,9 +3206,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3242,9 +3242,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3278,9 +3278,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3314,9 +3314,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3350,9 +3350,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3386,9 +3386,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3422,9 +3422,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3458,9 +3458,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3494,9 +3494,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3530,9 +3530,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   },
@@ -3566,9 +3566,9 @@
     "slurm_parameters": {
       "taskset_time": "01:00:00",
       "taskset_mem": "4G",
-      "assignment_time": "05:00:00",
+      "assignment_time": "2-00:00:00",
       "assignment_mem": "16G",
-      "scheduling_time": "10:00:00",
+      "scheduling_time": "2-00:00:00",
       "scheduling_mem": "32G"
     }
   }

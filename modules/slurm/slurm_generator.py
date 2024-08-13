@@ -123,7 +123,7 @@ done
 # Charger les modules nécessaires
 {self.modules}
 
-python3 {self.main_path}/main.py run_experience {self.experience_id} {config_key}
+python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_key}
 """
 
     def determine_optimal_resources(self, config_params, config_type):

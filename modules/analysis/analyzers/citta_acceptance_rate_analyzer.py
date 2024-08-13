@@ -23,7 +23,9 @@ class CittaAcceptanceRateAnalyzer:
         Calculates and visualizes the acceptance rate by Citta.
         """
         self.calculate_acceptance_rate()
+        self.calculate_schedulability_leakage()
         self.plot_acceptance_rate()
+        self.plot_schedulability_leakage()
 
     def calculate_acceptance_rate(self):
         """
@@ -50,6 +52,31 @@ class CittaAcceptanceRateAnalyzer:
                     'Citta', 'acceptance_rate'] = acceptance_rate
         return acceptance_rate
 
+    def calculate_schedulability_leakage(self):
+        """
+        Calculates the schedulability leakage to quantify the pessimism of Citta.
+        """
+        # Filter for task sets declared non-schedulable by Citta
+        citta_non_schedulable_ids = self.df[(self.df['assignment_method'] == 'Citta') &
+                                            (self.df['mean_success_assignment'] == 0)]['assignment_id']
+
+        # Filter for those non-schedulable by Citta but scheduled by RHMA
+        leakage_cases = self.df[(self.df['scheduling_algorithm'] == 'RHMA') &
+                                (self.df['mean_success_scheduling'] == 1) &
+                                (self.df['assignment_id'].isin(citta_non_schedulable_ids))]
+
+        # Calculate total number of task sets tested
+        total_tasks = len(self.df['assignment_id'].unique())
+
+        # Calculate leakage rate
+        if total_tasks > 0:
+            leakage_rate = (len(leakage_cases) / total_tasks) * \
+                100  # as percentage
+        else:
+            leakage_rate = 0
+
+        self.leakage_rate = leakage_rate
+
     def plot_acceptance_rate(self):
         """
         Plots the acceptance rate for Citta.
@@ -61,4 +88,17 @@ class CittaAcceptanceRateAnalyzer:
         ax.set_xlabel('Assignment Method')
         ax.set_ylabel('Acceptance Rate (%)')
         plt.savefig(self.plots_dir / 'citta_acceptance_rate.png')
+        plt.close()
+
+    def plot_schedulability_leakage(self):
+        """
+        Plots the schedulability leakage rate for Citta.
+        """
+        plt.figure(figsize=(8, 6))
+        sns.barplot(x=['Schedulability Leakage'], y=[self.leakage_rate])
+        plt.title('Schedulability Leakage Rate for Citta')
+        plt.ylabel('Leakage Rate (%)')
+        # Ensure the y-axis always shows up to 100% or beyond
+        plt.ylim(0, max(100, self.leakage_rate + 10))
+        plt.savefig(self.plots_dir / 'citta_schedulability_leakage.png')
         plt.close()

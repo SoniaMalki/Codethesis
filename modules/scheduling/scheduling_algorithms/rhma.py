@@ -405,16 +405,16 @@ class Rhma:
                 results["constraint_22"], results["constraint_23"], results["constraint_24"])
 
     def schedule(self):
-        # print(
-        #     f"-------------\nSolving RHMA")
+        print(
+            f"-------------\nSolving RHMA")
 
         schedule = BusyPeriod()
 
         for h, busy_period in enumerate(self.busy_periods):
             prob = LpProblem(
                 f"RHMA_Busy_Period_{h}", LpMinimize)
-            # print(
-            #     f"-------------\nCreating variables for BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}. total hyperperiod={self.hyperperiod}")
+            print(
+                f"-------------\nCreating variables for BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}. total hyperperiod={self.hyperperiod}")
 
             x, m, w = self.createLpVariables(h)
             constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24 = self.createLpConstraints(
@@ -459,9 +459,9 @@ class Rhma:
                     self.solver.options.append(
                         ("TimeLimit", self.solving_time_limit_MILP))
 
-            # print(
-            #     f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
-            # print(prob)
+            print(
+                f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
+            print(prob)
             prob.solve(self.solver)
 
             # Checking if a solution is found
@@ -484,20 +484,20 @@ class Rhma:
                 busy_period_schedule.add_total_utilization(
                     total_utilization=total_utilization)
                 schedule.add_period(scheduling=busy_period_schedule)
-                # print(f"RHMA solution found for busy period {h}.")
+                print(f"RHMA solution found for busy period {h}.")
 
             else:
                 if self.busy_periods[h].success == 0:
-                    # print(
-                    #     f'RHMA failed to find a solution for busy period. Cannot use CombinedScheduler instead, because it did not find one as well.')
+                    print(
+                        f'RHMA failed to find a solution for busy period. Cannot use CombinedScheduler instead, because it did not find one as well.')
                     return schedule
                 else:
-                    # print(
-                    #     f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
+                    print(
+                        f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
                     schedule.add_period(scheduling=self.busy_periods[h])
                     total_utilization = self.busy_periods[h].total_utilization
 
             self.actual_utilization[h] = total_utilization/self.hyperperiod
 
-        # print("----- RHMA Scheduling Completed -----")
+        print("----- RHMA Scheduling Completed -----")
         return schedule

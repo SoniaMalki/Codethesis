@@ -3,6 +3,7 @@ import json
 import socket
 from pathlib import Path
 from datetime import time
+from time import sleep
 
 from modules.core.experience_loader import ExperienceLoader
 from modules.utils.db_utils import DBUtils
@@ -19,11 +20,11 @@ class SlurmGenerator:
         # Dictionnaire des paramètres SLURM par défaut
         self.default_slurm_params = {
             "taskset": {"time": "01:00:00", "mem": "1G", "batch_size": 500},
-            "assignment_simple": {"time": "00:20:00", "mem": "1G", "batch_size": 500},
-            "assignment_milp": {"time": "00:30:00", "mem": "2G", "batch_size": 100},
-            "scheduling_simple": {"time": "01:00:00", "mem": "4G", "batch_size": 500},
-            "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 100},
-            "scheduling_rhma": {"time": "02:00:00", "mem": "16G", "batch_size": 20},
+            "assignment_simple": {"time": "00:20:00", "mem": "1G", "batch_size": 5},
+            "assignment_milp": {"time": "05:00:00", "mem": "4G", "batch_size": 5},
+            "scheduling_simple": {"time": "01:00:00", "mem": "4G", "batch_size": 5},
+            "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 5},
+            "scheduling_rhma": {"time": "05:00:00", "mem": "32G", "batch_size": 5},
         }
 
         self.slurm_parameters = self.default_slurm_params
@@ -115,8 +116,8 @@ done
         return f"""#!/bin/bash
 #SBATCH --job-name={config_key}
 #SBATCH --output={self.output_dir / config_type / f"{config_key}.txt"}
-#SBATCH --ntasks={optimal_threads}
-#SBATCH --cpus-per-task=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task={optimal_threads}
 #SBATCH --time={job_time}
 #SBATCH --mem={slurm_memory}
 

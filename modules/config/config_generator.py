@@ -125,7 +125,11 @@ class ConfigGenerator:
                 max_prime INT,
                 gen_limit_exponent INT,
                 number_of_cores INT,
-                result_file_path TEXT,
+                result_file_path TEXT DEFAULT 'None',
+                cluster TEXT DEFAULT 'None',  
+                threads INT DEFAULT 1,     
+                slurm_time TEXT DEFAULT 'None', 
+                slurm_memory TEXT DEFAULT 'None',
                 UNIQUE (
                     taskset_repetition,
                     tasks_per_taskset,
@@ -154,11 +158,11 @@ class ConfigGenerator:
                 number_of_cores INT,
                 solving_time_limit_MILP INT,
                 solver_name VARCHAR,
-                result_file_path TEXT,
-                cluster TEXT DEFAULT '',  
-                threads INT DEFAULT 0,     
-                slurm_time TEXT DEFAULT '', 
-                slurm_memory TEXT DEFAULT '',
+                result_file_path TEXT DEFAULT 'None',
+                cluster TEXT DEFAULT 'None',  
+                threads INT DEFAULT 1,     
+                slurm_time TEXT DEFAULT 'None', 
+                slurm_memory TEXT DEFAULT 'None',
                 FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id),
                 UNIQUE (
                     taskset_id,
@@ -184,11 +188,11 @@ class ConfigGenerator:
                 non_preemption_time_variant2 VARCHAR,
                 solving_time_limit_MILP INT,
                 solver_name VARCHAR,
-                result_file_path TEXT,
-                cluster TEXT DEFAULT '',   
-                threads INT DEFAULT 0,     
-                slurm_time TEXT DEFAULT '', 
-                slurm_memory TEXT DEFAULT '',
+                result_file_path TEXT DEFAULT 'None',
+                cluster TEXT DEFAULT 'None',   
+                threads INT DEFAULT 1,     
+                slurm_time TEXT DEFAULT 'None', 
+                slurm_memory TEXT DEFAULT 'None',
                 FOREIGN KEY (assignment_id) REFERENCES Assignments(assignment_id),
                 FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id),
                 UNIQUE (
@@ -354,8 +358,8 @@ class ConfigGenerator:
                         INSERT OR IGNORE INTO Tasksets (
                             taskset_id, action, taskset_repetition, tasks_per_taskset, interference_factor,
                             probability_factor, max_utilization, deadline_option, max_hyperperiod,
-                            max_prime, gen_limit_exponent, number_of_cores, result_file_path
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            max_prime, gen_limit_exponent, number_of_cores, result_file_path, cluster, threads, slurm_time, slurm_memory
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                         (
                             # Nouvel ID de taskset
@@ -371,7 +375,11 @@ class ConfigGenerator:
                             prime,
                             exponent,
                             cores,
-                            "",
+                            'None',
+                            'None',
+                            1,
+                            'None',
+                            'None'
                         ),
                     )
 
@@ -471,11 +479,11 @@ class ConfigGenerator:
                                 cores,
                                 solving_time,
                                 solver_name,
-                                "",
-                                '',
-                                0,
-                                '',
-                                ''
+                                'None',
+                                'None',
+                                1,
+                                'None',
+                                'None'
                             ),
                         )
 
@@ -590,11 +598,11 @@ class ConfigGenerator:
                                 non_preemption,
                                 solving_time,
                                 solver_name,
-                                "",
-                                '',
-                                0,
-                                '',
-                                ''
+                                'None',
+                                'None',
+                                1,
+                                'None',
+                                'None'
                             ),
                         )
 

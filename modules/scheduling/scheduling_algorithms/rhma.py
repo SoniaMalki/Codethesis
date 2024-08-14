@@ -1,13 +1,23 @@
 import math
+import dill
 from pathlib import Path
 from itertools import product
 from pulp import *
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import numpy as np
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.scheduling_algorithms.combined_scheduler import CombinedScheduler
 from modules.utils.busy_period import BusyPeriod
+
+
+def execute_serialized_func(serialized_self, func_name, *args):
+    obj = dill.loads(serialized_self)
+    # Vérification après désérialisation
+    assert obj.busy_periods is not None, "busy_periods is None after deserialization"
+    assert obj.S_i_h is not None, "S_i_h is None after deserialization"
+    func = getattr(obj, func_name)
+    return func(*args)
 
 
 class Rhma:
@@ -248,6 +258,7 @@ class Rhma:
 
     def create_constraint_16(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         print(f"----- Creating constraint 16 for busy period {h} -----")
+        self.assert_constraints_attributes()
         constraint_16 = []
         for i, activations in s_i_h_for_h.items():
             for a in activations:
@@ -260,6 +271,7 @@ class Rhma:
 
     def create_constraint_17(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         print(f"----- Creating constraint 17 for busy period {h} -----")
+        self.assert_constraints_attributes()
         constraint_17 = []
         for i, activations in s_i_h_for_h.items():
             for k in range(i + 1, len(s_i_h_for_h)):
@@ -273,6 +285,7 @@ class Rhma:
 
     def create_constraint_18(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         print(f"----- Creating constraint 18 for busy period {h} -----")
+        self.assert_constraints_attributes()
         constraint_18 = []
         for i, activations in s_i_h_for_h.items():
             for j in range(self.number_of_cores):
@@ -292,6 +305,7 @@ class Rhma:
 
     def create_constraint_19(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         print(f"----- Creating constraint 19 for busy period {h} -----")
+        self.assert_constraints_attributes()
         constraint_19 = []
         for i, activations in s_i_h_for_h.items():
             for a in activations:
@@ -311,6 +325,7 @@ class Rhma:
 
     def create_constraint_20(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         print(f"----- Creating constraint 20 for busy period {h} -----")
+        self.assert_constraints_attributes()
         constraint_20 = []
         for i, activations in s_i_h_for_h.items():
             for a in activations:
@@ -324,6 +339,7 @@ class Rhma:
 
     def create_constraint_21(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         print(f"----- Creating constraint 21 for busy period {h} -----")
+        self.assert_constraints_attributes()
         constraint_21 = []
         for j, t in product(range(self.number_of_cores), self.T_h[h]):
             constraint_21.append(
@@ -333,6 +349,7 @@ class Rhma:
 
     def create_constraint_22(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         print(f"----- Creating constraint 22 for busy period {h} -----")
+        self.assert_constraints_attributes()
         constraint_22 = []
         for i, activations in s_i_h_for_h.items():
             for k, b_activations in s_i_h_for_h.items():
@@ -346,6 +363,7 @@ class Rhma:
 
     def create_constraint_23(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         print(f"----- Creating constraint 23 for busy period {h} -----")
+        self.assert_constraints_attributes()
         constraint_23 = []
         for i, activations in s_i_h_for_h.items():
             for k, b_activations in s_i_h_for_h.items():
@@ -357,6 +375,7 @@ class Rhma:
 
     def create_constraint_24(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
         print(f"----- Creating constraint 24 for busy period {h} -----")
+        self.assert_constraints_attributes()
         constraint_24 = []
         for i, activations in s_i_h_for_h.items():
             for a in activations:
@@ -367,30 +386,61 @@ class Rhma:
         print(f"----- Constraint 24 created for busy period {h} -----")
         return constraint_24
 
+    def assert_constraints_attributes(self):
+        """
+        Function to assert that all necessary attributes for constraints are correctly initialized.
+        """
+        assert self.taskset is not None, "taskset should not be None"
+        assert self.assignment is not None, "assignment should not be None"
+        assert self.number_of_cores > 0, "number_of_cores should be greater than 0"
+        assert self.scheduling_options is not None, "scheduling_options should not be None"
+        assert self.o_i_j is not None, "o_i_j should not be None"
+        assert self.maxI is not None, "maxI should not be None"
+        assert self.combined_scheduler is not None, "combined_scheduler should not be None"
+        assert self.busy_periods is not None and len(
+            self.busy_periods) > 0, "busy_periods should not be None or empty"
+        assert self.actual_utilization is not None, "actual_utilization should not be None"
+        assert self.S_i_h is not None and len(
+            self.S_i_h) > 0, "S_i_h should not be None or empty"
+        assert self.R_i_a_h is not None and len(
+            self.R_i_a_h) > 0, "R_i_a_h should not be None or empty"
+        assert self.T_h is not None and len(
+            self.T_h) > 0, "T_h should not be None or empty"
+        assert self.d_i_a is not None, "d_i_a should not be None"
+        assert self.solver_name in [
+            "gurobi", "glpk"], "solver_name should be 'gurobi' or 'glpk'"
+        assert self.solver is not None, "solver should not be None"
+
     def createLpConstraints(self, h, x, m, w):
-        # Extraction des données pour le busy period 'h'
         s_i_h_for_h = self.extract_s_i_h_for_h(h)
         r_i_a_h_for_h = self.extract_r_i_a_h_for_h(h, s_i_h_for_h)
+        serialized_self = dill.dumps(self)
 
         # Parallélisation de la création des contraintes
-        with ThreadPoolExecutor(max_workers=self.threads) as executor:
+        with ThreadPoolExecutor(max_workers=8) as executor:
             futures = {
-                executor.submit(self.create_constraint_16, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_16",
-                executor.submit(self.create_constraint_17, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_17",
-                executor.submit(self.create_constraint_18, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_18",
-                executor.submit(self.create_constraint_19, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_19",
-                executor.submit(self.create_constraint_20, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_20",
-                executor.submit(self.create_constraint_21, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_21",
-                executor.submit(self.create_constraint_22, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_22",
-                executor.submit(self.create_constraint_23, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_23",
-                executor.submit(self.create_constraint_24, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_24",
+                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_16', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_16",
+                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_17', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_17",
+                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_18', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_18",
+                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_19', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_19",
+                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_20', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_20",
+                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_21', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_21",
+                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_22', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_22",
+                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_23', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_23",
+                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_24', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_24",
             }
 
             results = {key: future.result() for future, key in futures.items()}
 
-        return (results["constraint_16"], results["constraint_17"], results["constraint_18"],
-                results["constraint_19"], results["constraint_20"], results["constraint_21"],
-                results["constraint_22"], results["constraint_23"], results["constraint_24"])
+        # Print results
+        for key in results:
+            print(f"{key, results[key]} generated.")
+
+        return (
+            results["constraint_16"], results["constraint_17"], results["constraint_18"],
+            results["constraint_19"], results["constraint_20"], results["constraint_21"],
+            results["constraint_22"], results["constraint_23"], results["constraint_24"]
+        )
 
     def schedule(self):
         print(
@@ -427,6 +477,7 @@ class Rhma:
             for constraint in constraint_24:
                 prob += constraint
 
+            self.assert_constraints_attributes()
             # Objective function
             interference_term = lpSum(m[i, a, k, b] for i in range(len(self.taskset)) for k in range(
                 len(self.taskset)) for a in self.S_i_h[i, h] for b in self.S_i_h[k, h])

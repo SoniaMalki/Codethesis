@@ -125,11 +125,11 @@ class ConfigGenerator:
                 max_prime INT,
                 gen_limit_exponent INT,
                 number_of_cores INT,
-                result_file_path TEXT DEFAULT 'None',
-                cluster TEXT DEFAULT 'None',  
+                result_file_path TEXT DEFAULT None,
+                cluster TEXT DEFAULT None,  
                 threads INT DEFAULT 1,     
-                slurm_time TEXT DEFAULT 'None', 
-                slurm_memory TEXT DEFAULT 'None',
+                slurm_time TEXT DEFAULT None, 
+                slurm_memory TEXT DEFAULT None,
                 UNIQUE (
                     taskset_repetition,
                     tasks_per_taskset,
@@ -158,11 +158,11 @@ class ConfigGenerator:
                 number_of_cores INT,
                 solving_time_limit_MILP INT,
                 solver_name VARCHAR,
-                result_file_path TEXT DEFAULT 'None',
-                cluster TEXT DEFAULT 'None',  
+                result_file_path TEXT DEFAULT None,
+                cluster TEXT DEFAULT None,  
                 threads INT DEFAULT 1,     
-                slurm_time TEXT DEFAULT 'None', 
-                slurm_memory TEXT DEFAULT 'None',
+                slurm_time TEXT DEFAULT None, 
+                slurm_memory TEXT DEFAULT None,
                 FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id),
                 UNIQUE (
                     taskset_id,
@@ -188,11 +188,11 @@ class ConfigGenerator:
                 non_preemption_time_variant2 VARCHAR,
                 solving_time_limit_MILP INT,
                 solver_name VARCHAR,
-                result_file_path TEXT DEFAULT 'None',
-                cluster TEXT DEFAULT 'None',   
+                result_file_path TEXT DEFAULT None,
+                cluster TEXT DEFAULT None,   
                 threads INT DEFAULT 1,     
-                slurm_time TEXT DEFAULT 'None', 
-                slurm_memory TEXT DEFAULT 'None',
+                slurm_time TEXT DEFAULT None, 
+                slurm_memory TEXT DEFAULT None,
                 FOREIGN KEY (assignment_id) REFERENCES Assignments(assignment_id),
                 FOREIGN KEY (taskset_id) REFERENCES Tasksets(taskset_id),
                 UNIQUE (
@@ -359,10 +359,9 @@ class ConfigGenerator:
                             taskset_id, action, taskset_repetition, tasks_per_taskset, interference_factor,
                             probability_factor, max_utilization, deadline_option, max_hyperperiod,
                             max_prime, gen_limit_exponent, number_of_cores, result_file_path, cluster, threads, slurm_time, slurm_memory
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                         """,
                         (
-                            # Nouvel ID de taskset
                             f"taskset_{self.taskset_index}",
                             "generate",
                             repetition,
@@ -375,14 +374,13 @@ class ConfigGenerator:
                             prime,
                             exponent,
                             cores,
-                            'None',
-                            'None',
+                            None,
+                            None,
                             1,
-                            'None',
-                            'None'
+                            None,
+                            None
                         ),
                     )
-
                     # Récupérer l'ID du taskset inséré (s'il a été inséré)
                     taskset_id = self.cursor.lastrowid
                     if taskset_id:
@@ -479,11 +477,11 @@ class ConfigGenerator:
                                 cores,
                                 solving_time,
                                 solver_name,
-                                'None',
-                                'None',
+                                None,
+                                None,
                                 1,
-                                'None',
-                                'None'
+                                None,
+                                None
                             ),
                         )
 
@@ -598,11 +596,11 @@ class ConfigGenerator:
                                 non_preemption,
                                 solving_time,
                                 solver_name,
-                                'None',
-                                'None',
+                                None,
+                                None,
                                 1,
-                                'None',
-                                'None'
+                                None,
+                                None
                             ),
                         )
 

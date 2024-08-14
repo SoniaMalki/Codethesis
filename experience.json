@@ -71,7 +71,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_1": {
+  "full_experience_only_taskset_1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -107,7 +107,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_2": {
+  "full_experience_only_taskset_2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -143,7 +143,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_3": {
+  "full_experience_only_taskset_3": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -179,7 +179,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_4": {
+  "full_experience_only_taskset_4": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
@@ -215,7 +215,7 @@
       "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_5": {
+  "full_experience_only_taskset_5": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],

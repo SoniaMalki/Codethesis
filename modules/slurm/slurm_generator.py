@@ -338,11 +338,17 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
     def generate_master_slurm(self):
         """Generate the main master SLURM file."""
         print("Generating the main master SLURM file")
+        master_deps = {}
+
+        # Generating master SLURM files for taskset, assignment, and scheduling
         for config_type in ["taskset", "assignment", "scheduling"]:
             self.write_master_slurm(config_type)
+            master_file = self.master_dir / f"all_{config_type}s_master.slurm"
+            if master_file.exists():
+                master_deps[config_type] = master_file
 
-        # Only create master.slurm if at least one other master file exists
-        if any((self.master_dir).glob("*.slurm")):
+        # Generate the main master.slurm with dependencies
+        if master_deps:
             slurm_file = self.master_dir / "master.slurm"
             with open(slurm_file, "w") as f:
                 f.write(
@@ -354,31 +360,42 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
 #SBATCH --mem=2G
 """
                 )
-                if (self.master_dir / "all_tasksets_master.slurm").exists():
+
+                if "taskset" in master_deps:
                     f.write(
-                        f"""taskset_id=$(sbatch {self.master_dir / "all_tasksets_master.slurm"} | awk '{{print $4}}')\n"""
+                        f"""taskset_id=$(sbatch {master_deps["taskset"]} | awk '{{print $4}}')\n"""
                     )
-                if (self.master_dir / "all_assignments_master.slurm").exists():
+                if "assignment" in master_deps:
                     if 'taskset_id' in locals():
                         f.write(
-                            f"""assignment_id=$(sbatch --dependency=afterok:$taskset_id {self.master_dir / "all_assignments_master.slurm"} | awk '{{print $4}}')\n"""
+                            f"""assignment_id=$(sbatch --dependency=afterok:$taskset_id {master_deps["assignment"]} | awk '{{print $4}}')\n"""
                         )
                     else:
                         f.write(
-                            f"""assignment_id=$(sbatch {self.master_dir / "all_assignments_master.slurm"} | awk '{{print $4}}')\n"""
+                            f"""assignment_id=$(sbatch {master_deps["assignment"]} | awk '{{print $4}}')\n"""
                         )
-                if (self.master_dir / "all_schedulings_master.slurm").exists():
+                if "scheduling" in master_deps:
                     if 'assignment_id' in locals():
                         f.write(
-                            f"""scheduling_id=$(sbatch --dependency=afterok:$assignment_id {self.master_dir / "all_schedulings_master.slurm"} | awk '{{print $4}}')\n"""
+                            f"""scheduling_id=$(sbatch --dependency=afterok:$assignment_id {master_deps["scheduling"]} | awk '{{print $4}}')\n"""
                         )
                     else:
                         f.write(
-                            f"""scheduling_id=$(sbatch {self.master_dir / "all_schedulings_master.slurm"} | awk '{{print $4}}')\n"""
+                            f"""scheduling_id=$(sbatch {master_deps["scheduling"]} | awk '{{print $4}}')\n"""
                         )
+
+                # Add result analysis with dependency on the last executed step
                 if 'scheduling_id' in locals():
                     f.write(
                         f"""sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.slurm"}\n"""
+                    )
+                elif 'assignment_id' in locals():
+                    f.write(
+                        f"""sbatch --dependency=afterok:$assignment_id {self.master_dir / "analyze_results.slurm"}\n"""
+                    )
+                elif 'taskset_id' in locals():
+                    f.write(
+                        f"""sbatch --dependency=afterok:$taskset_id {self.master_dir / "analyze_results.slurm"}\n"""
                     )
                 else:
                     f.write(

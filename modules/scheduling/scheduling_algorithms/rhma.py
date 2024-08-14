@@ -4,6 +4,7 @@ from itertools import product
 from pulp import *
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import numpy as np
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.scheduling_algorithms.combined_scheduler import CombinedScheduler
 from modules.utils.busy_period import BusyPeriod
@@ -107,7 +108,7 @@ class Rhma:
         print("----- Generating maxI -----")
         maxI = 0
         for i, j in product(range(len(self.taskset)), repeat=2):
-            if i != j and self.o_i_j[i] != self.o_i_j[j] and self.taskset.single_interference[i] != 0 and self.taskset.single_interference[j] != 0:
+            if i != j and not np.array_equal(self.o_i_j[i], self.o_i_j[j]) and self.taskset.single_interference[i] != 0 and self.taskset.single_interference[j] != 0:
                 v_j_to_i = self.calculate_activation_pattern(j=j, i=i)
                 for a_index, a in enumerate(self.taskset.activation[i]):
                     maxI += v_j_to_i[a_index] * \
@@ -115,86 +116,73 @@ class Rhma:
         return maxI
 
     def calculate_activation_pattern(self, j, i):
-        # print(
-        #     f"      Calculating activation pattern for task {j} to task {i}")
-        v_j_to_i = []
-        for a in self.taskset.activation[i]:
-            activation_in_t = 1
+        v_j_to_i = np.ones(len(self.taskset.activation[i]), dtype=np.int32)
+        for a_idx, a in enumerate(self.taskset.activation[i]):
             activation_start = (a-1) * self.taskset.period[i] + 1
-            activation_end = a * self.taskset.period[i]  # pas -1 car python
-            # print(
-            #     f"         Processing activation {a} of task {i}, start: {activation_start}, end: {activation_end}")
+            activation_end = a * self.taskset.period[i]
             for t in range(activation_start, activation_end):
                 if t % self.taskset.period[j] == 0:
-                    activation_in_t += 1
-                    # print(
-                    #     f"            Activation of task {j} found at time {t}, incrementing count.")
-            v_j_to_i.append(activation_in_t)
-            # print(
-            #     f"         Activation count for activation {a} of task {i}: {activation_in_t}")
-        # print(
-        #     f"      Activation pattern for task {j} to task {i}: {v_j_to_i}")
+                    v_j_to_i[a_idx] += 1
         return v_j_to_i
 
     def generate_o_i_j(self):
         print("----- Generating o_i_j -----")
-
         tasks_per_core = {core: set() for core in range(self.number_of_cores)}
         for core, tasks in self.assignment.items():
             tasks_per_core[core].update(tasks)
 
-        o_i_j = [
-            [1 if task_index in tasks_per_core[core] else 0
-             for core in range(self.number_of_cores)]
-            for task_index in range(len(self.taskset))
-        ]
+        o_i_j = np.zeros(
+            (len(self.taskset), self.number_of_cores), dtype=np.int32)
+        for task_index in range(len(self.taskset)):
+            for core in range(self.number_of_cores):
+                if task_index in tasks_per_core[core]:
+                    o_i_j[task_index, core] = 1
 
         print(f"o_i_j generated: {o_i_j}")
         return o_i_j
 
     def generate_S_i_h(self):
         print("----- Generating S_i_h -----")
-        S_i_h = [[[] for _ in range(len(self.busy_periods))]
-                 for _ in range(len(self.taskset))]
-
-        for i, h in product(range(len(self.taskset)), range(len(self.busy_periods))):
-            task_period = self.taskset.period[i]
-            for a in self.taskset.activation[i]:
-                activation_start = ((a - 1) * task_period) + 1
-                busy_period = self.busy_periods[h]
-                if busy_period.start_time <= activation_start < busy_period.end_time:
-                    S_i_h[i][h].append(a)
+        S_i_h = np.empty((len(self.taskset), len(
+            self.busy_periods)), dtype=object)
+        for i in range(len(self.taskset)):
+            for h in range(len(self.busy_periods)):
+                S_i_h[i, h] = []
+                task_period = self.taskset.period[i]
+                for a in self.taskset.activation[i]:
+                    activation_start = ((a - 1) * task_period) + 1
+                    busy_period = self.busy_periods[h]
+                    if busy_period.start_time <= activation_start < busy_period.end_time:
+                        S_i_h[i, h].append(a)
         return S_i_h
 
     def generate_R_i_a_h(self, S_i_h):
         print("----- Generating R_i_a_h -----")
-        R_i_a_h = {}
+        R_i_a_h = np.empty(
+            (len(self.taskset), len(self.busy_periods)), dtype=object)
+        for i in range(len(self.taskset)):
+            for h in range(len(self.busy_periods)):
+                R_i_a_h[i, h] = {}
+                task_period = self.taskset.period[i]
+                for a in S_i_h[i, h]:
+                    activation_start = ((a - 1) * task_period) + 1
+                    activation_end = a * task_period + 1
+                    busy_period = self.busy_periods[h]
 
-        for i, h in product(range(len(self.taskset)), range(len(self.busy_periods))):
-            R_i_a_h[i] = {}
-            task_period = self.taskset.period[i]
-            for a in S_i_h[i][h]:
-                activation_start = ((a - 1) * task_period) + 1
-                activation_end = a * task_period + 1
-                busy_period = self.busy_periods[h]
+                    intersection_start = max(
+                        activation_start, busy_period.start_time)
+                    intersection_end = min(
+                        activation_end, busy_period.end_time)
 
-                intersection_start = max(
-                    activation_start, busy_period.start_time)
-                intersection_end = min(activation_end, busy_period.end_time)
-
-                R_i_a_h[i].setdefault(a, {})[h] = list(
-                    range(intersection_start, intersection_end))
+                    R_i_a_h[i, h][a] = np.arange(
+                        intersection_start, intersection_end)
         return R_i_a_h
 
     def generate_T_h(self):
-        # print("----- Generating T_h -----")
-        T_h = []
+        print("----- Generating T_h -----")
+        T_h = np.empty(len(self.busy_periods), dtype=object)
         for h, busy_period in enumerate(self.busy_periods):
-            # print(
-            #     f"   Busy period {h}: start={busy_period.start_time}, end={busy_period.end_time}")
-            T_h.append(
-                list(range(busy_period.start_time, busy_period.end_time)))
-        # print(f"T_h generated: {T_h}")
+            T_h[h] = np.arange(busy_period.start_time, busy_period.end_time)
         return T_h
 
     def createLpVariables(self, h):
@@ -205,7 +193,7 @@ class Rhma:
         w = LpVariable.dicts(
             "w",
             [(i, a) for i in range(len(self.taskset))
-             for a in self.S_i_h[i][h]],
+             for a in self.S_i_h[i, h]],
             lowBound=0,
             cat='Integer'
         )
@@ -214,7 +202,7 @@ class Rhma:
             "x",
             [(i, a, j, t)
              for i in range(len(self.taskset))
-             for a in self.S_i_h[i][h]
+             for a in self.S_i_h[i, h]
              for j, t in product(
                 range(self.number_of_cores),
                 self.T_h[h]
@@ -227,8 +215,8 @@ class Rhma:
             "m",
             [(i, a, k, b)
              for i, k in product(range(len(self.taskset)), repeat=2)
-             for a in self.S_i_h[i][h]
-             for b in self.S_i_h[k][h]
+             for a in self.S_i_h[i, h]
+             for b in self.S_i_h[k, h]
              ],
             cat='Binary'
         )
@@ -237,7 +225,7 @@ class Rhma:
         return x, m, w
 
     def extract_s_i_h_for_h(self, h):
-        s_i_h_for_h = {i: self.S_i_h[i][h] for i in range(
+        s_i_h_for_h = {i: self.S_i_h[i, h] for i in range(
             len(self.taskset)) if h < len(self.S_i_h[i])}
         return s_i_h_for_h
 
@@ -254,7 +242,7 @@ class Rhma:
                     activation_start, busy_period.start_time)
                 intersection_end = min(activation_end, busy_period.end_time)
 
-                r_i_a_h_for_h[i][a] = range(
+                r_i_a_h_for_h[i][a] = np.arange(
                     intersection_start, intersection_end)
         return r_i_a_h_for_h
 
@@ -265,7 +253,7 @@ class Rhma:
             for a in activations:
                 for j in range(self.number_of_cores):
                     for t in self.T_h[h]:
-                        if self.o_i_j[i][j] == 0:
+                        if self.o_i_j[i, j] == 0:
                             constraint_16.append(x[i, a, j, t] == 0)
         print(f"----- Constraint 16 created for busy period {h} -----")
         return constraint_16
@@ -278,7 +266,7 @@ class Rhma:
                 activations_i = s_i_h_for_h[i]
                 activations_k = s_i_h_for_h[k]
                 for a, b in product(activations_i, activations_k):
-                    if not set(r_i_a_h_for_h[i][a]).intersection(r_i_a_h_for_h[k][b]):
+                    if not np.intersect1d(r_i_a_h_for_h[i][a], r_i_a_h_for_h[k][b]).size:
                         constraint_17.append(m[i, a, k, b] == 0)
         print(f"----- Constraint 17 created for busy period {h} -----")
         return constraint_17
@@ -292,10 +280,10 @@ class Rhma:
                     left_side = lpSum(x[i, a, j, t]
                                       for a in activations for t in r_i_a_h_for_h[i][a])
                     right_side = len(activations) * \
-                        self.taskset.wcet[i] * self.o_i_j[i][j]
+                        self.taskset.wcet[i] * self.o_i_j[i, j]
 
-                    right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
-                                        for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                    right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i, j]
+                                        for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i, j] != self.o_i_j[k, j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
                                         for a in activations for b in b_activations)
 
                     constraint_18.append(left_side == right_side)
@@ -311,10 +299,10 @@ class Rhma:
                     if activations:
                         left_side = lpSum(x[i, a, j, t]
                                           for t in r_i_a_h_for_h[i][a])
-                        right_side = self.taskset.wcet[i] * self.o_i_j[i][j]
+                        right_side = self.taskset.wcet[i] * self.o_i_j[i, j]
 
-                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i][j]
-                                            for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i][j] != self.o_i_j[k][j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i, j]
+                                            for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i, j] != self.o_i_j[k, j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
                                             for b in b_activations)
 
                         constraint_19.append(left_side == right_side)
@@ -441,10 +429,10 @@ class Rhma:
 
             # Objective function
             interference_term = lpSum(m[i, a, k, b] for i in range(len(self.taskset)) for k in range(
-                len(self.taskset)) for a in self.S_i_h[i][h] for b in self.S_i_h[k][h])
+                len(self.taskset)) for a in self.S_i_h[i, h] for b in self.S_i_h[k, h])
 
             response_time_term = lpSum(
-                (1 / self.taskset.deadline[i]) * w[i, a] for i in range(len(self.taskset)) for a in self.S_i_h[i][h])
+                (1 / self.taskset.deadline[i]) * w[i, a] for i in range(len(self.taskset)) for a in self.S_i_h[i, h])
 
             # if maxI == 0
             if self.maxI != 0:
@@ -471,7 +459,7 @@ class Rhma:
 
                 for t in self.T_h[h]:
                     for i in range(len(self.taskset)):
-                        for a in self.S_i_h[i][h]:
+                        for a in self.S_i_h[i, h]:
                             for j in range(self.number_of_cores):
                                 if x[i, a, j, t].varValue == 1:
                                     busy_period_schedule[j].append(

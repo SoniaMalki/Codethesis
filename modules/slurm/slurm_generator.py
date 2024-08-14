@@ -24,7 +24,7 @@ class SlurmGenerator:
             "assignment_milp": {"time": "05:00:00", "mem": "4G", "batch_size": 5},
             "scheduling_simple": {"time": "01:00:00", "mem": "4G", "batch_size": 5},
             "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 5},
-            "scheduling_rhma": {"time": "05:00:00", "mem": "32G", "batch_size": 5},
+            "scheduling_rhma": {"time": "05:00:00", "mem": "64G", "batch_size": 5},
         }
 
         self.slurm_parameters = self.default_slurm_params

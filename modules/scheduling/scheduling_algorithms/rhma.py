@@ -461,7 +461,6 @@ class Rhma:
 
             print(
                 f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
-            print(prob)
             prob.solve(self.solver)
 
             # Checking if a solution is found

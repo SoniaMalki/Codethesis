@@ -218,8 +218,8 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
                 # Set threads in scheduling_options
                 config_params['scheduling_options']['threads'] = optimal_threads
 
-            else:
-                config_params = {}
+            elif config_type == "taskset":
+                config_params = {}  # Assuming no specific parameters for taskset
                 optimal_threads = 1  # Default to 1 if no parameters found
 
             # Get Slurm time and memory based on configuration type
@@ -243,7 +243,7 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
                 f"Skipping SLURM generation for {config_key} - result file already exists")
 
     def update_database_with_slurm_info(self, config_key, config_type, threads, slurm_time, slurm_memory):
-        """Updates the Assignments or Schedulings table with cluster, threads, time limit, and memory."""
+        """Updates the Tasksets, Assignments, or Schedulings table with cluster, threads, time limit, and memory."""
 
         hostname = socket.gethostname()
 
@@ -254,12 +254,7 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
             "sonia": "sonia"
         }
 
-        for key, value in cluster_mapping.items():
-            if hostname.startswith(key):
-                cluster_name = value
-                break
-        else:
-            cluster_name = hostname
+        cluster_name = next((value for key, value in cluster_mapping.items() if hostname.startswith(key)), hostname)
 
         db_utils = DBUtils(self.db_path)  # Create DBUtils instance
         if config_type == "assignment":
@@ -268,6 +263,9 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
         elif config_type == "scheduling":
             table_name = "Schedulings"
             id_column = "scheduling_id"
+        elif config_type == "taskset":
+            table_name = "Tasksets"
+            id_column = "taskset_id"
         else:
             print(f"Error: Invalid config_type: {config_type}")
             return

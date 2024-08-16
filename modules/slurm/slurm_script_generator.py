@@ -32,58 +32,14 @@ class SlurmScriptGenerator:
 
     def generate_all_scripts(self):
         print("Generating all SLURM scripts")
-        self.create_script(
-            script_name=f"generate_configs_{self.experience_id}.slurm",
-            job_name="generate_configs",
-            output_file=f"{self.output_slurm_path}/generate_configs_{self.experience_id}.txt",
-            time="24:00:00",
-            mem="16G",
-            command=f"python3 {self.main_path}/main.py \"generate_configs\" \"{self.experience_id}\""
-        )
 
-        self.create_script(
-            script_name=f"generate_slurm_files_{self.experience_id}.slurm",
-            job_name="generate_slurm_files",
-            output_file=f"{self.output_slurm_path}/generate_slurm_files_{self.experience_id}.txt",
-            time="24:00:00",
-            mem="16G",
-            command=f"python3 {self.main_path}/main.py generate_slurm_files {self.experience_id}"
-        )
-
-        self.create_script(
-            script_name=f"submit_master_{self.experience_id}.slurm",
-            job_name="submit_master",
-            output_file=f"{self.output_slurm_path}/submit_master_{self.experience_id}.txt",
-            time="00:10:00",
-            mem="2G",
-            command=(
-                "echo \"Checking for master.slurm file\"\n"
-                f"MASTER_DIR=\"{self.generation_path}/{self.experience_id}/slurm/master\"\n"
-                "if [ -f \"$MASTER_DIR/master.slurm\" ]; then\n"
-                "    echo \"Submitting master.slurm\"\n"
-                "    sbatch \"$MASTER_DIR/master.slurm\"\n"
-                "else\n"
-                "    echo \"Erreur: $MASTER_DIR/master.slurm n'existe pas\"\n"
-                "    exit 1\n"
-                "fi\n"
-            )
-        )
-
-        self.create_script(
-            script_name=f"analyze_results_{self.experience_id}.slurm",
-            job_name="analyze_results",
-            output_file=f"{self.output_slurm_path}/analyze_results_{self.experience_id}.txt",
-            time="24:00:00",
-            mem="16G",
-            command=f"python3 {self.main_path}/main.py analyze_results {self.experience_id}"
-        )
-
+        # Full Pipeline Script with Integrated Master Logic and Updated Time/Memory
         self.create_script(
             script_name=f"full_pipeline_{self.experience_id}.slurm",
             job_name="full_pipeline",
             output_file=f"{self.output_slurm_path}/full_pipeline_{self.experience_id}.txt",
-            time="24:00:00",
-            mem="32G",
+            time="2-00:00:00",  # Updated time
+            mem="4G",  # Updated memory
             command=(
                 f"echo \"Starting full pipeline for {self.experience_id}\"\n"
                 f"python3 {self.main_path}/main.py generate_configs {self.experience_id}\n"
@@ -98,18 +54,41 @@ class SlurmScriptGenerator:
                 "    exit 1\n"
                 "fi\n\n"
                 "echo \"Génération des fichiers SLURM réussie\"\n"
+                "echo \"Starting master job\"\n"
                 f"MASTER_DIR=\"{self.generation_path}/{self.experience_id}/slurm/master\"\n"
-                "if [ -f \"$MASTER_DIR/master.slurm\" ]; then\n"
-                "    echo \"Soumission du job master.slurm\"\n"
-                "    sbatch \"$MASTER_DIR/master.slurm\"\n"
-                "    if [ $? -ne 0 ]; then\n"
-                "        echo \"Échec de la soumission du job master.slurm\"\n"
-                "        exit 1\n"
-                "    fi\n"
-                "else\n"
-                "    echo \"Erreur: $MASTER_DIR/master.slurm n'existe pas\"\n"
-                "    exit 1\n"
+
+                # Taskset
+                "if [ -f \"$MASTER_DIR/all_tasksets_master.slurm\" ]; then\n"
+                "  echo \"Submitting all_tasksets_master.slurm\"\n"
+                "  taskset_id=$(sbatch \"$MASTER_DIR/all_tasksets_master.slurm\" | awk '{print $4}')\n"
                 "fi\n"
+
+                # Assignment (dependent on taskset)
+                "if [ -f \"$MASTER_DIR/all_assignments_master.slurm\" ]; then\n"
+                "  echo \"Submitting all_assignments_master.slurm\"\n"
+                "  if [[ -z \"$taskset_id\" ]]; then\n"
+                "    assignment_id=$(sbatch \"$MASTER_DIR/all_assignments_master.slurm\" | awk '{print $4}')\n"
+                "  else\n"
+                "    assignment_id=$(sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/all_assignments_master.slurm\" | awk '{print $4}')\n"
+                "  fi\n"
+                "fi\n"
+
+                # Scheduling (dependent on assignment OR taskset if assignment failed)
+                "if [ -f \"$MASTER_DIR/all_schedulings_master.slurm\" ]; then\n"
+                "  echo \"Submitting all_schedulings_master.slurm\"\n"
+                "  if [[ -z \"$assignment_id\" && -n \"$taskset_id\" ]]; then\n"
+                "    scheduling_id=$(sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/all_schedulings_master.slurm\" | awk '{print $4}')\n"
+                "  elif [[ -n \"$assignment_id\" ]]; then\n"
+                "    scheduling_id=$(sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/all_schedulings_master.slurm\" | awk '{print $4}')\n"
+                "  else\n"
+                "    scheduling_id=$(sbatch \"$MASTER_DIR/all_schedulings_master.slurm\" | awk '{print $4}')\n"
+                "  fi\n"
+                "fi\n"
+
+                # Analyze Results (directly in Python)
+                "echo \"Analyzing results directly in Python\"\n"
+                f"python3 {self.main_path}/main.py analyze_results {self.experience_id}\n"
+
                 f"echo \"Full pipeline completed for {self.experience_id}\"\n"
             )
         )

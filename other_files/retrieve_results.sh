@@ -22,6 +22,8 @@ DESTINATION="/home/sonia/Bureau/Codethesis/"
 
 DIRECTORIES=(
     'generation'
+    'slurm_code/output_launch_slurm_jobs'
+    'slurm_code/slurm_scripts'
 )
 
 for dir in "${DIRECTORIES[@]}"; do

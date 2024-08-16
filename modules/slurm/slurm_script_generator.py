@@ -85,9 +85,20 @@ class SlurmScriptGenerator:
                 "  fi\n"
                 "fi\n"
 
-                # Analyze Results (directly in Python)
-                "echo \"Analyzing results directly in Python\"\n"
-                f"python3 {self.main_path}/main.py analyze_results {self.experience_id}\n"
+                "if [[ -n \"$scheduling_id\" ]]; then\n"
+                "  echo \"Submitting analyze_results.slurm (waiting for scheduling to finish)\"\n"
+                "  sbatch --dependency=afterok:$scheduling_id \"$MASTER_DIR/analyze_results.slurm\"\n"
+                "elif [[ -n \"$assignment_id\" ]]; then\n"
+                "  echo \"Submitting analyze_results.slurm (waiting for assignment to finish)\"\n"
+                "  sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/analyze_results.slurm\"\n"
+                "elif [[ -n \"$taskset_id\" ]]; then\n"
+                "  echo \"Submitting analyze_results.slurm (waiting for taskset to finish)\"\n"
+                "  sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/analyze_results.slurm\"\n"
+                "else\n"
+                "  echo \"Submitting analyze_results.slurm (no dependencies)\"\n"
+                "  sbatch \"$MASTER_DIR/analyze_results.slurm\"\n"
+                "fi\n"
+
 
                 f"echo \"Full pipeline completed for {self.experience_id}\"\n"
             )

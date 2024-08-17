@@ -17,8 +17,14 @@ class SlurmGenerator:
         self.db_path = db_path
         self.experience_id = experience_id
 
+        # Centralized SLURM Parameters
+        self.default_slurm_time = "2-00:00:00"
+        self.default_slurm_mem = "2G"
+        self.analyze_slurm_time = "01:00:00"
+        self.analyze_slurm_mem = "4G"
+
         # Dictionnaire des paramètres SLURM par défaut
-        self.default_slurm_params = {
+        self.slurm_parameters = {
             "taskset": {"time": "01:00:00", "mem": "1G", "batch_size": 500},
             "assignment_simple": {"time": "00:20:00", "mem": "1G", "batch_size": 5},
             "assignment_milp": {"time": "05:00:00", "mem": "4G", "batch_size": 5},
@@ -26,8 +32,6 @@ class SlurmGenerator:
             "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 5},
             "scheduling_rhma": {"time": "05:00:00", "mem": "64G", "batch_size": 5},
         }
-
-        self.slurm_parameters = self.default_slurm_params
 
         self.master_dir = self.generation_path / "slurm" / "master"
         self.slurm_dir = self.generation_path / "slurm" / "slurm_files"
@@ -62,13 +66,6 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 """,
         }
 
-        # Dictionary of available cores per cluster
-        # self.cluster_cores = {
-        #     "lm": 40,
-        #     "nic": 32,
-        #     "her": 32,
-        # }
-
         self.cluster_cores = {
             "lm": 10,
             "nic": 10,
@@ -76,10 +73,8 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
             "sonia": 3
         }
 
-        # Récupérer le hostname de la machine
         hostname = socket.gethostname()
         print(f"Hostname: {hostname}")
-        # Charger les modules en fonction du cluster
         self.modules = self.get_modules_for_hostname(hostname)
         print(f"Loaded modules: {self.modules}")
 
@@ -254,7 +249,8 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
             "sonia": "sonia"
         }
 
-        cluster_name = next((value for key, value in cluster_mapping.items() if hostname.startswith(key)), hostname)
+        cluster_name = next((value for key, value in cluster_mapping.items(
+        ) if hostname.startswith(key)), hostname)
 
         db_utils = DBUtils(self.db_path)  # Create DBUtils instance
         if config_type == "assignment":
@@ -334,78 +330,6 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
         else:
             print(
                 f"Skipping master SLURM generation for {config_type} - No batch files found")
-
-    def generate_master_slurm(self):
-        """Generate the main master SLURM file."""
-        print("Generating the main master SLURM file")
-        master_deps = {}
-
-        # Generating master SLURM files for taskset, assignment, and scheduling
-        for config_type in ["taskset", "assignment", "scheduling"]:
-            self.write_master_slurm(config_type)
-            master_file = self.master_dir / f"all_{config_type}s_master.slurm"
-            if master_file.exists():
-                master_deps[config_type] = master_file
-
-        # Generate the main master.slurm with dependencies
-        if master_deps:
-            slurm_file = self.master_dir / "master.slurm"
-            with open(slurm_file, "w") as f:
-                f.write(
-                    f"""#!/bin/bash
-#SBATCH --job-name=master_job
-#SBATCH --output={self.output_dir / f"master_job.txt"}
-#SBATCH --ntasks=1
-#SBATCH --time=2-00:00:00
-#SBATCH --mem=2G
-"""
-                )
-
-                if "taskset" in master_deps:
-                    f.write(
-                        f"""taskset_id=$(sbatch {master_deps["taskset"]} | awk '{{print $4}}')\n"""
-                    )
-                if "assignment" in master_deps:
-                    if 'taskset_id' in locals():
-                        f.write(
-                            f"""assignment_id=$(sbatch --dependency=afterok:$taskset_id {master_deps["assignment"]} | awk '{{print $4}}')\n"""
-                        )
-                    else:
-                        f.write(
-                            f"""assignment_id=$(sbatch {master_deps["assignment"]} | awk '{{print $4}}')\n"""
-                        )
-                if "scheduling" in master_deps:
-                    if 'assignment_id' in locals():
-                        f.write(
-                            f"""scheduling_id=$(sbatch --dependency=afterok:$assignment_id {master_deps["scheduling"]} | awk '{{print $4}}')\n"""
-                        )
-                    else:
-                        f.write(
-                            f"""scheduling_id=$(sbatch {master_deps["scheduling"]} | awk '{{print $4}}')\n"""
-                        )
-
-                # Add result analysis with dependency on the last executed step
-                if 'scheduling_id' in locals():
-                    f.write(
-                        f"""sbatch --dependency=afterok:$scheduling_id {self.master_dir / "analyze_results.slurm"}\n"""
-                    )
-                elif 'assignment_id' in locals():
-                    f.write(
-                        f"""sbatch --dependency=afterok:$assignment_id {self.master_dir / "analyze_results.slurm"}\n"""
-                    )
-                elif 'taskset_id' in locals():
-                    f.write(
-                        f"""sbatch --dependency=afterok:$taskset_id {self.master_dir / "analyze_results.slurm"}\n"""
-                    )
-                else:
-                    f.write(
-                        f"""sbatch {self.master_dir / "analyze_results.slurm"}\n"""
-                    )
-
-            print(f"Main master SLURM file written at {slurm_file}")
-        else:
-            print(
-                "Skipping main master SLURM generation - No other master files found")
 
     def generate_analyze_slurm(self):
         print("Generating the SLURM file for analyzing results")
@@ -487,8 +411,9 @@ done
 
                 i += batch_size
 
-        # 4 & 5. Construct Master Files (per type and main)
-        self.generate_master_slurm()
+        # 4 & 5. Construct Master Files (per type)
+        for config_type in ["taskset", "assignment", "scheduling"]:
+            self.write_master_slurm(config_type)
 
         # Générer le fichier SLURM pour l'analyse des résultats
         self.generate_analyze_slurm()

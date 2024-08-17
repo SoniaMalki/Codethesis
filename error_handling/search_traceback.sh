@@ -13,7 +13,7 @@ config_type="$2"
 script_dir=$(dirname "$0")
 
 # Chemin vers le dossier de sortie
-output_dir="$script_dir/../../generation/$experience_number/slurm/output"
+output_dir="$script_dir/../generation/$experience_number/slurm/output"
 error_dir="$script_dir/output_error"
 
 # Créer le dossier de sortie pour les erreurs s'il n'existe pas

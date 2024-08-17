@@ -14,17 +14,18 @@ if [ -z "$EXPERIENCE" ] || [ -z "$ERROR_TYPE" ]; then
 fi
 
 # Obtenir le chemin du script actuel
-script_dir=$(dirname "$0")
+script_dir=$(cd $(dirname "$0") && pwd)
 
 # Dossier de base pour les fichiers d'erreur
 ERROR_DIR="$script_dir/output_error/$ERROR_TYPE"
 
-# Types de configuration
-CONFIG_TYPES=("scheduling" "taskset" "assignment")
+# Affichage pour debug
+echo "Script directory: $script_dir"
+echo "Error directory: $ERROR_DIR"
 
 # Fonction pour compter les jobs en cours
 count_jobs() {
-  squeue -u $(whoami) | grep "PD\|R" | wc -l
+  squeue -u $(whoami) | grep -c "PD\|R"
 }
 
 # Vérifier si le dossier d'erreur existe
@@ -41,12 +42,13 @@ for FILE in "$ERROR_DIR"/*; do
   BASENAME=$(basename "$FILE")
   
   # Extraire le nom du type de configuration et l'ID 
-  CONFIG_TYPE=$(echo "$BASENAME" | sed -E 's/^output_([^_]+)_.*$/\1/')
-  ID=$(echo "$BASENAME" | sed -E 's/^output_([^.]+).txt$/\1/')
-
+  CONFIG_TYPE=$(echo "$BASENAME" | sed -E 's/([^_]+)_.*\.txt$/\1/')
+  ID=$(echo "$BASENAME" | sed -E 's/[^_]+_([0-9]+)\.txt$/\1/')
+  echo $CONFIG_TYPE
   # Construire le chemin complet du fichier sbatch
-  SBATCH_FILE="$script_dir/../../generation/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/$ID.slurm"
+  SBATCH_FILE="$script_dir/../generation/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/$CONFIG_TYPE"_"$ID.slurm"
 
+  # Affichage pour debug
   echo "Processing error file: $FILE"
   echo "Configuration type: $CONFIG_TYPE, ID: $ID"
   echo "SBATCH file: $SBATCH_FILE"
@@ -56,7 +58,7 @@ for FILE in "$ERROR_DIR"/*; do
     echo "Found SBATCH file: $SBATCH_FILE"
 
     # Attendre que le nombre de jobs actifs soit inférieur à MAX_JOBS
-    while [ $(count_jobs) -ge $MAX_JOBS ]; do
+    while [ "$(count_jobs)" -ge $MAX_JOBS ]; do
       echo "Maximum number of jobs reached. Waiting..."
       sleep 10
     done

@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# Liste des clusters valides
+# List of valid clusters
 VALID_CLUSTERS=("lemaitre4" "hercules" "nic5" "dragon2")
 
-# Vérification du nom du cluster
+# Check the cluster name
 CLUSTER_NAME=$1
 
 if [[ -z "$CLUSTER_NAME" ]]; then
-    echo "Erreur: Vous devez préciser un nom de cluster parmi les suivants : ${VALID_CLUSTERS[*]}"
+    echo "Error: You must specify a cluster name among the following: ${VALID_CLUSTERS[*]}"
     exit 1
 fi
 
-# Vérification si le cluster fourni est valide
+# Check if the provided cluster is valid
 if [[ ! " ${VALID_CLUSTERS[@]} " =~ " $CLUSTER_NAME " ]]; then
-    echo "Erreur: Cluster invalide. Veuillez choisir parmi les suivants : ${VALID_CLUSTERS[*]}"
+    echo "Error: Invalid cluster. Please choose from the following: ${VALID_CLUSTERS[*]}"
     exit 1
 fi
 
@@ -39,13 +39,25 @@ for item in "${EXCLUDE_ITEMS[@]}"; do
     EXCLUDES+=(--exclude="$item")
 done
 
-# Simuler le transfert pour estimer la taille des données
+# Simulate the transfer to estimate the data size
 RSYNC_DRY_RUN_CMD="rsync -avz --dry-run --stats ${EXCLUDES[@]} $SOURCE $DESTINATION"
 DRY_RUN_OUTPUT=$(eval $RSYNC_DRY_RUN_CMD)
 
-# Extraire la taille totale des données à transférer
-TOTAL_SIZE=$(echo "$DRY_RUN_OUTPUT" | grep "Total transferred file size" | awk '{print $5, $6}')
-echo "The total data size to be transferred is ${TOTAL_SIZE}."
+# Extract the total size of data to be transferred
+TOTAL_BYTES=$(echo "$DRY_RUN_OUTPUT" | grep "Total transferred file size" | awk '{print $5}' | sed 's/[.,]//g') # Remove commas and dots
+
+# Convert the size to an appropriate unit
+if [ $TOTAL_BYTES -ge 1073741824 ]; then
+    TOTAL_SIZE=$(echo "scale=2; $TOTAL_BYTES/1073741824" | bc) && TOTAL_UNIT="GB"
+elif [ $TOTAL_BYTES -ge 1048576 ]; then
+    TOTAL_SIZE=$(echo "scale=2; $TOTAL_BYTES/1048576" | bc) && TOTAL_UNIT="MB"
+elif [ $TOTAL_BYTES -ge 1024 ]; then
+    TOTAL_SIZE=$(echo "scale=2; $TOTAL_BYTES/1024" | bc) && TOTAL_UNIT="KB"
+else
+    TOTAL_SIZE=$TOTAL_BYTES && TOTAL_UNIT="B"
+fi
+
+echo "The total data size to be transferred is ${TOTAL_SIZE}${TOTAL_UNIT}."
 
 read -p "Do you want to proceed with the transfer? (y/n) " confirm
 if [[ "$confirm" != "y" ]]; then
@@ -63,3 +75,4 @@ if [ $? -eq 0 ]; then
 else
     echo "Transfer failed!"
 fi
+

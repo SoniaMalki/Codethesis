@@ -1,8 +1,5 @@
-import os
-import json
 import socket
 from pathlib import Path
-from datetime import time
 from time import sleep
 import re
 
@@ -20,7 +17,7 @@ class SlurmGenerator:
 
         # Centralized SLURM Parameters
         self.default_slurm_time = "2-00:00:00"
-        self.default_slurm_mem = "2G"
+        self.default_slurm_mem = "1G"
         self.analyze_slurm_time = "01:00:00"
         self.analyze_slurm_mem = "4G"
         self.master_slurm_time = "2-00:00:00"
@@ -32,10 +29,10 @@ class SlurmGenerator:
         # Dictionnaire des paramètres SLURM par défaut
         self.slurm_parameters = {
             "taskset": {"time": "01:00:00", "mem": "1G", "batch_size": 500},
-            "assignment_simple": {"time": "00:20:00", "mem": "1G", "batch_size": 5},
-            "assignment_milp": {"time": "05:00:00", "mem": "4G", "batch_size": 5},
-            "scheduling_simple": {"time": "01:00:00", "mem": "4G", "batch_size": 5},
-            "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 5},
+            "assignment_simple": {"time": "00:20:00", "mem": "1G", "batch_size": 500},
+            "assignment_milp": {"time": "05:00:00", "mem": "4G", "batch_size": 100},
+            "scheduling_simple": {"time": "01:00:00", "mem": "4G", "batch_size": 500},
+            "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 100},
             "scheduling_rhma": {"time": "05:00:00", "mem": "64G", "batch_size": 5},
         }
 
@@ -158,7 +155,6 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
             optimal_cores = 1
 
         optimal_threads = optimal_cores
-
         return optimal_threads
 
     def get_job_time_and_memory(self, config_type, config_params):

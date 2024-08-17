@@ -298,7 +298,7 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
 {self.modules}
 
 # Exécuter le script d'analyse
-python3 {self.main_path}/main.py analyze_results {self.experience_id}
+python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
 """
             )
         print(f"SLURM file for analyzing results written at {slurm_file}")
@@ -488,13 +488,13 @@ done
 
         command = (
             f"echo \"Starting full pipeline for {self.experience_id}\"\n"
-            f"python3 {self.main_path}/main.py generate_configs {self.experience_id}\n"
+            f"python3 -u {self.main_path}/main.py generate_configs {self.experience_id}\n"
             "if [ $? -ne 0 ]; then\n"
             "    echo \"Échec de la génération des configurations\"\n"
             "    exit 1\n"
             "fi\n\n"
             "echo \"Génération des configurations réussie\"\n"
-            f"python3 {self.main_path}/main.py generate_slurm_files {self.experience_id}\n"
+            f"python3 -u {self.main_path}/main.py generate_slurm_files {self.experience_id}\n"
             "if [ $? -ne 0 ]; then\n"
             "    echo \"Échec de la génération des fichiers SLURM\"\n"
             "    exit 1\n"

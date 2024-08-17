@@ -1,11 +1,10 @@
-import json
 from copy import deepcopy
-import pprint
+import json
 import re
 
 
 def create_reduced_experience(config, name, **keys_to_remove):
-    """Creates a reduced experience configuration by removing specified keys.
+    """Creates a reduced experience configuration, ensuring required keys exist.
 
     Args:
         config: The original configuration dictionary.
@@ -25,6 +24,12 @@ def create_reduced_experience(config, name, **keys_to_remove):
                     del new_config[key1][key2]
         elif value1 == [] and key1 in new_config:
             del new_config[key1]
+
+    # Ensure required keys exist even if empty
+    for key in ["assignment_parameters", "scheduling_parameters"]:
+        if key not in new_config:
+            new_config[key] = {}
+
     return {f"full_experience_{name}": {"config_parameters": new_config}}
 
 
@@ -186,6 +191,28 @@ def split_scheduling_experiences(full_config, include_citta=True):
     return scheduling_experiences
 
 
+def format_json_string(data):
+    """Formats a JSON string for compact dictionaries and lists.
+
+    Args:
+        data: The data to be formatted as a JSON string.
+
+    Returns:
+        A formatted JSON string.
+    """
+    def compact_list_format(match):
+        """Compacts a list within the JSON string."""
+        # Remove line breaks and extra spaces from the matched list string
+        compacted = re.sub(r'\s+', ' ', match.group(0))
+        return compacted.strip()
+
+    json_string = json.dumps(data, indent=2, separators=(',', ': '))
+    # Use a regular expression to find and format lists
+    json_string = re.sub(r'\[[^\]]*\]', compact_list_format,
+                         json_string, flags=re.MULTILINE)
+    return json_string
+
+
 def split_experience(experience_data):
     """Splits a full experience configuration into smaller configurations.
 
@@ -209,33 +236,14 @@ def split_experience(experience_data):
     return all_experiences
 
 
-def format_json_string(data):
-    """Formats a JSON string for compact dictionaries and lists.
-
-    Args:
-        data: The data to be formatted as a JSON string.
-
-    Returns:
-        A formatted JSON string.
-    """
-    def compact_list_format(match):
-        """Compacts a list within the JSON string."""
-        # Remove line breaks and extra spaces from the matched list string
-        compacted = re.sub(r'\s+', ' ', match.group(0))
-        return compacted.strip()
-
-    json_string = json.dumps(data, indent=2, separators=(',', ': '))
-    # Use a regular expression to find and format lists
-    json_string = re.sub(r'\[[^\]]*\]', compact_list_format,
-                         json_string, flags=re.MULTILINE)
-    return json_string
-
-
-# --- Main Execution ---
 if __name__ == "__main__":
     # Load the experience JSON file
     with open("base_experience.json", "r") as f:
         experience_data = json.load(f)
+
+    # Load the old experience JSON file for comparison
+    with open("experience_old.json", "r") as f_old:
+        experience_data_old = json.load(f_old)
 
     # Split the experience configuration
     all_experiences = split_experience(experience_data)
@@ -245,7 +253,10 @@ if __name__ == "__main__":
     for experience in all_experiences:
         final_experience_data.update(experience)
 
-    # Write the complete experience JSON to a file
-    # Write the complete experience JSON to a file
+    # Write the formatted JSON to a file
     with open("experience.json", "w") as f:
         f.write(format_json_string(final_experience_data))
+
+    # Dump the old experience JSON to a file with consistent formatting
+    with open("experience_old_formatted.json", "w") as f_old_formatted:
+        f_old_formatted.write(format_json_string(experience_data_old))

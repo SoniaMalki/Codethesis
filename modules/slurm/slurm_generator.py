@@ -14,6 +14,12 @@ class SlurmGenerator:
         self.db_path = db_path
         self.experience_id = experience_id
 
+        # Define priority lists
+        self.assignment_algorithm_priority = [
+            "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Wmin", "Citta"]
+        self.scheduling_algorithm_priority = ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2",
+                                              "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]
+
         # Centralized SLURM Parameters
         self.default_slurm_time = "2-00:00:00"
         self.default_slurm_mem = "1G"
@@ -395,13 +401,39 @@ done
     def write_master_slurm(self, config_type):
         """Write master SLURM file for a configuration type."""
         print(f"Writing master SLURM file for {config_type}")
+
+        # Path to the batch files
+        batch_dir = self.slurm_dir / config_type / "batch"
+        batch_files = list(batch_dir.glob("*.slurm"))
+
+        # Retrieve the priority list based on the configuration type
+        if config_type == "assignment":
+            priority_list = self.assignment_algorithm_priority
+        elif config_type == "scheduling":
+            priority_list = self.scheduling_algorithm_priority
+        else:
+            # Default for taskset, not used as per your use case
+            priority_list = ["taskset"]
+
+        # Function to extract priority and numeric suffix from filename
+        def extract_priority_and_number(filename):
+            base_name = filename.stem
+            parts = base_name.split('_')
+            priority_rank = priority_list.index(
+                parts[2]) if parts[2] in priority_list else len(priority_list)
+            numeric_suffix = int(
+                parts[-1]) if parts[-1].isdigit() else float('inf')
+            return (priority_rank, numeric_suffix)
+
+        # Sorting batch files by priority and then numerically
+        sorted_batch_files = sorted(
+            batch_files, key=extract_priority_and_number)
+
+        # Master SLURM file path
         slurm_file = self.master_dir / f"all_{config_type}s_master.slurm"
-        batch_files = sorted(
-            (self.slurm_dir / config_type / "batch").glob("*.slurm"),
-            key=lambda x: self.extract_batch_number(x.name)
-        )
-        # Only write the master file if there are batch files
-        if batch_files:
+
+        # Write the master file if there are batch files
+        if sorted_batch_files:
             with open(slurm_file, "w") as f:
                 f.write(
                     f"""#!/bin/bash
@@ -415,7 +447,7 @@ done
 
                 # Lancer les batchs avec dépendances
                 previous_batch_id_var = None
-                for i, batch_file in enumerate(batch_files):
+                for batch_file in sorted_batch_files:
                     batch_name = batch_file.stem
                     current_batch_id_var = f"{batch_name}_ID"
 

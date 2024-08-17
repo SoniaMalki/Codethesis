@@ -13,14 +13,14 @@ if [ -z "$EXPERIENCE" ] || [ -z "$ERROR_TYPE" ]; then
   exit 1
 fi
 
-# Obtenir le chemin du script actuel
-script_dir=$(cd $(dirname "$0") && pwd)
+# Définir le dossier de base pour les scripts et les données
+base_dir="$CODETHESIS"
 
 # Dossier de base pour les fichiers d'erreur
-ERROR_DIR="$script_dir/output_error/$ERROR_TYPE"
+ERROR_DIR="$base_dir/error_handling/output_error/$ERROR_TYPE"
 
 # Affichage pour debug
-echo "Script directory: $script_dir"
+echo "Base directory: $base_dir"
 echo "Error directory: $ERROR_DIR"
 
 # Fonction pour compter les jobs en cours
@@ -46,7 +46,7 @@ for FILE in "$ERROR_DIR"/*; do
   ID=$(echo "$BASENAME" | sed -E 's/[^_]+_([0-9]+)\.txt$/\1/')
   echo $CONFIG_TYPE
   # Construire le chemin complet du fichier sbatch
-  SBATCH_FILE="$script_dir/../generation/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/$CONFIG_TYPE"_"$ID.slurm"
+  SBATCH_FILE="$base_dir/generation/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/$CONFIG_TYPE"_"$ID.slurm"
 
   # Affichage pour debug
   echo "Processing error file: $FILE"

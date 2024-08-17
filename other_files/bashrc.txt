@@ -24,6 +24,8 @@ if [[ $- == *i* ]]; then
 
 fi
 
+alias rebash='cp $HOME/.bashrc_empty $HOME/.bashrc && nano $HOME/.bashrc && source $HOME/.bashrc'
+
 # Définition des variables pour les tailles de colonnes
 export PID_COL_SIZE=8
 export NAME_COL_SIZE=32
@@ -167,3 +169,62 @@ scancel_all() {
 alias scp=scancel_pending
 alias sc=scancel_all
 
+generate_and_submit() {
+    python3 main.py generate_slurm_scripts "$1" && sbatch "generation/$1/slurm/master/full_pipeline_$1.slurm"
+}
+
+
+alias gen='generate_and_submit'
+
+tail_print() {
+    # Assurez-vous qu'il y a au moins trois arguments
+    if [ "$#" -lt 3 ]; then
+        echo "Usage: tail_print <line_count> <experience> <file_type>"
+        return 1
+    fi
+
+    local line_count="$1"
+    local experience="$2"
+    local file_type="$3"
+    local file_path="$HOME/Codethesis/generation/${experience}/slurm/output"
+
+    # Déterminez le chemin en fonction du troisième argument
+    case "$file_type" in
+        taskset_* | assignment_* | scheduling_* | batch_taskset_* | batch_assignment_* | batch_scheduling_*)
+            local category="${file_type%%_*}"
+            file_path+="/${category}/${file_type}.txt"
+            ;;
+        full_pipeline)
+            file_path+="/full_pipeline_${experience}.txt"
+            ;;
+        analyze_results)
+            file_path+="/analyze_results.txt"
+            ;;
+        all_tasksets_master | all_assignments_master | all_schedulings_master)
+            local category="${file_type%_*}"
+            category="${category#all_}"
+            # Adjusting the directory name to be singular
+            if [[ $category == "tasksets" ]]; then
+                category_dir="taskset"  
+            fi
+            
+            if [[ $category == "assignments" ]]; then
+                category_dir="assignment"  
+            fi
+            
+            if [[ $category == "schedulings" ]]; then
+                category_dir="scheduling"  
+            fi
+            file_path+="/${category_dir}/${category}_master.txt"
+            ;;
+        *)
+            echo "Invalid file type"
+            return 1
+            ;;
+    esac
+
+    # Exécuter tail sur le fichier
+    tail -n "$line_count" "$file_path"
+}
+
+alias t20='tail_print 20'

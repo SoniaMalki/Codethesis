@@ -39,8 +39,8 @@ class SlurmGenerator:
             "assignment_simple": {"time": "00:20:00", "mem": "1G", "batch_size": 500},
             "assignment_milp": {"time": "05:00:00", "mem": "4G", "batch_size": 100},
             "scheduling_simple": {"time": "01:00:00", "mem": "4G", "batch_size": 500},
-            "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 100},
-            "scheduling_rhma": {"time": "05:00:00", "mem": "64G", "batch_size": 5},
+            "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 500},
+            "scheduling_rhma": {"time": "05:00:00", "mem": "64G", "batch_size": 500},
         }
 
         self.master_dir = self.generation_path / "slurm" / "master"

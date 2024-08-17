@@ -432,9 +432,9 @@ class Rhma:
 
             results = {key: future.result() for future, key in futures.items()}
 
-        # Print results
-        for key in results:
-            print(f"{key, results[key]} generated.")
+        # # Print results
+        # for key in results:
+        #     print(f"{key, results[key]} generated.")
 
         return (
             results["constraint_16"], results["constraint_17"], results["constraint_18"],

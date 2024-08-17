@@ -50,11 +50,6 @@ def create_reduced_experience(full_config, name, taskset_params=None, assignment
         A dictionary containing the reduced configuration under the 
         key "full_experience_<name>".
     """
-    print(full_config)
-    print(name)
-    print(taskset_params)
-    print(assignment_params)
-    print(scheduling_params)
     new_config = {}
 
     # Add taskset parameters

@@ -24,13 +24,13 @@ class SlurmGenerator:
         self.default_slurm_time = "2-00:00:00"
         self.default_slurm_mem = "1G"
         self.analyze_slurm_time = "01:00:00"
-        self.analyze_slurm_mem = "4G"
+        self.analyze_slurm_mem = "500M"
         self.master_slurm_time = "2-00:00:00"
-        self.master_slurm_mem = "1G"
+        self.master_slurm_mem = "100M"
         self.batch_slurm_time = "2-00:00:00"
-        self.batch_slurm_mem = "1G"
+        self.batch_slurm_mem = "100M"
         self.full_pipeline_time = "2-00:00:00"
-        self.full_pipeline_mem = "4G"
+        self.full_pipeline_mem = "500M"
         self.default_batch_size = batch_size
 
         # Dictionnaire des paramètres SLURM par défaut
@@ -124,7 +124,7 @@ done
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task={optimal_threads}
 #SBATCH --time={job_time}
-#SBATCH --mem={slurm_memory}
+#SBATCH --mem-per-cpu={slurm_memory}
 
 # Charger les modules nécessaires
 {self.modules}
@@ -292,7 +292,7 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
 #SBATCH --output={self.output_dir / f"analyze_results.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time={self.analyze_slurm_time}
-#SBATCH --mem={self.analyze_slurm_mem}
+#SBATCH --mem-per-cpu={self.analyze_slurm_mem}
 
 # Charger les modules nécessaires
 {self.modules}
@@ -376,7 +376,7 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
 #SBATCH --output={self.output_dir / config_type / f"{batch_name}.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time={self.batch_slurm_time}
-#SBATCH --mem={self.batch_slurm_mem}
+#SBATCH --mem-per-cpu={self.batch_slurm_mem}
 
 # Séparer par des espaces
 # Use sorted_batch_configs
@@ -441,7 +441,7 @@ done
 #SBATCH --output={self.output_dir / config_type / f"{config_type}s_master.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time={self.master_slurm_time}
-#SBATCH --mem={self.master_slurm_mem}
+#SBATCH --mem-per-cpu={self.master_slurm_mem}
 """
                 )
 
@@ -556,7 +556,7 @@ done
 #SBATCH --output={self.output_dir / f"full_pipeline_{self.experience_id}.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time={self.full_pipeline_time}
-#SBATCH --mem={self.full_pipeline_mem}
+#SBATCH --mem-per-cpu={self.full_pipeline_mem}
 
 MASTER_DIR="{self.master_dir}"
 

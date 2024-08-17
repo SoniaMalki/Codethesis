@@ -7,7 +7,6 @@ from modules.config.config_generator import ConfigGenerator
 from modules.core.experience_loader import ExperienceLoader
 from modules.analysis.result_analyzer import ResultAnalyzer
 from modules.slurm.slurm_generator import SlurmGenerator
-from modules.slurm.slurm_script_generator import SlurmScriptGenerator
 from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
 from modules.utils.database_merger import DatabaseMerger
 from modules.utils.db_utils import DBUtils
@@ -147,9 +146,14 @@ def main(action, experience_id, experience_action=None):
 
     elif action == "generate_slurm_scripts":
         print(f"Generating SLURM scripts for experience ID: {experience_id}")
-        generator = SlurmScriptGenerator(main_path=main_path, slurm_script_path=slurm_script_path, output_slurm_path=output_slurm_path,
-                                         generation_path=generation_path, experience_id=experience_id)
-        generator.generate_all_scripts()
+        slurm_generator = SlurmGenerator(
+            main_path=main_path,
+            generation_path=generation_path,
+            db_path=db_path,
+            experience_id=experience_id,
+            experience_data=experience_data[experience_id],
+        )
+        slurm_generator.generate_full_pipeline_slurm()
         print(f"SLURM scripts generated for experience ID: {experience_id}")
 
     elif action == "merge_databases":

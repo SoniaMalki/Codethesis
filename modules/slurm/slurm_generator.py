@@ -1,6 +1,5 @@
 import socket
 from pathlib import Path
-from time import sleep
 import re
 
 from modules.core.experience_loader import ExperienceLoader
@@ -24,6 +23,8 @@ class SlurmGenerator:
         self.master_slurm_mem = "1G"
         self.batch_slurm_time = "2-00:00:00"
         self.batch_slurm_mem = "1G"
+        self.full_pipeline_time = "2-00:00:00"
+        self.full_pipeline_mem = "4G"
         self.default_batch_size = batch_size
 
         # Dictionnaire des paramètres SLURM par défaut
@@ -448,3 +449,86 @@ done
             print(
                 f"Warning: No batch number found in {filename}. Defaulting to 0.")
             return 0
+
+    def generate_full_pipeline_slurm(self):
+        """Generate the full pipeline SLURM script."""
+        print("Generating full pipeline SLURM script")
+
+        command = (
+            f"echo \"Starting full pipeline for {self.experience_id}\"\n"
+            f"python3 {self.main_path}/main.py generate_configs {self.experience_id}\n"
+            "if [ $? -ne 0 ]; then\n"
+            "    echo \"Échec de la génération des configurations\"\n"
+            "    exit 1\n"
+            "fi\n\n"
+            "echo \"Génération des configurations réussie\"\n"
+            f"python3 {self.main_path}/main.py generate_slurm_files {self.experience_id}\n"
+            "if [ $? -ne 0 ]; then\n"
+            "    echo \"Échec de la génération des fichiers SLURM\"\n"
+            "    exit 1\n"
+            "fi\n\n"
+            "echo \"Génération des fichiers SLURM réussie\"\n"
+            "echo \"Starting master job\"\n"
+
+            # Taskset
+            "if [ -f \"$MASTER_DIR/all_tasksets_master.slurm\" ]; then\n"
+            "  echo \"Submitting all_tasksets_master.slurm\"\n"
+            "  taskset_id=$(sbatch \"$MASTER_DIR/all_tasksets_master.slurm\" | awk '{print $4}')\n"
+            "fi\n"
+
+            # Assignment (dependent on taskset)
+            "if [ -f \"$MASTER_DIR/all_assignments_master.slurm\" ]; then\n"
+            "  echo \"Submitting all_assignments_master.slurm\"\n"
+            "  if [[ -z \"$taskset_id\" ]]; then\n"
+            "    assignment_id=$(sbatch \"$MASTER_DIR/all_assignments_master.slurm\" | awk '{print $4}')\n"
+            "  else\n"
+            "    assignment_id=$(sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/all_assignments_master.slurm\" | awk '{print $4}')\n"
+            "  fi\n"
+            "fi\n"
+
+            # Scheduling (dependent on assignment OR taskset if assignment failed)
+            "if [ -f \"$MASTER_DIR/all_schedulings_master.slurm\" ]; then\n"
+            "  echo \"Submitting all_schedulings_master.slurm\"\n"
+            "  if [[ -z \"$assignment_id\" && -n \"$taskset_id\" ]]; then\n"
+            "    scheduling_id=$(sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/all_schedulings_master.slurm\" | awk '{print $4}')\n"
+            "  elif [[ -n \"$assignment_id\" ]]; then\n"
+            "    scheduling_id=$(sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/all_schedulings_master.slurm\" | awk '{print $4}')\n"
+            "  else\n"
+            "    scheduling_id=$(sbatch \"$MASTER_DIR/all_schedulings_master.slurm\" | awk '{print $4}')\n"
+            "  fi\n"
+            "fi\n"
+
+            "if [[ -n \"$scheduling_id\" ]]; then\n"
+            "  echo \"Submitting analyze_results.slurm (waiting for scheduling to finish)\"\n"
+            "  sbatch --dependency=afterok:$scheduling_id \"$MASTER_DIR/analyze_results.slurm\"\n"
+            "elif [[ -n \"$assignment_id\" ]]; then\n"
+            "  echo \"Submitting analyze_results.slurm (waiting for assignment to finish)\"\n"
+            "  sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/analyze_results.slurm\"\n"
+            "elif [[ -n \"$taskset_id\" ]]; then\n"
+            "  echo \"Submitting analyze_results.slurm (waiting for taskset to finish)\"\n"
+            "  sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/analyze_results.slurm\"\n"
+            "else\n"
+            "  echo \"Submitting analyze_results.slurm (no dependencies)\"\n"
+            "  sbatch \"$MASTER_DIR/analyze_results.slurm\"\n"
+            "fi\n"
+
+            f"echo \"Full pipeline completed for {self.experience_id}\"\n"
+        )
+
+        # Create the full_pipeline SLURM script in the master directory
+        slurm_file = self.master_dir / \
+            f"full_pipeline_{self.experience_id}.slurm"
+        with open(slurm_file, "w") as f:
+            f.write(f"""#!/bin/bash
+#SBATCH --job-name=full_pipeline_{self.experience_id}
+#SBATCH --output={self.output_dir / f"full_pipeline_{self.experience_id}.txt"}
+#SBATCH --ntasks=1
+#SBATCH --time={self.full_pipeline_time}
+#SBATCH --mem={self.full_pipeline_mem}
+
+MASTER_DIR="{self.master_dir}"
+
+{command}
+""")
+
+        print(f"Full pipeline SLURM script generated at: {slurm_file}")

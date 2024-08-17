@@ -23,6 +23,11 @@ class SlurmGenerator:
         self.default_slurm_mem = "2G"
         self.analyze_slurm_time = "01:00:00"
         self.analyze_slurm_mem = "4G"
+        self.master_slurm_time = "2-00:00:00"
+        self.master_slurm_mem = "1G"
+        self.batch_slurm_time = "2-00:00:00"
+        self.batch_slurm_mem = "1G"
+        self.default_batch_size = batch_size
 
         # Dictionnaire des paramètres SLURM par défaut
         self.slurm_parameters = {
@@ -172,7 +177,7 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
             else:
                 return self.slurm_parameters["scheduling_simple"]["time"], self.slurm_parameters["scheduling_simple"]["mem"]
         else:
-            return "02:00:00", "8G"
+            return self.default_slurm_time, self.default_slurm_mem
 
     def get_batch_size(self, config_type, algorithm):
         algorithm = algorithm["algorithm"]
@@ -185,7 +190,7 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
                 "scheduling_combined" if "Combined" in algorithm else "scheduling_simple"
             )
         else:
-            return 100  # Default value
+            return self.default_batch_size
 
         return self.slurm_parameters[key]["batch_size"]
 
@@ -193,7 +198,6 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
         """Generate SLURM file for a specific configuration."""
         print(f"Generating SLURM file for {config_key} of type {config_type}")
 
-        # Load experience to check if a result file exists and get parameters
         experience = self.experience_loader.load(config_key)
 
         if experience and not experience.get_result_file_path(config_type):
@@ -201,21 +205,18 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
                 config_params = experience.assignment_parameters['parameters']
                 optimal_threads = self.determine_optimal_resources(
                     config_params, config_type)
-                # Set threads in assignment_options
                 config_params['assignment_options']['threads'] = optimal_threads
 
             elif config_type == "scheduling":
                 config_params = experience.scheduling_parameters['parameters']
                 optimal_threads = self.determine_optimal_resources(
                     config_params, config_type)
-                # Set threads in scheduling_options
                 config_params['scheduling_options']['threads'] = optimal_threads
 
             elif config_type == "taskset":
-                config_params = {}  # Assuming no specific parameters for taskset
-                optimal_threads = 1  # Default to 1 if no parameters found
+                config_params = {}
+                optimal_threads = 1
 
-            # Get Slurm time and memory based on configuration type
             job_time, slurm_memory = self.get_job_time_and_memory(
                 config_type, config_params)
 
@@ -228,7 +229,6 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
 
             print(f"SLURM file for {config_key} generated at {slurm_file}")
 
-            # Update database with cluster, threads, time, and memory information
             self.update_database_with_slurm_info(
                 config_key, config_type, optimal_threads, job_time, slurm_memory)
         else:
@@ -250,7 +250,7 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
         cluster_name = next((value for key, value in cluster_mapping.items(
         ) if hostname.startswith(key)), hostname)
 
-        db_utils = DBUtils(self.db_path)  # Create DBUtils instance
+        db_utils = DBUtils(self.db_path)
         if config_type == "assignment":
             table_name = "Assignments"
             id_column = "assignment_id"
@@ -265,7 +265,6 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
             return
 
         try:
-            # Use db_utils.cursor here to execute the SQL command
             db_utils.cursor.execute(f"""
                 UPDATE {table_name}
                 SET cluster = ?,
@@ -274,7 +273,7 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
                     slurm_memory = ?
                 WHERE {id_column} = ?
             """, (cluster_name, threads, slurm_time, slurm_memory, config_key))
-            db_utils.conn.commit()  # Commit using the DBUtils connection
+            db_utils.conn.commit()
             print(
                 f"Updated {table_name} table with Slurm info for {config_key}")
         except Exception as e:
@@ -344,14 +343,12 @@ python3 {self.main_path}/main.py analyze_results {self.experience_id}
                         grouped_slurm_files[algorithm] = []
                     grouped_slurm_files[algorithm].append(slurm_file)
 
-            # Création des fichiers batch pour chaque groupe
             for algorithm, slurm_files in grouped_slurm_files.items():
                 i = 0
 
                 batch_size = self.get_batch_size(
                     config_type, {"algorithm": algorithm})
 
-                # --- Use enumerate for batch naming ---
                 for batch_num, _ in enumerate(range(0, len(slurm_files), batch_size)):
                     batch_configs = {}
                     for j in range(i, min(i + batch_size, len(slurm_files))):
@@ -359,11 +356,8 @@ python3 {self.main_path}/main.py analyze_results {self.experience_id}
                         config_key = slurm_file.stem
                         batch_configs[config_key] = config_key
 
-                    # Nom du batch actuel
-                    # Use batch_num for name
                     batch_name = f"batch_{config_type}_{algorithm}_{batch_num}"
 
-                    # --- Sort batch_configs numerically (CORRECTED) ---
                     sorted_batch_configs = dict(
                         sorted(batch_configs.items(), key=lambda item: int(item[0].split('_')[1])))
 
@@ -378,8 +372,8 @@ python3 {self.main_path}/main.py analyze_results {self.experience_id}
 #SBATCH --job-name={batch_name}
 #SBATCH --output={self.output_dir / config_type / f"{batch_name}.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time={self.default_slurm_time}
-#SBATCH --mem={self.default_slurm_mem}
+#SBATCH --time={self.batch_slurm_time}
+#SBATCH --mem={self.batch_slurm_mem}
 
 # Séparer par des espaces
 # Use sorted_batch_configs
@@ -417,8 +411,8 @@ done
 #SBATCH --job-name=all_{config_type}s_master
 #SBATCH --output={self.output_dir / config_type / f"{config_type}s_master.txt"}
 #SBATCH --ntasks=1
-#SBATCH --time=2-00:00:00
-#SBATCH --mem=2G
+#SBATCH --time={self.master_slurm_time}
+#SBATCH --mem={self.master_slurm_mem}
 """
                 )
 
@@ -450,7 +444,6 @@ done
             print(
                 f"Skipping master SLURM generation for {config_type} - No batch files found")
 
-    # Add this method to your class:
     def extract_batch_number(self, filename):
         match = re.search(r'batch_[^_]+_(\d+)', filename)
         if match:

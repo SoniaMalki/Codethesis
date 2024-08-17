@@ -485,7 +485,7 @@
       }
     }
   },
-  "full_experience_only_scheduling_simple_scheduling_edf": {
+  "full_experience_only_scheduling_simple_scheduling_earliestdeadlinefirst": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -512,7 +512,7 @@
       }
     }
   },
-  "full_experience_only_scheduling_simple_scheduling_edf_v1": {
+  "full_experience_only_scheduling_simple_scheduling_earliestdeadlinefirstvariant1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -539,7 +539,7 @@
       }
     }
   },
-  "full_experience_only_scheduling_simple_scheduling_dm": {
+  "full_experience_only_scheduling_simple_scheduling_deadlinemonotonic": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -566,7 +566,7 @@
       }
     }
   },
-  "full_experience_only_scheduling_simple_scheduling_dm_v1": {
+  "full_experience_only_scheduling_simple_scheduling_deadlinemonotonicvariant1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -620,7 +620,7 @@
       }
     }
   },
-  "full_experience_only_scheduling_variant_2_edf_v2": {
+  "full_experience_only_scheduling_variant_2_earliestdeadlinefirstvariant2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -647,7 +647,7 @@
       }
     }
   },
-  "full_experience_only_scheduling_variant_2_dm_v2": {
+  "full_experience_only_scheduling_variant_2_deadlinemonotonicvariant2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -944,7 +944,7 @@
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_simple_scheduling_edf": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_earliestdeadlinefirst": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -971,7 +971,7 @@
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_simple_scheduling_edf_v1": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_earliestdeadlinefirstvariant1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -998,7 +998,7 @@
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_simple_scheduling_dm": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_deadlinemonotonic": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -1025,7 +1025,7 @@
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_simple_scheduling_dm_v1": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_deadlinemonotonicvariant1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -1079,7 +1079,7 @@
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_variant_2_edf_v2": {
+  "full_experience_without_citta_only_scheduling_variant_2_earliestdeadlinefirstvariant2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -1106,7 +1106,7 @@
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_variant_2_dm_v2": {
+  "full_experience_without_citta_only_scheduling_variant_2_deadlinemonotonicvariant2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],

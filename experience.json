@@ -208,10 +208,10 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
-        "solving_time_limit_milp_scheduling": [ 300 ],
-        "solver_name_scheduling": [ "gurobi" ]
+        "scheduling_algorithms": [],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [],
+        "solver_name_scheduling": []
       }
     }
   },
@@ -229,16 +229,16 @@
         "number_of_cores_list": [ 2, 4, 8 ]
       },
       "assignment_parameters": {
-        "assignment_methods": [ "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin" ],
+        "assignment_methods": [ "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner" ],
         "sorting_criteria": [ "wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order" ],
         "solving_time_limit_milp_assignment": [],
         "solver_name_assignment": []
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
-        "solving_time_limit_milp_scheduling": [ 300 ],
-        "solver_name_scheduling": [ "gurobi" ]
+        "scheduling_algorithms": [],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [],
+        "solver_name_scheduling": []
       }
     }
   },
@@ -256,16 +256,16 @@
         "number_of_cores_list": [ 2, 4, 8 ]
       },
       "assignment_parameters": {
-        "assignment_methods": [ "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin" ],
+        "assignment_methods": [ "Citta" ],
         "sorting_criteria": [ "wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order" ],
         "solving_time_limit_milp_assignment": [ 300 ],
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
-        "solving_time_limit_milp_scheduling": [ 300 ],
-        "solver_name_scheduling": [ "gurobi" ]
+        "scheduling_algorithms": [],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [],
+        "solver_name_scheduling": []
       }
     }
   },
@@ -283,16 +283,16 @@
         "number_of_cores_list": [ 2, 4, 8 ]
       },
       "assignment_parameters": {
-        "assignment_methods": [ "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin" ],
-        "sorting_criteria": [ "wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order" ],
+        "assignment_methods": [ "Citta" ],
+        "sorting_criteria": [ "wcet_ascending", "wcet_descending" ],
         "solving_time_limit_milp_assignment": [ 300 ],
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
-        "solving_time_limit_milp_scheduling": [ 300 ],
-        "solver_name_scheduling": [ "gurobi" ]
+        "scheduling_algorithms": [],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [],
+        "solver_name_scheduling": []
       }
     }
   },
@@ -310,16 +310,16 @@
         "number_of_cores_list": [ 2, 4, 8 ]
       },
       "assignment_parameters": {
-        "assignment_methods": [ "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin" ],
-        "sorting_criteria": [ "wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order" ],
+        "assignment_methods": [ "Citta" ],
+        "sorting_criteria": [ "period_ascending", "period_descending" ],
         "solving_time_limit_milp_assignment": [ 300 ],
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
-        "solving_time_limit_milp_scheduling": [ 300 ],
-        "solver_name_scheduling": [ "gurobi" ]
+        "scheduling_algorithms": [],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [],
+        "solver_name_scheduling": []
       }
     }
   },
@@ -337,16 +337,16 @@
         "number_of_cores_list": [ 2, 4, 8 ]
       },
       "assignment_parameters": {
-        "assignment_methods": [ "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin" ],
-        "sorting_criteria": [ "wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order" ],
+        "assignment_methods": [ "Citta" ],
+        "sorting_criteria": [ "utilization_ascending", "utilization_descending" ],
         "solving_time_limit_milp_assignment": [ 300 ],
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
-        "solving_time_limit_milp_scheduling": [ 300 ],
-        "solver_name_scheduling": [ "gurobi" ]
+        "scheduling_algorithms": [],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [],
+        "solver_name_scheduling": []
       }
     }
   },
@@ -364,16 +364,16 @@
         "number_of_cores_list": [ 2, 4, 8 ]
       },
       "assignment_parameters": {
-        "assignment_methods": [ "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin" ],
-        "sorting_criteria": [ "wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order" ],
+        "assignment_methods": [ "Citta" ],
+        "sorting_criteria": [ "execution_slack_ascending", "execution_slack_descending" ],
         "solving_time_limit_milp_assignment": [ 300 ],
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
-        "solving_time_limit_milp_scheduling": [ 300 ],
-        "solver_name_scheduling": [ "gurobi" ]
+        "scheduling_algorithms": [],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [],
+        "solver_name_scheduling": []
       }
     }
   },
@@ -391,16 +391,16 @@
         "number_of_cores_list": [ 2, 4, 8 ]
       },
       "assignment_parameters": {
-        "assignment_methods": [ "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin" ],
-        "sorting_criteria": [ "wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order" ],
+        "assignment_methods": [ "Citta" ],
+        "sorting_criteria": [ "random_order" ],
         "solving_time_limit_milp_assignment": [ 300 ],
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
-        "solving_time_limit_milp_scheduling": [ 300 ],
-        "solver_name_scheduling": [ "gurobi" ]
+        "scheduling_algorithms": [],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [],
+        "solver_name_scheduling": []
       }
     }
   },
@@ -418,16 +418,16 @@
         "number_of_cores_list": [ 2, 4, 8 ]
       },
       "assignment_parameters": {
-        "assignment_methods": [ "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin" ],
+        "assignment_methods": [ "Wmin" ],
+        "sorting_criteria": [],
         "solving_time_limit_milp_assignment": [ 300 ],
-        "solver_name_assignment": [ "gurobi" ],
-        "sorting_criteria": []
+        "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
-        "solving_time_limit_milp_scheduling": [ 300 ],
-        "solver_name_scheduling": [ "gurobi" ]
+        "scheduling_algorithms": [],
+        "non_preemption_time_variant2_options": [],
+        "solving_time_limit_milp_scheduling": [],
+        "solver_name_scheduling": []
       }
     }
   },
@@ -478,14 +478,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "DeadlineMonotonic", "DeadlineMonotonicVariant1" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_only_scheduling_simple_scheduling_earliestdeadlinefirst": {
+  "full_experience_only_scheduling_simple_scheduling_edf": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -505,14 +505,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirst" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_only_scheduling_simple_scheduling_earliestdeadlinefirstvariant1": {
+  "full_experience_only_scheduling_simple_scheduling_edf_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -532,14 +532,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirstVariant1" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_only_scheduling_simple_scheduling_deadlinemonotonic": {
+  "full_experience_only_scheduling_simple_scheduling_dm": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -559,14 +559,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "DeadlineMonotonic" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_only_scheduling_simple_scheduling_deadlinemonotonicvariant1": {
+  "full_experience_only_scheduling_simple_scheduling_dm_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -586,7 +586,7 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "DeadlineMonotonicVariant1" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
@@ -613,14 +613,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_only_scheduling_variant_2_earliestdeadlinefirstvariant2": {
+  "full_experience_only_scheduling_variant_2_edf_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -640,14 +640,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirstVariant2" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_only_scheduling_variant_2_deadlinemonotonicvariant2": {
+  "full_experience_only_scheduling_variant_2_dm_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -667,7 +667,7 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "DeadlineMonotonicVariant2" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
@@ -694,7 +694,7 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "CombinedScheduler" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
@@ -721,8 +721,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "CombinedScheduler" ],
+        "non_preemption_time_variant2_options": [ "number_of_tasks" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
@@ -748,8 +748,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "CombinedScheduler" ],
+        "non_preemption_time_variant2_options": [ "wcet_of_tasks" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
@@ -775,8 +775,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "CombinedScheduler" ],
+        "non_preemption_time_variant2_options": [ "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
@@ -802,7 +802,7 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "Rhma" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [ 300 ],
         "solver_name_scheduling": [ "gurobi" ]
@@ -829,8 +829,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "Rhma" ],
+        "non_preemption_time_variant2_options": [ "number_of_tasks" ],
         "solving_time_limit_milp_scheduling": [ 300 ],
         "solver_name_scheduling": [ "gurobi" ]
       }
@@ -856,8 +856,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "Rhma" ],
+        "non_preemption_time_variant2_options": [ "wcet_of_tasks" ],
         "solving_time_limit_milp_scheduling": [ 300 ],
         "solver_name_scheduling": [ "gurobi" ]
       }
@@ -883,8 +883,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "Rhma" ],
+        "non_preemption_time_variant2_options": [ "system_utilization" ],
         "solving_time_limit_milp_scheduling": [ 300 ],
         "solver_name_scheduling": [ "gurobi" ]
       }
@@ -937,14 +937,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "DeadlineMonotonic", "DeadlineMonotonicVariant1" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_simple_scheduling_earliestdeadlinefirst": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_edf": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -964,14 +964,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirst" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_simple_scheduling_earliestdeadlinefirstvariant1": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_edf_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -991,14 +991,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirstVariant1" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_simple_scheduling_deadlinemonotonic": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_dm": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -1018,14 +1018,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "DeadlineMonotonic" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_simple_scheduling_deadlinemonotonicvariant1": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_dm_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -1045,7 +1045,7 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "DeadlineMonotonicVariant1" ],
         "non_preemption_time_variant2_options": [],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
@@ -1072,14 +1072,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_variant_2_earliestdeadlinefirstvariant2": {
+  "full_experience_without_citta_only_scheduling_variant_2_edf_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -1099,14 +1099,14 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "EarliestDeadlineFirstVariant2" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
     }
   },
-  "full_experience_without_citta_only_scheduling_variant_2_deadlinemonotonicvariant2": {
+  "full_experience_without_citta_only_scheduling_variant_2_dm_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [ 10 ],
@@ -1126,7 +1126,7 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "DeadlineMonotonicVariant2" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
@@ -1153,7 +1153,7 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "CombinedScheduler" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
@@ -1180,8 +1180,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "CombinedScheduler" ],
+        "non_preemption_time_variant2_options": [ "number_of_tasks" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
@@ -1207,8 +1207,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "CombinedScheduler" ],
+        "non_preemption_time_variant2_options": [ "wcet_of_tasks" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
@@ -1234,8 +1234,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "CombinedScheduler" ],
+        "non_preemption_time_variant2_options": [ "system_utilization" ],
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": []
       }
@@ -1261,7 +1261,7 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
+        "scheduling_algorithms": [ "Rhma" ],
         "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
         "solving_time_limit_milp_scheduling": [ 300 ],
         "solver_name_scheduling": [ "gurobi" ]
@@ -1288,8 +1288,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "Rhma" ],
+        "non_preemption_time_variant2_options": [ "number_of_tasks" ],
         "solving_time_limit_milp_scheduling": [ 300 ],
         "solver_name_scheduling": [ "gurobi" ]
       }
@@ -1315,8 +1315,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "Rhma" ],
+        "non_preemption_time_variant2_options": [ "wcet_of_tasks" ],
         "solving_time_limit_milp_scheduling": [ 300 ],
         "solver_name_scheduling": [ "gurobi" ]
       }
@@ -1342,8 +1342,8 @@
         "solver_name_assignment": [ "gurobi" ]
       },
       "scheduling_parameters": {
-        "scheduling_algorithms": [ "EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma" ],
-        "non_preemption_time_variant2_options": [ "number_of_tasks", "wcet_of_tasks", "system_utilization" ],
+        "scheduling_algorithms": [ "Rhma" ],
+        "non_preemption_time_variant2_options": [ "system_utilization" ],
         "solving_time_limit_milp_scheduling": [ 300 ],
         "solver_name_scheduling": [ "gurobi" ]
       }

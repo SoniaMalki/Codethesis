@@ -151,6 +151,5 @@ generation/*
 #!generation/plots/
 #!generation/plots/**
 
-slurm_code/error_handling/output_error
-slurm_code/error_handling/filtered_output
-slurm_code/slurm_scripts/
+/error_handling/output_error
+/error_handling/filtered_output

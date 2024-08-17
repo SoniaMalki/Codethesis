@@ -2,89 +2,42 @@
   "full_experience": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6],
-          [10000, 13, 5],
-          [10000, 19, 4],
-          [10000, 23, 3]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
       "assignment_parameters": {
         "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
         "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
+        "solving_time_limit_milp_assignment": [300],
         "solver_name_assignment": ["gurobi"] 
       },
       "scheduling_parameters": {
         "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
         "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": ["", 300, 600],
+        "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1": {
+  "full_experience_only_taskset": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": ["", 300, 600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_taskset": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -100,27 +53,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_1": {
+  "full_experience_only_taskset_1": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -136,27 +81,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_2": {
+  "full_experience_only_taskset_2": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.4],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -172,27 +109,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_3": {
+  "full_experience_only_taskset_3": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.6],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -208,27 +137,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_4": {
+  "full_experience_only_taskset_4": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.8],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -244,27 +165,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_taskset_5": {
+  "full_experience_only_taskset_5": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -280,34 +193,26 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_assignment": {
+  "full_experience_only_assignment": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
       "assignment_parameters": {
         "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
         "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
+        "solving_time_limit_milp_assignment": [300],
         "solver_name_assignment": ["gurobi"] 
       },
       "scheduling_parameters": {
@@ -316,27 +221,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_assignment_simple_assigner": {
+  "full_experience_only_assignment_simple_assigner": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -352,135 +249,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_assignment_simple_assigner_worst_fit": {
+  "full_experience_only_assignment_citta": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "taskset_repetitions": [10],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": [],
-        "solver_name_assignment": [] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_assignment_citta": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["Citta"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_assignment_citta_1": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["Citta"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": [""],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_assignment_citta_2": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -496,1614 +277,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_only_assignment_citta_3": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["Citta"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": [600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_assignment_wmin": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["Wmin"],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_assignment_wmin_1": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["Wmin"],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": [""],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_assignment_wmin_2": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["Wmin"],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": [300],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_assignment_wmin_3": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["Wmin"],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": [600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": ["", 300, 600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_solving_time_limit_milp_scheduling_none": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [""],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_solving_time_limit_milp_scheduling_300": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [300],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_solving_time_limit_milp_scheduling_600": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_simple_scheduling": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "DeadlineMonotonic", "DeadlineMonotonicVariant1"],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_simple_scheduling_edf": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst"],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_simple_scheduling_edf_v1": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirstVariant1"],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_simple_scheduling_dm": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["DeadlineMonotonic"],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_simple_scheduling_dm_v1": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["DeadlineMonotonicVariant1"],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_variant_2": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_variant_2_edf_v2": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirstVariant2"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_variant_2_dm_v2": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["DeadlineMonotonicVariant2"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_combined": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["CombinedScheduler"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_combined_sorting_criterion_number_of_tasks": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["CombinedScheduler"],
-        "non_preemption_time_variant2_options": ["number_of_tasks"],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_combined_sorting_criterion_wcet_of_tasks": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["CombinedScheduler"],
-        "non_preemption_time_variant2_options": ["wcet_of_tasks"],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_combined_sorting_criterion_system_utilization": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["CombinedScheduler"],
-        "non_preemption_time_variant2_options": ["system_utilization"],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": ["", 300, 600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_number_of_tasks": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks"],
-        "solving_time_limit_milp_scheduling": ["", 300, 600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_number_of_tasks_solving_time_limit_milp_scheduling_none": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks"],
-        "solving_time_limit_milp_scheduling": [""],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_number_of_tasks_solving_time_limit_milp_scheduling_300": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks"],
-        "solving_time_limit_milp_scheduling": [300],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_number_of_tasks_solving_time_limit_milp_scheduling_600": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks"],
-        "solving_time_limit_milp_scheduling": [600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_wcet_of_tasks": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["wcet_of_tasks"],
-        "solving_time_limit_milp_scheduling": ["", 300, 600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_wcet_of_tasks_solving_time_limit_milp_scheduling_none": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["wcet_of_tasks"],
-        "solving_time_limit_milp_scheduling": [""],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_wcet_of_tasks_solving_time_limit_milp_scheduling_300": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["wcet_of_tasks"],
-        "solving_time_limit_milp_scheduling": [300],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_wcet_of_tasks_solving_time_limit_milp_scheduling_600": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["wcet_of_tasks"],
-        "solving_time_limit_milp_scheduling": [600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_system_utilization": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["system_utilization"],
-        "solving_time_limit_milp_scheduling": ["", 300, 600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_system_utilization_solving_time_limit_milp_scheduling_none": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["system_utilization"],
-        "solving_time_limit_milp_scheduling": [""],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_system_utilization_solving_time_limit_milp_scheduling_300": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["system_utilization"],
-        "solving_time_limit_milp_scheduling": [300],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_only_scheduling_rhma_sorting_criterion_system_utilization_solving_time_limit_milp_scheduling_600": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [1, 10, 20],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": ["", 300 , 600],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["Rhma"],
-        "non_preemption_time_variant2_options": ["system_utilization"],
-        "solving_time_limit_milp_scheduling": [600],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-
-
-
-  "full_experience_prime_1_reduced": {
+  "full_experience_only_assignment_citta_sorting_wcet": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": [300],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [300],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_taskset": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": [],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": [],
-        "solver_name_assignment": [] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_taskset_1": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": [],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": [],
-        "solver_name_assignment": [] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_taskset_2": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.4],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": [],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": [],
-        "solver_name_assignment": [] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_taskset_3": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.6],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": [],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": [],
-        "solver_name_assignment": [] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_taskset_4": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.8],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": [],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": [],
-        "solver_name_assignment": [] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_taskset_5": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": [],
-        "sorting_criteria": [],
-        "solving_time_limit_milp_assignment": [],
-        "solver_name_assignment": [] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_assignment": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": [300],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_assignment_simple_assigner": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": [],
-        "solver_name_assignment": [] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_assignment_citta": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [2, 4, 8]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["Citta"],
-        "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-        "solving_time_limit_milp_assignment": [300],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": [],
-        "non_preemption_time_variant2_options": [],
-        "solving_time_limit_milp_scheduling": [],
-        "solver_name_scheduling": [] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_assignment_citta_sorting_wcet": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
-        "interference_factors": [0.2, 0.8],
-        "probability_factors": [0.1, 0.4],
-        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2119,27 +305,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_assignment_citta_sorting_period": {
+  "full_experience_only_assignment_citta_sorting_period": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2155,27 +333,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_assignment_citta_sorting_utilization": {
+  "full_experience_only_assignment_citta_sorting_utilization": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2191,27 +361,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_assignment_citta_sorting_execution_slack": {
+  "full_experience_only_assignment_citta_sorting_execution_slack": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2227,27 +389,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_assignment_citta_sorting_random": {
+  "full_experience_only_assignment_citta_sorting_random": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2263,27 +417,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_assignment_wmin": {
+  "full_experience_only_assignment_wmin": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2299,27 +445,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling": {
+  "full_experience_only_scheduling": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2335,27 +473,19 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling": {
+  "full_experience_only_scheduling_simple_scheduling": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2371,27 +501,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling_edf": {
+  "full_experience_only_scheduling_simple_scheduling_edf": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2407,27 +529,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling_edf_v1": {
+  "full_experience_only_scheduling_simple_scheduling_edf_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2443,27 +557,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling_dm": {
+  "full_experience_only_scheduling_simple_scheduling_dm": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2479,27 +585,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_simple_scheduling_dm_v1": {
+  "full_experience_only_scheduling_simple_scheduling_dm_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2515,27 +613,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_variant_2": {
+  "full_experience_only_scheduling_variant_2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2551,27 +641,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_variant_2_edf_v2": {
+  "full_experience_only_scheduling_variant_2_edf_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2587,27 +669,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_variant_2_dm_v2": {
+  "full_experience_only_scheduling_variant_2_dm_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2623,27 +697,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_combined": {
+  "full_experience_only_scheduling_combined": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2659,27 +725,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_combined_sorting_criterion_number_of_tasks": {
+  "full_experience_only_scheduling_combined_sorting_criterion_number_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2695,27 +753,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_combined_sorting_criterion_wcet_of_tasks": {
+  "full_experience_only_scheduling_combined_sorting_criterion_wcet_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2731,27 +781,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_combined_sorting_criterion_system_utilization": {
+  "full_experience_only_scheduling_combined_sorting_criterion_system_utilization": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2767,27 +809,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_rhma": {
+  "full_experience_only_scheduling_rhma": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2803,27 +837,19 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_rhma_sorting_criterion_number_of_tasks": {
+  "full_experience_only_scheduling_rhma_sorting_criterion_number_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2839,27 +865,19 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_rhma_sorting_criterion_wcet_of_tasks": {
+  "full_experience_only_scheduling_rhma_sorting_criterion_wcet_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2875,27 +893,19 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_only_scheduling_rhma_sorting_criterion_system_utilization": {
+  "full_experience_only_scheduling_rhma_sorting_criterion_system_utilization": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2911,30 +921,19 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-
-
-
-  "full_experience_prime_1_reduced_without_citta_only_scheduling": {
+  "full_experience_without_citta_only_scheduling": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2950,27 +949,19 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_simple_scheduling": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -2986,27 +977,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_simple_scheduling_edf": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_edf": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3022,27 +1005,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_simple_scheduling_edf_v1": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_edf_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3058,27 +1033,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_simple_scheduling_dm": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_dm": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3094,27 +1061,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_simple_scheduling_dm_v1": {
+  "full_experience_without_citta_only_scheduling_simple_scheduling_dm_v1": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3130,27 +1089,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_variant_2": {
+  "full_experience_without_citta_only_scheduling_variant_2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3166,27 +1117,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_variant_2_edf_v2": {
+  "full_experience_without_citta_only_scheduling_variant_2_edf_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3202,27 +1145,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_variant_2_dm_v2": {
+  "full_experience_without_citta_only_scheduling_variant_2_dm_v2": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3238,27 +1173,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_combined": {
+  "full_experience_without_citta_only_scheduling_combined": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3274,27 +1201,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_combined_sorting_criterion_number_of_tasks": {
+  "full_experience_without_citta_only_scheduling_combined_sorting_criterion_number_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3310,27 +1229,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_combined_sorting_criterion_wcet_of_tasks": {
+  "full_experience_without_citta_only_scheduling_combined_sorting_criterion_wcet_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3346,27 +1257,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_combined_sorting_criterion_system_utilization": {
+  "full_experience_without_citta_only_scheduling_combined_sorting_criterion_system_utilization": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3382,27 +1285,19 @@
         "solving_time_limit_milp_scheduling": [],
         "solver_name_scheduling": [] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_rhma": {
+  "full_experience_without_citta_only_scheduling_rhma": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3418,27 +1313,19 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_rhma_sorting_criterion_number_of_tasks": {
+  "full_experience_without_citta_only_scheduling_rhma_sorting_criterion_number_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3454,27 +1341,19 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_rhma_sorting_criterion_wcet_of_tasks": {
+  "full_experience_without_citta_only_scheduling_rhma_sorting_criterion_wcet_of_tasks": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3490,27 +1369,19 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   },
-  "full_experience_prime_1_reduced_without_citta_only_scheduling_rhma_sorting_criterion_system_utilization": {
+  "full_experience_without_citta_only_scheduling_rhma_sorting_criterion_system_utilization": {
     "config_parameters": {
       "taskset_parameters": {
         "taskset_repetitions": [10],
-        "tasks_per_taskset": [4, 5, 10, 20],
+        "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
+          [1000, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },
@@ -3526,50 +1397,6 @@
         "solving_time_limit_milp_scheduling": [300],
         "solver_name_scheduling": ["gurobi"] 
       }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
-    }
-  },
-  "full_experience_prime_1_reduced_only_scheduling_mini": {
-    "config_parameters": {
-      "taskset_parameters": {
-        "taskset_repetitions": [10],
-        "tasks_per_taskset": [4],
-        "interference_factors": [0.2],
-        "probability_factors": [0.1],
-        "max_utilization_factors": [0.2],
-        "deadline_options": ["eq_period"],
-        "prime_exponent_hyperperiod_combinations": [
-          [10000, 11, 6]
-        ],
-        "number_of_cores_list": [4]
-      },
-      "assignment_parameters": {
-        "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-        "sorting_criteria": ["wcet_ascending"],
-        "solving_time_limit_milp_assignment": [300],
-        "solver_name_assignment": ["gurobi"] 
-      },
-      "scheduling_parameters": {
-        "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
-        "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-        "solving_time_limit_milp_scheduling": [300],
-        "solver_name_scheduling": ["gurobi"] 
-      }
-    },
-    "slurm_parameters": {
-      "taskset_time": "01:00:00",
-      "taskset_mem": "4G",
-      "assignment_time": "2-00:00:00",
-      "assignment_mem": "16G",
-      "scheduling_time": "2-00:00:00",
-      "scheduling_mem": "32G"
     }
   }
 }

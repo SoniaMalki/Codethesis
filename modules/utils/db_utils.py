@@ -70,7 +70,12 @@ class DBUtils:
                 )
             """, (experience_id,))
             results = self.cursor.fetchall()
-            return [row[0] for row in results]
+            config_ids = [row[0] for row in results]
+
+            # Sort config_ids numerically
+            config_ids.sort(key=lambda x: int(x.split('_')[1]))
+
+            return config_ids
         except Exception as e:
             print(f"Error retrieving config IDs from {table_name}: {e}")
             return []

@@ -51,6 +51,9 @@ class SlurmGenerator:
         for dir_path in [self.master_dir, self.slurm_dir, self.output_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
 
+        self.experience_loader = ExperienceLoader(
+            self.db_path, self.experience_id)
+
         # Dictionnaire des modules pour chaque cluster
         self.cluster_modules = {
             "lm": """
@@ -555,7 +558,7 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
             "  echo \"Submitting analyze_results.slurm (waiting for taskset to finish)\"\n"
             "  sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/analyze_results.slurm\"\n"
             "else\n"
-            "  echo \"Submitting analyze_results.slurm\"\n"
+            "  echo \"Submitting analyze_results.slurm (no dependencies)\"\n"
             "  sbatch \"$MASTER_DIR/analyze_results.slurm\"\n"
             "fi\n"
 

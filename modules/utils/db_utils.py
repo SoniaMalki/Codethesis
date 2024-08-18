@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from pathlib import Path
 
@@ -87,3 +88,31 @@ class DBUtils:
         except Exception as e:
             print(f"Error checking result existence in {table_name}: {e}")
             return False
+
+    def get_assignment_algorithm(self, assignment_id):
+        """Retrieves the assignment_method for the given assignment_id."""
+        try:
+            self.cursor.execute("""
+                SELECT assignment_method
+                FROM Assignments
+                WHERE assignment_id = ?
+            """, (assignment_id,))
+            result = self.cursor.fetchone()
+            return result[0] if result else None
+        except Exception as e:
+            print(f"Error retrieving assignment algorithm: {e}")
+            return None
+
+    def get_scheduling_algorithm(self, scheduling_id):
+        """Retrieves the scheduling_algorithm for the given scheduling_id."""
+        try:
+            self.cursor.execute("""
+                SELECT scheduling_algorithm
+                FROM Schedulings
+                WHERE scheduling_id = ?
+            """, (scheduling_id,))
+            result = self.cursor.fetchone()
+            return result[0] if result else None
+        except Exception as e:
+            print(f"Error retrieving scheduling algorithm: {e}")
+            return None

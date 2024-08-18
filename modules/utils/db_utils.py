@@ -4,10 +4,16 @@ from pathlib import Path
 
 
 class DBUtils:
-    def __init__(self, db_path):
+    def __init__(self, db_path, assignment_algorithm_priority=[
+            "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Wmin", "Citta"], scheduling_algorithm_priority=["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2",
+                                                                                                                        "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]):
         self.db_path = db_path
         self.conn = sqlite3.connect(self.db_path)
         self.cursor = self.conn.cursor()
+
+        # Store algorithm priority lists as attributes
+        self.assignment_algorithm_priority = assignment_algorithm_priority
+        self.scheduling_algorithm_priority = scheduling_algorithm_priority
 
     def get_result_file_path(self, config_id, config_type):
         """Récupère le chemin du fichier de résultat pour une configuration donnée dans la base de données."""
@@ -68,8 +74,8 @@ class DBUtils:
             return False
 
     def get_config_ids_with_no_results(self, table_name, id_column, experience_id):
-        """Retrieves config IDs from a table where result_file_path is NULL, 
-        sorted numerically.
+        """Retrieves config IDs from a table where result_file_path is NULL,
+        grouped and sorted by algorithm (respecting priority), then numerically within each algorithm.
         """
         try:
             self.cursor.execute(f"""
@@ -78,20 +84,47 @@ class DBUtils:
                 WHERE result_file_path IS NULL
                 AND {id_column} IN (
                     SELECT {id_column}
-                    FROM Experience{table_name} 
+                    FROM Experience{table_name}
                     WHERE experience_id = ?
                 )
             """, (experience_id,))
             results = self.cursor.fetchall()
             config_ids = [row[0] for row in results]
 
-            # Sort config_ids numerically
-            config_ids.sort(key=lambda x: int(x.split('_')[1]))
+            # Group and sort config_ids by algorithm
+            grouped_config_ids = {}
+            if table_name == 'Assignments':
+                algorithm_data = self.get_all_assignment_algorithms(config_ids)
+                priority_list = self.assignment_algorithm_priority
+            elif table_name == 'Schedulings':
+                algorithm_data = self.get_all_scheduling_algorithms(config_ids)
+                priority_list = self.scheduling_algorithm_priority
+            else:  # Taskset
+                algorithm_data = {
+                    config_id: 'taskset' for config_id in config_ids}
+                priority_list = ["taskset"]  # Only one algorithm for taskset
 
-            return config_ids
+            for config_id in config_ids:
+                algorithm = algorithm_data.get(config_id)
+                if algorithm not in grouped_config_ids:
+                    grouped_config_ids[algorithm] = []
+                grouped_config_ids[algorithm].append(config_id)
+
+            # Sort algorithms based on priority list
+            sorted_algorithms = sorted(grouped_config_ids.keys(), key=lambda x: priority_list.index(
+                x) if x in priority_list else len(priority_list))
+
+            # Sort IDs numerically within each algorithm
+            sorted_grouped_config_ids = {}
+            for algorithm in sorted_algorithms:
+                sorted_grouped_config_ids[algorithm] = sorted(
+                    grouped_config_ids[algorithm], key=lambda x: int(x.split('_')[1]))
+
+            return sorted_grouped_config_ids
+
         except Exception as e:
             print(f"Error retrieving config IDs from {table_name}: {e}")
-            return []
+            return {}
 
     def get_assignment_algorithm(self, assignment_id):
         """Retrieves the assignment_method for the given assignment_id."""

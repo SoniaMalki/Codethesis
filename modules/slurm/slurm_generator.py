@@ -84,6 +84,19 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
         self.modules = self.get_modules_for_hostname(hostname)
         print(f"Loaded modules: {self.modules}")
 
+        # Pre-calculate cluster resources for faster access
+        self.cluster_resources = {}
+        for config_type in ["taskset", "assignment", "scheduling"]:
+            for algorithm in (self.assignment_algorithm_priority if config_type == "assignment" else
+                              self.scheduling_algorithm_priority if config_type == "scheduling" else
+                              ["taskset"]):
+                self.cluster_resources[(config_type, algorithm)] = {
+                    "optimal_threads": self.determine_optimal_resources(config_type, algorithm),
+                    "job_time": self.get_job_time_and_memory(config_type, algorithm)[0],
+                    "slurm_memory": self.get_job_time_and_memory(config_type, algorithm)[1],
+                    "batch_size": self.get_batch_size(config_type, algorithm)
+                }
+
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
             (self.slurm_dir / config_type /
@@ -227,9 +240,9 @@ done
     def generate_slurm_for_config(self, config_key, config_type, algorithm):
         """Generate SLURM file for a specific configuration, only if result file does not exist."""
         print(
-            f"Generating SLURM file for {config_key} of type {config_type}")
+            f"Generating SLURM file for {config_key} of type {config_type} with algo {algorithm}")
 
-        with DBUtils(self.db_path) as db_utils:
+        with DBUtils(self.db_path, self.assignment_algorithm_priority, self.scheduling_algorithm_priority) as db_utils:
             if config_type == "assignment":
                 result_exists = db_utils.check_result_exists(
                     "Assignments", "assignment_id", config_key)
@@ -245,10 +258,10 @@ done
                 return
 
             if not result_exists:
-                optimal_threads = self.determine_optimal_resources(
-                    config_type, algorithm)
-                job_time, slurm_memory = self.get_job_time_and_memory(
-                    config_type, algorithm)
+                resources = self.cluster_resources[(config_type, algorithm)]
+                optimal_threads = resources["optimal_threads"]
+                job_time = resources["job_time"]
+                slurm_memory = resources["slurm_memory"]
 
                 slurm_file = self.slurm_dir / \
                     config_type / f"{config_key}.slurm"
@@ -281,7 +294,7 @@ done
         cluster_name = next((value for key, value in cluster_mapping.items(
         ) if hostname.startswith(key)), hostname)
 
-        with DBUtils(self.db_path) as db_utils:
+        with DBUtils(self.db_path, self.assignment_algorithm_priority, self.scheduling_algorithm_priority) as db_utils:
             if config_type == "assignment":
                 table_name = "Assignments"
                 id_column = "assignment_id"
@@ -340,41 +353,35 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
         for config_type in ["taskset", "assignment", "scheduling"]:
             print(f"Fetching config IDs for {config_type}")
 
-            with DBUtils(self.db_path) as db_utils:
+            with DBUtils(self.db_path, self.assignment_algorithm_priority, self.scheduling_algorithm_priority) as db_utils:
                 if config_type == 'taskset':
-                    config_ids = db_utils.get_config_ids_with_no_results(
+                    grouped_config_ids = db_utils.get_config_ids_with_no_results(
                         "Tasksets", "taskset_id", self.experience_id)
-                    algorithm_data = {}  # Tasksets don't have algorithms
                 elif config_type == 'assignment':
-                    config_ids = db_utils.get_config_ids_with_no_results(
+                    grouped_config_ids = db_utils.get_config_ids_with_no_results(
                         "Assignments", "assignment_id", self.experience_id)
-                    algorithm_data = db_utils.get_all_assignment_algorithms(
-                        config_ids)
                 elif config_type == 'scheduling':
-                    config_ids = db_utils.get_config_ids_with_no_results(
+                    grouped_config_ids = db_utils.get_config_ids_with_no_results(
                         "Schedulings", "scheduling_id", self.experience_id)
-                    algorithm_data = db_utils.get_all_scheduling_algorithms(
-                        config_ids)
                 else:
                     print(f"Error: Invalid config_type: {config_type}")
                     continue
 
-                # 1 & 2. Combined Loop: Generate SLURM Files and Group Batches
+                # 1 & 2. Generate SLURM Files and Group Batches
                 grouped_slurm_files = {}
-                for config_key in config_ids:
-                    algorithm = algorithm_data.get(config_key, "taskset")
+                for algorithm, config_ids in grouped_config_ids.items():
+                    for config_key in config_ids:
+                        self.generate_slurm_for_config(
+                            config_key, config_type, algorithm)
 
-                    self.generate_slurm_for_config(
-                        config_key, config_type, algorithm)
-
-                    if algorithm not in grouped_slurm_files:
-                        grouped_slurm_files[algorithm] = {}
-                    grouped_slurm_files[algorithm][config_key] = config_key
+                        if algorithm not in grouped_slurm_files:
+                            grouped_slurm_files[algorithm] = {}
+                        grouped_slurm_files[algorithm][config_key] = config_key
 
                 # 3. Construct Batch Files
                 for algorithm, batch_configs in grouped_slurm_files.items():
-                    batch_size = self.get_batch_size(
-                        config_type, algorithm)
+                    batch_size = self.cluster_resources[(
+                        config_type, algorithm)]["batch_size"]
                     for batch_num, _ in enumerate(range(0, len(batch_configs), batch_size)):
                         self.generate_slurm_batch(config_type, algorithm, dict(list(batch_configs.items())[
                             batch_num * batch_size:(batch_num + 1) * batch_size]), batch_num)

@@ -1,6 +1,8 @@
 import socket
 from pathlib import Path
 import re
+import io
+from collections import defaultdict
 
 from modules.utils.db_utils import DBUtils
 
@@ -34,7 +36,7 @@ class SlurmGenerator:
 
         # Dictionnaire des paramètres SLURM par défaut
         self.slurm_parameters = {
-            "taskset": {"time": "01:00:00", "mem": "100M", "batch_size": 2000},
+            "taskset": {"time": "01:00:00", "mem": "200M", "batch_size": 1000},
             "assignment_simple": {"time": "00:20:00", "mem": "100M", "batch_size": 2000},
             "assignment_milp": {"time": "05:00:00", "mem": "500M", "batch_size": 500},
             "scheduling_simple": {"time": "01:00:00", "mem": "100M", "batch_size": 2000},
@@ -84,8 +86,13 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
         self.modules = self.get_modules_for_hostname(hostname)
         print(f"Loaded modules: {self.modules}")
 
-        # Pre-calculate cluster resources for faster access
-        self.cluster_resources = {}
+        # Pre-calculate cluster resources for faster access using defaultdict
+        self.cluster_resources = defaultdict(lambda: {
+            "optimal_threads": self.determine_optimal_resources("scheduling", "simple"),
+            "job_time": self.get_job_time_and_memory("scheduling", "simple")[0],
+            "slurm_memory": self.get_job_time_and_memory("scheduling", "simple")[1],
+            "batch_size": self.get_batch_size("scheduling", "simple")
+        })
         for config_type in ["taskset", "assignment", "scheduling"]:
             for algorithm in (self.assignment_algorithm_priority if config_type == "assignment" else
                               self.scheduling_algorithm_priority if config_type == "scheduling" else
@@ -96,6 +103,8 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
                     "slurm_memory": self.get_job_time_and_memory(config_type, algorithm)[1],
                     "batch_size": self.get_batch_size(config_type, algorithm)
                 }
+
+        # No longer need explicit entries for None algorithm
 
         for config_type in ["taskset", "assignment", "scheduling"]:
             (self.slurm_dir / config_type).mkdir(parents=True, exist_ok=True)
@@ -263,12 +272,17 @@ done
                 job_time = resources["job_time"]
                 slurm_memory = resources["slurm_memory"]
 
+                # Use StringIO for in-memory buffering
+                slurm_content = io.StringIO()
+                slurm_content.write(self.get_slurm_content(
+                    config_key, config_type, optimal_threads, job_time, slurm_memory))
+
                 slurm_file = self.slurm_dir / \
                     config_type / f"{config_key}.slurm"
 
+                # Write the entire content to disk
                 with open(slurm_file, "w") as f:
-                    f.write(self.get_slurm_content(
-                        config_key, config_type, optimal_threads, job_time, slurm_memory))
+                    f.write(slurm_content.getvalue())
 
                 print(
                     f"SLURM file for {config_key} generated at {slurm_file}")
@@ -352,6 +366,18 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
 
         for config_type in ["taskset", "assignment", "scheduling"]:
             print(f"Fetching config IDs for {config_type}")
+            slurm_data_to_update = []
+
+            # Determine cluster_name here, outside the if block
+            hostname = socket.gethostname()
+            cluster_mapping = {
+                "lm": "lemaitre4",
+                "nic": "nic5",
+                "her": "hercules",
+                "sonia": "sonia"
+            }
+            cluster_name = next((value for key, value in cluster_mapping.items()
+                                 if hostname.startswith(key)), hostname)
 
             with DBUtils(self.db_path, self.assignment_algorithm_priority, self.scheduling_algorithm_priority) as db_utils:
                 if config_type == 'taskset':
@@ -371,8 +397,20 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
                 grouped_slurm_files = {}
                 for algorithm, config_ids in grouped_config_ids.items():
                     for config_key in config_ids:
+                        resources = self.cluster_resources[(
+                            config_type, algorithm)]
+                        optimal_threads = resources["optimal_threads"]
+                        job_time = resources["job_time"]
+                        slurm_memory = resources["slurm_memory"]
+
                         self.generate_slurm_for_config(
                             config_key, config_type, algorithm)
+
+                        # Accumulate data for bulk update
+                        slurm_data_to_update.append(
+                            (cluster_name, optimal_threads,
+                             job_time, slurm_memory, config_key)
+                        )
 
                         if algorithm not in grouped_slurm_files:
                             grouped_slurm_files[algorithm] = {}
@@ -385,6 +423,28 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
                     for batch_num, _ in enumerate(range(0, len(batch_configs), batch_size)):
                         self.generate_slurm_batch(config_type, algorithm, dict(list(batch_configs.items())[
                             batch_num * batch_size:(batch_num + 1) * batch_size]), batch_num)
+
+                # Batch update the database after generating all SLURM files
+                if slurm_data_to_update:
+                    if config_type == "assignment":
+                        table_name = "Assignments"
+                        id_column = "assignment_id"
+                    elif config_type == "scheduling":
+                        table_name = "Schedulings"
+                        id_column = "scheduling_id"
+                    elif config_type == "taskset":
+                        table_name = "Tasksets"
+                        id_column = "taskset_id"
+
+                    db_utils.cursor.executemany(f"""
+                        UPDATE {table_name}
+                        SET cluster = ?,
+                            threads = ?,
+                            slurm_time = ?,
+                            slurm_memory = ?
+                        WHERE {id_column} = ?
+                    """, slurm_data_to_update)
+                    db_utils.conn.commit()
 
         # 4 & 5. Construct Master Files (per type)
         for config_type in ["taskset", "assignment", "scheduling"]:

@@ -172,8 +172,10 @@ alias scp=scancel_pending
 alias sc=scancel_all
 
 generate_and_submit() {
-    python3 main.py generate_slurm_scripts "$1" && sbatch "generation/$1/slurm/master/full_pipeline_$1.slurm"
+    output=$(python3 main.py generate_slurm_scripts "$1" 2>&1 && sbatch "$CODETHESIS/generation/$1/slurm/master/full_pipeline_$1.slurm" 2>&1)
+    echo "$output" > "$CODETHESIS/generation/$1/slurm/output/submit_full_pipeline.txt"
 }
+
 
 
 alias gen='generate_and_submit'
@@ -219,6 +221,9 @@ tail_print() {
             fi
             file_path+="/${category_dir}/${category}_master.txt"
             ;;
+        submit)
+            file_path+="/submit_full_pipeline.txt"
+            ;;
         *)
             echo "Invalid file type"
             return 1
@@ -228,5 +233,6 @@ tail_print() {
     # Exécuter tail sur le fichier
     tail -n "$line_count" "$file_path"
 }
+
 
 alias t20='tail_print 20'

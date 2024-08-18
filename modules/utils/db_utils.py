@@ -48,16 +48,29 @@ class DBUtils:
         self.conn.close()
 
     def __enter__(self):
-        """Enter the runtime context related to this object."""
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        """Exit the runtime context related to this object."""
-        # Close the database connection
         self.conn.close()
 
+    def check_result_exists(self, table_name, id_column, config_key):
+        """Checks if a result file path exists for a given config ID."""
+        try:
+            self.cursor.execute(f"""
+                SELECT result_file_path
+                FROM {table_name}
+                WHERE {id_column} = ?
+            """, (config_key,))
+            result = self.cursor.fetchone()
+            return result[0] is not None if result else False
+        except Exception as e:
+            print(f"Error checking result existence in {table_name}: {e}")
+            return False
+
     def get_config_ids_with_no_results(self, table_name, id_column, experience_id):
-        """Retrieves config IDs from a table where result_file_path is NULL."""
+        """Retrieves config IDs from a table where result_file_path is NULL, 
+        sorted numerically.
+        """
         try:
             self.cursor.execute(f"""
                 SELECT {id_column}
@@ -79,20 +92,6 @@ class DBUtils:
         except Exception as e:
             print(f"Error retrieving config IDs from {table_name}: {e}")
             return []
-
-    def check_result_exists(self, table_name, id_column, config_key):
-        """Checks if a result file path exists for a given config ID."""
-        try:
-            self.cursor.execute(f"""
-                SELECT result_file_path
-                FROM {table_name}
-                WHERE {id_column} = ?
-            """, (config_key,))
-            result = self.cursor.fetchone()
-            return result[0] is not None if result else False
-        except Exception as e:
-            print(f"Error checking result existence in {table_name}: {e}")
-            return False
 
     def get_assignment_algorithm(self, assignment_id):
         """Retrieves the assignment_method for the given assignment_id."""
@@ -121,3 +120,31 @@ class DBUtils:
         except Exception as e:
             print(f"Error retrieving scheduling algorithm: {e}")
             return None
+
+    def get_all_assignment_algorithms(self, assignment_ids):
+        """Retrieves assignment_method for multiple assignment_ids."""
+        try:
+            placeholders = ",".join("?" * len(assignment_ids))
+            self.cursor.execute(f"""
+                SELECT assignment_id, assignment_method
+                FROM Assignments
+                WHERE assignment_id IN ({placeholders})
+            """, assignment_ids)
+            return dict(self.cursor.fetchall())
+        except Exception as e:
+            print(f"Error retrieving assignment algorithms: {e}")
+            return {}
+
+    def get_all_scheduling_algorithms(self, scheduling_ids):
+        """Retrieves scheduling_algorithm for multiple scheduling_ids."""
+        try:
+            placeholders = ",".join("?" * len(scheduling_ids))
+            self.cursor.execute(f"""
+                SELECT scheduling_id, scheduling_algorithm
+                FROM Schedulings
+                WHERE scheduling_id IN ({placeholders})
+            """, scheduling_ids)
+            return dict(self.cursor.fetchall())
+        except Exception as e:
+            print(f"Error retrieving scheduling algorithms: {e}")
+            return {}

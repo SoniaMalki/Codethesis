@@ -340,45 +340,32 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
         for config_type in ["taskset", "assignment", "scheduling"]:
             print(f"Fetching config IDs for {config_type}")
 
-            with DBUtils(self.db_path) as db_utils:  # Move with block outside the loop
+            with DBUtils(self.db_path) as db_utils:
                 if config_type == 'taskset':
                     config_ids = db_utils.get_config_ids_with_no_results(
                         "Tasksets", "taskset_id", self.experience_id)
+                    algorithm_data = {}  # Tasksets don't have algorithms
                 elif config_type == 'assignment':
                     config_ids = db_utils.get_config_ids_with_no_results(
                         "Assignments", "assignment_id", self.experience_id)
+                    algorithm_data = db_utils.get_all_assignment_algorithms(
+                        config_ids)
                 elif config_type == 'scheduling':
                     config_ids = db_utils.get_config_ids_with_no_results(
                         "Schedulings", "scheduling_id", self.experience_id)
+                    algorithm_data = db_utils.get_all_scheduling_algorithms(
+                        config_ids)
                 else:
                     print(f"Error: Invalid config_type: {config_type}")
                     continue
 
-                # 1. Generate Individual SLURM Files (if needed)
+                # 1 & 2. Combined Loop: Generate SLURM Files and Group Batches
+                grouped_slurm_files = {}
                 for config_key in config_ids:
-                    if config_type == "assignment":
-                        algorithm = db_utils.get_assignment_algorithm(
-                            config_key)
-                    elif config_type == "scheduling":
-                        algorithm = db_utils.get_scheduling_algorithm(
-                            config_key)
-                    else:
-                        algorithm = "taskset"
+                    algorithm = algorithm_data.get(config_key, "taskset")
 
                     self.generate_slurm_for_config(
                         config_key, config_type, algorithm)
-
-                # 2. Group and batch SLURM files
-                grouped_slurm_files = {}
-                for config_key in config_ids:
-                    if config_type == "assignment":
-                        algorithm = db_utils.get_assignment_algorithm(
-                            config_key)
-                    elif config_type == "scheduling":
-                        algorithm = db_utils.get_scheduling_algorithm(
-                            config_key)
-                    else:
-                        algorithm = "taskset"
 
                     if algorithm not in grouped_slurm_files:
                         grouped_slurm_files[algorithm] = {}

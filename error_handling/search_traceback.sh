@@ -33,6 +33,12 @@ process_file() {
     error_type="PulpSolverError"
   elif grep -q "FileNotFoundError" "$file_path"; then
     error_type="FileNotFoundError"
+  elif grep -q "OperationalError" "$file_path"; then
+    error_type="OperationalError"
+  elif grep -q "EOFError" "$file_path"; then
+    error_type="EOFError"
+  elif grep -q "DatabaseError" "$file_path"; then
+    error_type="DatabaseError"
   else
     error_type="UnknownError"
   fi

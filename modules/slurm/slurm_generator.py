@@ -2,7 +2,6 @@ import socket
 from pathlib import Path
 import re
 
-from modules.core.experience_loader import ExperienceLoader
 from modules.utils.db_utils import DBUtils
 
 
@@ -50,9 +49,6 @@ class SlurmGenerator:
 
         for dir_path in [self.master_dir, self.slurm_dir, self.output_dir]:
             dir_path.mkdir(parents=True, exist_ok=True)
-
-        self.experience_loader = ExperienceLoader(
-            self.db_path, self.experience_id)
 
         # Dictionnaire des modules pour chaque cluster
         self.cluster_modules = {
@@ -132,14 +128,14 @@ done
 python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_key}
 """
 
-    def determine_optimal_resources(self, config_params, config_type):
+    def determine_optimal_resources(self, config_type, algorithm):
         hostname = socket.gethostname()
         cluster_name = next(
             (cluster for cluster in self.cluster_cores if cluster in hostname), None
         )
 
         print(f"Cluster name: {cluster_name}")
-        print(f"Algorithm : {config_params.get('assignment_method', '')}")
+        print(f"Algorithm : {algorithm}")
 
         if cluster_name is None:
             print(
@@ -149,12 +145,12 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
             available_cores = self.cluster_cores[cluster_name]
 
         if config_type == "assignment":
-            if "Wmin" in config_params.get('assignment_method', "") or "Citta" in config_params.get('assignment_method', ""):
+            if "Wmin" in algorithm or "Citta" in algorithm:
                 optimal_cores = min(available_cores, 8)
             else:
                 optimal_cores = min(available_cores, 1)
         elif config_type == "scheduling":
-            if "Rhma" in config_params.get('scheduling_algorithm', ""):
+            if "Rhma" in algorithm:
                 optimal_cores = min(available_cores, 8)
             else:
                 optimal_cores = 1
@@ -164,18 +160,18 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
         optimal_threads = optimal_cores
         return optimal_threads
 
-    def get_job_time_and_memory(self, config_type, config_params):
+    def get_job_time_and_memory(self, config_type, algorithm):
         if config_type == "taskset":
             return self.slurm_parameters["taskset"]["time"], self.slurm_parameters["taskset"]["mem"]
         elif config_type == "assignment":
-            if "Wmin" in config_params.get('assignment_method', "") or "Citta" in config_params.get('assignment_method', ""):
+            if "Wmin" in algorithm or "Citta" in algorithm:
                 return self.slurm_parameters["assignment_milp"]["time"], self.slurm_parameters["assignment_milp"]["mem"]
             else:
                 return self.slurm_parameters["assignment_simple"]["time"], self.slurm_parameters["assignment_simple"]["mem"]
         elif config_type == "scheduling":
-            if "Rhma" in config_params.get('scheduling_algorithm', ""):
+            if "Rhma" in algorithm:
                 return self.slurm_parameters["scheduling_rhma"]["time"], self.slurm_parameters["scheduling_rhma"]["mem"]
-            elif "Combined" in config_params.get('scheduling_algorithm', ""):
+            elif "Combined" in algorithm:
                 return self.slurm_parameters["scheduling_combined"]["time"], self.slurm_parameters["scheduling_combined"]["mem"]
             else:
                 return self.slurm_parameters["scheduling_simple"]["time"], self.slurm_parameters["scheduling_simple"]["mem"]
@@ -183,7 +179,6 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
             return self.default_slurm_time, self.default_slurm_mem
 
     def get_batch_size(self, config_type, algorithm):
-        algorithm = algorithm["algorithm"]
         if config_type == "taskset":
             key = "taskset"
         elif config_type == "assignment":
@@ -229,7 +224,7 @@ done
                             """
             )
 
-    def generate_slurm_for_config(self, config_key, config_type):
+    def generate_slurm_for_config(self, config_key, config_type, algorithm):
         """Generate SLURM file for a specific configuration, only if result file does not exist."""
         print(
             f"Generating SLURM file for {config_key} of type {config_type}")
@@ -250,26 +245,10 @@ done
                 return
 
             if not result_exists:
-                experience = self.experience_loader.load(config_key)
-
-                if config_type == "assignment":
-                    config_params = experience.assignment_parameters['parameters']
-                    optimal_threads = self.determine_optimal_resources(
-                        config_params, config_type)
-                    config_params['assignment_options']['threads'] = optimal_threads
-
-                elif config_type == "scheduling":
-                    config_params = experience.scheduling_parameters['parameters']
-                    optimal_threads = self.determine_optimal_resources(
-                        config_params, config_type)
-                    config_params['scheduling_options']['threads'] = optimal_threads
-
-                elif config_type == "taskset":
-                    config_params = {}
-                    optimal_threads = 1
-
+                optimal_threads = self.determine_optimal_resources(
+                    config_type, algorithm)
                 job_time, slurm_memory = self.get_job_time_and_memory(
-                    config_type, config_params)
+                    config_type, algorithm)
 
                 slurm_file = self.slurm_dir / \
                     config_type / f"{config_key}.slurm"
@@ -358,11 +337,10 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
         print(
             f"Generating all SLURM files for experience ID: {self.experience_id}")
 
-        # Pour chaque type de configuration (taskset, assignment, scheduling)
         for config_type in ["taskset", "assignment", "scheduling"]:
             print(f"Fetching config IDs for {config_type}")
 
-            with DBUtils(self.db_path) as db_utils:
+            with DBUtils(self.db_path) as db_utils:  # Move with block outside the loop
                 if config_type == 'taskset':
                     config_ids = db_utils.get_config_ids_with_no_results(
                         "Tasksets", "taskset_id", self.experience_id)
@@ -376,37 +354,43 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
                     print(f"Error: Invalid config_type: {config_type}")
                     continue
 
-            # 1. Generate Individual SLURM Files (if needed)
-            for config_key in config_ids:
-                self.generate_slurm_for_config(config_key, config_type)
-
-            # 2. Group and batch SLURM files
-            grouped_slurm_files = {}
-            for config_key in config_ids:
-                experience = self.experience_loader.load(config_key)
-                if experience:
+                # 1. Generate Individual SLURM Files (if needed)
+                for config_key in config_ids:
                     if config_type == "assignment":
-                        config_params = experience.assignment_parameters['parameters']
-                        algorithm = config_params.get(
-                            'assignment_method', 'simple')
+                        algorithm = db_utils.get_assignment_algorithm(
+                            config_key)
                     elif config_type == "scheduling":
-                        config_params = experience.scheduling_parameters['parameters']
-                        algorithm = config_params.get(
-                            'scheduling_algorithm', 'simple')
+                        algorithm = db_utils.get_scheduling_algorithm(
+                            config_key)
                     else:
-                        algorithm = "taskset"  # Default for taskset
+                        algorithm = "taskset"
+
+                    self.generate_slurm_for_config(
+                        config_key, config_type, algorithm)
+
+                # 2. Group and batch SLURM files
+                grouped_slurm_files = {}
+                for config_key in config_ids:
+                    if config_type == "assignment":
+                        algorithm = db_utils.get_assignment_algorithm(
+                            config_key)
+                    elif config_type == "scheduling":
+                        algorithm = db_utils.get_scheduling_algorithm(
+                            config_key)
+                    else:
+                        algorithm = "taskset"
 
                     if algorithm not in grouped_slurm_files:
                         grouped_slurm_files[algorithm] = {}
                     grouped_slurm_files[algorithm][config_key] = config_key
 
-            # 3. Construct Batch Files
-            for algorithm, batch_configs in grouped_slurm_files.items():
-                batch_size = self.get_batch_size(
-                    config_type, {"algorithm": algorithm})
-                for batch_num, _ in enumerate(range(0, len(batch_configs), batch_size)):
-                    self.generate_slurm_batch(config_type, algorithm, dict(list(batch_configs.items())[
-                                              batch_num * batch_size:(batch_num + 1) * batch_size]), batch_num)
+                # 3. Construct Batch Files
+                for algorithm, batch_configs in grouped_slurm_files.items():
+                    batch_size = self.get_batch_size(
+                        config_type, algorithm)
+                    for batch_num, _ in enumerate(range(0, len(batch_configs), batch_size)):
+                        self.generate_slurm_batch(config_type, algorithm, dict(list(batch_configs.items())[
+                            batch_num * batch_size:(batch_num + 1) * batch_size]), batch_num)
 
         # 4 & 5. Construct Master Files (per type)
         for config_type in ["taskset", "assignment", "scheduling"]:
@@ -558,7 +542,7 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
             "  echo \"Submitting analyze_results.slurm (waiting for taskset to finish)\"\n"
             "  sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/analyze_results.slurm\"\n"
             "else\n"
-            "  echo \"Submitting analyze_results.slurm (no dependencies)\"\n"
+            "  echo \"Submitting analyze_results.slurm\"\n"
             "  sbatch \"$MASTER_DIR/analyze_results.slurm\"\n"
             "fi\n"
 

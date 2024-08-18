@@ -155,29 +155,39 @@ class DBUtils:
             return None
 
     def get_all_assignment_algorithms(self, assignment_ids):
-        """Retrieves assignment_method for multiple assignment_ids."""
+        """Retrieves assignment_method for multiple assignment_ids in chunks."""
         try:
-            placeholders = ",".join("?" * len(assignment_ids))
-            self.cursor.execute(f"""
-                SELECT assignment_id, assignment_method
-                FROM Assignments
-                WHERE assignment_id IN ({placeholders})
-            """, assignment_ids)
-            return dict(self.cursor.fetchall())
+            chunk_size = 999  # SQLite often has a limit around 1000
+            algorithm_data = {}
+            for i in range(0, len(assignment_ids), chunk_size):
+                chunk = assignment_ids[i:i + chunk_size]
+                placeholders = ",".join("?" * len(chunk))
+                self.cursor.execute(f"""
+                    SELECT assignment_id, assignment_method
+                    FROM Assignments
+                    WHERE assignment_id IN ({placeholders})
+                """, chunk)
+                algorithm_data.update(dict(self.cursor.fetchall()))
+            return algorithm_data
         except Exception as e:
             print(f"Error retrieving assignment algorithms: {e}")
             return {}
 
     def get_all_scheduling_algorithms(self, scheduling_ids):
-        """Retrieves scheduling_algorithm for multiple scheduling_ids."""
+        """Retrieves scheduling_algorithm for multiple scheduling_ids in chunks."""
         try:
-            placeholders = ",".join("?" * len(scheduling_ids))
-            self.cursor.execute(f"""
-                SELECT scheduling_id, scheduling_algorithm
-                FROM Schedulings
-                WHERE scheduling_id IN ({placeholders})
-            """, scheduling_ids)
-            return dict(self.cursor.fetchall())
+            chunk_size = 999  # SQLite often has a limit around 1000
+            algorithm_data = {}
+            for i in range(0, len(scheduling_ids), chunk_size):
+                chunk = scheduling_ids[i:i + chunk_size]
+                placeholders = ",".join("?" * len(chunk))
+                self.cursor.execute(f"""
+                    SELECT scheduling_id, scheduling_algorithm
+                    FROM Schedulings
+                    WHERE scheduling_id IN ({placeholders})
+                """, chunk)
+                algorithm_data.update(dict(self.cursor.fetchall()))
+            return algorithm_data
         except Exception as e:
             print(f"Error retrieving scheduling algorithms: {e}")
             return {}

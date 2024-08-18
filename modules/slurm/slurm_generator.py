@@ -35,12 +35,12 @@ class SlurmGenerator:
 
         # Dictionnaire des paramètres SLURM par défaut
         self.slurm_parameters = {
-            "taskset": {"time": "01:00:00", "mem": "1G", "batch_size": 500},
-            "assignment_simple": {"time": "00:20:00", "mem": "1G", "batch_size": 500},
-            "assignment_milp": {"time": "05:00:00", "mem": "4G", "batch_size": 100},
-            "scheduling_simple": {"time": "01:00:00", "mem": "4G", "batch_size": 500},
-            "scheduling_combined": {"time": "02:00:00", "mem": "4G", "batch_size": 500},
-            "scheduling_rhma": {"time": "05:00:00", "mem": "64G", "batch_size": 500},
+            "taskset": {"time": "01:00:00", "mem": "100M", "batch_size": 2000},
+            "assignment_simple": {"time": "00:20:00", "mem": "100M", "batch_size": 2000},
+            "assignment_milp": {"time": "05:00:00", "mem": "500M", "batch_size": 500},
+            "scheduling_simple": {"time": "01:00:00", "mem": "100M", "batch_size": 2000},
+            "scheduling_combined": {"time": "02:00:00", "mem": "500M", "batch_size": 1000},
+            "scheduling_rhma": {"time": "05:00:00", "mem": "16G", "batch_size": 500},
         }
 
         self.master_dir = self.generation_path / "slurm" / "master"
@@ -197,46 +197,95 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
 
         return self.slurm_parameters[key]["batch_size"]
 
-    def generate_slurm(self, config_key, config_type):
-        """Generate SLURM file for a specific configuration."""
-        print(f"Generating SLURM file for {config_key} of type {config_type}")
+    def generate_slurm_batch(self, config_type, algorithm, batch_configs, batch_num):
+        individual_slurm_dir = self.slurm_dir / config_type
+        batch_name = f"batch_{config_type}_{algorithm}_{batch_num}"
 
-        experience = self.experience_loader.load(config_key)
+        sorted_batch_configs = dict(
+            sorted(batch_configs.items(), key=lambda item: int(item[0].split('_')[1])))
 
-        if experience and not experience.get_result_file_path(config_type):
+        print(f"Generating SLURM batch file for {batch_name}")
+        slurm_file = self.slurm_dir / \
+            config_type / f"batch/{batch_name}.slurm"
+        param_exclude = [
+            f"batch_{config_type}", f"all_{config_type}s_master"]
+        with open(slurm_file, "w") as f:
+            f.write(
+                f"""#!/bin/bash
+#SBATCH --job-name={batch_name}
+#SBATCH --output={self.output_dir / config_type / f"{batch_name}.txt"}
+#SBATCH --ntasks=1
+#SBATCH --time={self.batch_slurm_time}
+#SBATCH --mem-per-cpu={self.batch_slurm_mem}
+
+# Séparer par des espaces
+# Use sorted_batch_configs
+for config_key in {" ".join(sorted_batch_configs.keys())}; do
+  # Utiliser le chemin complet
+  sbatch {individual_slurm_dir / f"$config_key.slurm"}
+done
+
+{self.get_wait_for_jobs_script(config_type, param_exclude)}
+                            """
+            )
+
+    def generate_slurm_for_config(self, config_key, config_type):
+        """Generate SLURM file for a specific configuration, only if result file does not exist."""
+        print(
+            f"Generating SLURM file for {config_key} of type {config_type}")
+
+        with DBUtils(self.db_path) as db_utils:
             if config_type == "assignment":
-                config_params = experience.assignment_parameters['parameters']
-                optimal_threads = self.determine_optimal_resources(
-                    config_params, config_type)
-                config_params['assignment_options']['threads'] = optimal_threads
-
+                result_exists = db_utils.check_result_exists(
+                    "Assignments", "assignment_id", config_key)
             elif config_type == "scheduling":
-                config_params = experience.scheduling_parameters['parameters']
-                optimal_threads = self.determine_optimal_resources(
-                    config_params, config_type)
-                config_params['scheduling_options']['threads'] = optimal_threads
-
+                result_exists = db_utils.check_result_exists(
+                    "Schedulings", "scheduling_id", config_key)
             elif config_type == "taskset":
-                config_params = {}
-                optimal_threads = 1
+                result_exists = db_utils.check_result_exists(
+                    "Tasksets", "taskset_id", config_key)
+            else:
+                print(
+                    f"Error: Invalid config_type: {config_type}")
+                return
 
-            job_time, slurm_memory = self.get_job_time_and_memory(
-                config_type, config_params)
+            if not result_exists:
+                experience = self.experience_loader.load(config_key)
 
-            slurm_file = self.slurm_dir / \
-                config_type / f"{config_key}.slurm"
+                if config_type == "assignment":
+                    config_params = experience.assignment_parameters['parameters']
+                    optimal_threads = self.determine_optimal_resources(
+                        config_params, config_type)
+                    config_params['assignment_options']['threads'] = optimal_threads
 
-            with open(slurm_file, "w") as f:
-                f.write(self.get_slurm_content(
-                    config_key, config_type, optimal_threads, job_time, slurm_memory))
+                elif config_type == "scheduling":
+                    config_params = experience.scheduling_parameters['parameters']
+                    optimal_threads = self.determine_optimal_resources(
+                        config_params, config_type)
+                    config_params['scheduling_options']['threads'] = optimal_threads
 
-            print(f"SLURM file for {config_key} generated at {slurm_file}")
+                elif config_type == "taskset":
+                    config_params = {}
+                    optimal_threads = 1
 
-            self.update_database_with_slurm_info(
-                config_key, config_type, optimal_threads, job_time, slurm_memory)
-        else:
-            print(
-                f"Skipping SLURM generation for {config_key} - result file already exists")
+                job_time, slurm_memory = self.get_job_time_and_memory(
+                    config_type, config_params)
+
+                slurm_file = self.slurm_dir / \
+                    config_type / f"{config_key}.slurm"
+
+                with open(slurm_file, "w") as f:
+                    f.write(self.get_slurm_content(
+                        config_key, config_type, optimal_threads, job_time, slurm_memory))
+
+                print(
+                    f"SLURM file for {config_key} generated at {slurm_file}")
+
+                self.update_database_with_slurm_info(
+                    config_key, config_type, optimal_threads, job_time, slurm_memory)
+            else:
+                print(
+                    f"Skipping SLURM generation for {config_key} - result file already exists")
 
     def update_database_with_slurm_info(self, config_key, config_type, threads, slurm_time, slurm_memory):
         """Updates the Tasksets, Assignments, or Schedulings table with cluster, threads, time limit, and memory."""
@@ -253,34 +302,35 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
         cluster_name = next((value for key, value in cluster_mapping.items(
         ) if hostname.startswith(key)), hostname)
 
-        db_utils = DBUtils(self.db_path)
-        if config_type == "assignment":
-            table_name = "Assignments"
-            id_column = "assignment_id"
-        elif config_type == "scheduling":
-            table_name = "Schedulings"
-            id_column = "scheduling_id"
-        elif config_type == "taskset":
-            table_name = "Tasksets"
-            id_column = "taskset_id"
-        else:
-            print(f"Error: Invalid config_type: {config_type}")
-            return
+        with DBUtils(self.db_path) as db_utils:
+            if config_type == "assignment":
+                table_name = "Assignments"
+                id_column = "assignment_id"
+            elif config_type == "scheduling":
+                table_name = "Schedulings"
+                id_column = "scheduling_id"
+            elif config_type == "taskset":
+                table_name = "Tasksets"
+                id_column = "taskset_id"
+            else:
+                print(f"Error: Invalid config_type: {config_type}")
+                return
 
-        try:
-            db_utils.cursor.execute(f"""
-                UPDATE {table_name}
-                SET cluster = ?,
-                    threads = ?,
-                    slurm_time = ?,
-                    slurm_memory = ?
-                WHERE {id_column} = ?
-            """, (cluster_name, threads, slurm_time, slurm_memory, config_key))
-            db_utils.conn.commit()
-            print(
-                f"Updated {table_name} table with Slurm info for {config_key}")
-        except Exception as e:
-            print(f"Error updating {table_name} table: {e}")
+            try:
+                db_utils.cursor.execute(f"""
+                    UPDATE {table_name}
+                    SET cluster = ?,
+                        threads = ?,
+                        slurm_time = ?,
+                        slurm_memory = ?
+                    WHERE {id_column} = ?
+                """, (cluster_name, threads, slurm_time, slurm_memory, config_key))
+                db_utils.conn.commit()
+
+                print(
+                    f"Updated {table_name} table with Slurm info for {config_key}")
+            except Exception as e:
+                print(f"Error updating {table_name} table: {e}")
 
     def generate_analyze_slurm(self):
         print("Generating the SLURM file for analyzing results")
@@ -310,25 +360,29 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
 
         # Pour chaque type de configuration (taskset, assignment, scheduling)
         for config_type in ["taskset", "assignment", "scheduling"]:
-            # Récupérer les IDs de configuration pour ce type
             print(f"Fetching config IDs for {config_type}")
-            config_ids = self.experience_loader.get_config_ids(config_type)
+
+            with DBUtils(self.db_path) as db_utils:
+                if config_type == 'taskset':
+                    config_ids = db_utils.get_config_ids_with_no_results(
+                        "Tasksets", "taskset_id", self.experience_id)
+                elif config_type == 'assignment':
+                    config_ids = db_utils.get_config_ids_with_no_results(
+                        "Assignments", "assignment_id", self.experience_id)
+                elif config_type == 'scheduling':
+                    config_ids = db_utils.get_config_ids_with_no_results(
+                        "Schedulings", "scheduling_id", self.experience_id)
+                else:
+                    print(f"Error: Invalid config_type: {config_type}")
+                    continue
 
             # 1. Generate Individual SLURM Files (if needed)
             for config_key in config_ids:
-                self.generate_slurm(config_key, config_type)
+                self.generate_slurm_for_config(config_key, config_type)
 
-            # 2. Read Individual SLURM Directory
-            individual_slurm_dir = self.slurm_dir / config_type
-            generated_slurm_files = list(individual_slurm_dir.glob("*.slurm"))
-
-            # 3. Construct Batch Files
-            i = 0
-
-            # Regroupement des fichiers SLURM par type de configuration
+            # 2. Group and batch SLURM files
             grouped_slurm_files = {}
-            for slurm_file in generated_slurm_files:
-                config_key = slurm_file.stem
+            for config_key in config_ids:
                 experience = self.experience_loader.load(config_key)
                 if experience:
                     if config_type == "assignment":
@@ -343,53 +397,17 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
                         algorithm = "taskset"  # Default for taskset
 
                     if algorithm not in grouped_slurm_files:
-                        grouped_slurm_files[algorithm] = []
-                    grouped_slurm_files[algorithm].append(slurm_file)
+                        grouped_slurm_files[algorithm] = {}
+                    grouped_slurm_files[algorithm][config_key] = config_key
 
-            for algorithm, slurm_files in grouped_slurm_files.items():
-                i = 0
-
+            # 3. Construct Batch Files
+            for algorithm, batch_configs in grouped_slurm_files.items():
                 batch_size = self.get_batch_size(
                     config_type, {"algorithm": algorithm})
+                for batch_num, _ in enumerate(range(0, len(batch_configs), batch_size)):
+                    self.generate_slurm_batch(config_type, algorithm, dict(list(batch_configs.items())[
+                                              batch_num * batch_size:(batch_num + 1) * batch_size]), batch_num)
 
-                for batch_num, _ in enumerate(range(0, len(slurm_files), batch_size)):
-                    batch_configs = {}
-                    for j in range(i, min(i + batch_size, len(slurm_files))):
-                        slurm_file = slurm_files[j]
-                        config_key = slurm_file.stem
-                        batch_configs[config_key] = config_key
-
-                    batch_name = f"batch_{config_type}_{algorithm}_{batch_num}"
-
-                    sorted_batch_configs = dict(
-                        sorted(batch_configs.items(), key=lambda item: int(item[0].split('_')[1])))
-
-                    print(f"Generating SLURM batch file for {batch_name}")
-                    slurm_file = self.slurm_dir / \
-                        config_type / f"batch/{batch_name}.slurm"
-                    param_exclude = [
-                        f"batch_{config_type}", f"all_{config_type}s_master"]
-                    with open(slurm_file, "w") as f:
-                        f.write(
-                            f"""#!/bin/bash
-#SBATCH --job-name={batch_name}
-#SBATCH --output={self.output_dir / config_type / f"{batch_name}.txt"}
-#SBATCH --ntasks=1
-#SBATCH --time={self.batch_slurm_time}
-#SBATCH --mem-per-cpu={self.batch_slurm_mem}
-
-# Séparer par des espaces
-# Use sorted_batch_configs
-for config_key in {" ".join(sorted_batch_configs.keys())}; do
-  # Utiliser le chemin complet
-  sbatch {individual_slurm_dir / f"$config_key.slurm"}
-done
-
-{self.get_wait_for_jobs_script(config_type, param_exclude)}
-                            """
-                        )
-
-                    i += batch_size
         # 4 & 5. Construct Master Files (per type)
         for config_type in ["taskset", "assignment", "scheduling"]:
             self.write_master_slurm(config_type)

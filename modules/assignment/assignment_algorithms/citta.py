@@ -35,7 +35,7 @@ class Citta:
             f"Citta utilisant le solveur : {self.solver_name} avec thread {self.threads}")
 
         if self.solver_name == "gurobi":
-            self.solver = GUROBI_CMD(msg=1, options=[("OutputFlag", 1)])
+            self.solver = GUROBI_CMD(msg=0, options=[("OutputFlag", 0)])
         elif self.solver_name == "glpk":
             self.solver = GLPK_CMD(msg=0)
         else:
@@ -147,11 +147,7 @@ class Citta:
         I_run_old = 1
         # copie wcet pour modif temporaire
         wcet_updated = numpy.copy(self.wcet)
-
-        # Historique des valeurs de I_run
-        history = []
-        history_length = 100  # Longueur de l'historique
-
+        # si entre deux tours de boucle on arrive à un résultats similaire à l'ancien, on s'arrête.
         while I_run_old != I_run and wcet_updated[task_index] <= self.period[task_index]:
             I_run_old = I_run
             print(
@@ -167,16 +163,6 @@ class Citta:
             wcet_updated[task_index] = self.wcet[task_index] + I_run
             print(
                 f"         Updated wcet for task {task_index}: {wcet_updated[task_index]}")
-
-            # Ajouter la valeur à l'historique
-            history.append(I_run)
-            if len(history) > history_length:
-                history.pop(0)
-
-            # Détection d'oscillation
-            if len(history) == history_length and len(set(history)) == 2:
-                print("----- Oscillation detected! -----")
-                break
 
         if wcet_updated[task_index] > self.period[task_index]:
             # Le wcet trouvé fait qu'on pourra pas atteindre la deadline, on renvoie la période pour faire comprendre ça

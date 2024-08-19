@@ -24,28 +24,46 @@ fi
 
 # Exécute le script Python pour générer les scripts SLURM
 echo "Launching python generate_slurm_scripts"
+echo "--------PYTHON-OUTPUT-BEGIN------------------"
 python3 -u $HOME/Codethesis/main.py generate_slurm_scripts $1
+echo "--------PYTHON-OUTPUT-END--------------------"
 echo "Python generate slurm script finish."
-
 
 # Soumet le script généré en tant que job
 echo "Launching fullpipeline"
-# Soumission du job
-output=$(sbatch "$HOME/Codethesis/generation/$1/slurm/master/full_pipeline_$1.slurm")
-# Extraire le Job ID de la sortie de sbatch
-job_id=$(echo $output | awk '{print $4}')
+echo "--------SBATCH-OUTPUT-BEGIN------------------"
 
-# Vérifier si le Job ID est valide
-if [[ -n "$job_id" ]]; then
-    # Extraire le nom du job en utilisant scontrol
-    job_name=$(scontrol show job "$job_id" | grep "JobName=" | awk -F= '{print $3}')
+# Utiliser un fichier temporaire pour capturer stdout et stderr
+tempfile=$(mktemp)
 
-    # Afficher le message original et le nom du job
-    echo "$output" " | Job Name: $job_name"
-else
-    # Si le job n'a pas été lancé, afficher un message d'erreur
+# Soumission du job et capture de la sortie et des erreurs
+sbatch "$HOME/Codethesis/generation/$1/slurm/master/full_pipeline_$1.slurm" >"$tempfile" 2>&1
+output=$(cat "$tempfile")
+
+# Vérifier s'il y a une erreur dans la sortie
+if echo "$output" | grep -q "error"; then
+    # Afficher l'erreur et quitter
     echo "Job not launched. Output:"
     echo "$output"
+else
+    # Extraire le Job ID de la sortie de sbatch
+    job_id=$(echo "$output" | awk '{print $4}')
+
+    # Vérifier si le Job ID est valide
+    if [[ -n "$job_id" ]]; then
+        # Extraire le nom du job en utilisant scontrol
+        job_name=$(scontrol show job "$job_id" | grep "JobName=" | awk -F= '{print $3}')
+
+        # Afficher le message original et le nom du job
+        echo "$output | Job Name: $job_name"
+    else
+        # Si le job n'a pas été lancé, afficher un message d'erreur
+        echo "Job not launched. Output:"
+        echo "$output"
+    fi
 fi
 
-echo "Fullpipeline launched"
+# Nettoyer le fichier temporaire
+rm -f "$tempfile"
+echo "--------SBATCH-OUTPUT-END------------------"
+

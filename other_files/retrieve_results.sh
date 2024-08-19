@@ -1,23 +1,25 @@
 #!/bin/bash
 
-# List of valid clusters
-VALID_CLUSTERS=("lemaitre4" "hercules" "nic5" "dragon2")
+# List of valid clusters and their corresponding $GLOBALSCRATCH paths
+declare -A CLUSTER_GLOBALSCRATCH=(
+    ["lemaitre4"]="/globalscratch/ulb/parts/smalki"
+    ["hercules"]="/workdir/smalki/ "
+    ["nic5"]="/scratch/ulb/parts/smalki/"
+    ["dragon2"]="/scratch/dragon2/smalki"
+)
 
 # Check the cluster name
 CLUSTER_NAME=$1
 
-if [[ -z "$CLUSTER_NAME" ]]; then
-    echo "Error: You must specify a cluster name among the following: ${VALID_CLUSTERS[*]}"
+# Correct check if the provided cluster is valid 
+if [[ -z "${CLUSTER_GLOBALSCRATCH[$CLUSTER_NAME]+x}" ]]; then 
+    echo "Error: Invalid cluster. Please choose from the following: ${!CLUSTER_GLOBALSCRATCH[@]}"
     exit 1
 fi
 
-# Check if the provided cluster is valid
-if [[ ! " ${VALID_CLUSTERS[@]} " =~ " $CLUSTER_NAME " ]]; then
-    echo "Error: Invalid cluster. Please choose from the following: ${VALID_CLUSTERS[*]}"
-    exit 1
-fi
+GLOBALSCRATCH_PATH="${CLUSTER_GLOBALSCRATCH[$CLUSTER_NAME]}"
 
-SOURCE="$CLUSTER_NAME:~/Codethesis/"
+SOURCE="$CLUSTER_NAME:${GLOBALSCRATCH_PATH}"
 DESTINATION="/home/sonia/Bureau/Codethesis/"
 
 DIRECTORIES=(
@@ -26,7 +28,7 @@ DIRECTORIES=(
 
 for dir in "${DIRECTORIES[@]}"; do
     # Check existence of the source directory on the remote server
-    ssh "$CLUSTER_NAME" "test -d ~/Codethesis/$dir"
+    ssh "$CLUSTER_NAME" "test -d ${GLOBALSCRATCH_PATH}/${dir}" # Using $GLOBALSCRATCH_PATH
     if [ $? -eq 0 ]; then
         # Construct the destination directory with cluster suffix
         DESTINATION_WITH_SUFFIX="${DESTINATION}${dir}_${CLUSTER_NAME}"
@@ -38,7 +40,8 @@ for dir in "${DIRECTORIES[@]}"; do
         fi
 
         # Simulate the transfer to estimate the data size
-        RSYNC_DRY_RUN_CMD="rsync -av --dry-run --stats ${SOURCE}${dir}/ $DESTINATION_WITH_SUFFIX/"
+        RSYNC_DRY_RUN_CMD="rsync -av --dry-run --stats ${SOURCE}/${dir}
+        $DESTINATION_WITH_SUFFIX/"
         DRY_RUN_OUTPUT=$(eval $RSYNC_DRY_RUN_CMD)
 
         # Extract the total size of data to be transferred
@@ -63,7 +66,7 @@ for dir in "${DIRECTORIES[@]}"; do
             exit 1
         fi
 
-        RSYNC_CMD="rsync -av --info=progress2 ${SOURCE}${dir}/ $DESTINATION_WITH_SUFFIX/"
+        RSYNC_CMD="rsync -av --info=progress2 ${SOURCE}/${dir} $DESTINATION_WITH_SUFFIX/"
         echo "Executing: $RSYNC_CMD"
         eval $RSYNC_CMD
 
@@ -73,6 +76,6 @@ for dir in "${DIRECTORIES[@]}"; do
             echo "Transfer of ${dir} from ${CLUSTER_NAME} failed!"
         fi
     else
-        echo "Source directory ${SOURCE}${dir} does not exist on ${CLUSTER_NAME}. Skipping."
+        echo "Source directory ${SOURCE}/${dir} does not exist on ${CLUSTER_NAME}. Skipping."
     fi
 done

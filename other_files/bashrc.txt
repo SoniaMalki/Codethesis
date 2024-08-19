@@ -203,6 +203,11 @@ tail_print() {
 
 # Fonction pour gérer la suppression avec confirmation
 rm_res() {
+    # Create the empty directory if it doesn't exist
+    if [ ! -d "$EMPTY_DIR" ]; then
+        mkdir -p "$EMPTY_DIR"
+    fi
+
     # Rechercher les fichiers à supprimer dans le dossier GENERATION
     files_to_delete_gen=$(find "$GENERATION_DIR" -mindepth 1 \
         ! -name "results" ! -path "$GENERATION_DIR/results/*" \
@@ -223,12 +228,13 @@ rm_res() {
 
     # Si l'utilisateur confirme, procéder à la suppression
     if [ "$answer" = "y" ]; then
-        if [ ! -z "$files_to_delete_gen" ]; then
-            find "$GENERATION_DIR" -mindepth 1 \
-                ! -name "results" ! -path "$GENERATION_DIR/results/*" \
-                ! -name "plots" ! -path "$GENERATION_DIR/plots/*" \
-                ! -name "experience.db" -print | xargs rm -rf
-        fi
+        rsync -a --delete-before \
+            --exclude="results" \
+            --exclude="results/*" \
+            --exclude="plots" \
+            --exclude="plots/*" \
+            --exclude="experience.db" \
+            "$EMPTY_DIR/" "$GENERATION_DIR/"
         echo "Deletion completed."
     else
         echo "Deletion canceled."
@@ -240,11 +246,17 @@ rm_res() {
 rm_plots() {
     PLOTS_DIR="$GENERATION_DIR/plots"
 
+    # Create the empty directory if it doesn't exist
+    if [ ! -d "$EMPTY_DIR" ]; then
+        mkdir -p "$EMPTY_DIR"
+    fi
+
     if [ -d "$PLOTS_DIR" ]; then
         echo "Le dossier 'plots' va être supprimé. Confirmer? (y/n)"
         read -r answer
         if [ "$answer" = "y" ]; then
-            rm -rf "$PLOTS_DIR"
+            rsync -a --delete-before "$EMPTY_DIR/" "$PLOTS_DIR/"
+            rmdir "$PLOTS_DIR" 2>/dev/null || true
             echo "Le dossier 'plots' a été supprimé."
         else
             echo "Suppression annulée."
@@ -318,8 +330,3 @@ scancel_all() {
         echo "Annulation annulée."
     fi
 }
-
-
-
-
-

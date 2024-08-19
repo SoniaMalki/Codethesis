@@ -146,7 +146,7 @@ done
 
 # Charger les modules nécessaires
 {self.modules}
-
+source $GLOBALSCRATCH/myenv/bin/activate
 python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_key}
 """
 
@@ -354,6 +354,7 @@ done
 {self.modules}
 
 # Exécuter le script d'analyse
+source $GLOBALSCRATCH/myenv/bin/activate
 python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
 """
             )

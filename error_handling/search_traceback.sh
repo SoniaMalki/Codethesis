@@ -57,7 +57,7 @@ export error_dir
 
 # Boucle sur les types de configuration
 if [ "$config_type" == "all" ]; then
-  config_types=("taskset" "assignment" "scheduling" "")
+  config_types=("")
 else
   config_types=("$config_type")
 fi

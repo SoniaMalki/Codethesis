@@ -25,6 +25,7 @@ if [[ $- == *i* ]]; then
 fi
 
 CODETHESIS=$HOME/Codethesis
+WALLTIME="2-00:00:00"
 
 alias rebash='cp $HOME/.bashrc_empty $HOME/.bashrc && nano $HOME/.bashrc && source $HOME/.bashrc'
 
@@ -35,6 +36,7 @@ export ST_COL_SIZE=2
 export TIME_COL_SIZE=8
 export NODES_COL_SIZE=2
 export NODELIST_COL_SIZE=20
+
 
 # Alias pour squeue -u $USER
 alias sq='squeue -u $USER'
@@ -172,9 +174,10 @@ alias scp=scancel_pending
 alias sc=scancel_all
 
 generate_and_submit() {
-    output=$(python3 main.py generate_slurm_scripts "$1" 2>&1 && sbatch "$CODETHESIS/generation/$1/slurm/master/full_pipeline_$1.slurm" 2>&1)
-    echo "$output" > "$CODETHESIS/generation/$1/slurm/output/submit_full_pipeline.txt"
+    srun -t $WALLTIME python3 main.py generate_slurm_scripts "$1" 2>&1 && \
+    sbatch "$CODETHESIS/generation/$1/slurm/master/full_pipeline_$1.slurm" 2>&1 > "$CODETHESIS/generation/$1/slurm/output/submit_full_pipeline.txt" &
 }
+
 
 
 

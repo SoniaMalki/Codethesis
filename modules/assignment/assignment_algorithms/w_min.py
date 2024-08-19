@@ -120,21 +120,35 @@ class Wmin:
                 self.solver.options.append(
                     ("TimeLimit", self.solving_time_limit_MILP))
 
-        prob.solve(self.solver)
-        print("MILP Problem solved.")
+        max_retries = 100
+        retries = 0
+        success = False
 
-        task_in_core = [[] for _ in range(self.number_of_cores)]
-        # Checking if a solution is found
-        if prob.status == 1:
-            print("W-Min found a solution.")
-            for i in range(len(self.taskset)):
-                for k in range(self.number_of_cores):
-                    if o[i, k].varValue == 1:
-                        task_in_core[k].append(i)
-            return task_in_core, 1
-        elif prob.status == LpStatusNotSolved:
-            print("Time limit was hit during optimization.")
-            return task_in_core, 0
-        else:
-            print("Wmin failed to find a solution.")
-            return task_in_core, 0
+        while retries < max_retries and not success:
+            try:
+                prob.solve(self.solver)
+                print("MILP Problem solved.")
+
+                task_in_core = [[] for _ in range(self.number_of_cores)]
+                # Checking if a solution is found
+                if prob.status == 1:
+                    print("W-Min found a solution.")
+                    for i in range(len(self.taskset)):
+                        for k in range(self.number_of_cores):
+                            if o[i, k].varValue == 1:
+                                task_in_core[k].append(i)
+                    return task_in_core, 1
+                elif prob.status == LpStatusNotSolved:
+                    print("Time limit was hit during optimization.")
+                    return task_in_core, 0
+                else:
+                    print("Wmin failed to find a solution.")
+                    return task_in_core, 0
+            except PulpSolverError:
+                retries += 1
+                print(f"Gurobi error, retrying {retries}/{max_retries}")
+                success = False
+
+        if retries >= max_retries:
+            raise PulpSolverError(
+                "Gurobi failed to solve after multiple attempts.")

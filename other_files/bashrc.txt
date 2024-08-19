@@ -29,6 +29,7 @@ fi
 CODETHESIS=$HOME/Codethesis
 WALLTIME="2-00:00:00"
 GENERATION_DIR="$HOME/Codethesis/generation"
+EMPTY_DIR="$HOME/empty_dir"
 
 # Définition des variables pour les tailles de colonnes
 export PID_COL_SIZE=8
@@ -197,10 +198,17 @@ rm_db() {
 
 # Fonction pour supprimer le dossier generation
 rm_gen() {
+    # Créer le répertoire vide s'il n'existe pas
+    if [ ! -d "$EMPTY_DIR" ]; then
+        mkdir -p "$EMPTY_DIR"
+    fi
+
     if [ -d "$GENERATION_DIR" ]; then
         echo "Le dossier 'generation' va être supprimé avec tout son contenu. Confirmer? (y/n)"
         read -r answer
         if [ "$answer" = "y" ]; then
+            # Utilisation de rsync pour vider rapidement le dossier
+            rsync -a --delete-before --ignore-existing "$EMPTY_DIR/" "$GENERATION_DIR/"
             rm -rf "$GENERATION_DIR"
             echo "Le dossier 'generation' a été supprimé."
         else
@@ -210,6 +218,7 @@ rm_gen() {
         echo "Le dossier 'generation' n'existe pas."
     fi
 }
+
 
 
 

@@ -68,7 +68,7 @@ alias sqna='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST
 generate_and_submit() {
     output_file="generated_script.sh"
 
-    cat <<EOF > $output_file
+    sbatch <<EOF
 #!/bin/bash
 #SBATCH --time=2-00:00:00
 #SBATCH --output=./create_full_pipeline_output.txt
@@ -96,7 +96,7 @@ fi
 # Exécute le script Python pour générer les scripts SLURM
 echo "Launching python generate_slurm_scripts"
 echo "--------PYTHON-OUTPUT-BEGIN------------------"
-python3 -u \$HOME/Codethesis/main.py generate_slurm_scripts \$1
+python3 -u \$HOME/Codethesis/main.py generate_slurm_scripts $1
 echo "--------PYTHON-OUTPUT-END--------------------"
 echo "Python generate slurm script finish."
 
@@ -108,7 +108,7 @@ echo "--------SBATCH-OUTPUT-BEGIN------------------"
 tempfile=\$(mktemp)
 
 # Soumission du job et capture de la sortie et des erreurs
-sbatch "\$HOME/Codethesis/generation/\$1/slurm/master/full_pipeline_\$1.slurm" >"\$tempfile" 2>&1
+sbatch "\$HOME/Codethesis/generation/$1/slurm/master/full_pipeline_$1.slurm" >"\$tempfile" 2>&1
 output=\$(cat "\$tempfile")
 
 # Vérifier s'il y a une erreur dans la sortie
@@ -140,7 +140,6 @@ echo "--------SBATCH-OUTPUT-END------------------"
 
 EOF
 
-    echo "Script written to $output_file for verification."
 }
 
 

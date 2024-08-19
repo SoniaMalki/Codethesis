@@ -93,6 +93,8 @@ elif [[ \$(hostname) == *"nic" ]]; then
     module load Gurobi/10.0.3-GCCcore-12.2.0
 fi
 
+source $GLOBALSCRATCH/myenv/bin/activate
+
 # Exécute le script Python pour générer les scripts SLURM
 echo "Launching python generate_slurm_scripts"
 echo "--------PYTHON-OUTPUT-BEGIN------------------"

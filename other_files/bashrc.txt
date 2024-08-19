@@ -66,9 +66,46 @@ alias sqna='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST
 #----------Fonctions-----------------------------
 
 generate_and_submit() {
-    srun -t $WALLTIME python3 main.py generate_slurm_scripts "$1" 2>&1 && \
-    sbatch "$CODETHESIS/generation/$1/slurm/master/full_pipeline_$1.slurm" 2>&1 > "$CODETHESIS/generation/$1/slurm/output/submit_full_pipeline.txt" &
+    sbatch <<EOF
+#!/bin/bash
+#SBATCH --time=2-00:00:00
+#SBATCH --output=./create_full_pipeline_output.txt
+#SBATCH --job-name=create_full_pipeline_$1
+
+if [[ \$(hostname) == *"her" ]]; then
+    module load Python/3.9.6-GCCcore-11.2.0
+    module load GLPK/5.0-GCCcore-11.2.0
+    module load Gurobi-Optimizer/9.5.1
+
+elif [[ \$(hostname) == *"lm4" ]]; then
+    module load releases/2023a
+    module load Python/3.11.3-GCCcore-12.3.0
+    module load GLPK/5.0-GCCcore-12.3.0
+    module load tis/2018.01
+    module load gurobi/gurobi1102
+
+elif [[ \$(hostname) == *"nic" ]]; then
+    module load releases/2022b
+    module load Python/3.10.8-GCCcore-12.2.0
+    module load GLPK/5.0-GCCcore-12.2.0
+    module load Gurobi/10.0.3-GCCcore-12.2.0
+fi
+
+# Exécute le script Python pour générer les scripts SLURM
+echo "Launching python generate_slurm_scripts"
+python3 -u \$HOME/Codethesis/main.py generate_slurm_scripts $1
+echo "Python generate slurm script finish."
+
+# Soumet le script généré en tant que job
+echo "Launching fullpipeline"
+output=$(sbatch "$HOME/Codethesis/generation/$1/slurm/master/full_pipeline_$1.slurm")
+job_id=$(echo $output | awk '{print $4}')
+echo "Job Name: $(scontrol show job $job_id | grep JobName | awk -F= '{print $2}')"
+
+echo "Fullpipeline launched"
+EOF
 }
+
 
 tail_print() {
     # Assurez-vous qu'il y a au moins trois arguments

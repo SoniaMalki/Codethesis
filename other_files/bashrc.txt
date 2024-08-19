@@ -24,10 +24,11 @@ if [[ $- == *i* ]]; then
 
 fi
 
+
+# -------Définitions des variables---------------
 CODETHESIS=$HOME/Codethesis
 WALLTIME="2-00:00:00"
-
-alias rebash='cp $HOME/.bashrc_empty $HOME/.bashrc && nano $HOME/.bashrc && source $HOME/.bashrc'
+GENERATION_DIR="$HOME/Codethesis/generation"
 
 # Définition des variables pour les tailles de colonnes
 export PID_COL_SIZE=8
@@ -37,9 +38,19 @@ export TIME_COL_SIZE=8
 export NODES_COL_SIZE=2
 export NODELIST_COL_SIZE=20
 
+#----------Alias---------------------------------
 
-# Alias pour squeue -u $USER
+alias gen='generate_and_submit'
+alias t20='tail_print 20'
+alias rebash='cp $HOME/.bashrc_empty $HOME/.bashrc && nano $HOME/.bashrc && source $HOME/.bashrc'
+alias rmplots=rm_plots
+alias rmplot=rm_plots
+alias rmres=rm_res
+alias rmdb=rm_db
+alias rmgen=rm_gen
 alias sq='squeue -u $USER'
+alias scp=scancel_pending
+alias sc=scancel_all
 
 # Alias pour squeue avec nom complet et PID
 alias sqn='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST_COL_SIZE't %.'$TIME_COL_SIZE'M %.'$NODES_COL_SIZE'D %.'$NODELIST_COL_SIZE'R" | awk '\''BEGIN { printf "%-'$NAME_COL_SIZE's %-'$PID_COL_SIZE's %-'$ST_COL_SIZE's %-'$TIME_COL_SIZE's %-'$NODES_COL_SIZE's %-'$NODELIST_COL_SIZE's\n", "NAME", "PID", "ST", "TIME", "NODES", "NODELIST" } { printf "%-'$NAME_COL_SIZE's %-'$PID_COL_SIZE's %-'$ST_COL_SIZE's %-'$TIME_COL_SIZE's %-'$NODES_COL_SIZE's %-'$NODELIST_COL_SIZE's\n", $1, $2, $3, $4, $5, $6 }'\'''
@@ -50,138 +61,13 @@ alias sqnr='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST
 # Alias pour squeue avec nom complet et PID des jobs running ou pending pour raison autre que Dependency
 alias sqna='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST_COL_SIZE't %.'$TIME_COL_SIZE'M %.'$NODES_COL_SIZE'D %.'$NODELIST_COL_SIZE'R" | awk '\''BEGIN { printf "%-'$NAME_COL_SIZE's %-'$PID_COL_SIZE's %-'$ST_COL_SIZE's %-'$TIME_COL_SIZE's %-'$NODES_COL_SIZE's %-'$NODELIST_COL_SIZE's\n", "NAME", "PID", "ST", "TIME", "NODES", "NODELIST" } $3 == "R" || ($3 == "PD" && $6 != "(Dependency)") { printf "%-'$NAME_COL_SIZE's %-'$PID_COL_SIZE's %-'$ST_COL_SIZE's %-'$TIME_COL_SIZE's %-'$NODES_COL_SIZE's %-'$NODELIST_COL_SIZE's\n", $1, $2, $3, $4, $5, $6 }'\'''
 
-# Alias pour rm generation & slurm
-# Variables pour les chemins et exclusions
-GENERATION_DIR="$HOME/Codethesis/generation"
 
-# Fonction pour gérer la suppression avec confirmation
-rm_res() {
-    # Rechercher les fichiers à supprimer dans le dossier GENERATION
-    files_to_delete_gen=$(find "$GENERATION_DIR" -mindepth 1 \
-        ! -name "results" ! -path "$GENERATION_DIR/results/*" \
-        ! -name "plots" ! -path "$GENERATION_DIR/plots/*" \
-        ! -name "experience.db" -print)
-    
-    if [ -z "$files_to_delete_gen" ]; then
-        echo "Nothing to delete."
-        return
-    fi
-    
-    # Afficher la liste des fichiers à supprimer et demander confirmation
-    echo "The following files and directories will be deleted:"
-    echo "$files_to_delete_gen"
-    
-    echo "Proceed with deletion? (y/n)"
-    read -r answer
-
-    # Si l'utilisateur confirme, procéder à la suppression
-    if [ "$answer" = "y" ]; then
-        if [ ! -z "$files_to_delete_gen" ]; then
-            find "$GENERATION_DIR" -mindepth 1 \
-                ! -name "results" ! -path "$GENERATION_DIR/results/*" \
-                ! -name "plots" ! -path "$GENERATION_DIR/plots/*" \
-                ! -name "experience.db" -print | xargs rm -rf
-        fi
-        echo "Deletion completed."
-    else
-        echo "Deletion canceled."
-    fi
-}
-
-alias rmres=rm_res
-
-# Fonction pour supprimer le dossier plots
-rm_plots() {
-    PLOTS_DIR="$GENERATION_DIR/plots"
-
-    if [ -d "$PLOTS_DIR" ]; then
-        echo "Le dossier 'plots' va être supprimé. Confirmer? (y/n)"
-        read -r answer
-        if [ "$answer" = "y" ]; then
-            rm -rf "$PLOTS_DIR"
-            echo "Le dossier 'plots' a été supprimé."
-        else
-            echo "Suppression annulée."
-        fi
-    else
-        echo "Le dossier 'plots' n'existe pas."
-    fi
-}
-
-alias rmplots=rm_plots
-alias rmplot=rm_plots
-
-
-# Fonction pour supprimer le fichier experience.db
-rm_db() {
-    DB_FILE="$GENERATION_DIR/experience.db"
-
-    if [ -f "$DB_FILE" ];then
-        echo "Le fichier 'experience.db' va être supprimé. Confirmer? (y/n)"
-        read -r answer
-        if [ "$answer" = "y" ];then
-            rm -f "$DB_FILE"
-            echo "Le fichier 'experience.db' a été supprimé."
-        else
-            echo "Suppression annulée."
-        fi
-    else
-        echo "Le fichier 'experience.db' n'existe pas."
-    fi
-}
-
-alias rmdb=rm_db
-
-# Fonction pour supprimer le dossier generation
-rm_gen() {
-    if [ -d "$GENERATION_DIR" ]; then
-        echo "Le dossier 'generation' va être supprimé avec tout son contenu. Confirmer? (y/n)"
-        read -r answer
-        if [ "$answer" = "y" ]; then
-            rm -rf "$GENERATION_DIR"
-            echo "Le dossier 'generation' a été supprimé."
-        else
-            echo "Suppression annulée."
-        fi
-    else
-        echo "Le dossier 'generation' n'existe pas."
-    fi
-}
-
-alias rmgen=rm_gen
-
-scancel_pending() {
-    echo "Confirmez-vous l'annulation de tous les jobs en attente? (y/n)"
-    read -r response
-    if [[ "$response" == "y" ]]; then
-        squeue -u $USER -h -t PENDING -o %i | xargs scancel
-    else
-        echo "Annulation annulée."
-    fi
-}
-
-scancel_all() {
-    echo "Confirmez-vous l'annulation de tous vos jobs? (y/n)"
-    read -r response
-    if [[ "$response" == "y" ]];then
-        scancel -u $USER
-    else
-        echo "Annulation annulée."
-    fi
-}
-
-alias scp=scancel_pending
-alias sc=scancel_all
+#----------Fonctions-----------------------------
 
 generate_and_submit() {
     srun -t $WALLTIME python3 main.py generate_slurm_scripts "$1" 2>&1 && \
     sbatch "$CODETHESIS/generation/$1/slurm/master/full_pipeline_$1.slurm" 2>&1 > "$CODETHESIS/generation/$1/slurm/output/submit_full_pipeline.txt" &
 }
-
-
-
-
-alias gen='generate_and_submit'
 
 tail_print() {
     # Assurez-vous qu'il y a au moins trois arguments
@@ -237,5 +123,117 @@ tail_print() {
     tail -n "$line_count" "$file_path"
 }
 
+# Fonction pour gérer la suppression avec confirmation
+rm_res() {
+    # Rechercher les fichiers à supprimer dans le dossier GENERATION
+    files_to_delete_gen=$(find "$GENERATION_DIR" -mindepth 1 \
+        ! -name "results" ! -path "$GENERATION_DIR/results/*" \
+        ! -name "plots" ! -path "$GENERATION_DIR/plots/*" \
+        ! -name "experience.db" -print)
+    
+    if [ -z "$files_to_delete_gen" ]; then
+        echo "Nothing to delete."
+        return
+    fi
+    
+    # Afficher la liste des fichiers à supprimer et demander confirmation
+    echo "The following files and directories will be deleted:"
+    echo "$files_to_delete_gen"
+    
+    echo "Proceed with deletion? (y/n)"
+    read -r answer
 
-alias t20='tail_print 20'
+    # Si l'utilisateur confirme, procéder à la suppression
+    if [ "$answer" = "y" ]; then
+        if [ ! -z "$files_to_delete_gen" ]; then
+            find "$GENERATION_DIR" -mindepth 1 \
+                ! -name "results" ! -path "$GENERATION_DIR/results/*" \
+                ! -name "plots" ! -path "$GENERATION_DIR/plots/*" \
+                ! -name "experience.db" -print | xargs rm -rf
+        fi
+        echo "Deletion completed."
+    else
+        echo "Deletion canceled."
+    fi
+}
+
+
+# Fonction pour supprimer le dossier plots
+rm_plots() {
+    PLOTS_DIR="$GENERATION_DIR/plots"
+
+    if [ -d "$PLOTS_DIR" ]; then
+        echo "Le dossier 'plots' va être supprimé. Confirmer? (y/n)"
+        read -r answer
+        if [ "$answer" = "y" ]; then
+            rm -rf "$PLOTS_DIR"
+            echo "Le dossier 'plots' a été supprimé."
+        else
+            echo "Suppression annulée."
+        fi
+    else
+        echo "Le dossier 'plots' n'existe pas."
+    fi
+}
+
+
+# Fonction pour supprimer le fichier experience.db
+rm_db() {
+    DB_FILE="$GENERATION_DIR/experience.db"
+
+    if [ -f "$DB_FILE" ];then
+        echo "Le fichier 'experience.db' va être supprimé. Confirmer? (y/n)"
+        read -r answer
+        if [ "$answer" = "y" ];then
+            rm -f "$DB_FILE"
+            echo "Le fichier 'experience.db' a été supprimé."
+        else
+            echo "Suppression annulée."
+        fi
+    else
+        echo "Le fichier 'experience.db' n'existe pas."
+    fi
+}
+
+# Fonction pour supprimer le dossier generation
+rm_gen() {
+    if [ -d "$GENERATION_DIR" ]; then
+        echo "Le dossier 'generation' va être supprimé avec tout son contenu. Confirmer? (y/n)"
+        read -r answer
+        if [ "$answer" = "y" ]; then
+            rm -rf "$GENERATION_DIR"
+            echo "Le dossier 'generation' a été supprimé."
+        else
+            echo "Suppression annulée."
+        fi
+    else
+        echo "Le dossier 'generation' n'existe pas."
+    fi
+}
+
+
+
+scancel_pending() {
+    echo "Confirmez-vous l'annulation de tous les jobs en attente? (y/n)"
+    read -r response
+    if [[ "$response" == "y" ]]; then
+        squeue -u $USER -h -t PENDING -o %i | xargs scancel
+    else
+        echo "Annulation annulée."
+    fi
+}
+
+scancel_all() {
+    echo "Confirmez-vous l'annulation de tous vos jobs? (y/n)"
+    read -r response
+    if [[ "$response" == "y" ]];then
+        scancel -u $USER
+    else
+        echo "Annulation annulée."
+    fi
+}
+
+
+
+
+

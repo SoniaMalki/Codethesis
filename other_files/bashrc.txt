@@ -27,9 +27,9 @@ fi
 
 # -------Définitions des variables---------------
 CODETHESIS=$HOME/Codethesis
-WALLTIME="2-00:00:00"
-GENERATION_DIR="$HOME/Codethesis/generation"
+GENERATION_DIR="$GLOBALSCRATCH/generation"
 EMPTY_DIR="$HOME/empty_dir"
+WALLTIME="2-00:00:00"
 
 # Définition des variables pour les tailles de colonnes
 export PID_COL_SIZE=8

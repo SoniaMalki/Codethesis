@@ -11,6 +11,16 @@ from modules.taskset.task_parameters_generator.prime_matrix_generator import Pri
 from modules.utils.database_merger import DatabaseMerger
 from modules.utils.db_utils import DBUtils
 
+global_scratch = os.getenv('GLOBALSCRATCH')
+
+if global_scratch is None:
+    print("La variable d'environnement GLOBALSCRATCH n'est pas définie.")
+    raise FileNotFoundError
+
+else:
+    global_scratch = Path(global_scratch)
+    print(f"Le chemin de global_scratch est: {global_scratch}")
+
 
 def run_experience(experience_parameter_key, experience_loader):
     print(f"Running experience with parameter key: {experience_parameter_key}")
@@ -45,7 +55,7 @@ def main(action, experience_id, experience_action=None):
     print(
         f"Main function started with action: {action}, experience_id: {experience_id}, experience_action: {experience_action}")
     main_path = Path(__file__).parent
-    generation_path = Path(__file__).parent / "generation"
+    generation_path = global_scratch / "generation"
     db_path = generation_path / "experience.db"
     experience_json_path = Path(__file__).parent / "experience.json"
     slurm_script_path = main_path / "slurm_code" / "slurm_scripts"

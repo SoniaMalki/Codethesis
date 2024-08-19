@@ -46,7 +46,7 @@ for FILE in "$ERROR_DIR"/*; do
   ID=$(echo "$BASENAME" | sed -E 's/[^_]+_([0-9]+)\.txt$/\1/')
   echo $CONFIG_TYPE
   # Construire le chemin complet du fichier sbatch
-  SBATCH_FILE="$base_dir/generation/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/$CONFIG_TYPE"_"$ID.slurm"
+  SBATCH_FILE="$GENERATION_DIR/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/$CONFIG_TYPE"_"$ID.slurm"
 
   # Affichage pour debug
   echo "Processing error file: $FILE"

@@ -13,7 +13,7 @@ config_type="$2"
 base_dir="$CODETHESIS"
 
 # Chemins vers les dossiers de sortie
-output_dir="$base_dir/generation/$experience_number/slurm/output"
+output_dir="$GENERATION_DIR/$experience_number/slurm/output"
 error_dir="$base_dir/error_handling/output_error"
 
 # Créer le dossier de sortie pour les erreurs s'il n'existe pas

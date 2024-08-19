@@ -28,14 +28,17 @@ for dir in "${DIRECTORIES[@]}"; do
     # Check existence of the source directory on the remote server
     ssh "$CLUSTER_NAME" "test -d ~/Codethesis/$dir"
     if [ $? -eq 0 ]; then
+        # Construct the destination directory with cluster suffix
+        DESTINATION_WITH_SUFFIX="${DESTINATION}${dir}_${CLUSTER_NAME}"
+
         # Create the destination directory if it does not exist
-        if [ ! -d "${DESTINATION}${dir}" ]; then
-            echo "Creating directory ${DESTINATION}${dir}"
-            mkdir -p "${DESTINATION}${dir}"
+        if [ ! -d "$DESTINATION_WITH_SUFFIX" ]; then
+            echo "Creating directory $DESTINATION_WITH_SUFFIX"
+            mkdir -p "$DESTINATION_WITH_SUFFIX"
         fi
 
         # Simulate the transfer to estimate the data size
-        RSYNC_DRY_RUN_CMD="rsync -av --dry-run --stats ${SOURCE}${dir}/ ${DESTINATION}${dir}/"
+        RSYNC_DRY_RUN_CMD="rsync -av --dry-run --stats ${SOURCE}${dir}/ $DESTINATION_WITH_SUFFIX/"
         DRY_RUN_OUTPUT=$(eval $RSYNC_DRY_RUN_CMD)
 
         # Extract the total size of data to be transferred
@@ -52,7 +55,7 @@ for dir in "${DIRECTORIES[@]}"; do
             TOTAL_SIZE=$TOTAL_BYTES && TOTAL_UNIT="B"
         fi
 
-        echo "The total data size to be transferred for ${dir} is ${TOTAL_SIZE}${TOTAL_UNIT}."
+        echo "The total data size to be transferred for ${dir} from ${CLUSTER_NAME} is ${TOTAL_SIZE}${TOTAL_UNIT}."
 
         read -p "Do you want to proceed with the transfer? (y/n) " confirm
         if [[ "$confirm" != "y" ]]; then
@@ -60,17 +63,16 @@ for dir in "${DIRECTORIES[@]}"; do
             exit 1
         fi
 
-        RSYNC_CMD="rsync -av --info=progress2 ${SOURCE}${dir}/ ${DESTINATION}${dir}/"
+        RSYNC_CMD="rsync -av --info=progress2 ${SOURCE}${dir}/ $DESTINATION_WITH_SUFFIX/"
         echo "Executing: $RSYNC_CMD"
         eval $RSYNC_CMD
 
         if [ $? -eq 0 ]; then
-            echo "Transfer of ${dir} complete!"
+            echo "Transfer of ${dir} from ${CLUSTER_NAME} complete!"
         else
-            echo "Transfer of ${dir} failed!"
+            echo "Transfer of ${dir} from ${CLUSTER_NAME} failed!"
         fi
     else
-        echo "Source directory ${SOURCE}${dir} does not exist on the remote server. Skipping."
+        echo "Source directory ${SOURCE}${dir} does not exist on ${CLUSTER_NAME}. Skipping."
     fi
 done
-

@@ -154,3 +154,4 @@ generation/*
 /error_handling/output_error
 /error_handling/filtered_output
 generations/*
+generation_*/*

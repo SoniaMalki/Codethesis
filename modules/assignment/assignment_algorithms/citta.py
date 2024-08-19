@@ -1,6 +1,7 @@
 import numpy
 import math
 from pulp import *
+from pulp.apis.core import PulpSolverError
 
 
 class Citta:
@@ -233,17 +234,31 @@ class Citta:
             # Set thread count for Gurobi
             self.solver.options.append(("Threads", self.threads))
 
-        prob.solve(self.solver)
-        solution = pulp.value(prob.objective)
+        max_retries = 100
+        retries = 0
+        success = False
+        while retries < max_retries and not success:
+            try:
+                prob.solve(self.solver)
+                solution = pulp.value(prob.objective)
 
-        # Check if the time limit was hit
+                # Check if the time limit was hit
 
-        if prob.status == LpStatusNotSolved:
-            print("Time limit was hit during optimization.")
-            return solution if solution is not None else 0, False
-        else:
-            print("Upper bound computed:", solution)
-            return solution if solution is not None else 0, True
+                if prob.status == LpStatusNotSolved:
+                    print("Time limit was hit during optimization.")
+                    return solution if solution is not None else 0, False
+                else:
+                    print("Upper bound computed:", solution)
+                    return solution if solution is not None else 0, True
+            except PulpSolverError:
+                retries += 1
+                print(f"Gurobi error, retrying {retries}/{max_retries}")
+                success = False
+
+        if retries >= max_retries:
+            # Raise the exception if the limit is reached
+            raise PulpSolverError(
+                "Gurobi failed to solve after multiple attempts.")
 
     def check_one_task(self, task_index, core, wcet_with_interference):
         print("----- Checking schedulability of task:",

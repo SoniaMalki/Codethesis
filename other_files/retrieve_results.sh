@@ -66,7 +66,7 @@ for dir in "${DIRECTORIES[@]}"; do
             exit 1
         fi
 
-        RSYNC_CMD="rsync -av --info=progress2 ${SOURCE}/${dir} $DESTINATION_WITH_SUFFIX/"
+        RSYNC_CMD="rsync -av --info=progress2 ${SOURCE}/${dir}/ $DESTINATION_WITH_SUFFIX/"
         echo "Executing: $RSYNC_CMD"
         eval $RSYNC_CMD
 

@@ -32,6 +32,7 @@ EXCLUDE_ITEMS=(
     'permanent_results'
     '/error_handling/output_error'
     '/error_handling/filtered_output'
+    'generations'
 )
 
 EXCLUDES=()

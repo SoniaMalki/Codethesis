@@ -35,7 +35,7 @@ class Citta:
             f"Citta utilisant le solveur : {self.solver_name} avec thread {self.threads}")
 
         if self.solver_name == "gurobi":
-            self.solver = GUROBI_CMD(msg=0, options=[("OutputFlag", 0)])
+            self.solver = GUROBI_CMD(msg=1, options=[("OutputFlag", 1)])
         elif self.solver_name == "glpk":
             self.solver = GLPK_CMD(msg=0)
         else:
@@ -144,11 +144,11 @@ class Citta:
         print("----- Computing interference for task:",
               task_index, "on core:", core_index, "-----")
         I_run = 0
-        I_run_old = 1
+        I_run_old = -1
         # copie wcet pour modif temporaire
         wcet_updated = numpy.copy(self.wcet)
         # si entre deux tours de boucle on arrive à un résultats similaire à l'ancien, on s'arrête.
-        while I_run_old != I_run and wcet_updated[task_index] <= self.period[task_index]:
+        while I_run_old < I_run and wcet_updated[task_index] <= self.period[task_index]:
             I_run_old = I_run
             print(
                 f"         Computing upper bound on cache interference for task {task_index} with execution window: {wcet_updated[task_index]}")

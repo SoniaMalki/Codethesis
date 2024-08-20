@@ -141,7 +141,6 @@ def main(action, experience_id, experience_action=None):
         merged_db_path = generation_path / "merged.db"
         merger = DatabaseMerger(db_path_v1, db_path_v2, merged_db_path)
         merger.merge_tables()
-        merger.close_connections()
         print(
             f"Databases merged successfully for experience ID: {experience_id}")
 

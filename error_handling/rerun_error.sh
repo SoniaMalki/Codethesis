@@ -3,13 +3,14 @@
 # Nombre de jobs à lancer simultanément
 MAX_JOBS=50
 
-# Nom de l'expérience et type d'erreur, passés en arguments
-EXPERIENCE=$1
-ERROR_TYPE=$2
+# Nom du suffixe, de l'expérience et type d'erreur, passés en arguments
+SUFFIXE=$1
+EXPERIENCE=$2
+ERROR_TYPE=$3
 
 # Vérifier si les arguments sont fournis
-if [ -z "$EXPERIENCE" ] || [ -z "$ERROR_TYPE" ]; then
-  echo "Usage: $0 <experience_name> <error_type>"
+if [ -z "$SUFFIXE" ] || [ -z "$EXPERIENCE" ] || [ -z "$ERROR_TYPE" ]; then
+  echo "Usage: $0 <suffixe (nic5, lemaitre4, hercules, dragon2)> <experience_name> <error_type>"
   exit 1
 fi
 
@@ -34,7 +35,7 @@ if [ ! -d "$ERROR_DIR" ]; then
   exit 1
 fi
 
-echo "Starting job submission for experience: $EXPERIENCE, error type: $ERROR_TYPE"
+echo "Starting job submission for experience: $EXPERIENCE, error type: $ERROR_TYPE, suffixe: $SUFFIXE"
 
 # Parcourir tous les fichiers dans le dossier d'erreur
 for FILE in "$ERROR_DIR"/*; do
@@ -44,9 +45,9 @@ for FILE in "$ERROR_DIR"/*; do
   # Extraire le nom du type de configuration et l'ID 
   CONFIG_TYPE=$(echo "$BASENAME" | sed -E 's/([^_]+)_.*\.txt$/\1/')
   ID=$(echo "$BASENAME" | sed -E 's/[^_]+_([0-9]+)\.txt$/\1/')
-  echo $CONFIG_TYPE
+  
   # Construire le chemin complet du fichier sbatch
-  SBATCH_FILE="$GENERATION_DIR/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/$CONFIG_TYPE"_"$ID.slurm"
+  SBATCH_FILE="${GENERATION_DIR}_${SUFFIXE}/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/${CONFIG_TYPE}_${ID}.slurm"
 
   # Affichage pour debug
   echo "Processing error file: $FILE"
@@ -71,4 +72,4 @@ for FILE in "$ERROR_DIR"/*; do
   fi
 done
 
-echo "Job submission completed for experience: $EXPERIENCE, error type: $ERROR_TYPE"
+echo "Job submission completed for experience: $EXPERIENCE, error type: $ERROR_TYPE, suffixe: $SUFFIXE"

@@ -1,19 +1,20 @@
 #!/bin/bash
 
 # Vérifier les arguments
-if [ $# -lt 2 ]; then
-  echo "Usage: $0 <experience_number> <config_type (all, taskset, assignment, scheduling)>"
+if [ $# -lt 3 ]; then
+  echo "Usage: $0 <suffixe (nic5, lemaitre4, hercules, dragon2)> <experience_number> <config_type (all, taskset, assignment, scheduling)>"
   exit 1
 fi
 
-experience_number="$1"
-config_type="$2"
+suffixe="$1"
+experience_number="$2"
+config_type="$3"
 
 # Définir le chemin de base pour les scripts et les données
 base_dir="$CODETHESIS"
 
 # Chemins vers les dossiers de sortie
-output_dir="$GENERATION_DIR/$experience_number/slurm/output"
+output_dir="${GENERATION_DIR}_${suffixe}/$experience_number/slurm/output"
 error_dir="$base_dir/error_handling/output_error"
 
 # Créer le dossier de sortie pour les erreurs s'il n'existe pas
@@ -63,7 +64,7 @@ else
 fi
 
 for type in "${config_types[@]}"; do
-  if [ -n "$type" ]; then
+  if [ -n "$type" ];then
     # Chemin vers le dossier de sortie pour le type de configuration
     output_path="$output_dir/$type"
   else

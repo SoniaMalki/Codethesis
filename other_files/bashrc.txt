@@ -26,10 +26,10 @@ fi
 
 
 # -------Définitions des variables---------------
-CODETHESIS=$HOME/Codethesis
-GENERATION_DIR="$GLOBALSCRATCH/generation"
-EMPTY_DIR="$HOME/empty_dir"
-WALLTIME="2-00:00:00"
+export CODETHESIS=$HOME/Codethesis
+export GENERATION_DIR="$GLOBALSCRATCH/generation"
+export EMPTY_DIR="$HOME/empty_dir"
+export WALLTIME="2-00:00:00"
 
 # Définition des variables pour les tailles de colonnes
 export PID_COL_SIZE=8
@@ -110,7 +110,7 @@ echo "--------SBATCH-OUTPUT-BEGIN------------------"
 tempfile=\$(mktemp)
 
 # Soumission du job et capture de la sortie et des erreurs
-sbatch "\$HOME/Codethesis/generation/$1/slurm/master/full_pipeline_$1.slurm" >"\$tempfile" 2>&1
+sbatch "\$GENERATION_DIR/$1/slurm/master/full_pipeline_$1.slurm" >"\$tempfile" 2>&1
 output=\$(cat "\$tempfile")
 
 # Vérifier s'il y a une erreur dans la sortie
@@ -159,7 +159,7 @@ tail_print() {
     local line_count="$1"
     local experience="$2"
     local file_type="$3"
-    local file_path="$HOME/Codethesis/generation/${experience}/slurm/output"
+    local file_path="$GENERATION_DIR/${experience}/slurm/output"
 
     # Déterminez le chemin en fonction du troisième argument
     case "$file_type" in

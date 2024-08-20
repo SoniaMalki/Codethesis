@@ -3,7 +3,7 @@
 # List of valid clusters and their corresponding $GLOBALSCRATCH paths
 declare -A CLUSTER_GLOBALSCRATCH=(
     ["lemaitre4"]="/globalscratch/ulb/parts/smalki"
-    ["hercules"]="/workdir/smalki/ "
+    ["hercules"]="/workdir/smalki/"
     ["nic5"]="/scratch/ulb/parts/smalki/"
     ["dragon2"]="/scratch/dragon2/smalki"
 )

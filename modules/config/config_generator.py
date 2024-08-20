@@ -11,6 +11,7 @@ class ConfigGenerator:
         print("Initializing ConfigGenerator")
         self.db_utils = DBUtils(db_path)
         self.experience_data = experience_data
+        self.create_tables()
 
         # Vérifier si config_parameters est présent
         if "config_parameters" not in experience_data:

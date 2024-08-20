@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 import re
 from copy import deepcopy
@@ -297,7 +298,7 @@ def split_experience(experience_data):
 # --- Main Execution ---
 if __name__ == "__main__":
     # Load the base experience JSON file
-    json_path = Path().parent
+    json_path = Path(os.getenv('CODETHESIS'))
     with open(json_path / "base_experience.json", "r") as f:
         experience_data = json.load(f)
 

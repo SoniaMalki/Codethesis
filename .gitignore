@@ -151,7 +151,6 @@ generation/*
 #!generation/plots/
 #!generation/plots/**
 
-/error_handling/output_error
-/error_handling/filtered_output
+/error_handling/*
 generations/*
 generation_*/*

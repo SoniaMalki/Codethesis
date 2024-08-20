@@ -13,9 +13,14 @@ config_type="$3"
 # Définir le chemin de base pour les scripts et les données
 base_dir="$CODETHESIS"
 
-# Chemins vers les dossiers de sortie
-output_dir="${GENERATION_DIR}_${suffixe}/$experience_number/slurm/output"
-error_dir="$base_dir/error_handling/output_error_${suffixe}"
+# Gestion du chemin en fonction de la présence ou non d'un suffixe
+if [ -z "$suffixe" ]; then
+  output_dir="${GENERATION_DIR}/$experience_number/slurm/output"
+  error_dir="$base_dir/error_handling/output_error"
+else
+  output_dir="${GENERATION_DIR}_${suffixe}/$experience_number/slurm/output"
+  error_dir="$base_dir/error_handling/output_error_${suffixe}"
+fi
 
 # Créer le dossier de sortie pour les erreurs s'il n'existe pas
 mkdir -p "$error_dir"

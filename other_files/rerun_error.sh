@@ -8,17 +8,23 @@ SUFFIXE=$1
 EXPERIENCE=$2
 ERROR_TYPE=$3
 
-# Vérifier si les arguments sont fournis
-if [ -z "$SUFFIXE" ] || [ -z "$EXPERIENCE" ] || [ -z "$ERROR_TYPE" ]; then
-  echo "Usage: $0 <suffixe (nic5, lemaitre4, hercules, dragon2)> <experience_name> <error_type>"
+# Vérifier les arguments
+if [ $# -lt 3 ]; then
+  echo "Usage: $0 <suffixe (nic5, lemaitre4, hercules, dragon2)> <experience_number> <config_type (all, taskset, assignment, scheduling)>"
   exit 1
 fi
 
 # Définir le dossier de base pour les scripts et les données
 base_dir="$CODETHESIS"
 
-# Dossier de base pour les fichiers d'erreur
-ERROR_DIR="$base_dir/error_handling/output_error_${SUFFIXE}/$ERROR_TYPE"
+# Gestion du chemin en fonction de la présence ou non d'un suffixe
+if [ -z "$SUFFIXE" ]; then
+  ERROR_DIR="$base_dir/error_handling/output_error/$ERROR_TYPE"
+  SBATCH_DIR="$GENERATION_DIR/$EXPERIENCE/slurm/slurm_files"
+else
+  ERROR_DIR="$base_dir/error_handling/output_error_${SUFFIXE}/$ERROR_TYPE"
+  SBATCH_DIR="${GENERATION_DIR}_${SUFFIXE}/$EXPERIENCE/slurm/slurm_files"
+fi
 
 # Affichage pour debug
 echo "Base directory: $base_dir"
@@ -47,7 +53,7 @@ for FILE in "$ERROR_DIR"/*; do
   ID=$(echo "$BASENAME" | sed -E 's/[^_]+_([0-9]+)\.txt$/\1/')
   
   # Construire le chemin complet du fichier sbatch
-  SBATCH_FILE="${GENERATION_DIR}_${SUFFIXE}/$EXPERIENCE/slurm/slurm_files/$CONFIG_TYPE/${CONFIG_TYPE}_${ID}.slurm"
+  SBATCH_FILE="$SBATCH_DIR/$CONFIG_TYPE/${CONFIG_TYPE}_${ID}.slurm"
 
   # Affichage pour debug
   echo "Processing error file: $FILE"

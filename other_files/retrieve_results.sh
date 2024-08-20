@@ -40,8 +40,7 @@ for dir in "${DIRECTORIES[@]}"; do
         fi
 
         # Simulate the transfer to estimate the data size
-        RSYNC_DRY_RUN_CMD="rsync -av --dry-run --stats ${SOURCE}/${dir}
-        $DESTINATION_WITH_SUFFIX/"
+        RSYNC_DRY_RUN_CMD="rsync -avz --dry-run --stats --no-whole-file -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no' ${SOURCE}/${dir} $DESTINATION_WITH_SUFFIX/"
         DRY_RUN_OUTPUT=$(eval $RSYNC_DRY_RUN_CMD)
 
         # Extract the total size of data to be transferred
@@ -66,7 +65,7 @@ for dir in "${DIRECTORIES[@]}"; do
             exit 1
         fi
 
-        RSYNC_CMD="rsync -av --info=progress2 ${SOURCE}/${dir}/ $DESTINATION_WITH_SUFFIX/"
+        RSYNC_CMD="rsync -avz --info=progress2 --no-whole-file -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no' ${SOURCE}/${dir}/ $DESTINATION_WITH_SUFFIX/"
         echo "Executing: $RSYNC_CMD"
         eval $RSYNC_CMD
 

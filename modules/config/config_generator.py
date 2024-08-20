@@ -3,14 +3,14 @@ from pathlib import Path
 import sqlite3
 import time
 
+from modules.utils.db_utils import DBUtils
+
 
 class ConfigGenerator:
     def __init__(self, db_path, experience_data):
         print("Initializing ConfigGenerator")
-        self.db_path = Path(db_path)
-        self.conn = sqlite3.connect(self.db_path)
-        self.cursor = self.conn.cursor()
-        self.create_tables()
+        self.db_utils = DBUtils(db_path)
+        self.experience_data = experience_data
 
         # Vérifier si config_parameters est présent
         if "config_parameters" not in experience_data:
@@ -92,16 +92,17 @@ class ConfigGenerator:
             },
         }
         # Initialiser les index globalement
-        self.taskset_index = self.get_last_index("Tasksets", "taskset_id") + 1
-        self.assignment_index = self.get_last_index(
+        self.taskset_index = self.db_utils.get_last_index(
+            "Tasksets", "taskset_id") + 1
+        self.assignment_index = self.db_utils.get_last_index(
             "Assignments", "assignment_id") + 1
-        self.scheduling_index = self.get_last_index(
+        self.scheduling_index = self.db_utils.get_last_index(
             "Schedulings", "scheduling_id") + 1
         print("ConfigGenerator initialized successfully")
 
     def create_tables(self):
         print("Creating tables if not exist")
-        self.cursor.execute(
+        self.db_utils._execute_with_retry(
             """
             CREATE TABLE IF NOT EXISTS Experiences (
                 experience_id TEXT PRIMARY KEY
@@ -110,7 +111,7 @@ class ConfigGenerator:
         )
 
         # Définir la contrainte d'unicité sur les colonnes pertinentes pour Tasksets
-        self.cursor.execute(
+        self.db_utils._execute_with_retry(
             """
             CREATE TABLE IF NOT EXISTS Tasksets (
                 taskset_id TEXT PRIMARY KEY,
@@ -147,7 +148,7 @@ class ConfigGenerator:
         )
 
         # Définir la contrainte d'unicité sur les colonnes pertinentes pour Assignments
-        self.cursor.execute(
+        self.db_utils._execute_with_retry(
             """
             CREATE TABLE IF NOT EXISTS Assignments (
                 assignment_id TEXT PRIMARY KEY,
@@ -177,7 +178,7 @@ class ConfigGenerator:
         )
 
         # Définir la contrainte d'unicité sur les colonnes pertinentes pour Schedulings
-        self.cursor.execute(
+        self.db_utils._execute_with_retry(
             """
             CREATE TABLE IF NOT EXISTS Schedulings (
                 scheduling_id TEXT PRIMARY KEY,
@@ -206,7 +207,7 @@ class ConfigGenerator:
             )
         """
         )
-        self.cursor.execute(
+        self.db_utils._execute_with_retry(
             """
             CREATE TABLE IF NOT EXISTS ExperienceTasksets (
                 experience_id TEXT,
@@ -217,7 +218,7 @@ class ConfigGenerator:
             )
         """
         )
-        self.cursor.execute(
+        self.db_utils._execute_with_retry(
             """
             CREATE TABLE IF NOT EXISTS ExperienceAssignments (
                 experience_id TEXT,
@@ -228,7 +229,7 @@ class ConfigGenerator:
             )
         """
         )
-        self.cursor.execute(
+        self.db_utils._execute_with_retry(
             """
             CREATE TABLE IF NOT EXISTS ExperienceSchedulings (
                 experience_id TEXT,
@@ -240,6 +241,7 @@ class ConfigGenerator:
         """
         )
         print("Tables created or verified successfully")
+        self.db_utils._commit_with_retry()
 
     def add_experience(self, experience_id):
         """
@@ -247,35 +249,20 @@ class ConfigGenerator:
         """
         print(f"Adding experience: {experience_id}")
         try:
-            self.cursor.execute(
+            self.db_utils._execute_with_retry(
                 "INSERT INTO Experiences (experience_id) VALUES (?)",
                 (experience_id,),
             )
-            self.conn.commit()
+            self.db_utils._commit_with_retry()
             print(f"Experience {experience_id} added successfully")
             return experience_id
         except sqlite3.IntegrityError:
             print(f"L'expérience '{experience_id}' existe déjà.")
             return None
 
-    def get_last_index(self, table_name, id_column):
-        """Récupère le dernier index utilisé dans une table pour une colonne d'ID donnée."""
-        print(f"Getting last index from table {table_name}")
-        self.cursor.execute(
-            f"""
-            SELECT MAX(CAST(SUBSTR({id_column}, LENGTH('{id_column.split('_')[0]}_') + 1) AS INT)) 
-            FROM {table_name}
-        """
-        )
-        result = self.cursor.fetchone()
-        print(
-            f"Last index for {table_name} is {result[0] if result[0] is not None else 0}"
-        )
-        return result[0] if result[0] is not None else 0
-
     def get_taskset_id(self, repetition, tasks, interference, probability, max_utilization, deadline, hyperperiod, prime, exponent, cores):
         """Récupère l'ID d'un taskset existant en fonction de ses paramètres."""
-        self.cursor.execute(
+        result = self.db_utils._execute_with_retry(
             """
             SELECT taskset_id
             FROM Tasksets
@@ -303,8 +290,7 @@ class ConfigGenerator:
                 cores,
             ),
         )
-        result = self.cursor.fetchone()
-        return result[0] if result else None
+        return result[0][0] if result else None
 
     def generate_tasksets(self, experience_id):
         print(f"Generating taskset config for experience {experience_id}")
@@ -343,7 +329,7 @@ class ConfigGenerator:
                 if existing_taskset_id:
                     # Lier le taskset existant à l'expérience
                     taskset_id = existing_taskset_id
-                    self.cursor.execute(
+                    self.db_utils._execute_with_retry(
                         """
                         INSERT OR IGNORE INTO ExperienceTasksets (experience_id, taskset_id) 
                         VALUES (?, ?)
@@ -353,7 +339,7 @@ class ConfigGenerator:
                 else:
                     # Tenter d'insérer le taskset.
                     # Si un taskset avec les mêmes paramètres existe déjà, il sera ignoré.
-                    self.cursor.execute(
+                    self.db_utils._execute_with_retry(
                         """
                         INSERT OR IGNORE INTO Tasksets (
                             taskset_id, action, taskset_repetition, tasks_per_taskset, interference_factor,
@@ -382,14 +368,14 @@ class ConfigGenerator:
                         ),
                     )
                     # Récupérer l'ID du taskset inséré (s'il a été inséré)
-                    taskset_id = self.cursor.lastrowid
+                    taskset_id = self.db_utils.cursor.lastrowid
                     if taskset_id:
                         # Incrémenter l'index uniquement si un nouveau taskset a été inséré
                         self.taskset_index += 1
                         print(f"New taskset generated with id: {taskset_id}")
 
                         # Lier le nouveau taskset à l'expérience
-                        self.cursor.execute(
+                        self.db_utils._execute_with_retry(
                             """
                             INSERT OR IGNORE INTO ExperienceTasksets (experience_id, taskset_id) 
                             VALUES (?, ?)
@@ -397,14 +383,14 @@ class ConfigGenerator:
                             (experience_id,
                              f"taskset_{self.taskset_index - 1}"),
                         )
-        self.conn.commit()
+        self.db_utils._commit_with_retry()
         print(
             f"Taskset config generation for experience {experience_id} completed"
         )
 
     def get_assignment_id(self, taskset_id, sorting, method, cores, solving_time, solver_name):
         """Récupère l'ID d'un assignment existant en fonction de ses paramètres."""
-        self.cursor.execute(
+        result = self.db_utils._execute_with_retry(
             """
             SELECT assignment_id
             FROM Assignments
@@ -424,12 +410,11 @@ class ConfigGenerator:
                 solver_name,
             ),
         )
-        result = self.cursor.fetchone()
-        return result[0] if result else None
+        return result[0][0] if result else None
 
     def generate_assignments(self, experience_id):
         print(f"Generating assignment config for experience {experience_id}")
-        for taskset_id in self.get_taskset_ids_for_experience(experience_id):
+        for taskset_id in self.db_utils.get_config_ids_for_experience(experience_id, "taskset"):
             cores = self.get_number_of_cores_from_taskset(taskset_id)
             for method in self.assignment_methods:
                 for (
@@ -450,7 +435,7 @@ class ConfigGenerator:
                     if existing_assignment_id:
                         # Lier l'assignment existant à l'expérience
                         assignment_id = existing_assignment_id
-                        self.cursor.execute(
+                        self.db_utils._execute_with_retry(
                             """
                             INSERT OR IGNORE INTO ExperienceAssignments (experience_id, assignment_id) 
                             VALUES (?, ?)
@@ -460,7 +445,7 @@ class ConfigGenerator:
                     else:
                         # Tenter d'insérer l'assignment.
                         # Si un assignment avec les mêmes paramètres existe déjà, il sera ignoré.
-                        self.cursor.execute(
+                        self.db_utils._execute_with_retry(
                             """
                             INSERT OR IGNORE INTO Assignments (
                                 assignment_id, taskset_id, action, sorting_criterion,
@@ -486,7 +471,7 @@ class ConfigGenerator:
                         )
 
                         # Récupérer l'ID de l'assignment inséré (s'il a été inséré)
-                        assignment_id = self.cursor.lastrowid
+                        assignment_id = self.db_utils.cursor.lastrowid
                         if assignment_id:
                             # Incrémenter l'index uniquement si un nouvel assignment a été inséré
                             self.assignment_index += 1
@@ -495,7 +480,7 @@ class ConfigGenerator:
                             )
 
                             # Lier l'assignment à l'expérience
-                            self.cursor.execute(
+                            self.db_utils._execute_with_retry(
                                 """
                                 INSERT OR IGNORE INTO ExperienceAssignments (experience_id, assignment_id) 
                                 VALUES (?, ?)
@@ -507,14 +492,14 @@ class ConfigGenerator:
                                 ),
                             )
 
-        self.conn.commit()
+        self.db_utils._commit_with_retry()
         print(
             f"Assignment config generation for experience {experience_id} completed"
         )
 
     def get_scheduling_id(self, assignment_id, taskset_id, algorithm, non_preemption, solving_time, solver_name):
         """Récupère l'ID d'un scheduling existant en fonction de ses paramètres."""
-        self.cursor.execute(
+        result = self.db_utils._execute_with_retry(
             """
             SELECT scheduling_id
             FROM Schedulings
@@ -534,14 +519,13 @@ class ConfigGenerator:
                 solver_name,
             ),
         )
-        result = self.cursor.fetchone()
-        return result[0] if result else None
+        return result[0][0] if result else None
 
     def generate_schedulings(self, experience_id):
         print(f"Generating scheduling config for experience {experience_id}")
         for (
             assignment_id
-        ) in self.get_assignment_ids_for_experience(experience_id):
+        ) in self.db_utils.get_config_ids_for_experience(experience_id, "assignment"):
             taskset_id = self.get_taskset_id_from_assignment(assignment_id)
             for algorithm in self.scheduling_algorithms:
                 for (
@@ -569,7 +553,7 @@ class ConfigGenerator:
                     if existing_scheduling_id:
                         # Lier le scheduling existant à l'expérience
                         scheduling_id = existing_scheduling_id
-                        self.cursor.execute(
+                        self.db_utils._execute_with_retry(
                             """
                             INSERT OR IGNORE INTO ExperienceSchedulings (experience_id, scheduling_id) 
                             VALUES (?, ?)
@@ -579,7 +563,7 @@ class ConfigGenerator:
                     else:
                         # Tenter d'insérer le scheduling.
                         # Si un scheduling avec les mêmes paramètres existe déjà, il sera ignoré.
-                        self.cursor.execute(
+                        self.db_utils._execute_with_retry(
                             """
                             INSERT OR IGNORE INTO Schedulings (
                                 scheduling_id, assignment_id, taskset_id, action, scheduling_algorithm,
@@ -605,7 +589,7 @@ class ConfigGenerator:
                         )
 
                         # Récupérer l'ID du scheduling inséré (s'il a été inséré)
-                        scheduling_id = self.cursor.lastrowid
+                        scheduling_id = self.db_utils.cursor.lastrowid
                         if scheduling_id:
                             # Incrémenter l'index uniquement si un nouveau scheduling a été inséré
                             self.scheduling_index += 1
@@ -614,7 +598,7 @@ class ConfigGenerator:
                             )
 
                             # Lier le scheduling à l'expérience
-                            self.cursor.execute(
+                            self.db_utils._execute_with_retry(
                                 """
                                 INSERT OR IGNORE INTO ExperienceSchedulings (experience_id, scheduling_id) 
                                 VALUES (?, ?)
@@ -626,70 +610,28 @@ class ConfigGenerator:
                                 ),
                             )
 
-        self.conn.commit()
+        self.db_utils._commit_with_retry()
         print(
             f"Scheduling config generation for experience {experience_id} completed"
         )
 
-    def get_taskset_ids_for_experience(self, experience_id):
-        print(f"Fetching taskset ids for experience {experience_id}")
-        self.cursor.execute(
-            """
-            SELECT T.taskset_id 
-            FROM Tasksets T 
-            JOIN ExperienceTasksets ET ON T.taskset_id = ET.taskset_id 
-            WHERE ET.experience_id = ?
-            """,
-            (experience_id,),
-        )
-        taskset_ids = [row[0] for row in self.cursor.fetchall()]
-
-        # Trier numériquement les taskset_id
-        taskset_ids.sort(key=lambda x: int(x.split("_")[1]))
-
-        print(f"Taskset ids for experience {experience_id}: {taskset_ids}")
-        return taskset_ids
-
-    def get_assignment_ids_for_experience(self, experience_id):
-        print(f"Fetching assignment ids for experience {experience_id}")
-        self.cursor.execute(
-            """
-            SELECT A.assignment_id
-            FROM Assignments A
-            JOIN ExperienceAssignments EA ON A.assignment_id = EA.assignment_id
-            WHERE EA.experience_id = ?
-            """,
-            (experience_id,),
-        )
-        assignment_ids = [row[0] for row in self.cursor.fetchall()]
-
-        # Trier numériquement les assignment_id
-        assignment_ids.sort(key=lambda x: int(x.split("_")[1]))
-
-        print(
-            f"Assignment ids for experience {experience_id}: {assignment_ids}"
-        )
-        return assignment_ids
-
     def get_number_of_cores_from_taskset(self, taskset_id):
         print(f"Fetching number of cores for taskset {taskset_id}")
-        self.cursor.execute(
+        result = self.db_utils._execute_with_retry(
             "SELECT number_of_cores FROM Tasksets WHERE taskset_id = ?",
             (taskset_id,),
         )
-        result = self.cursor.fetchone()
-        cores = result[0] if result else None
+        cores = result[0][0] if result else None
         print(f"Number of cores for taskset {taskset_id}: {cores}")
         return cores
 
     def get_taskset_id_from_assignment(self, assignment_id):
         print(f"Fetching taskset id for assignment {assignment_id}")
-        self.cursor.execute(
+        result = self.db_utils._execute_with_retry(
             "SELECT taskset_id FROM Assignments WHERE assignment_id = ?",
             (assignment_id,),
         )
-        result = self.cursor.fetchone()
-        taskset_id = result[0] if result else None
+        taskset_id = result[0][0] if result else None
         print(f"Taskset id for assignment {assignment_id}: {taskset_id}")
         return taskset_id
 
@@ -725,8 +667,3 @@ class ConfigGenerator:
             self.generate_assignments(experience_id)
             self.generate_schedulings(experience_id)
             print(f"Experience {experience_id} processed successfully")
-
-    def close_connection(self):
-        print("Closing database connection")
-        self.conn.close()
-        print("Database connection closed")

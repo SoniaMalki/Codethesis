@@ -298,3 +298,18 @@ class DBUtils:
         config_ids = [row[0] for row in result]
         config_ids.sort(key=lambda x: int(x.split('_')[1]))
         return config_ids
+
+    def get_last_index(self, table_name, id_column):
+        """Récupère le dernier index utilisé dans une table pour une colonne d'ID donnée."""
+        print(f"Getting last index from table {table_name}")
+        self.cursor.execute(
+            f"""
+            SELECT MAX(CAST(SUBSTR({id_column}, LENGTH('{id_column.split('_')[0]}_') + 1) AS INT)) 
+            FROM {table_name}
+        """
+        )
+        result = self.cursor.fetchone()
+        print(
+            f"Last index for {table_name} is {result[0] if result[0] is not None else 0}"
+        )
+        return result[0] if result[0] is not None else 0

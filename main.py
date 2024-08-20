@@ -120,7 +120,6 @@ def main(action, experience_id, experience_action=None):
         generator = ConfigGenerator(
             db_path=db_path, experience_data=experience_data[experience_id])
         generator.generate_configs_from_json(experience_data, experience_id)
-        generator.close_connection()
 
     elif action == "generate_slurm_scripts":
         print(f"Generating SLURM scripts for experience ID: {experience_id}")

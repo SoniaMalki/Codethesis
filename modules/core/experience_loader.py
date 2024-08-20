@@ -1,16 +1,14 @@
-import sqlite3
 from pathlib import Path
 from modules.core.experience import Experience
+from modules.utils.db_utils import DBUtils
 
 
 class ExperienceLoader:
     def __init__(self, db_path, experience_id=None):
         print(
             f"Initializing ExperienceLoader for experience ID: {experience_id}")
-        self.db_path = db_path
+        self.db_utils = DBUtils(db_path)
         self.experience_id = experience_id
-        self.conn = sqlite3.connect(self.db_path)
-        self.cursor = self.conn.cursor()
         print("ExperienceLoader initialized successfully")
 
     def load(self, config_id):
@@ -30,20 +28,10 @@ class ExperienceLoader:
 
         if config_type == "taskset":
             print("Loading taskset configuration")
-            self.cursor.execute(
-                """
-                SELECT T.taskset_id, T.action, T.taskset_repetition, T.tasks_per_taskset, T.interference_factor, 
-                       T.probability_factor, T.max_utilization, T.deadline_option, T.max_hyperperiod, 
-                       T.max_prime, T.gen_limit_exponent, T.result_file_path
-                FROM Tasksets T
-                JOIN ExperienceTasksets ET ON T.taskset_id = ET.taskset_id
-                WHERE ET.experience_id = ? AND T.taskset_id = ?
-                """,
-                (self.experience_id, config_id)
-            )
-            taskset_data = self.cursor.fetchone()
+            taskset_data = self.db_utils.get_taskset_data(config_id)
 
             if taskset_data:
+                taskset_data = taskset_data[0]  # Extract the single row
                 taskset_params = {
                     "action": taskset_data[1],
                     "taskset_id": taskset_data[0],
@@ -68,23 +56,14 @@ class ExperienceLoader:
 
         elif config_type == "assignment":
             print("Loading assignment configuration")
-            self.cursor.execute(
-                """
-                SELECT A.assignment_id, A.action, A.sorting_criterion, A.assignment_method,
-                       A.number_of_cores, A.threads, A.solving_time_limit_MILP, A.solver_name, A.result_file_path, A.taskset_id
-                FROM Assignments A
-                JOIN ExperienceAssignments EA ON A.assignment_id = EA.assignment_id
-                WHERE EA.experience_id = ? AND A.assignment_id = ?
-                """,
-                (self.experience_id, config_id)
-            )
-            assignment_data = self.cursor.fetchone()
+            assignment_data = self.db_utils.get_assignment_data(config_id)
 
             if assignment_data:
+                assignment_data = assignment_data[0]
                 assignment_params = {
                     "action": assignment_data[1],
                     "assignment_id": assignment_data[0],
-                    "taskset_id": self.get_taskset_id_from_assignment(config_id),
+                    "taskset_id": self.db_utils.get_taskset_id_from_assignment(config_id),
                     "parameters": {
                         "sorting_criterion": assignment_data[2],
                         "assignment_method": assignment_data[3],
@@ -104,24 +83,15 @@ class ExperienceLoader:
 
         elif config_type == "scheduling":
             print("Loading scheduling configuration")
-            self.cursor.execute(
-                """
-                SELECT S.scheduling_id, S.action, S.scheduling_algorithm, S.non_preemption_time_variant2,
-                       S.threads, S.solving_time_limit_MILP, S.solver_name, S.result_file_path, S.taskset_id, S.assignment_id
-                FROM Schedulings S
-                JOIN ExperienceSchedulings ES ON S.scheduling_id = ES.scheduling_id
-                WHERE ES.experience_id = ? AND S.scheduling_id = ?
-                """,
-                (self.experience_id, config_id)
-            )
-            scheduling_data = self.cursor.fetchone()
+            scheduling_data = self.db_utils.get_scheduling_data(config_id)
 
             if scheduling_data:
+                scheduling_data = scheduling_data[0]
                 scheduling_params = {
                     "action": scheduling_data[1],
                     "scheduling_id": scheduling_data[0],
-                    "taskset_id": self.get_taskset_id_from_scheduling(config_id),
-                    "assignment_id": self.get_assignment_id_from_scheduling(config_id),
+                    "taskset_id": self.db_utils.get_taskset_and_assignment_ids_from_scheduling(config_id)[0],
+                    "assignment_id": self.db_utils.get_taskset_and_assignment_ids_from_scheduling(config_id)[1],
                     "parameters": {
                         "scheduling_algorithm": scheduling_data[2],
                         "scheduling_options": {
@@ -149,47 +119,19 @@ class ExperienceLoader:
             taskset_parameters=taskset_params,
             assignment_parameters=assignment_params,
             scheduling_parameters=scheduling_params,
-            main_path=Path(self.db_path).parent,
-            db_path=self.db_path
+            main_path=Path(self.db_utils.db_path).parent,
+            db_path=self.db_utils.db_path
         )
 
     def get_experience_ids(self):
         """Récupère la liste des IDs d'expérience disponibles dans la base de données."""
-        print("Fetching experience IDs from database")
-        self.cursor.execute("SELECT experience_id FROM Experiences")
-        experience_ids = [row[0] for row in self.cursor.fetchall()]
-        print(f"Experience IDs: {experience_ids}")
-        return experience_ids
-
-    def get_taskset_id_from_assignment(self, assignment_id):
-        self.cursor.execute(
-            "SELECT taskset_id FROM Assignments WHERE assignment_id = ?",
-            (assignment_id,)
-        )
-        result = self.cursor.fetchone()
-        return result[0] if result else None
-
-    def get_taskset_id_from_scheduling(self, scheduling_id):
-        self.cursor.execute(
-            "SELECT T.taskset_id FROM Tasksets T JOIN Assignments A ON T.taskset_id = A.taskset_id JOIN Schedulings S ON A.assignment_id = S.assignment_id WHERE S.scheduling_id = ?",
-            (scheduling_id,)
-        )
-        result = self.cursor.fetchone()
-        return result[0] if result else None
-
-    def get_assignment_id_from_scheduling(self, scheduling_id):
-        self.cursor.execute(
-            "SELECT assignment_id FROM Schedulings WHERE scheduling_id = ?",
-            (scheduling_id,)
-        )
-        result = self.cursor.fetchone()
-        return result[0] if result else None
+        return self.db_utils.get_experience_ids()
 
     def get_config_ids(self, config_type="taskset"):
         """Récupère les IDs de configuration pour un type donné et une expérience donnée.
 
         Args:
-            config_type (str, optional): Le type de configuration ('taskset', 'assignment', 'scheduling'). 
+            config_type (str, optional): Le type de configuration ('taskset', 'assignment', 'scheduling').
                                          Par défaut à 'taskset'.
 
         Returns:
@@ -199,76 +141,4 @@ class ExperienceLoader:
         if not self.experience_id:
             return []
 
-        if config_type == "taskset":
-            return self.get_taskset_ids_for_experience(self.experience_id)
-        elif config_type == "assignment":
-            return self.get_assignment_ids_for_experience(self.experience_id)
-        elif config_type == "scheduling":
-            return self.get_scheduling_ids_for_experience(self.experience_id)
-        else:
-            print(f"Erreur : Type de configuration invalide '{config_type}'.")
-            return []
-
-    def get_taskset_ids_for_experience(self, experience_id):
-        print(f"Fetching taskset IDs for experience ID: {experience_id}")
-        self.cursor.execute(
-            """
-            SELECT T.taskset_id 
-            FROM Tasksets T 
-            JOIN ExperienceTasksets ET ON T.taskset_id = ET.taskset_id 
-            WHERE ET.experience_id = ?
-            """,
-            (experience_id,)
-        )
-        taskset_ids = [row[0] for row in self.cursor.fetchall()]
-
-        # Trier numériquement les taskset_id
-        taskset_ids.sort(key=lambda x: int(x.split('_')[1]))
-
-        print(f"Taskset IDs for experience ID {experience_id}: {taskset_ids}")
-        return taskset_ids
-
-    def get_assignment_ids_for_experience(self, experience_id):
-        print(f"Fetching assignment IDs for experience ID: {experience_id}")
-        self.cursor.execute(
-            """
-            SELECT A.assignment_id
-            FROM Assignments A
-            JOIN ExperienceAssignments EA ON A.assignment_id = EA.assignment_id
-            WHERE EA.experience_id = ?
-            """,
-            (experience_id,)
-        )
-        assignment_ids = [row[0] for row in self.cursor.fetchall()]
-
-        # Trier numériquement les assignment_id
-        assignment_ids.sort(key=lambda x: int(x.split('_')[1]))
-
-        print(
-            f"Assignment IDs for experience ID {experience_id}: {assignment_ids}")
-        return assignment_ids
-
-    def get_scheduling_ids_for_experience(self, experience_id):
-        print(f"Fetching scheduling IDs for experience ID: {experience_id}")
-        self.cursor.execute(
-            """
-            SELECT S.scheduling_id
-            FROM Schedulings S
-            JOIN ExperienceSchedulings ES ON S.scheduling_id = ES.scheduling_id
-            WHERE ES.experience_id = ?
-            """,
-            (experience_id,)
-        )
-        scheduling_ids = [row[0] for row in self.cursor.fetchall()]
-
-        # Trier numériquement les scheduling_id
-        scheduling_ids.sort(key=lambda x: int(x.split('_')[1]))
-
-        print(
-            f"Scheduling IDs for experience ID {experience_id}: {scheduling_ids}")
-        return scheduling_ids
-
-    def close_connection(self):
-        print("Closing database connection")
-        self.conn.close()
-        print("Database connection closed")
+        return self.db_utils.get_config_ids_for_experience(self.experience_id, config_type)

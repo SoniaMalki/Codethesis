@@ -225,3 +225,76 @@ class DBUtils:
             result = self._execute_with_retry(query, chunk)
             algorithm_data.update(dict(result))
         return algorithm_data
+
+    def get_taskset_data(self, taskset_id):
+        """Récupère les données d'un taskset."""
+        query = """
+            SELECT T.taskset_id, T.action, T.taskset_repetition, T.tasks_per_taskset, T.interference_factor, 
+                   T.probability_factor, T.max_utilization, T.deadline_option, T.max_hyperperiod, 
+                   T.max_prime, T.gen_limit_exponent, T.result_file_path
+            FROM Tasksets T
+            WHERE T.taskset_id = ?
+            """
+        return self._execute_with_retry(query, (taskset_id,))
+
+    def get_assignment_data(self, assignment_id):
+        """Récupère les données d'un assignment."""
+        query = """
+            SELECT A.assignment_id, A.action, A.sorting_criterion, A.assignment_method,
+                   A.number_of_cores, A.threads, A.solving_time_limit_MILP, A.solver_name, A.result_file_path, A.taskset_id
+            FROM Assignments A
+            WHERE A.assignment_id = ?
+            """
+        return self._execute_with_retry(query, (assignment_id,))
+
+    def get_scheduling_data(self, scheduling_id):
+        """Récupère les données d'un scheduling."""
+        query = """
+            SELECT S.scheduling_id, S.action, S.scheduling_algorithm, S.non_preemption_time_variant2,
+                   S.threads, S.solving_time_limit_MILP, S.solver_name, S.result_file_path, S.taskset_id, S.assignment_id
+            FROM Schedulings S
+            WHERE S.scheduling_id = ?
+            """
+        return self._execute_with_retry(query, (scheduling_id,))
+
+    def get_taskset_id_from_assignment(self, assignment_id):
+        """Récupère l'ID du taskset associé à un assignment."""
+        query = """
+            SELECT taskset_id
+            FROM Assignments
+            WHERE assignment_id = ?
+            """
+        result = self._execute_with_retry(query, (assignment_id,))
+        return result[0][0] if result else None
+
+    def get_taskset_and_assignment_ids_from_scheduling(self, scheduling_id):
+        """Récupère les IDs du taskset et de l'assignment associés à un scheduling."""
+        query = """
+            SELECT S.taskset_id, S.assignment_id
+            FROM Schedulings S
+            WHERE S.scheduling_id = ?
+            """
+        result = self._execute_with_retry(query, (scheduling_id,))
+        return result[0] if result else (None, None)
+
+    def get_experience_ids(self):
+        """Récupère la liste des IDs d'expérience disponibles dans la base de données."""
+        query = "SELECT experience_id FROM Experiences"
+        result = self._execute_with_retry(query)
+        return [row[0] for row in result]
+
+    def get_config_ids_for_experience(self, experience_id, config_type="taskset"):
+        """Récupère les IDs de configuration pour un type donné et une expérience donnée."""
+        if config_type not in ["taskset", "assignment", "scheduling"]:
+            raise ValueError(f"Invalid config_type: {config_type}")
+
+        query = f"""
+            SELECT T.{config_type}_id 
+            FROM {config_type.capitalize()}s T 
+            JOIN Experience{config_type.capitalize()}s ET ON T.{config_type}_id = ET.{config_type}_id 
+            WHERE ET.experience_id = ?
+            """
+        result = self._execute_with_retry(query, (experience_id,))
+        config_ids = [row[0] for row in result]
+        config_ids.sort(key=lambda x: int(x.split('_')[1]))
+        return config_ids

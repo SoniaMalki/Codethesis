@@ -72,12 +72,17 @@ module load Python/3.10.8-GCCcore-12.2.0
 module load GLPK/5.0-GCCcore-12.2.0
 module load Gurobi/10.0.3-GCCcore-12.2.0
 """,
+            "drg2": """
+module load Python/3.11.3-GCCcore-12.3.0
+export GLOBALSCRATCH=$HOME
+""",
         }
 
         self.cluster_cores = {
             "lm": 10,
             "nic": 10,
             "her": 10,
+            "drg2": 10,
             "sonia": 3
         }
 
@@ -311,6 +316,7 @@ done
             "lm": "lemaitre4",
             "nic": "nic5",
             "her": "hercules",
+            "drg2": "dragon2",
             "sonia": "sonia"
         }
 
@@ -554,6 +560,8 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
 
         command = (
             f"echo \"Starting full pipeline for {self.experience_id}\"\n"
+            f"{self.modules}"
+            f"source $GLOBALSCRATCH/myenv/bin/activate\n"
             f"python3 -u {self.main_path}/main.py generate_configs {self.experience_id}\n"
             "if [ $? -ne 0 ]; then\n"
             "    echo \"Échec de la génération des configurations\"\n"

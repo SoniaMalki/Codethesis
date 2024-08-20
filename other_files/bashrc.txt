@@ -22,6 +22,7 @@ if [[ $- == *i* ]]; then
         module load Gurobi/10.0.3-GCCcore-12.2.0
 
     elif [[ $(hostname) == "dragon2.umons.ac.be" ]]; then
+        module load Python/3.11.3-GCCcore-12.3.0
         export GLOBALSCRATCH=$HOME
         cd $HOME/Codethesis
     fi
@@ -99,8 +100,9 @@ elif [[ \$(hostname) == *"nic" ]]; then
     module load Gurobi/10.0.3-GCCcore-12.2.0
 
 elif [[ \$(hostname) == *"drg2" ]]; then
+    module load Python/3.11.3-GCCcore-12.3.0
     export GLOBALSCRATCH=$HOME
- fi
+fi
 
 source $GLOBALSCRATCH/myenv/bin/activate
 

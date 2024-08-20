@@ -543,38 +543,6 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
         """Generate the full pipeline SLURM script."""
         print("Generating full pipeline SLURM script")
 
-        # Construct the command to submit analyze_results.slurm based on dependencies
-        analyze_command = ""
-        if any(file.is_file() for file in (self.master_dir / f"all_{config_type}s_master.slurm" for config_type in ["assignment", "scheduling"])):
-            analyze_command = (
-                "echo \"Launching analyze\"\n"
-                "echo \"--------SBATCH-OUTPUT-BEGIN------------------\"\n"
-                "tempfile=$(mktemp)\n"
-                "if [[ -n \"$scheduling_id\" ]]; then\n"
-                "  echo \"Submitting analyze_results.slurm (waiting for scheduling to finish)\"\n"
-                "  sbatch --dependency=afterok:$scheduling_id \"$MASTER_DIR/analyze_results.slurm\" >\"$tempfile\" 2>&1\n"
-                "elif [[ -n \"$assignment_id\" ]]; then\n"
-                "  echo \"Submitting analyze_results.slurm (waiting for assignment to finish)\"\n"
-                "  sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/analyze_results.slurm\" >\"$tempfile\" 2>&1\n"
-                "elif [[ -n \"$taskset_id\" ]]; then\n"
-                "  echo \"Submitting analyze_results.slurm (waiting for taskset to finish)\"\n"
-                "  sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/analyze_results.slurm\" >\"$tempfile\" 2>&1\n"
-                "else\n"
-                "  echo \"Submitting analyze_results.slurm\"\n"
-                "  sbatch \"$MASTER_DIR/analyze_results.slurm\" >\"$tempfile\" 2>&1\n"
-                "fi\n"
-                "output=$(cat \"$tempfile\")\n"
-                "if echo \"$output\" | grep -q \"error\"; then\n"
-                "    echo \"Job not launched. Output:\"\n"
-                "    echo \"$output\"\n"
-                "else\n"
-                "    analyze_id=$(echo \"$output\" | awk '{print $4}')\n"
-                "    job_name=$(scontrol show job $analyze_id | grep \"JobName=\" | awk -F= '{print $3}')\n"
-                "    echo \"$output | Job Name: $job_name | Job ID : $analyze_id\"\n"
-                "fi\n"
-                "rm -f \"$tempfile\"\n"
-                "echo \"--------SBATCH-OUTPUT-END------------------\"\n"
-            )
         command = (
             f"echo \"Starting full pipeline for {self.experience_id}\"\n"
             f"python3 -u {self.main_path}/main.py generate_configs {self.experience_id}\n"
@@ -591,78 +559,46 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
             "echo \"Génération des fichiers SLURM réussie\"\n"
             "echo \"Starting master job\"\n"
 
-            # Taskset Submission
-            "echo \"Launching taskset\"\n"
-            "echo \"--------SBATCH-OUTPUT-BEGIN------------------\"\n"
-            "tempfile=$(mktemp)\n"
+            # Taskset
             "if [ -f \"$MASTER_DIR/all_tasksets_master.slurm\" ]; then\n"
             "  echo \"Submitting all_tasksets_master.slurm\"\n"
-            "  sbatch \"$MASTER_DIR/all_tasksets_master.slurm\" >\"$tempfile\" 2>&1\n"
-            "  output=$(cat \"$tempfile\")\n"
-            "  if echo \"$output\" | grep -q \"error\"; then\n"
-            "    echo \"Job not launched. Output:\"\n"
-            "    echo \"$output\"\n"
-            "  else\n"
-            "    taskset_id=$(echo \"$output\" | awk '{print $4}')\n"
-            "    job_name=$(scontrol show job $taskset_id | grep \"JobName=\" | awk -F= '{print $3}')\n"
-            "    echo \"$output | Job Name: $job_name | Job ID : $taskset_id\"\n"
-            "  fi\n"
+            "  taskset_id=$(sbatch \"$MASTER_DIR/all_tasksets_master.slurm\" | awk '{print $4}')\n"
             "fi\n"
-            "rm -f \"$tempfile\"\n"
-            "echo \"--------SBATCH-OUTPUT-END------------------\"\n"
 
-            # Assignment Submission (dependent on taskset)
-            "echo \"Launching assignment\"\n"
-            "echo \"--------SBATCH-OUTPUT-BEGIN------------------\"\n"
-            "tempfile=$(mktemp)\n"
+            # Assignment (dependent on taskset)
             "if [ -f \"$MASTER_DIR/all_assignments_master.slurm\" ]; then\n"
             "  echo \"Submitting all_assignments_master.slurm\"\n"
             "  if [[ -z \"$taskset_id\" ]]; then\n"
-            "    sbatch \"$MASTER_DIR/all_assignments_master.slurm\" >\"$tempfile\" 2>&1\n"
+            "    assignment_id=$(sbatch \"$MASTER_DIR/all_assignments_master.slurm\" | awk '{print $4}')\n"
             "  else\n"
-            "    sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/all_assignments_master.slurm\" >\"$tempfile\" 2>&1\n"
-            "  fi\n"
-            "  output=$(cat \"$tempfile\")\n"
-            "  if echo \"$output\" | grep -q \"error\"; then\n"
-            "    echo \"Job not launched. Output:\"\n"
-            "    echo \"$output\"\n"
-            "  else\n"
-            "    assignment_id=$(echo \"$output\" | awk '{print $4}')\n"
-            "    job_name=$(scontrol show job $assignment_id | grep \"JobName=\" | awk -F= '{print $3}')\n"
-            "    echo \"$output | Job Name: $job_name | Job ID : $assignment_id\"\n"
+            "    assignment_id=$(sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/all_assignments_master.slurm\" | awk '{print $4}')\n"
             "  fi\n"
             "fi\n"
-            "rm -f \"$tempfile\"\n"
-            "echo \"--------SBATCH-OUTPUT-END------------------\"\n"
 
-            # Scheduling Submission (dependent on assignment OR taskset if assignment failed)
-            "echo \"Launching scheduling\"\n"
-            "echo \"--------SBATCH-OUTPUT-BEGIN------------------\"\n"
-            "tempfile=$(mktemp)\n"
+            # Scheduling (dependent on assignment OR taskset if assignment failed)
             "if [ -f \"$MASTER_DIR/all_schedulings_master.slurm\" ]; then\n"
             "  echo \"Submitting all_schedulings_master.slurm\"\n"
             "  if [[ -z \"$assignment_id\" && -n \"$taskset_id\" ]]; then\n"
-            "    sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/all_schedulings_master.slurm\" >\"$tempfile\" 2>&1\n"
+            "    scheduling_id=$(sbatch --dependency=afterok:$taskset_id \"$MASTER_DIR/all_schedulings_master.slurm\" | awk '{print $4}')\n"
             "  elif [[ -n \"$assignment_id\" ]]; then\n"
-            "    sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/all_schedulings_master.slurm\" >\"$tempfile\" 2>&1\n"
+            "    scheduling_id=$(sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/all_schedulings_master.slurm\" | awk '{print $4}')\n"
             "  else\n"
-            "    sbatch \"$MASTER_DIR/all_schedulings_master.slurm\" >\"$tempfile\" 2>&1\n"
-            "  fi\n"
-            "  output=$(cat \"$tempfile\")\n"
-            "  if echo \"$output\" | grep -q \"error\"; then\n"
-            "    echo \"Job not launched. Output:\"\n"
-            "    echo \"$output\"\n"
-            "  else\n"
-            "    scheduling_id=$(echo \"$output\" | awk '{print $4}')\n"
-            "    job_name=$(scontrol show job $scheduling_id | grep \"JobName=\" | awk -F= '{print $3}')\n"
-            "    echo \"$output | Job Name: $job_name | Job ID : $scheduling_id\"\n"
+            "    scheduling_id=$(sbatch \"$MASTER_DIR/all_schedulings_master.slurm\" | awk '{print $4}')\n"
             "  fi\n"
             "fi\n"
-            "rm -f \"$tempfile\"\n"
-            "echo \"--------SBATCH-OUTPUT-END------------------\"\n"
 
-            # Analyze Submission (Conditional)
-            f"{analyze_command if analyze_command else ''}"
+            "if [[ -n \"$scheduling_id\" ]]; then\n"
+            "  echo \"Submitting analyze_results.slurm (waiting for scheduling to finish)\"\n"
+            "  sbatch --dependency=afterok:$scheduling_id \"$MASTER_DIR/analyze_results.slurm\"\n"
+            "elif [[ -n \"$assignment_id\" ]]; then\n"
+            "  echo \"Submitting analyze_results.slurm (waiting for assignment to finish)\"\n"
+            "  sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/analyze_results.slurm\"\n"
+            "elif [[ -n \"$taskset_id\" ]]; then\n"
+            "  echo \"Not submitting after only taskset\"\n"
+            "else\n"
+            "  echo \"Submitting analyze_results.slurm\"\n"
+            "  sbatch \"$MASTER_DIR/analyze_results.slurm\"\n"
+            "fi\n"
 
             f"echo \"Full pipeline completed for {self.experience_id}\"\n"
         )
@@ -677,10 +613,8 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
 #SBATCH --ntasks=1
 #SBATCH --time={self.full_pipeline_time}
 #SBATCH --mem-per-cpu={self.full_pipeline_mem}
-
 MASTER_DIR="{self.master_dir}"
-
 {command}
-""")
+    """)
 
         print(f"Full pipeline SLURM script generated at: {slurm_file}")

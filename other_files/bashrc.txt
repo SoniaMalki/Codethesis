@@ -163,7 +163,12 @@ tail_print() {
 
     # Déterminez le chemin en fonction du troisième argument
     case "$file_type" in
-        taskset_* | assignment_* | scheduling_* | batch_taskset_* | batch_assignment_* | batch_scheduling_*)
+        batch_taskset_* | batch_assignment_* | batch_scheduling_*)
+            local category="${file_type#batch_}"
+            category="${category%%_*}"
+            file_path+="/${category}/${file_type}.txt"
+            ;;
+        taskset_* | assignment_* | scheduling_*)
             local category="${file_type%%_*}"
             file_path+="/${category}/${file_type}.txt"
             ;;
@@ -202,6 +207,8 @@ tail_print() {
     # Exécuter tail sur le fichier
     tail -n "$line_count" "$file_path"
 }
+
+
 
 # Fonction pour gérer la suppression avec confirmation
 rm_res() {

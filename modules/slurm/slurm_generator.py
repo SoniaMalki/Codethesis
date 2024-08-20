@@ -238,8 +238,17 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
 # Séparer par des espaces
 # Use sorted_batch_configs
 for config_key in {" ".join(sorted_batch_configs.keys())}; do
-  # Utiliser le chemin complet
-  sbatch {individual_slurm_dir / f"$config_key.slurm"}
+  tempfile=$(mktemp /tmp/slurm_batch_XXXXXX)
+  sbatch {individual_slurm_dir / f"$config_key.slurm"} >"$tempfile" 2>&1
+  output=$(cat "$tempfile")
+  if echo "$output" | grep -q "error"; then
+    echo "Job not launched. Output: $output"
+  else
+    job_id=$(echo "$output" | awk '{{print $4}}')
+    job_name=$(scontrol show job "$job_id" | grep "JobName=" | awk -F= '{{print $3}}')
+    echo "$output | Job Name: $job_name | Job ID : $job_id"
+  fi
+  rm -f "$tempfile"
 done
 
 {self.get_wait_for_jobs_script(config_type, param_exclude)}

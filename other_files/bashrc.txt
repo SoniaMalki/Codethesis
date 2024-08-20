@@ -43,6 +43,8 @@ export NODELIST_COL_SIZE=20
 
 alias gen='generate_and_submit'
 alias t20='tail_print 20'
+alias t100='tail_print 100'
+alias t500='tail_print 500'
 alias rebash='cp $HOME/.bashrc_empty $HOME/.bashrc && nano $HOME/.bashrc && source $HOME/.bashrc'
 alias rmplots=rm_plots
 alias rmplot=rm_plots

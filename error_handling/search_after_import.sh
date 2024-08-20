@@ -15,7 +15,7 @@ base_dir="$CODETHESIS"
 
 # Chemins vers les dossiers de sortie
 output_dir="${GENERATION_DIR}_${suffixe}/$experience_number/slurm/output"
-filtered_dir="$base_dir/error_handling/filtered_output"
+filtered_dir="$base_dir/error_handling/filtered_output_${suffixe}"
 
 # Créer le dossier de sortie pour les fichiers filtrés s'il n'existe pas
 mkdir -p "$filtered_dir"

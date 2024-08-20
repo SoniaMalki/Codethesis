@@ -18,7 +18,7 @@ fi
 base_dir="$CODETHESIS"
 
 # Dossier de base pour les fichiers d'erreur
-ERROR_DIR="$base_dir/error_handling/output_error/$ERROR_TYPE"
+ERROR_DIR="$base_dir/error_handling/output_error_${SUFFIXE}/$ERROR_TYPE"
 
 # Affichage pour debug
 echo "Base directory: $base_dir"

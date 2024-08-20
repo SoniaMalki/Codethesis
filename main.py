@@ -15,11 +15,13 @@ global_scratch = os.getenv('GLOBALSCRATCH')
 
 if global_scratch is None:
     print("La variable d'environnement GLOBALSCRATCH n'est pas définie.")
-    raise FileNotFoundError
+    global_scratch = os.getenv('HOME')
+    print('Utilisation HOME à la place de GLOBALSCRATCH')
+    if global_scratch is None:
+        raise FileNotFoundError
 
-else:
-    global_scratch = Path(global_scratch)
-    print(f"Le chemin de global_scratch est: {global_scratch}")
+global_scratch = Path(global_scratch)
+print(f"Le chemin de global_scratch est: {global_scratch}")
 
 
 def run_experience(experience_parameter_key, experience_loader):
@@ -58,8 +60,6 @@ def main(action, experience_id, experience_action=None):
     generation_path = global_scratch / "generation"
     db_path = generation_path / "experience.db"
     experience_json_path = Path(__file__).parent / "experience.json"
-    slurm_script_path = main_path / "slurm_code" / "slurm_scripts"
-    output_slurm_path = main_path / "slurm_code" / "output_launch_slurm_jobs"
 
     # Charger experience.json
     print("Loading experience.json")

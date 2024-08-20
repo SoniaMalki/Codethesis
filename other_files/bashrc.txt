@@ -33,6 +33,7 @@ fi
 # -------Définitions des variables---------------
 export CODETHESIS=$HOME/Codethesis
 export GENERATION_DIR="$GLOBALSCRATCH/generation"
+export PATH=$PATH:$CODETHESIS/other_files
 export EMPTY_DIR="$HOME/empty_dir"
 export WALLTIME="2-00:00:00"
 

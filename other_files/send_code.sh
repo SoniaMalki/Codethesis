@@ -31,15 +31,13 @@ DESTINATION="$CLUSTER_NAME:~/Codethesis"
 EXCLUDE_ITEMS=(
     '.git'
     '__pycache__'
-    'other_files'
     '.vscode'
     'tests'
     '.pytest_cache'
     '.gitignore'
     'README.md'
     'permanent_results'
-    '/error_handling/output_error'
-    '/error_handling/filtered_output'
+    'error_handling'
     'generation'  # Exclude "generation" directories
     'generation_*' # Exclude variants like "generation_backup", etc. 
 )

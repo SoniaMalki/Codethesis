@@ -7,7 +7,7 @@ declare -A CLUSTER_GLOBALSCRATCH=(
     ["lemaitre4"]="/globalscratch/ulb/parts/smalki"
     ["hercules"]="/workdir/smalki/"
     ["nic5"]="/scratch/ulb/parts/smalki/"
-    ["dragon2"]="/scratch/dragon2/smalki"
+    ["dragon2"]="/home/ulb/parts/smalki"
 )
 
 # Check the cluster name
@@ -87,46 +87,44 @@ fi
 
 # --- Part 2: Transfer ONLY the "generation" directory to GLOBALSCRATCH ---
 
-read -p "Do you want to transfer the 'generation' directory to GLOBALSCRATCH? (y/n) " confirm_global
-if [[ "$confirm_global" == "y" ]]; then
-    GLOBALSCRATCH_PATH="${CLUSTER_GLOBALSCRATCH[$CLUSTER_NAME]}"
-    GENERATION_SOURCE="/home/sonia/Bureau/Codethesis/generation/" 
-    GENERATION_DESTINATION="$CLUSTER_NAME:${GLOBALSCRATCH_PATH}/generation"
 
-    # Dry run for "generation" directory
-    RSYNC_DRY_RUN_CMD="rsync -avz --dry-run --stats $GENERATION_SOURCE $GENERATION_DESTINATION"
-    DRY_RUN_OUTPUT=$(eval $RSYNC_DRY_RUN_CMD)
 
-    # Extract the total size
-    TOTAL_BYTES=$(echo "$DRY_RUN_OUTPUT" | grep "Total transferred file size" | awk '{print $5}' | sed 's/[.,]//g')
+GLOBALSCRATCH_PATH="${CLUSTER_GLOBALSCRATCH[$CLUSTER_NAME]}"
+GENERATION_SOURCE="/home/sonia/Bureau/Codethesis/generation/" 
+GENERATION_DESTINATION="$CLUSTER_NAME:${GLOBALSCRATCH_PATH}/generation"
 
-    # Convert the size 
-    if [ $TOTAL_BYTES -ge 1073741824 ]; then
-        TOTAL_SIZE=$(echo "scale=2; $TOTAL_BYTES/1073741824" | bc) && TOTAL_UNIT="GB"
-    elif [ $TOTAL_BYTES -ge 1048576 ]; then
-        TOTAL_SIZE=$(echo "scale=2; $TOTAL_BYTES/1048576" | bc) && TOTAL_UNIT="MB"
-    elif [ $TOTAL_BYTES -ge 1024 ]; then
-        TOTAL_SIZE=$(echo "scale=2; $TOTAL_BYTES/1024" | bc) && TOTAL_UNIT="KB"
+# Dry run for "generation" directory
+RSYNC_DRY_RUN_CMD="rsync -avz --dry-run --stats $GENERATION_SOURCE $GENERATION_DESTINATION"
+DRY_RUN_OUTPUT=$(eval $RSYNC_DRY_RUN_CMD)
+
+# Extract the total size
+TOTAL_BYTES=$(echo "$DRY_RUN_OUTPUT" | grep "Total transferred file size" | awk '{print $5}' | sed 's/[.,]//g')
+
+# Convert the size 
+if [ $TOTAL_BYTES -ge 1073741824 ]; then
+    TOTAL_SIZE=$(echo "scale=2; $TOTAL_BYTES/1073741824" | bc) && TOTAL_UNIT="GB"
+elif [ $TOTAL_BYTES -ge 1048576 ]; then
+    TOTAL_SIZE=$(echo "scale=2; $TOTAL_BYTES/1048576" | bc) && TOTAL_UNIT="MB"
+elif [ $TOTAL_BYTES -ge 1024 ]; then
+    TOTAL_SIZE=$(echo "scale=2; $TOTAL_BYTES/1024" | bc) && TOTAL_UNIT="KB"
+else
+    TOTAL_SIZE=$TOTAL_BYTES && TOTAL_UNIT="B"
+fi
+
+echo "The total data size of 'generation' to be transferred is ${TOTAL_SIZE}${TOTAL_UNIT}."
+
+read -p "Proceed with 'generation' transfer? (y/n) " confirm_gen_transfer
+if [[ "$confirm_gen_transfer" == "y" ]]; then
+    RSYNC_CMD="rsync -avz --info=progress2 --no-whole-file -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no' $GENERATION_SOURCE $GENERATION_DESTINATION"
+    echo "Executing: $RSYNC_CMD"
+    eval $RSYNC_CMD
+
+    if [ $? -eq 0 ]; then
+        echo "Transfer of 'generation' complete!"
     else
-        TOTAL_SIZE=$TOTAL_BYTES && TOTAL_UNIT="B"
-    fi
-
-    echo "The total data size of 'generation' to be transferred is ${TOTAL_SIZE}${TOTAL_UNIT}."
-
-    read -p "Proceed with 'generation' transfer? (y/n) " confirm_gen_transfer
-    if [[ "$confirm_gen_transfer" == "y" ]]; then
-        RSYNC_CMD="rsync -avz --info=progress2 --no-whole-file -e 'ssh -T -c aes128-gcm@openssh.com -o Compression=no' $GENERATION_SOURCE $GENERATION_DESTINATION"
-        echo "Executing: $RSYNC_CMD"
-        eval $RSYNC_CMD
-
-        if [ $? -eq 0 ]; then
-            echo "Transfer of 'generation' complete!"
-        else
-            echo "'generation' transfer failed!"
-        fi
-    else
-        echo "'generation' transfer aborted."
+        echo "'generation' transfer failed!"
     fi
 else
-    echo "Skipping 'generation' transfer."
+    echo "'generation' transfer aborted."
 fi
+

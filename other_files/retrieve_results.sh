@@ -5,7 +5,7 @@ declare -A CLUSTER_GLOBALSCRATCH=(
     ["lemaitre4"]="/globalscratch/ulb/parts/smalki"
     ["hercules"]="/workdir/smalki/"
     ["nic5"]="/scratch/ulb/parts/smalki/"
-    ["dragon2"]="/scratch/dragon2/smalki"
+    ["dragon2"]="/home/ulb/parts/smalki"
 )
 
 # Check the cluster name

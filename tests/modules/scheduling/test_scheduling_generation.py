@@ -176,7 +176,7 @@ def prepare_input_data_dic_manual_3(scheduling_algorithm, non_preemption_time_va
     assignment_parameters = {
         "assignment_id": "assignment",
         "taskset_id": "taskset",
-        "sorting_criterion": "utilization_descending",
+        "sorting_criterion": "utilization_ascending",
         "assignment_method": "WorstFitAssigner",
         "number_of_cores": 2,
         "assignment_options": {

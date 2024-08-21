@@ -39,6 +39,8 @@ process_file() {
     stop_type="UserRequest"
   elif grep -q "CANCELLED AT .* DUE TO SYSTEM FAILURE" "$file_path"; then
     stop_type="SystemFailure"
+  elif grep -q "Detected 1 oom_kill event" "$file_path"; then
+    stop_type="OOMKill"
   else
     stop_type="OtherReason"
   fi

@@ -51,7 +51,7 @@ scheduling_options_non_preemption_time_variant2 = [
 
 scheduling_algorithms = scheduling_algorithms_with_combination + \
     scheduling_algorithms_without_combination
-experiences = ["manual_1", "manual_2", "generate_1"]
+experiences = ["manual_1", "manual_2", "manual_3", "generate_1"]
 
 
 def prepare_input_data_taskset_manual_1():
@@ -85,6 +85,22 @@ def prepare_input_data_taskset_manual_2():
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0]
     ]
+    utilization = [w / p for w, p in zip(wcet, period)]
+
+    return taskset_id, taskset_action, wcet, deadline, period, interference, utilization
+
+
+def prepare_input_data_taskset_manual_3():
+    taskset_id = "taskset_manual_3"
+    taskset_action = "manual"
+    wcet = [1, 3]
+    deadline = [4, 5]
+    period = [4, 5]
+    interference = [
+        [0, 0],
+        [0, 0]
+    ]
+
     utilization = [w / p for w, p in zip(wcet, period)]
 
     return taskset_id, taskset_action, wcet, deadline, period, interference, utilization
@@ -135,7 +151,7 @@ def prepare_input_data_dic(scheduling_algorithm, non_preemption_time_variant_2):
     assignment_parameters = {
         "assignment_id": "assignment",
         "taskset_id": "taskset",
-        "sorting_criterion": "utilization_descending",
+        "sorting_criterion": "utilization_ascending",
         "assignment_method": "WorstFitAssigner",
         "number_of_cores": 2,
         "assignment_options": {
@@ -161,6 +177,8 @@ def prepare_input_data(experience, scheduling_algorithm, non_preemption_time_var
         taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_1()
     elif experience == "manual_2":
         taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_2()
+    elif experience == "manual_3":
+        taskset_id, taskset_action, wcet, deadline, period, interference, utilization = prepare_input_data_taskset_manual_3()
     elif experience == "generate_1":
         taskset_id, taskset_action, taskset_repetition, probability_factor, max_utilization, tasks_per_taskset, interference_factor, taskset_options = prepare_input_data_taskset_generate_1()
 
@@ -238,6 +256,8 @@ def verify_assignment(assignment):
 
 def verify_scheduling(scheduling, expected_scheduling):
     # assert scheduling == expected_scheduling
+    print(scheduling)
+    print(expected_scheduling)
     for result, exp_s in zip(scheduling, expected_scheduling):
         assert result == exp_s
 

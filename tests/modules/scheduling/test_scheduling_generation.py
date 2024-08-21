@@ -151,7 +151,32 @@ def prepare_input_data_dic(scheduling_algorithm, non_preemption_time_variant_2):
     assignment_parameters = {
         "assignment_id": "assignment",
         "taskset_id": "taskset",
-        "sorting_criterion": "utilization_ascending",
+        "sorting_criterion": "utilization_descending",
+        "assignment_method": "WorstFitAssigner",
+        "number_of_cores": 2,
+        "assignment_options": {
+
+        },
+    }
+    scheduling_parameters = {
+        "assignment_id": "assignment",
+        "taskset_id": "taskset",
+        "scheduling_id": "scheduling",
+        "scheduling_algorithm": scheduling_algorithm,
+        "scheduling_options": {
+            "non_preemption_time_variant2": non_preemption_time_variant_2,
+            "test_mode": True,
+            "seed": seed
+        }
+    }
+    return assignment_parameters, scheduling_parameters
+
+
+def prepare_input_data_dic_manual_3(scheduling_algorithm, non_preemption_time_variant_2):
+    assignment_parameters = {
+        "assignment_id": "assignment",
+        "taskset_id": "taskset",
+        "sorting_criterion": "utilization_descending",
         "assignment_method": "WorstFitAssigner",
         "number_of_cores": 2,
         "assignment_options": {
@@ -190,6 +215,9 @@ def prepare_input_data(experience, scheduling_algorithm, non_preemption_time_var
             taskset_repetition, probability_factor, max_utilization, tasks_per_taskset, interference_factor, taskset_options)
     assignment_parameters, scheduling_parameters = prepare_input_data_dic(
         scheduling_algorithm, non_preemption_time_variant_2)
+    if experience == "manual_3":
+        assignment_parameters, scheduling_parameters = prepare_input_data_dic_manual_3(
+            scheduling_algorithm, non_preemption_time_variant_2)
     return taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters
 
 

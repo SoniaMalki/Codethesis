@@ -155,11 +155,5 @@ generation/*
 generations/*
 generation_*/*
 other_files/output_parameters.txt
-modele_rhma_pulp_0.lp
-modele_rhma_pulp_1.lp
-modele_rhma_pulp_2.lp
-modele_rhma_pulp_3.lp
-modele_rhma_gurobipy_0.lp
-modele_rhma_gurobipy_1.lp
-modele_rhma_gurobipy_2.lp
-modele_rhma_gurobipy_3.lp
+modele_rhma_pulp_*.lp
+modele_rhma_gurobipy_*.lp

@@ -444,6 +444,20 @@ class Rhma:
             results["constraint_22"], results["constraint_23"], results["constraint_24"]
         )
 
+    def add_constraints(self, prob, constraints_dict):
+        for constraint_name, constraints in constraints_dict.items():
+            constraint_id = 0
+            num_constraints = len(constraints)
+            # Détermine le nombre de zéros nécessaires pour l'indexation
+            zero_padding = len(str(num_constraints - 1))
+
+            while constraint_id < num_constraints:
+                # Formate le constraint_id avec le bon nombre de zéros
+                formatted_id = f"{constraint_id:0{zero_padding}}"
+                prob += (constraints[constraint_id],
+                         f"{constraint_name}_{formatted_id}")
+                constraint_id += 1
+
     def schedule(self):
         print(
             f"-------------\nSolving RHMA")
@@ -460,24 +474,21 @@ class Rhma:
             constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24 = self.createLpConstraints(
                 h, x, m, w)
 
-            for constraint in constraint_16:
-                prob += constraint
-            for constraint in constraint_17:
-                prob += constraint
-            for constraint in constraint_18:
-                prob += constraint
-            for constraint in constraint_19:
-                prob += constraint
-            for constraint in constraint_20:
-                prob += constraint
-            for constraint in constraint_21:
-                prob += constraint
-            for constraint in constraint_22:
-                prob += constraint
-            for constraint in constraint_23:
-                prob += constraint
-            for constraint in constraint_24:
-                prob += constraint
+            # Exemple d'utilisation avec votre série de contraintes
+            constraints_dict = {
+                "constraint_16": constraint_16,
+                "constraint_17": constraint_17,
+                "constraint_18": constraint_18,
+                "constraint_19": constraint_19,
+                "constraint_20": constraint_20,
+                "constraint_21": constraint_21,
+                "constraint_22": constraint_22,
+                "constraint_23": constraint_23,
+                "constraint_24": constraint_24
+            }
+
+            # Appel de la fonction
+            self.add_constraints(prob, constraints_dict)
 
             self.assert_constraints_attributes()
             # Objective function

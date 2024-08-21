@@ -212,7 +212,7 @@ class Rhma:
 
         x = LpVariable.dicts(
             "x",
-            [(i, a, j, t)
+            [(i, a, j, int(t))
              for i in range(len(self.taskset))
              for a in self.S_i_h[i, h]
              for j, t in product(
@@ -518,7 +518,7 @@ class Rhma:
                             for j in range(self.number_of_cores):
                                 if x[i, a, j, t].varValue == 1:
                                     busy_period_schedule[j].append(
-                                        (t, i, a))
+                                        (int(t), i, a))
                                     total_utilization += 1
 
                 busy_period_schedule = Scheduling(

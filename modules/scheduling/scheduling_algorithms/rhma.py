@@ -10,7 +10,8 @@ from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.scheduling_algorithms.combined_scheduler import CombinedScheduler
 from modules.utils.busy_period import BusyPeriod
 
-#tourne
+# tourne
+
 
 def execute_serialized_func(serialized_self, func_name, *args):
     obj = dill.loads(serialized_self)
@@ -501,6 +502,8 @@ class Rhma:
 
             print(
                 f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
+            prob.writeLP("modele_rhma_pulp.lp")
+            # exit()
             prob.solve(self.solver)
 
             # Checking if a solution is found

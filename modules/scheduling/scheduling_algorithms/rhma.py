@@ -502,7 +502,7 @@ class Rhma:
 
             print(
                 f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
-            prob.writeLP(f"modele_rhma_gurobipy_{h}.lp")
+            prob.writeLP(f"modele_rhma_pulp_{h}.lp")
             # exit()
             prob.solve(self.solver)
 

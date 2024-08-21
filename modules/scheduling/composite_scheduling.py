@@ -39,9 +39,12 @@ class CompositeScheduling:
     def __eq__(self, other):
         if not isinstance(other, CompositeScheduling):
             return NotImplemented
-        return (self.scheduler_name == other.scheduler_name and
-                self.success == other.success and
-                self.schedules == other.schedules)
+        scheduler_name_same = self.scheduler_name == other.scheduler_name
+        success_same = self.success == other.success
+        schedule_same = self.schedules == other.schedules
+        return (scheduler_name_same and
+                success_same and
+                schedule_same)
 
     def add_performances(self, computation_time, actual_utilization, theoritical_utilization):
         self.computation_time = computation_time

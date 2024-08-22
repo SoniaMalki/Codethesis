@@ -65,6 +65,7 @@ module load gurobi/gurobi1102
 module load Python/3.9.6-GCCcore-11.2.0
 module load GLPK/5.0-GCCcore-11.2.0
 module load Gurobi-Optimizer/9.5.1
+#SBATCH --exclude=her2-w120
 """,
             "nic": """
 module load releases/2022b
@@ -239,6 +240,7 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
 #SBATCH --ntasks=1
 #SBATCH --time={self.batch_slurm_time}
 #SBATCH --mem-per-cpu={self.batch_slurm_mem}
+{self.modules}
 
 # Séparer par des espaces
 # Use sorted_batch_configs
@@ -514,6 +516,7 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
 #SBATCH --ntasks=1
 #SBATCH --time={self.master_slurm_time}
 #SBATCH --mem-per-cpu={self.master_slurm_mem}
+{self.modules}
 """
                 )
 
@@ -666,6 +669,7 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
 #SBATCH --ntasks=1
 #SBATCH --time={self.full_pipeline_time}
 #SBATCH --mem-per-cpu={self.full_pipeline_mem}
+{self.modules}
 
 MASTER_DIR="{self.master_dir}"
 

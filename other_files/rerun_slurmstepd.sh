@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Nombre de jobs à lancer simultanément
-MAX_JOBS=50
+MAX_JOBS=10000
 
 # Nom du suffixe, de l'expérience et type d'erreur, passés en arguments
 SUFFIXE=$1

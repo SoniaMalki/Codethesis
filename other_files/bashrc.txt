@@ -26,7 +26,7 @@ if [[ $- == *i* ]]; then
         export GLOBALSCRATCH=$HOME
         cd $HOME/Codethesis
     fi
-    source $GLOBALSCRATCH/myenv/bin/activate
+    #source $GLOBALSCRATCH/myenv/bin/activate
 fi
 
 
@@ -36,6 +36,7 @@ export GENERATION_DIR="$GLOBALSCRATCH/generation"
 export PATH=$PATH:$CODETHESIS/other_files
 export EMPTY_DIR="$HOME/empty_dir"
 export WALLTIME="2-00:00:00"
+export ENV="source $GLOBALSCRATCH/myenv/bin/activate"
 
 # Définition des variables pour les tailles de colonnes
 export PID_COL_SIZE=8
@@ -46,7 +47,7 @@ export NODES_COL_SIZE=2
 export NODELIST_COL_SIZE=20
 
 #----------Alias---------------------------------
-
+alias env=$ENV
 alias gen='generate_and_submit'
 alias t20='tail_print 20'
 alias t100='tail_print 100'

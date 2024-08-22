@@ -2,24 +2,14 @@ import math
 import dill
 from pathlib import Path
 from itertools import product
-from pulp import *
 import time
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import numpy as np
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.scheduling_algorithms.combined_scheduler import CombinedScheduler
 from modules.utils.busy_period import BusyPeriod
-
-# tourne
-
-
-def execute_serialized_func(serialized_self, func_name, *args):
-    obj = dill.loads(serialized_self)
-    # Vérification après désérialisation
-    assert obj.busy_periods is not None, "busy_periods is None after deserialization"
-    assert obj.S_i_h is not None, "S_i_h is None after deserialization"
-    func = getattr(obj, func_name)
-    return func(*args)
+import gurobipy as gp
+from gurobipy import GRB  # Importe le module gurobipy
 
 
 class Rhma:
@@ -79,15 +69,17 @@ class Rhma:
             f"Rhma utilisant le solveur : {self.solver_name} avec thread {self.threads}")
 
         if self.solver_name == "gurobi":
-            self.solver = GUROBI_CMD(msg=0, options=[
-                ("OutputFlag", 0),
-                ("Seed", self.seed)
-            ] if self.test_mode else [("OutputFlag", 0), ("Threads", self.threads)])
-        elif self.solver_name == "glpk":
-            self.solver = GLPK_CMD(msg=0)
+            self.param = []
+            if self.test_mode:
+                self.param.append(('OutputFlag', 0))
+                self.param.append(('Seed', self.seed))
+
+            else:
+                self.param.append(('OutputFlag', 0))
+                self.param.append(('Threads', self.threads))
         else:
             raise ValueError(
-                f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi' ou 'glpk'.")
+                f"Solveur non supporté: {self.solver_name}. Choisissez 'gurobi'.")
 
     def output_parameters_to_str(self):
         output_res = "---------------------\n Parameters \n---------------------\n"
@@ -202,36 +194,23 @@ class Rhma:
 
         print(f"----- Creating LP variables for busy period {h} -----")
 
-        w = LpVariable.dicts(
-            "w",
-            [(i, a) for i in range(len(self.taskset))
-             for a in self.S_i_h[i, h]],
-            lowBound=0,
-            cat='Integer'
-        )
+        w = {(i, a): self.model.addVar(lb=0, vtype=GRB.INTEGER, name=f'w_{i}_{a}')
+             for i in range(len(self.taskset)) for a in self.S_i_h[i, h]}
 
-        x = LpVariable.dicts(
-            "x",
-            [(i, a, j, int(t))
+        x = {(i, a, j, t): self.model.addVar(vtype=GRB.BINARY, name=f'x_{i}_{a}_{j}_{t}')
              for i in range(len(self.taskset))
              for a in self.S_i_h[i, h]
              for j, t in product(
-                range(self.number_of_cores),
-                self.T_h[h]
-            )
-            ],
-            cat='Binary'
+                 range(self.number_of_cores),
+                 self.T_h[h]
         )
+        }
 
-        m = LpVariable.dicts(
-            "m",
-            [(i, a, k, b)
+        m = {(i, a, k, b): self.model.addVar(vtype=GRB.BINARY, name=f'm_{i}_{a}_{k}_{b}')
              for i, k in product(range(len(self.taskset)), repeat=2)
              for a in self.S_i_h[i, h]
              for b in self.S_i_h[k, h]
-             ],
-            cat='Binary'
-        )
+             }
 
         print("LP Variables created.")
         return x, m, w
@@ -292,16 +271,16 @@ class Rhma:
         for i, activations in s_i_h_for_h.items():
             for j in range(self.number_of_cores):
                 if activations:
-                    left_side = lpSum(x[i, a, j, t]
-                                      for a in activations for t in r_i_a_h_for_h[i][a])
+                    left_side = gp.quicksum(x[i, a, j, t]
+                                            for a in activations for t in r_i_a_h_for_h[i][a])
                     right_side = len(activations) * \
                         self.taskset.wcet[i] * self.o_i_j[i, j]
 
-                    right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i, j]
-                                        for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i, j] != self.o_i_j[k, j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
-                                        for a in activations for b in b_activations)
-
+                    right_side += gp.quicksum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i, j]
+                                              for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i, j] != self.o_i_j[k, j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                                              for a in activations for b in b_activations)
                     constraint_18.append(left_side == right_side)
+
         print(f"----- Constraint 18 created for busy period {h} -----")
         return constraint_18
 
@@ -313,13 +292,13 @@ class Rhma:
             for a in activations:
                 for j in range(self.number_of_cores):
                     if activations:
-                        left_side = lpSum(x[i, a, j, t]
-                                          for t in r_i_a_h_for_h[i][a])
+                        left_side = gp.quicksum(x[i, a, j, t]
+                                                for t in r_i_a_h_for_h[i][a])
                         right_side = self.taskset.wcet[i] * self.o_i_j[i, j]
 
-                        right_side += lpSum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i, j]
-                                            for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i, j] != self.o_i_j[k, j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
-                                            for b in b_activations)
+                        right_side += gp.quicksum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i, j]
+                                                  for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i, j] != self.o_i_j[k, j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
+                                                  for b in b_activations)
 
                         constraint_19.append(left_side == right_side)
         print(f"----- Constraint 19 created for busy period {h} -----")
@@ -332,8 +311,8 @@ class Rhma:
         for i, activations in s_i_h_for_h.items():
             for a in activations:
                 for t in self.T_h[h]:
-                    left_side = lpSum(t * x[i, a, j, t]
-                                      for j in range(self.number_of_cores))
+                    left_side = gp.quicksum(t * x[i, a, j, t]
+                                            for j in range(self.number_of_cores))
                     right_side = self.d_i_a[i][a] - 1
                     constraint_20.append(left_side <= right_side)
         print(f"----- Constraint 20 created for busy period {h} -----")
@@ -345,7 +324,7 @@ class Rhma:
         constraint_21 = []
         for j, t in product(range(self.number_of_cores), self.T_h[h]):
             constraint_21.append(
-                lpSum(x[i, a, j, t] for i in s_i_h_for_h for a in s_i_h_for_h[i]) <= 1)
+                gp.quicksum(x[i, a, j, t] for i in s_i_h_for_h for a in s_i_h_for_h[i]) <= 1)
         print(f"----- Constraint 21 created for busy period {h} -----")
         return constraint_21
 
@@ -410,39 +389,32 @@ class Rhma:
             self.T_h) > 0, "T_h should not be None or empty"
         assert self.d_i_a is not None, "d_i_a should not be None"
         assert self.solver_name in [
-            "gurobi", "glpk"], "solver_name should be 'gurobi' or 'glpk'"
-        assert self.solver is not None, "solver should not be None"
+            "gurobi"], "solver_name should be 'gurobi'"
+        assert self.model is not None, "model should not be None"
 
     def createLpConstraints(self, h, x, m, w):
         s_i_h_for_h = self.extract_s_i_h_for_h(h)
         r_i_a_h_for_h = self.extract_r_i_a_h_for_h(h, s_i_h_for_h)
-        serialized_self = dill.dumps(self)
 
         # Parallélisation de la création des contraintes
-        with ThreadPoolExecutor(max_workers=8) as executor:
+        with ThreadPoolExecutor(max_workers=self.threads) as executor:
             futures = {
-                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_16', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_16",
-                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_17', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_17",
-                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_18', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_18",
-                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_19', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_19",
-                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_20', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_20",
-                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_21', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_21",
-                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_22', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_22",
-                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_23', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_23",
-                executor.submit(execute_serialized_func, serialized_self, 'create_constraint_24', s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_24",
+                executor.submit(self.create_constraint_16, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_16",
+                executor.submit(self.create_constraint_17, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_17",
+                executor.submit(self.create_constraint_18, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_18",
+                executor.submit(self.create_constraint_19, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_19",
+                executor.submit(self.create_constraint_20, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_20",
+                executor.submit(self.create_constraint_21, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_21",
+                executor.submit(self.create_constraint_22, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_22",
+                executor.submit(self.create_constraint_23, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_23",
+                executor.submit(self.create_constraint_24, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_24",
             }
 
             results = {key: future.result() for future, key in futures.items()}
 
-        # # Print results
-        # for key in results:
-        #     print(f"{key, results[key]} generated.")
-
-        return (
-            results["constraint_16"], results["constraint_17"], results["constraint_18"],
-            results["constraint_19"], results["constraint_20"], results["constraint_21"],
-            results["constraint_22"], results["constraint_23"], results["constraint_24"]
-        )
+        return (results["constraint_16"], results["constraint_17"], results["constraint_18"],
+                results["constraint_19"], results["constraint_20"], results["constraint_21"],
+                results["constraint_22"], results["constraint_23"], results["constraint_24"])
 
     def add_constraints(self, prob, constraints_dict):
         for constraint_name, constraints in constraints_dict.items():
@@ -454,8 +426,8 @@ class Rhma:
             while constraint_id < num_constraints:
                 # Formate le constraint_id avec le bon nombre de zéros
                 formatted_id = f"{constraint_id:0{zero_padding}}"
-                prob += (constraints[constraint_id],
-                         f"{constraint_name}_{formatted_id}")
+                self.model.addConstr(
+                    constraints[constraint_id], name=f"{constraint_name}_{formatted_id}")
                 constraint_id += 1
 
     def schedule(self):
@@ -465,10 +437,12 @@ class Rhma:
         schedule = BusyPeriod()
 
         for h, busy_period in enumerate(self.busy_periods):
-            prob = LpProblem(
-                f"RHMA_Busy_Period_{h}", LpMinimize)
             print(
                 f"-------------\nCreating variables for BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}. total hyperperiod={self.hyperperiod}")
+            # Création du modèle
+            self.model = gp.Model(f"RHMA_Busy_Period_{h}")
+            for param in self.param:
+                self.model.setParam(*param)
 
             x, m, w = self.createLpVariables(h)
             constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24 = self.createLpConstraints(
@@ -488,39 +462,37 @@ class Rhma:
             }
 
             # Appel de la fonction
-            self.add_constraints(prob, constraints_dict)
+            self.add_constraints(self.model, constraints_dict)
 
             self.assert_constraints_attributes()
             # Objective function
-            interference_term = lpSum(m[i, a, k, b] for i in range(len(self.taskset)) for k in range(
+            interference_term = gp.quicksum(m[i, a, k, b] for i in range(len(self.taskset)) for k in range(
                 len(self.taskset)) for a in self.S_i_h[i, h] for b in self.S_i_h[k, h])
 
-            response_time_term = lpSum(
+            response_time_term = gp.quicksum(
                 (1 / self.taskset.deadline[i]) * w[i, a] for i in range(len(self.taskset)) for a in self.S_i_h[i, h])
-
             # if maxI == 0
             if self.maxI != 0:
                 interference_term /= self.maxI
             else:
                 interference_term = 0
 
-            prob += interference_term + response_time_term
+            # prob += interference_term + response_time_term
+            self.model.setObjective(
+                interference_term + response_time_term, GRB.MINIMIZE)
 
             if self.solving_time_limit_MILP is not None and type(self.solving_time_limit_MILP) == int:
-                if self.solver_name == "gurobi":
-                    self.solver.options.append(
-                        ("TimeLimit", self.solving_time_limit_MILP))
+                self.model.setParam(GRB.Param.TimeLimit,
+                                    self.solving_time_limit_MILP)
 
             print(
                 f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
-            prob.writeLP(f"modele_rhma_pulp_{h}.lp")
-            prob.writeMPS(f"modele_rhma_pulp_{h}.mps")
-
-            # exit()
-            prob.solve(self.solver)
+            self.model.write(f"modele_rhma_gurobipy_{h}.lp")
+            # self.model.write(f"modele_rhma_gurobipy_{h}.mps")
+            self.model.optimize()
 
             # Checking if a solution is found
-            if prob.status == LpStatusOptimal:
+            if self.model.status == GRB.OPTIMAL:
                 total_utilization = 0
                 busy_period_schedule = [[]
                                         for _ in range(self.number_of_cores)]
@@ -529,9 +501,9 @@ class Rhma:
                     for i in range(len(self.taskset)):
                         for a in self.S_i_h[i, h]:
                             for j in range(self.number_of_cores):
-                                if x[i, a, j, t].varValue == 1:
+                                if x[i, a, j, t].X == 1:
                                     busy_period_schedule[j].append(
-                                        (int(t), i, a))
+                                        (t, i, a))
                                     total_utilization += 1
 
                 busy_period_schedule = Scheduling(

@@ -157,3 +157,5 @@ generation_*/*
 other_files/output_parameters.txt
 modele_rhma_pulp_*.lp
 modele_rhma_gurobipy_*.lp
+modele_rhma_pulp_*.mps
+modele_rhma_gurobipy_*.mps

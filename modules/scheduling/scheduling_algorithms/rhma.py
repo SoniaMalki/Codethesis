@@ -411,7 +411,7 @@ class Rhma:
             }
 
             results = {key: future.result() for future, key in futures.items()}
-
+        print("----Finished creating constraint and combining----")
         return (results["constraint_16"], results["constraint_17"], results["constraint_18"],
                 results["constraint_19"], results["constraint_20"], results["constraint_21"],
                 results["constraint_22"], results["constraint_23"], results["constraint_24"])
@@ -462,22 +462,27 @@ class Rhma:
             }
 
             # Appel de la fonction
+            print("----Adding constraints to the model----")
             self.add_constraints(self.model, constraints_dict)
+            print("----Finished adding the constraint to the model----")
 
             self.assert_constraints_attributes()
+
+            print("----Creating objective function----")
             # Objective function
             interference_term = gp.quicksum(m[i, a, k, b] for i in range(len(self.taskset)) for k in range(
                 len(self.taskset)) for a in self.S_i_h[i, h] for b in self.S_i_h[k, h])
 
             response_time_term = gp.quicksum(
                 (1 / self.taskset.deadline[i]) * w[i, a] for i in range(len(self.taskset)) for a in self.S_i_h[i, h])
-            # if maxI == 0
+
             if self.maxI != 0:
                 interference_term /= self.maxI
             else:
                 interference_term = 0
+            print("----Objective function created----")
 
-            # prob += interference_term + response_time_term
+            print("----Adding objective function to the model----")
             self.model.setObjective(
                 interference_term + response_time_term, GRB.MINIMIZE)
 
@@ -485,11 +490,15 @@ class Rhma:
                 self.model.setParam(GRB.Param.TimeLimit,
                                     self.solving_time_limit_MILP)
 
+            print("----Added objective function to the model----")
+
             print(
                 f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
             # self.model.write(f"modele_rhma_gurobipy_{h}.lp")
             # self.model.write(f"modele_rhma_gurobipy_{h}.mps")
             self.model.optimize()
+            print(
+                f"-------------\nFinished BP solving-------------\n")
 
             # Checking if a solution is found
             if self.model.status == GRB.OPTIMAL:

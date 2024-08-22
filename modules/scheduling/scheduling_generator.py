@@ -132,6 +132,9 @@ class SchedulingGenerator:
         for busy_period in busy_periods:
             scheduling.add_schedule(schedule=busy_period)
 
+        if len(busy_periods) == 0:
+            scheduling.success = 0
+
         if not scheduling.success:
             computation_time = numpy.nan
             actual_utilization = numpy.nan

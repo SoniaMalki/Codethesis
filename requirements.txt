@@ -6,3 +6,4 @@ PuLP
 pytest
 seaborn
 sympy
+gurobipy

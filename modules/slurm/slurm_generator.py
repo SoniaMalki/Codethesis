@@ -62,10 +62,11 @@ module load tis/2018.01
 module load gurobi/gurobi1102
 """,
             "her": """
+#SBATCH --exclude=her2-w120
 module load Python/3.9.6-GCCcore-11.2.0
 module load GLPK/5.0-GCCcore-11.2.0
 module load Gurobi-Optimizer/9.5.1
-#SBATCH --exclude=her2-w120
+
 """,
             "nic": """
 module load releases/2022b
@@ -149,8 +150,6 @@ done
 #SBATCH --cpus-per-task={optimal_threads}
 #SBATCH --time={job_time}
 #SBATCH --mem-per-cpu={slurm_memory}
-
-# Charger les modules nécessaires
 {self.modules}
 source $GLOBALSCRATCH/myenv/bin/activate
 python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_key}
@@ -366,8 +365,6 @@ done
 #SBATCH --ntasks=1
 #SBATCH --time={self.analyze_slurm_time}
 #SBATCH --mem-per-cpu={self.analyze_slurm_mem}
-
-# Charger les modules nécessaires
 {self.modules}
 
 # Exécuter le script d'analyse

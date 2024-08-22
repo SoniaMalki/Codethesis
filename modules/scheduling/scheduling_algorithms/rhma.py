@@ -487,7 +487,7 @@ class Rhma:
 
             print(
                 f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
-            self.model.write(f"modele_rhma_gurobipy_{h}.lp")
+            # self.model.write(f"modele_rhma_gurobipy_{h}.lp")
             # self.model.write(f"modele_rhma_gurobipy_{h}.mps")
             self.model.optimize()
 

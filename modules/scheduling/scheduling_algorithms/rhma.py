@@ -533,6 +533,8 @@ class Rhma:
                     schedule.add_period(scheduling=self.busy_periods[h])
                     total_utilization = self.busy_periods[h].total_utilization
 
+            if type(self.actual_utilization) == float:
+                self.actual_utilization = [None]
             self.actual_utilization[h] = total_utilization/self.hyperperiod
 
         print("----- RHMA Scheduling Completed -----")

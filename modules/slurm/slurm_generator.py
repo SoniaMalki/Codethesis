@@ -24,8 +24,8 @@ class SlurmGenerator:
         # Centralized SLURM Parameters
         self.default_slurm_time = "2-00:00:00"
         self.default_slurm_mem = "1G"
-        self.analyze_slurm_time = "01:00:00"
-        self.analyze_slurm_mem = "500M"
+        self.analyze_slurm_time = "2-00:00:00"
+        self.analyze_slurm_mem = "4G"
         self.master_slurm_time = "2-00:00:00"
         self.master_slurm_mem = "100M"
         self.batch_slurm_time = "2-00:00:00"

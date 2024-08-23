@@ -1,8 +1,10 @@
+import matplotlib
+import seaborn as sns
+import numpy as np
 import os
 from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt
-import numpy as np
-import seaborn as sns
+matplotlib.use('Agg')
 
 
 class AssignmentAnalyzer:

@@ -20,7 +20,6 @@ class ResultAnalyzer:
         self.loader = ResultLoader(
             db_path=db_path, experience_id=experience_id)
 
-        print("Loading results from database...")
         self.taskset_sets, self.assignment_sets, self.scheduling_sets = self.loader.load_results()
 
         print("Converting results to DataFrame...")
@@ -87,7 +86,7 @@ class ResultAnalyzer:
         print("Analyzing citta acceptance rate...")
         analyzer = CittaAcceptanceRateAnalyzer(self.df, self.current_path)
         analyzer.analyze()
-        print("Citta acceptance rate  analysis completed.")
+        print("Citta acceptance rate analysis completed.")
 
     def analyze_rhma_acceptance_rate(self):
         print("Analyzing Rhma acceptance rate...")

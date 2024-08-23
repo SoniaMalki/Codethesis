@@ -17,10 +17,10 @@ class ResultLoader:
         print("ResultLoader initialized successfully")
 
     def load_data(self, file_path):
-        print(f"Loading data from {file_path}")
+        # print(f"Loading data from {file_path}")
         with open(file_path, "rb") as f:
             data = pickle.load(f)
-        print(f"Data loaded from {file_path}")
+        # print(f"Data loaded from {file_path}")
         return data
 
     def load_results(self):
@@ -38,8 +38,8 @@ class ResultLoader:
                 file_path = result_directory / \
                     (config_type + "s") / f"{config_id}.pkl"
                 if file_path.exists():
-                    print(
-                        f"Loading {config_type} data for ID: {config_id}")
+                    # print(
+                    #     f"Loading {config_type} data for ID: {config_id}")
                     data_obj = self.load_data(file_path)
                     if config_type == "taskset":
                         taskset_sets.append(data_obj)

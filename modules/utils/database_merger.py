@@ -61,58 +61,37 @@ class DatabaseMerger:
             primary_key_column = columns[0]
             primary_key_value = row[0]
 
-            # Get the indices of the relevant columns in the v2 row
+            # Get the index of the 'result_file_path' in the v2 row
             result_file_path_index = columns.index('result_file_path')
-            cluster_index = columns.index('cluster')
-            threads_index = columns.index('threads')
-            slurm_time_index = columns.index('slurm_time')
-            slurm_memory_index = columns.index('slurm_memory')
 
             existing_row = self.db_utils_merged._execute_with_retry(
-                f"SELECT result_file_path, cluster, threads, slurm_time, slurm_memory FROM {table_name} WHERE {primary_key_column} = ?",
+                f"SELECT * FROM {table_name} WHERE {primary_key_column} = ?",
                 (primary_key_value,),
             )
 
             if existing_row:
+                # Existing row in merged database
                 existing_row = existing_row[0]
-                # Row exists, update columns with non-empty values from v2
-                merged_result_file_path, merged_cluster, merged_threads, merged_slurm_time, merged_slurm_memory = existing_row
+                existing_result_file_path = existing_row[result_file_path_index]
 
-                # Choose the non-empty 'result_file_path', prioritizing v2 if both are non-empty
-                if row[result_file_path_index] and not merged_result_file_path:
-                    self.db_utils_merged._execute_with_retry(
-                        f"UPDATE {table_name} SET result_file_path = ? WHERE {primary_key_column} = ?",
-                        (row[result_file_path_index], primary_key_value),
+                # Check if the 'result_file_path' in v2 is non-empty
+                if row[result_file_path_index]:
+                    # 'result_file_path' in v2 is non-empty, replace the entire row in the merged database
+                    update_query = (
+                        f"UPDATE {table_name} SET "
+                        + ", ".join([f"{col} = ?" for col in columns])
+                        + f" WHERE {primary_key_column} = ?"
                     )
-
-                # Update cluster if v2 value is not empty
-                if row[cluster_index]:
                     self.db_utils_merged._execute_with_retry(
-                        f"UPDATE {table_name} SET cluster = ? WHERE {primary_key_column} = ?",
-                        (row[cluster_index], primary_key_value),
-                    )
-
-                # Update threads if v2 value is not empty
-                if row[threads_index] is not None:  # Use 'is not None' for threads as it can be 0
-                    self.db_utils_merged._execute_with_retry(
-                        f"UPDATE {table_name} SET threads = ? WHERE {primary_key_column} = ?",
-                        (row[threads_index], primary_key_value),
-                    )
-
-                # Update slurm_time if v2 value is not empty
-                if row[slurm_time_index]:
-                    self.db_utils_merged._execute_with_retry(
-                        f"UPDATE {table_name} SET slurm_time = ? WHERE {primary_key_column} = ?",
-                        (row[slurm_time_index], primary_key_value),
-                    )
-
-                # Update slurm_memory if v2 value is not empty
-                if row[slurm_memory_index]:
-                    self.db_utils_merged._execute_with_retry(
-                        f"UPDATE {table_name} SET slurm_memory = ? WHERE {primary_key_column} = ?",
-                        (row[slurm_memory_index], primary_key_value),
-                    )
-
+                        update_query, (*row, primary_key_value))
+                elif not existing_result_file_path:
+                    # 'result_file_path' in v2 is empty, but only merge other columns if 'result_file_path' in merged DB is empty
+                    for idx, column in enumerate(columns):
+                        if idx != result_file_path_index and row[idx] is not None:
+                            self.db_utils_merged._execute_with_retry(
+                                f"UPDATE {table_name} SET {column} = ? WHERE {primary_key_column} = ?",
+                                (row[idx], primary_key_value)
+                            )
             else:
                 # Row doesn't exist, insert the new row from v2
                 insert_query = (

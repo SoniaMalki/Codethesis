@@ -2,14 +2,14 @@
   "full_experience": {
     "config_parameters": {
       "taskset_parameters": {
-        "taskset_repetitions": [10],
+        "taskset_repetitions": [1],
         "tasks_per_taskset": [4, 10, 20],
         "interference_factors": [0.2, 0.8],
         "probability_factors": [0.1, 0.4],
         "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
         "deadline_options": ["eq_period"],
         "prime_exponent_hyperperiod_combinations": [
-          [1000, 11, 5]
+          [500, 11, 5]
         ],
         "number_of_cores_list": [2, 4, 8]
       },

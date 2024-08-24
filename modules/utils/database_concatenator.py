@@ -27,7 +27,7 @@ class DatabaseConcatenator:
     def find_matching_taskset_id(self, taskset):
         """Recherche un taskset correspondant dans big.db."""
         print(
-            f"Searching for matching Taskset: {taskset[2:]}")  
+            f"Searching for matching Taskset: {taskset[2:]}")
         self.cursor.execute("""
             SELECT taskset_id FROM Tasksets WHERE
                 taskset_repetition = ? AND
@@ -40,7 +40,7 @@ class DatabaseConcatenator:
                 max_prime = ? AND
                 gen_limit_exponent = ? AND
                 number_of_cores = ?
-            """, taskset[2:12])  
+            """, taskset[2:12])
         result = self.cursor.fetchone()
         if result:
             print(f"Found matching Taskset ID in big.db: {result[0]}")
@@ -69,29 +69,32 @@ class DatabaseConcatenator:
 
         return taskset_map, {}, {}
 
-    def move_and_rename_files(self, taskset_map):
-        print("Moving and renaming result files...")
+    def move_and_rename_files(self, table_name, id_map):
+        """Copie et renomme les fichiers de résultats pour la table donnée."""
+        print(f"Moving and renaming result files for {table_name}...")
         os.makedirs(os.path.join(self.result_folder,
-                    "tasksets"), exist_ok=True)
+                    table_name.lower()), exist_ok=True)
 
         for db_index in self.db_paths:
             source_folder = os.path.join(
-                self.result_folder.parent, f"results_{db_index}", "tasksets")
+                self.result_folder.parent, f"results_{db_index}", table_name.lower())
             if os.path.exists(source_folder):
                 for filename in os.listdir(source_folder):
                     if filename.endswith(".pkl"):
                         file_id = filename.split('_')[1].split('.')[0]
-                        new_file_id = taskset_map.get(f"taskset_{file_id}")
+                        new_file_id = id_map.get(
+                            f"{table_name.lower()[:-1]}_{file_id}")
                         if new_file_id:
                             old_path = os.path.join(source_folder, filename)
-                            new_filename = f"taskset_{new_file_id}.pkl"
+                            new_filename = f"{new_file_id}.pkl"
                             new_path = os.path.join(
-                                self.result_folder, "tasksets", new_filename)
+                                self.result_folder, table_name.lower(), new_filename)
                             shutil.copy2(old_path, new_path)
                             print(f"Copied: {old_path} -> {new_path}")
             else:
                 print(f"Directory not found: {source_folder}")
-        print("Result files copied and renamed successfully.")
+        print(
+            f"Result files copied and renamed successfully for {table_name}.")
 
     def integrate_databases(self):
         print("Integrating databases...")
@@ -100,6 +103,6 @@ class DatabaseConcatenator:
             tm, _, _ = self.process_database(db_index, db_path)
             taskset_map.update(tm)
 
-        self.move_and_rename_files(taskset_map)
+        self.move_and_rename_files("Tasksets", taskset_map)
         print("Database integration completed.")
         self.conn_structure.close()

@@ -26,8 +26,7 @@ class DatabaseConcatenator:
 
     def find_matching_taskset_id(self, taskset):
         """Recherche un taskset correspondant dans big.db."""
-        print(
-            f"Searching for matching Taskset: {taskset[2:]}")
+        print(f"Searching for matching Taskset: {taskset[2:]}")
         self.cursor.execute("""
             SELECT taskset_id FROM Tasksets WHERE
                 taskset_repetition = ? AND
@@ -49,6 +48,27 @@ class DatabaseConcatenator:
             print("Error: No matching Taskset found. This should not happen!")
             return None
 
+    def update_result_columns(self, table_name, record, new_id):
+        """Met à jour les colonnes de résultats pour l'enregistrement donné."""
+        print(f"Updating result columns for {table_name[:-1]} {new_id}...")
+        self.cursor.execute(f"SELECT * FROM {table_name} LIMIT 0")
+        columns = [description[0] for description in self.cursor.description]
+        record = dict(zip(columns, record))
+
+        update_values = []
+        set_clause = []
+        for col in self.result_columns:
+            if col in record:
+                set_clause.append(f"{col} = ?")
+                update_values.append(record[col])
+
+        if set_clause: 
+            query = f"UPDATE {table_name} SET {', '.join(set_clause)} WHERE {table_name[:-1]}_id = ?"
+            update_values.append(new_id)
+            self.cursor.execute(query, tuple(update_values))
+            self.conn_structure.commit()
+            print(f"Result columns updated successfully.")
+
     def process_database(self, db_index, db_path):
         print(f"Processing database: {db_path} (index: {db_index})")
         with sqlite3.connect(db_path) as conn:
@@ -61,11 +81,7 @@ class DatabaseConcatenator:
             if new_taskset_id is not None:
                 taskset_map[taskset[0]] = new_taskset_id
 
-                self.cursor.execute(
-                    "UPDATE Tasksets SET result_file_path = ? WHERE taskset_id = ?",
-                    (f"{new_taskset_id}.pkl", new_taskset_id)
-                )
-                self.conn_structure.commit()
+                self.update_result_columns("Tasksets", taskset, new_taskset_id)
 
         return taskset_map, {}, {}
 

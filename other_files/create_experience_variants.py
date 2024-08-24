@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 from copy import deepcopy
 import time
+import argparse
 
 # Define empty assignment_parameters and scheduling_parameters structures
 EMPTY_ASSIGNMENT_PARAMETERS = {
@@ -36,39 +37,21 @@ FULL_SCHEDULING_PARAMETERS = {
 
 
 def create_reduced_experience(full_config, name, taskset_params=None, assignment_params=None, scheduling_params=None):
-    """Creates a reduced experience configuration.
-
-    Args:
-        full_config: The full configuration dictionary.
-        name: A descriptive name for the new reduced configuration.
-        taskset_params:  A dictionary of taskset parameters to include. If None, 
-                         use the taskset parameters from the full config.
-        assignment_params: A dictionary of assignment parameters to include. 
-                           If None, use FULL_ASSIGNMENT_PARAMETERS.
-        scheduling_params: A dictionary of scheduling parameters to include. 
-                           If None, use FULL_SCHEDULING_PARAMETERS.
-
-    Returns:
-        A dictionary containing the reduced configuration under the 
-        key "full_experience_<name>".
-    """
+    """Creates a reduced experience configuration."""
     new_config = {}
 
-    # Add taskset parameters
     if taskset_params is None:
         new_config["taskset_parameters"] = deepcopy(
             full_config["taskset_parameters"])
     else:
         new_config["taskset_parameters"] = taskset_params
 
-    # Add assignment parameters
     if assignment_params is None:
         new_config["assignment_parameters"] = deepcopy(
             FULL_ASSIGNMENT_PARAMETERS)
     else:
         new_config["assignment_parameters"] = assignment_params
 
-    # Add scheduling parameters
     if scheduling_params is None:
         new_config["scheduling_parameters"] = deepcopy(
             FULL_SCHEDULING_PARAMETERS)
@@ -79,16 +62,8 @@ def create_reduced_experience(full_config, name, taskset_params=None, assignment
 
 
 def format_json_string(data):
-    """Formats a JSON string for compact dictionaries and lists.
-
-    Args:
-        data: The data to be formatted as a JSON string.
-
-    Returns:
-        A formatted JSON string.
-    """
+    """Formats a JSON string for compact dictionaries and lists."""
     def compact_list_format(match):
-        """Compacts a list within the JSON string."""
         compacted = re.sub(r'\s+', ' ', match.group(0))
         return compacted.strip()
 
@@ -98,13 +73,13 @@ def format_json_string(data):
     return json_string
 
 
-def split_taskset_experiences(full_config):
+def split_taskset_experiences(full_config, prefix=""):
     """Creates experience configurations for taskset generation only."""
     taskset_experiences = []
 
     # 1. Only Taskset
     taskset_experiences.append(create_reduced_experience(
-        full_config, "only_taskset",
+        full_config, f"{prefix}only_taskset",
         assignment_params=EMPTY_ASSIGNMENT_PARAMETERS,
         scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
 
@@ -114,31 +89,31 @@ def split_taskset_experiences(full_config):
         taskset_config["taskset_parameters"]["max_utilization_factors"] = [
             util_factor]
         taskset_experiences.append(create_reduced_experience(
-            taskset_config, f"only_taskset_{i+1}",
+            taskset_config, f"{prefix}only_taskset_{i+1}",
             assignment_params=EMPTY_ASSIGNMENT_PARAMETERS,
             scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
     return taskset_experiences
 
 
-def split_assignment_experiences(full_config):
+def split_assignment_experiences(full_config, prefix=""):
     """Creates experience configurations for assignment methods."""
     assignment_experiences = []
 
     # 3. Only Assignment
     assignment_experiences.append(create_reduced_experience(
-        full_config, "only_assignment",
+        full_config, f"{prefix}only_assignment",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
 
     # 4. Only Assignment with Simple Assigners
-    assignment_experiences.append(create_reduced_experience(full_config, "only_assignment_simple_assigner",
+    assignment_experiences.append(create_reduced_experience(full_config, f"{prefix}only_assignment_simple_assigner",
                                                             assignment_params={"assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner"],
                                                                                "sorting_criteria": full_config["assignment_parameters"]["sorting_criteria"],
-                                                                               "solving_time_limit_milp_assignment": [],  
-                                                                               "solver_name_assignment": []},  
+                                                                               "solving_time_limit_milp_assignment": [],
+                                                                               "solver_name_assignment": []},
                                                             scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
     # 5. Only Assignment with Citta
-    assignment_experiences.append(create_reduced_experience(full_config, "only_assignment_citta",
+    assignment_experiences.append(create_reduced_experience(full_config, f"{prefix}only_assignment_citta",
                                                             assignment_params={"assignment_methods": ["Citta"],
                                                                                "sorting_criteria": full_config["assignment_parameters"]["sorting_criteria"],
                                                                                "solving_time_limit_milp_assignment": [300],
@@ -154,7 +129,7 @@ def split_assignment_experiences(full_config):
         "random": ["random_order"],
     }
     for name, sorting in citta_sorting.items():
-        assignment_experiences.append(create_reduced_experience(full_config, f"only_assignment_citta_sorting_{name}",
+        assignment_experiences.append(create_reduced_experience(full_config, f"{prefix}only_assignment_citta_sorting_{name}",
                                                                 assignment_params={"assignment_methods": ["Citta"],
                                                                                    "sorting_criteria": sorting,
                                                                                    "solving_time_limit_milp_assignment": [300],
@@ -162,7 +137,7 @@ def split_assignment_experiences(full_config):
                                                                 scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
 
     # 7. Only Assignment with Wmin
-    assignment_experiences.append(create_reduced_experience(full_config, "only_assignment_wmin",
+    assignment_experiences.append(create_reduced_experience(full_config, f"{prefix}only_assignment_wmin",
                                                             assignment_params={"assignment_methods": ["Wmin"],
                                                                                "sorting_criteria": [],
                                                                                "solving_time_limit_milp_assignment": [300],
@@ -171,19 +146,19 @@ def split_assignment_experiences(full_config):
     return assignment_experiences
 
 
-def split_scheduling_experiences(full_config):
+def split_scheduling_experiences(full_config, prefix=""):
     """Creates experience configurations for scheduling algorithms."""
     scheduling_experiences = []
 
     # 8. Only Scheduling (all algorithms)
     scheduling_experiences.append(create_reduced_experience(
-        full_config, "only_scheduling",
+        full_config, f"{prefix}only_scheduling",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params=full_config["scheduling_parameters"]))
 
     # 9. Only Scheduling without RHMA
     scheduling_experiences.append(create_reduced_experience(
-        full_config, "only_scheduling_without_rhma",
+        full_config, f"{prefix}only_scheduling_without_rhma",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params={"scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2",
                                                      "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler"],
@@ -194,7 +169,7 @@ def split_scheduling_experiences(full_config):
     # 10. Only Scheduling with Simple Scheduling algorithms
     scheduling_experiences.append(create_reduced_experience(
         full_config,
-        "only_scheduling_simple_scheduling", 
+        f"{prefix}only_scheduling_simple_scheduling",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params={"scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1",
                                                      "DeadlineMonotonic", "DeadlineMonotonicVariant1"],
@@ -208,7 +183,7 @@ def split_scheduling_experiences(full_config):
     for scheduler in simple_schedulers:
         scheduling_experiences.append(create_reduced_experience(
             full_config,
-            f"only_scheduling_simple_scheduling_{scheduler.lower()}",
+            f"{prefix}only_scheduling_simple_scheduling_{scheduler.lower()}",
             assignment_params=full_config["assignment_parameters"],
             scheduling_params={"scheduling_algorithms": [scheduler],
                                "non_preemption_time_variant2_options": [],
@@ -218,7 +193,7 @@ def split_scheduling_experiences(full_config):
     # 12. Only Scheduling with Variant 2 algorithms
     scheduling_experiences.append(create_reduced_experience(
         full_config,
-        "only_scheduling_variant_2",
+        f"{prefix}only_scheduling_variant_2",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params={"scheduling_algorithms": ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2"],
                            "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
@@ -231,7 +206,7 @@ def split_scheduling_experiences(full_config):
     for scheduler in variant2_schedulers:
         scheduling_experiences.append(create_reduced_experience(
             full_config,
-            f"only_scheduling_variant_2_{scheduler.lower()}", 
+            f"{prefix}only_scheduling_variant_2_{scheduler.lower()}",
             assignment_params=full_config["assignment_parameters"],
             scheduling_params={"scheduling_algorithms": [scheduler],
                                "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
@@ -241,7 +216,7 @@ def split_scheduling_experiences(full_config):
     # 14. Only Scheduling with CombinedScheduler
     scheduling_experiences.append(create_reduced_experience(
         full_config,
-        "only_scheduling_combined", 
+        f"{prefix}only_scheduling_combined",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params={"scheduling_algorithms": ["CombinedScheduler"],
                            "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
@@ -252,7 +227,7 @@ def split_scheduling_experiences(full_config):
     for name in ["number_of_tasks", "wcet_of_tasks", "system_utilization"]:
         scheduling_experiences.append(create_reduced_experience(
             full_config,
-            f"only_scheduling_combined_sorting_criterion_{name}", 
+            f"{prefix}only_scheduling_combined_sorting_criterion_{name}",
             assignment_params=full_config["assignment_parameters"],
             scheduling_params={"scheduling_algorithms": ["CombinedScheduler"],
                                "non_preemption_time_variant2_options": [name],
@@ -262,7 +237,7 @@ def split_scheduling_experiences(full_config):
     # 16. Only Scheduling with RHMA
     scheduling_experiences.append(create_reduced_experience(
         full_config,
-        "only_scheduling_rhma",
+        f"{prefix}only_scheduling_rhma",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params={"scheduling_algorithms": ["Rhma"],
                            "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
@@ -273,7 +248,7 @@ def split_scheduling_experiences(full_config):
     for name in ["number_of_tasks", "wcet_of_tasks", "system_utilization"]:
         scheduling_experiences.append(create_reduced_experience(
             full_config,
-            f"only_scheduling_rhma_sorting_criterion_{name}", 
+            f"{prefix}only_scheduling_rhma_sorting_criterion_{name}",
             assignment_params=full_config["assignment_parameters"],
             scheduling_params={"scheduling_algorithms": ["Rhma"],
                                "non_preemption_time_variant2_options": [name],
@@ -283,27 +258,50 @@ def split_scheduling_experiences(full_config):
     return scheduling_experiences
 
 
-def split_experience(experience_data):
-    """Splits a full experience configuration into smaller configurations."""
+def split_experience(experience_data, split_by_tpt):
+    """Splits a full experience configuration based on tasks_per_taskset."""
     full_config = experience_data["full_experience"]["config_parameters"]
-    all_experiences = [experience_data]  # Start with the full experience
+    all_experiences = []
 
+    # 1. Always do the base splitting first
+    all_experiences.append(experience_data)  # Add original full experience
     all_experiences.extend(split_taskset_experiences(full_config))
     all_experiences.extend(split_assignment_experiences(full_config))
     all_experiences.extend(split_scheduling_experiences(full_config))
+
+    # 2. Split by tpt if enabled
+    if split_by_tpt:
+        for tpt in full_config["taskset_parameters"]["tasks_per_taskset"]:
+            tpt_config = deepcopy(full_config)
+            tpt_config["taskset_parameters"]["tasks_per_taskset"] = [tpt]
+
+            # Apply all other splitting logic WITH the tpt prefix
+            prefix = f"tpt_{tpt}_"
+            all_experiences.extend(
+                split_taskset_experiences(tpt_config, prefix))
+            all_experiences.extend(
+                split_assignment_experiences(tpt_config, prefix))
+            all_experiences.extend(
+                split_scheduling_experiences(tpt_config, prefix))
 
     return all_experiences
 
 
 # --- Main Execution ---
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description='Split experience configurations.')
+    parser.add_argument('--split_by_tpt', action='store_true',
+                        help='Enable splitting experiences by tasks_per_taskset')
+    args = parser.parse_args()
+
     # Load the base experience JSON file
     json_path = Path(os.getenv('CODETHESIS'))
     with open(json_path / "base_experience.json", "r") as f:
         experience_data = json.load(f)
 
     # Split the experience configuration
-    all_experiences = split_experience(experience_data)
+    all_experiences = split_experience(experience_data, args.split_by_tpt)
 
     # Combine all experiences into a single dictionary
     final_experience_data = {}

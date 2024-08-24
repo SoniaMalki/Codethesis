@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import shutil
+import time
 
 
 class DatabaseConcatenator:
@@ -125,24 +126,23 @@ class DatabaseConcatenator:
         """Met à jour les colonnes de résultats pour l'enregistrement donné."""
         print(f"Updating result columns for {table_name[:-1]} {new_id}...")
         self.cursor.execute(f"SELECT * FROM {table_name} LIMIT 0")
-        columns = [description[0]
-                   for description in self.cursor.description]
+        columns = [description[0] for description in self.cursor.description]
         record = dict(zip(columns, record))
 
         update_values = []
         set_clause = []
         for col in self.result_columns:
-            if col in record:
+            if col in record and record[col] is not None:
                 set_clause.append(f"{col} = ?")
                 update_values.append(record[col])
 
-        set_clause.append(f"result_file_path = ?")
-        update_values.append(f"{new_id}.pkl")
+        if 'result_file_path' in record and record['result_file_path'] is not None:
+            set_clause.append(f"result_file_path = ?")
+            update_values.append(f"{new_id}.pkl")
 
         if set_clause:
             query = f"UPDATE {table_name} SET {', '.join(set_clause)} WHERE {table_name[:-1]}_id = ?"
             update_values.append(new_id)
-
             self.cursor.execute(query, tuple(update_values))
             self.conn_structure.commit()
             print(f"Result columns updated successfully.")

@@ -144,6 +144,7 @@ cython_debug/
 # Exclude the entire generation directory
 generation/*
 
+
 # But not the experience.db file
 #!generation/experience.db
 
@@ -159,3 +160,4 @@ modele_rhma_pulp_*.lp
 modele_rhma_gurobipy_*.lp
 modele_rhma_pulp_*.mps
 modele_rhma_gurobipy_*.mps
+permanent_results/*

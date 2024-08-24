@@ -63,9 +63,13 @@ class DatabaseConcatenator:
                 set_clause.append(f"{col} = ?")
                 update_values.append(record[col])
 
+        set_clause.append(f"result_file_path = ?")
+        update_values.append(f"{new_id}.pkl")
+
         if set_clause:
             query = f"UPDATE {table_name} SET {', '.join(set_clause)} WHERE {table_name[:-1]}_id = ?"
             update_values.append(new_id)
+
             self.cursor.execute(query, tuple(update_values))
             self.conn_structure.commit()
             print(f"Result columns updated successfully.")

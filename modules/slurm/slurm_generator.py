@@ -241,11 +241,18 @@ python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_
 #SBATCH --mem-per-cpu={self.batch_slurm_mem}
 {self.modules}
 
-# Séparer par des espaces
-# Use sorted_batch_configs
-for config_key in {" ".join(sorted_batch_configs.keys())}; do
+# Définir la liste des configurations
+configs=(\n""")
+            for config_key in sorted_batch_configs.keys():
+                f.write(f"  {config_key}\n")
+
+            f.write(
+                f""")
+
+# Boucle sur la liste des configurations
+for config_key in "${{configs[@]}}"; do
   tempfile=$(mktemp /tmp/slurm_batch_XXXXXX)
-  sbatch {individual_slurm_dir / f"$config_key.slurm"} >"$tempfile" 2>&1
+  sbatch {individual_slurm_dir}/$config_key.slurm >"$tempfile" 2>&1
   output=$(cat "$tempfile")
   if echo "$output" | grep -q "error"; then
     echo "Job not launched. Output: $output"

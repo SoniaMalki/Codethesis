@@ -1,6 +1,7 @@
 import sqlite3
 import os
 import shutil
+import time
 
 
 class DatabaseConcatenator:
@@ -62,7 +63,7 @@ class DatabaseConcatenator:
                 set_clause.append(f"{col} = ?")
                 update_values.append(record[col])
 
-        if set_clause: 
+        if set_clause:
             query = f"UPDATE {table_name} SET {', '.join(set_clause)} WHERE {table_name[:-1]}_id = ?"
             update_values.append(new_id)
             self.cursor.execute(query, tuple(update_values))
@@ -85,28 +86,27 @@ class DatabaseConcatenator:
 
         return taskset_map, {}, {}
 
-    def move_and_rename_files(self, table_name, id_map):
+    def move_and_rename_files(self, table_name, id_map, db_index):
         """Copie et renomme les fichiers de résultats pour la table donnée."""
         print(f"Moving and renaming result files for {table_name}...")
         os.makedirs(os.path.join(self.result_folder,
                     table_name.lower()), exist_ok=True)
 
-        for db_index in self.db_paths:
-            source_folder = os.path.join(
-                self.result_folder.parent, f"results_{db_index}", table_name.lower())
-            if os.path.exists(source_folder):
-                for filename in os.listdir(source_folder):
-                    if filename.endswith(".pkl"):
-                        file_id = filename.split('_')[1].split('.')[0]
-                        new_file_id = id_map.get(
-                            f"{table_name.lower()[:-1]}_{file_id}")
-                        if new_file_id:
-                            old_path = os.path.join(source_folder, filename)
-                            new_filename = f"{new_file_id}.pkl"
-                            new_path = os.path.join(
-                                self.result_folder, table_name.lower(), new_filename)
-                            shutil.copy2(old_path, new_path)
-                            print(f"Copied: {old_path} -> {new_path}")
+        source_folder = os.path.join(
+            self.result_folder.parent, f"results_{db_index}", table_name.lower())
+        if os.path.exists(source_folder):
+            for filename in os.listdir(source_folder):
+                if filename.endswith(".pkl"):
+                    file_id = filename.split('_')[1].split('.')[0]
+                    new_file_id = id_map.get(
+                        f"{table_name.lower()[:-1]}_{file_id}")
+                    if new_file_id:
+                        old_path = os.path.join(source_folder, filename)
+                        new_filename = f"{new_file_id}.pkl"
+                        new_path = os.path.join(
+                            self.result_folder, table_name.lower(), new_filename)
+                        shutil.copy2(old_path, new_path)
+                        print(f"Copied: {old_path} -> {new_path}")
             else:
                 print(f"Directory not found: {source_folder}")
         print(
@@ -114,11 +114,10 @@ class DatabaseConcatenator:
 
     def integrate_databases(self):
         print("Integrating databases...")
-        taskset_map, _, _ = {}, {}, {}
         for db_index, db_path in self.db_paths.items():
+            taskset_map, _, _ = {}, {}, {}
             tm, _, _ = self.process_database(db_index, db_path)
             taskset_map.update(tm)
-
-        self.move_and_rename_files("Tasksets", taskset_map)
-        print("Database integration completed.")
+            self.move_and_rename_files("Tasksets", taskset_map, db_index)
+            print("Database integration completed.")
         self.conn_structure.close()

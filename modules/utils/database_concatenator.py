@@ -1,7 +1,6 @@
 import sqlite3
 import os
 import shutil
-import time
 
 
 class DatabaseConcatenator:
@@ -10,8 +9,8 @@ class DatabaseConcatenator:
         self.structure_db_path = structure_db_path
         self.result_folder = result_folder
 
-        self.result_columns = {'result_file_path',
-                               'cluster', 'threads', 'slurm_time', 'slurm_memory'}
+        self.result_columns = {
+            'result_file_path', 'cluster', 'threads', 'slurm_time', 'slurm_memory'}
 
         self.conn_structure = sqlite3.connect(self.structure_db_path)
         self.conn_structure.execute("PRAGMA foreign_keys = ON")
@@ -23,7 +22,13 @@ class DatabaseConcatenator:
         cursor.execute("SELECT * FROM Tasksets")
         tasksets = cursor.fetchall()
         print(f"Loaded {len(tasksets)} tasksets.")
-        return tasksets
+        cursor.execute("SELECT * FROM Assignments")
+        assignments = cursor.fetchall()
+        print(f"Loaded {len(assignments)} assignments.")
+        cursor.execute("SELECT * FROM Schedulings")
+        schedulings = cursor.fetchall()
+        print(f"Loaded {len(schedulings)} schedulings.")
+        return tasksets, assignments, schedulings
 
     def find_matching_taskset_id(self, taskset):
         """Recherche un taskset correspondant dans big.db."""
@@ -49,11 +54,79 @@ class DatabaseConcatenator:
             print("Error: No matching Taskset found. This should not happen!")
             return None
 
+    def find_matching_assignment_id(self, assignment, taskset_map):
+        """Recherche un assignment correspondant dans big.db en utilisant le nouveau taskset_id."""
+
+        # Traduire l'ancien taskset_id en nouveau taskset_id
+        old_taskset_id = assignment[1]
+        new_taskset_id = taskset_map.get(old_taskset_id)
+
+        if new_taskset_id is None:
+            print(
+                f"Error: No matching taskset found for assignment {assignment[0]}. This should not happen!")
+            return None
+
+        print(
+            f"Searching for matching Assignment: {(new_taskset_id,) + assignment[2:7]}")
+        self.cursor.execute("""
+            SELECT assignment_id FROM Assignments WHERE
+                taskset_id = ? AND
+                action = ? AND
+                sorting_criterion = ? AND
+                assignment_method = ? AND
+                number_of_cores = ? AND
+                solving_time_limit_MILP = ? 
+            """, (new_taskset_id,) + assignment[2:7])  # Utiliser le nouveau taskset_id
+        result = self.cursor.fetchone()
+        if result:
+            print(f"Found matching Assignment ID in big.db: {result[0]}")
+            return result[0]
+        else:
+            print(
+                "Error: No matching Assignment found. This should not happen!")
+            return None
+
+    def find_matching_scheduling_id(self, scheduling, taskset_map, assignment_map):
+        """Recherche un scheduling correspondant dans big.db en utilisant les nouveaux IDs."""
+
+        # Traduire les anciens IDs en nouveaux IDs
+        old_assignment_id = scheduling[1]
+        old_taskset_id = scheduling[2]
+        new_assignment_id = assignment_map.get(old_assignment_id)
+        new_taskset_id = taskset_map.get(old_taskset_id)
+
+        if new_assignment_id is None or new_taskset_id is None:
+            print(
+                f"Error: No matching assignment or taskset found for scheduling {scheduling[0]}. This should not happen!")
+            return None
+
+        print(
+            f"Searching for matching Scheduling: {(new_assignment_id, new_taskset_id) + scheduling[3:7]}")
+
+        self.cursor.execute("""
+            SELECT scheduling_id FROM Schedulings WHERE
+                assignment_id = ? AND
+                taskset_id = ? AND
+                action = ? AND
+                scheduling_algorithm = ? AND
+                non_preemption_time_variant2 = ? AND
+                solving_time_limit_MILP = ? 
+            """, (new_assignment_id, new_taskset_id) + scheduling[3:7])  # Utiliser les nouveaux IDs
+        result = self.cursor.fetchone()
+        if result:
+            print(f"Found matching Scheduling ID in big.db: {result[0]}")
+            return result[0]
+        else:
+            print(
+                "Error: No matching Scheduling found. This should not happen!")
+            return None
+
     def update_result_columns(self, table_name, record, new_id):
         """Met à jour les colonnes de résultats pour l'enregistrement donné."""
         print(f"Updating result columns for {table_name[:-1]} {new_id}...")
         self.cursor.execute(f"SELECT * FROM {table_name} LIMIT 0")
-        columns = [description[0] for description in self.cursor.description]
+        columns = [description[0]
+                   for description in self.cursor.description]
         record = dict(zip(columns, record))
 
         update_values = []
@@ -77,18 +150,35 @@ class DatabaseConcatenator:
     def process_database(self, db_index, db_path):
         print(f"Processing database: {db_path} (index: {db_index})")
         with sqlite3.connect(db_path) as conn:
-            tasksets = self.load_data(conn)
+            tasksets, assignments, schedulings = self.load_data(conn)
 
         taskset_map = {}
-
         for taskset in tasksets:
             new_taskset_id = self.find_matching_taskset_id(taskset)
             if new_taskset_id is not None:
                 taskset_map[taskset[0]] = new_taskset_id
+                self.update_result_columns(
+                    "Tasksets", taskset, new_taskset_id)
 
-                self.update_result_columns("Tasksets", taskset, new_taskset_id)
+        assignment_map = {}
+        for assignment in assignments:
+            new_assignment_id = self.find_matching_assignment_id(
+                assignment, taskset_map)
+            if new_assignment_id is not None:
+                assignment_map[assignment[0]] = new_assignment_id
+                self.update_result_columns(
+                    "Assignments", assignment, new_assignment_id)
 
-        return taskset_map, {}, {}
+        scheduling_map = {}
+        for scheduling in schedulings:
+            new_scheduling_id = self.find_matching_scheduling_id(
+                scheduling, taskset_map, assignment_map)
+            if new_scheduling_id is not None:
+                scheduling_map[scheduling[0]] = new_scheduling_id
+                self.update_result_columns(
+                    "Schedulings", scheduling, new_scheduling_id)
+
+        return taskset_map, assignment_map, scheduling_map
 
     def move_and_rename_files(self, table_name, id_map, db_index):
         """Copie et renomme les fichiers de résultats pour la table donnée."""
@@ -119,9 +209,14 @@ class DatabaseConcatenator:
     def integrate_databases(self):
         print("Integrating databases...")
         for db_index, db_path in self.db_paths.items():
-            taskset_map, _, _ = {}, {}, {}
-            tm, _, _ = self.process_database(db_index, db_path)
+            taskset_map, assignment_map, scheduling_map = {}, {}, {}
+            tm, am, sm = self.process_database(db_index, db_path)
             taskset_map.update(tm)
+            assignment_map.update(am)
+            scheduling_map.update(sm)
             self.move_and_rename_files("Tasksets", taskset_map, db_index)
+            self.move_and_rename_files("Assignments", assignment_map, db_index)
+            self.move_and_rename_files(
+                "Schedulings", scheduling_map, db_index)
             print("Database integration completed.")
         self.conn_structure.close()

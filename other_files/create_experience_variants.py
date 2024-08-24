@@ -134,8 +134,8 @@ def split_assignment_experiences(full_config):
     assignment_experiences.append(create_reduced_experience(full_config, "only_assignment_simple_assigner",
                                                             assignment_params={"assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner"],
                                                                                "sorting_criteria": full_config["assignment_parameters"]["sorting_criteria"],
-                                                                               "solving_time_limit_milp_assignment": [],  # Added back the key
-                                                                               "solver_name_assignment": []},  # Added back the key
+                                                                               "solving_time_limit_milp_assignment": [],  
+                                                                               "solver_name_assignment": []},  
                                                             scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
     # 5. Only Assignment with Citta
     assignment_experiences.append(create_reduced_experience(full_config, "only_assignment_citta",
@@ -171,20 +171,30 @@ def split_assignment_experiences(full_config):
     return assignment_experiences
 
 
-def split_scheduling_experiences(full_config, include_citta=True):
+def split_scheduling_experiences(full_config):
     """Creates experience configurations for scheduling algorithms."""
     scheduling_experiences = []
 
     # 8. Only Scheduling (all algorithms)
     scheduling_experiences.append(create_reduced_experience(
-        full_config, "only_scheduling" if include_citta else "without_citta_only_scheduling",
+        full_config, "only_scheduling",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params=full_config["scheduling_parameters"]))
 
-    # 9. Only Scheduling with Simple Scheduling algorithms
+    # 9. Only Scheduling without RHMA
+    scheduling_experiences.append(create_reduced_experience(
+        full_config, "only_scheduling_without_rhma",
+        assignment_params=full_config["assignment_parameters"],
+        scheduling_params={"scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2",
+                                                     "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler"],
+                           "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
+                           "solving_time_limit_milp_scheduling": [300],
+                           "solver_name_scheduling": ["gurobi"]}))
+
+    # 10. Only Scheduling with Simple Scheduling algorithms
     scheduling_experiences.append(create_reduced_experience(
         full_config,
-        "only_scheduling_simple_scheduling" if include_citta else "without_citta_only_scheduling_simple_scheduling",
+        "only_scheduling_simple_scheduling", 
         assignment_params=full_config["assignment_parameters"],
         scheduling_params={"scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1",
                                                      "DeadlineMonotonic", "DeadlineMonotonicVariant1"],
@@ -192,78 +202,78 @@ def split_scheduling_experiences(full_config, include_citta=True):
                            "solving_time_limit_milp_scheduling": [],
                            "solver_name_scheduling": []}))
 
-    # 10. Only Scheduling with individual Simple Scheduling algorithms
+    # 11. Only Scheduling with individual Simple Scheduling algorithms
     simple_schedulers = ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1",
                          "DeadlineMonotonic", "DeadlineMonotonicVariant1"]
     for scheduler in simple_schedulers:
         scheduling_experiences.append(create_reduced_experience(
             full_config,
-            f"only_scheduling_simple_scheduling_{scheduler.lower()}" if include_citta else f"without_citta_only_scheduling_simple_scheduling_{scheduler.lower()}",
+            f"only_scheduling_simple_scheduling_{scheduler.lower()}",
             assignment_params=full_config["assignment_parameters"],
             scheduling_params={"scheduling_algorithms": [scheduler],
                                "non_preemption_time_variant2_options": [],
                                "solving_time_limit_milp_scheduling": [],
                                "solver_name_scheduling": []}))
 
-    # 11. Only Scheduling with Variant 2 algorithms
+    # 12. Only Scheduling with Variant 2 algorithms
     scheduling_experiences.append(create_reduced_experience(
         full_config,
-        "only_scheduling_variant_2" if include_citta else "without_citta_only_scheduling_variant_2",
+        "only_scheduling_variant_2",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params={"scheduling_algorithms": ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2"],
                            "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
                            "solving_time_limit_milp_scheduling": [],
                            "solver_name_scheduling": []}))
 
-    # 12. Only Scheduling with individual Variant 2 algorithms
+    # 13. Only Scheduling with individual Variant 2 algorithms
     variant2_schedulers = [
         "EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2"]
     for scheduler in variant2_schedulers:
         scheduling_experiences.append(create_reduced_experience(
             full_config,
-            f"only_scheduling_variant_2_{scheduler.lower()}" if include_citta else f"without_citta_only_scheduling_variant_2_{scheduler.lower()}",
+            f"only_scheduling_variant_2_{scheduler.lower()}", 
             assignment_params=full_config["assignment_parameters"],
             scheduling_params={"scheduling_algorithms": [scheduler],
                                "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
                                "solving_time_limit_milp_scheduling": [],
                                "solver_name_scheduling": []}))
 
-    # 13. Only Scheduling with CombinedScheduler
+    # 14. Only Scheduling with CombinedScheduler
     scheduling_experiences.append(create_reduced_experience(
         full_config,
-        "only_scheduling_combined" if include_citta else "without_citta_only_scheduling_combined",
+        "only_scheduling_combined", 
         assignment_params=full_config["assignment_parameters"],
         scheduling_params={"scheduling_algorithms": ["CombinedScheduler"],
                            "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
                            "solving_time_limit_milp_scheduling": [],
                            "solver_name_scheduling": []}))
 
-    # 14. Only Scheduling with CombinedScheduler, split by sorting criteria
+    # 15. Only Scheduling with CombinedScheduler, split by sorting criteria
     for name in ["number_of_tasks", "wcet_of_tasks", "system_utilization"]:
         scheduling_experiences.append(create_reduced_experience(
             full_config,
-            f"only_scheduling_combined_sorting_criterion_{name}" if include_citta else f"without_citta_only_scheduling_combined_sorting_criterion_{name}",
+            f"only_scheduling_combined_sorting_criterion_{name}", 
             assignment_params=full_config["assignment_parameters"],
             scheduling_params={"scheduling_algorithms": ["CombinedScheduler"],
                                "non_preemption_time_variant2_options": [name],
                                "solving_time_limit_milp_scheduling": [],
                                "solver_name_scheduling": []}))
 
-    # 15. Only Scheduling with RHMA
+    # 16. Only Scheduling with RHMA
     scheduling_experiences.append(create_reduced_experience(
         full_config,
-        "only_scheduling_rhma" if include_citta else "without_citta_only_scheduling_rhma",
+        "only_scheduling_rhma",
         assignment_params=full_config["assignment_parameters"],
         scheduling_params={"scheduling_algorithms": ["Rhma"],
                            "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
                            "solving_time_limit_milp_scheduling": [300],
                            "solver_name_scheduling": ["gurobi"]}))
 
-    # 16. Only Scheduling with RHMA, split by sorting criteria
+    # 17. Only Scheduling with RHMA, split by sorting criteria
     for name in ["number_of_tasks", "wcet_of_tasks", "system_utilization"]:
         scheduling_experiences.append(create_reduced_experience(
             full_config,
-            f"only_scheduling_rhma_sorting_criterion_{name}" if include_citta else f"without_citta_only_scheduling_rhma_sorting_criterion_{name}",
+            f"only_scheduling_rhma_sorting_criterion_{name}", 
             assignment_params=full_config["assignment_parameters"],
             scheduling_params={"scheduling_algorithms": ["Rhma"],
                                "non_preemption_time_variant2_options": [name],
@@ -280,17 +290,7 @@ def split_experience(experience_data):
 
     all_experiences.extend(split_taskset_experiences(full_config))
     all_experiences.extend(split_assignment_experiences(full_config))
-
-    # Create deepcopy here!
-    no_citta_config = deepcopy(full_config)
-    # Remove Citta for the without_citta experiences
-    no_citta_config["assignment_parameters"]["assignment_methods"] = [
-        "WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Wmin"]
-
-    all_experiences.extend(split_scheduling_experiences(
-        full_config, include_citta=True))
-    all_experiences.extend(split_scheduling_experiences(
-        no_citta_config, include_citta=False))
+    all_experiences.extend(split_scheduling_experiences(full_config))
 
     return all_experiences
 

@@ -8,6 +8,7 @@ from modules.core.experience_loader import ExperienceLoader
 from modules.analysis.result_analyzer import ResultAnalyzer
 from modules.slurm.slurm_generator import SlurmGenerator
 from modules.taskset.task_parameters_generator.prime_matrix_generator import PrimeMatrixGenerator
+from modules.utils.database_concatenator import DatabaseConcatenator
 from modules.utils.database_merger import DatabaseMerger
 from modules.utils.db_utils import DBUtils
 
@@ -143,6 +144,18 @@ def main(action, experience_id, experience_action=None):
         merger.merge_tables()
         print(
             f"Databases merged successfully for experience ID: {experience_id}")
+
+    elif action == "concatenate_databases":
+        db_paths = {
+            '10': generation_path / 'db_10.db'
+        }
+
+        structure_db_path = generation_path / 'big.db'
+        result_folder = generation_path / "results"
+
+        integrator = DatabaseConcatenator(
+            db_paths, structure_db_path, result_folder)
+        integrator.integrate_databases()
 
     else:
         print(f"Action invalide: {action}")

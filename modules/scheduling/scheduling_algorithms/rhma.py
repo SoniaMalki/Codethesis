@@ -20,9 +20,6 @@ class Rhma:
         self.assignment = assignment
         self.number_of_cores = number_of_cores
         self.scheduling_options = scheduling_options
-        self.test_mode = self.scheduling_options.get("test_mode", False)
-        if self.test_mode:
-            self.seed = self.scheduling_options.get("seed", 42)
 
         self.solving_time_limit_MILP = self.scheduling_options.get(
             "solving_time_limit_MILP", None)
@@ -67,6 +64,11 @@ class Rhma:
 
         print(
             f"Rhma utilisant le solveur : {self.solver_name} avec thread {self.threads}")
+
+        self.test_mode = self.scheduling_options.get("test_mode", False)
+        if self.test_mode:
+            self.seed = self.scheduling_options.get("seed", 42)
+            self.threads = 1
 
         if self.solver_name == "gurobi":
             self.param = []
@@ -237,37 +239,78 @@ class Rhma:
                     intersection_start, intersection_end)
         return r_i_a_h_for_h
 
-    def create_constraint_16(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+    def calculate_estimated_size(self, s_i_h_for_h, h):
+        """Calcule estimated_size pour toutes les contraintes en une fois."""
+        size = {
+            "constraint_16": 0,
+            "constraint_17": 0,
+            "constraint_18": 0,
+            "constraint_19": 0,
+            "constraint_20": 0,
+            "constraint_21": 0,
+            "constraint_22": 0,
+            "constraint_23": 0,
+            "constraint_24": 0
+        }
+
+        for i, activations in s_i_h_for_h.items():
+            size["constraint_16"] += len(activations) * \
+                self.number_of_cores * len(self.T_h[h])
+            size["constraint_18"] += len(activations) * self.number_of_cores
+            size["constraint_19"] += len(activations) * self.number_of_cores
+            size["constraint_20"] += len(activations) * len(self.T_h[h])
+            size["constraint_24"] += len(activations) * \
+                self.number_of_cores * len(self.T_h[h])
+
+            for k, b_activations in s_i_h_for_h.items():
+                if i != k:
+                    size["constraint_17"] += len(activations) * \
+                        len(b_activations)
+                    size["constraint_22"] += len(activations) * len(
+                        b_activations) * self.number_of_cores * (self.number_of_cores - 1) * len(self.T_h[h])
+                    size["constraint_23"] += len(activations) * \
+                        len(b_activations)
+
+        size["constraint_21"] = self.number_of_cores * len(self.T_h[h])
+
+        return size
+
+    def create_constraint_16(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 16 for busy period {h} -----")
         self.assert_constraints_attributes()
-        constraint_16 = []
+        constraint_16 = np.empty((estimated_size,), dtype=object)
+        index = 0
         for i, activations in s_i_h_for_h.items():
             for a in activations:
                 for j in range(self.number_of_cores):
                     for t in self.T_h[h]:
                         if self.o_i_j[i, j] == 0:
-                            constraint_16.append(x[i, a, j, t] == 0)
+                            constraint_16[index] = x[i, a, j, t] == 0
+                            index += 1
         print(f"----- Constraint 16 created for busy period {h} -----")
-        return constraint_16
+        return constraint_16[:index]
 
-    def create_constraint_17(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+    def create_constraint_17(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 17 for busy period {h} -----")
         self.assert_constraints_attributes()
-        constraint_17 = []
+        constraint_17 = np.empty((estimated_size,), dtype=object)
+        index = 0
         for i, activations in s_i_h_for_h.items():
             for k in range(i + 1, len(s_i_h_for_h)):
                 activations_i = s_i_h_for_h[i]
                 activations_k = s_i_h_for_h[k]
                 for a, b in product(activations_i, activations_k):
                     if not np.intersect1d(r_i_a_h_for_h[i][a], r_i_a_h_for_h[k][b]).size:
-                        constraint_17.append(m[i, a, k, b] == 0)
+                        constraint_17[index] = m[i, a, k, b] == 0
+                        index += 1
         print(f"----- Constraint 17 created for busy period {h} -----")
-        return constraint_17
+        return constraint_17[:index]
 
-    def create_constraint_18(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+    def create_constraint_18(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 18 for busy period {h} -----")
         self.assert_constraints_attributes()
-        constraint_18 = []
+        constraint_18 = np.empty((estimated_size,), dtype=object)
+        index = 0
         for i, activations in s_i_h_for_h.items():
             for j in range(self.number_of_cores):
                 if activations:
@@ -279,15 +322,17 @@ class Rhma:
                     right_side += gp.quicksum(m[i, a, k, b] * self.taskset.single_interference[k] * self.o_i_j[i, j]
                                               for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i, j] != self.o_i_j[k, j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
                                               for a in activations for b in b_activations)
-                    constraint_18.append(left_side == right_side)
+                    constraint_18[index] = left_side == right_side
+                    index += 1
 
         print(f"----- Constraint 18 created for busy period {h} -----")
-        return constraint_18
+        return constraint_18[:index]
 
-    def create_constraint_19(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+    def create_constraint_19(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 19 for busy period {h} -----")
         self.assert_constraints_attributes()
-        constraint_19 = []
+        constraint_19 = np.empty((estimated_size,), dtype=object)
+        index = 0
         for i, activations in s_i_h_for_h.items():
             for a in activations:
                 for j in range(self.number_of_cores):
@@ -300,72 +345,83 @@ class Rhma:
                                                   for k, b_activations in s_i_h_for_h.items() if k != i and self.o_i_j[i, j] != self.o_i_j[k, j] and self.taskset.single_interference[k] > 0 and self.taskset.single_interference[i] > 0
                                                   for b in b_activations)
 
-                        constraint_19.append(left_side == right_side)
+                        constraint_19[index] = left_side == right_side
+                        index += 1
         print(f"----- Constraint 19 created for busy period {h} -----")
-        return constraint_19
+        return constraint_19[:index]
 
-    def create_constraint_20(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+    def create_constraint_20(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 20 for busy period {h} -----")
         self.assert_constraints_attributes()
-        constraint_20 = []
+        constraint_20 = np.empty((estimated_size,), dtype=object)
+        index = 0
         for i, activations in s_i_h_for_h.items():
             for a in activations:
                 for t in self.T_h[h]:
                     left_side = gp.quicksum(t * x[i, a, j, t]
                                             for j in range(self.number_of_cores))
                     right_side = self.d_i_a[i][a] - 1
-                    constraint_20.append(left_side <= right_side)
+                    constraint_20[index] = left_side <= right_side
+                    index += 1
         print(f"----- Constraint 20 created for busy period {h} -----")
-        return constraint_20
+        return constraint_20[:index]
 
-    def create_constraint_21(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+    def create_constraint_21(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 21 for busy period {h} -----")
         self.assert_constraints_attributes()
-        constraint_21 = []
+        constraint_21 = np.empty((estimated_size,), dtype=object)
+        index = 0
         for j, t in product(range(self.number_of_cores), self.T_h[h]):
-            constraint_21.append(
-                gp.quicksum(x[i, a, j, t] for i in s_i_h_for_h for a in s_i_h_for_h[i]) <= 1)
+            constraint_21[index] = gp.quicksum(
+                x[i, a, j, t] for i in s_i_h_for_h for a in s_i_h_for_h[i]) <= 1
+            index += 1
         print(f"----- Constraint 21 created for busy period {h} -----")
-        return constraint_21
+        return constraint_21[:index]
 
-    def create_constraint_22(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+    def create_constraint_22(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 22 for busy period {h} -----")
         self.assert_constraints_attributes()
-        constraint_22 = []
+        constraint_22 = np.empty((estimated_size,), dtype=object)
+        index = 0
         for i, activations in s_i_h_for_h.items():
             for k, b_activations in s_i_h_for_h.items():
                 if i != k:
                     for a, b, j, l, t in product(activations, b_activations, range(self.number_of_cores), range(self.number_of_cores), self.T_h[h]):
                         if j != l:
-                            constraint_22.append(
-                                m[i, a, k, b] >= x[i, a, j, t] + x[k, b, l, t] - 1)
+                            constraint_22[index] = m[i, a, k,
+                                                     b] >= x[i, a, j, t] + x[k, b, l, t] - 1
+                            index += 1
         print(f"----- Constraint 22 created for busy period {h} -----")
-        return constraint_22
+        return constraint_22[:index]
 
-    def create_constraint_23(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+    def create_constraint_23(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 23 for busy period {h} -----")
         self.assert_constraints_attributes()
-        constraint_23 = []
+        constraint_23 = np.empty((estimated_size,), dtype=object)
+        index = 0
         for i, activations in s_i_h_for_h.items():
             for k, b_activations in s_i_h_for_h.items():
                 if i != k:
                     for a, b in product(activations, b_activations):
-                        constraint_23.append(m[i, a, k, b] == m[k, b, i, a])
+                        constraint_23[index] = m[i, a, k, b] == m[k, b, i, a]
+                        index += 1
         print(f"----- Constraint 23 created for busy period {h} -----")
-        return constraint_23
+        return constraint_23[:index]
 
-    def create_constraint_24(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w):
+    def create_constraint_24(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 24 for busy period {h} -----")
         self.assert_constraints_attributes()
-        constraint_24 = []
+        constraint_24 = np.empty((estimated_size,), dtype=object)
+        index = 0
         for i, activations in s_i_h_for_h.items():
             for a in activations:
                 for j in range(self.number_of_cores):
                     for t in self.T_h[h]:
-                        constraint_24.append(w[i, a] >= (
-                            t * x[i, a, j, t]) - (a * self.taskset.period[i]) + 1)
+                        constraint_24[index] = w[i, a] >= (
+                            t * x[i, a, j, t]) - (a * self.taskset.period[i]) + 1
+                        index += 1
         print(f"----- Constraint 24 created for busy period {h} -----")
-        return constraint_24
+        return constraint_24[:index]
 
     def assert_constraints_attributes(self):
         """
@@ -396,25 +452,32 @@ class Rhma:
         s_i_h_for_h = self.extract_s_i_h_for_h(h)
         r_i_a_h_for_h = self.extract_r_i_a_h_for_h(h, s_i_h_for_h)
 
-        # Parallélisation de la création des contraintes
-        with ThreadPoolExecutor(max_workers=self.threads) as executor:
-            futures = {
-                executor.submit(self.create_constraint_16, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_16",
-                executor.submit(self.create_constraint_17, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_17",
-                executor.submit(self.create_constraint_18, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_18",
-                executor.submit(self.create_constraint_19, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_19",
-                executor.submit(self.create_constraint_20, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_20",
-                executor.submit(self.create_constraint_21, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_21",
-                executor.submit(self.create_constraint_22, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_22",
-                executor.submit(self.create_constraint_23, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_23",
-                executor.submit(self.create_constraint_24, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w): "constraint_24",
-            }
+        # Calculer estimated_size pour toutes les contraintes
+        estimated_sizes = self.calculate_estimated_size(s_i_h_for_h, h)
 
-            results = {key: future.result() for future, key in futures.items()}
-        print("----Finished creating constraint and combining----")
-        return (results["constraint_16"], results["constraint_17"], results["constraint_18"],
-                results["constraint_19"], results["constraint_20"], results["constraint_21"],
-                results["constraint_22"], results["constraint_23"], results["constraint_24"])
+        # Créer les contraintes en utilisant estimated_size
+        constraint_16 = self.create_constraint_16(
+            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_16"])
+        constraint_17 = self.create_constraint_17(
+            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_17"])
+        constraint_18 = self.create_constraint_18(
+            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_18"])
+        constraint_19 = self.create_constraint_19(
+            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_19"])
+        constraint_20 = self.create_constraint_20(
+            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_20"])
+        constraint_21 = self.create_constraint_21(
+            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_21"])
+        constraint_22 = self.create_constraint_22(
+            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_22"])
+        constraint_23 = self.create_constraint_23(
+            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_23"])
+        constraint_24 = self.create_constraint_24(
+            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_24"])
+
+        return (constraint_16, constraint_17, constraint_18,
+                constraint_19, constraint_20, constraint_21,
+                constraint_22, constraint_23, constraint_24)
 
     def add_constraints(self, prob, constraints_dict):
         for constraint_name, constraints in constraints_dict.items():

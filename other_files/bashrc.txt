@@ -50,6 +50,9 @@ export NODELIST_COL_SIZE=20
 alias env=$ENV
 alias gen='generate_and_submit'
 alias genf='generate_file'
+# Alias pour afficher le nom de l'expérience courante
+alias expn='cat $HOME/.current_experience'
+alias setexp='echo > $HOME/.current_experience'
 alias t20='tail_print 20'
 alias t100='tail_print 100'
 alias t500='tail_print 500'
@@ -77,6 +80,9 @@ alias sqna='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST
 
 generate_and_submit() {
     output_file="generated_script.sh"
+
+    # Enregistrer le nom de l'expérience dans un fichier
+    echo $1 > $HOME/.current_experience
 
     sbatch <<EOF
 #!/bin/bash
@@ -160,6 +166,9 @@ EOF
 
 generate_file() {
     output_file="generated_script.sh"
+
+    # Enregistrer le nom de l'expérience dans un fichier
+    echo $1 > $HOME/.current_experience
 
     cat <<EOF > $output_file
 #!/bin/bash
@@ -254,6 +263,12 @@ tail_print() {
     local line_count="$1"
     local experience="$2"
     local file_type="$3"
+
+    # Si l'argument 'experience' est 'expn', remplacer par le contenu de .current_experience
+    if [ "$experience" == "expn" ]; then
+        experience=$(cat $HOME/.current_experience)
+    fi
+
     local file_path="$GENERATION_DIR/${experience}/slurm/output"
 
     # Déterminez le chemin en fonction du troisième argument

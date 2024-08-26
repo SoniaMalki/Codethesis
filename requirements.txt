@@ -7,3 +7,4 @@ pytest
 seaborn
 sympy
 gurobipy
+psutil

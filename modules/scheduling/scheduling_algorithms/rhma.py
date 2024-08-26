@@ -431,16 +431,6 @@ class Rhma:
         # Calculer estimated_size pour toutes les contraintes
         estimated_sizes = self.calculate_estimated_size(s_i_h_for_h, h)
 
-        total_estimated_size = 0
-        for size in estimated_sizes.values():
-            total_estimated_size += size
-
-        total_estimated_size = (total_estimated_size * 8) / (1024 ** 3)
-        print(f"Estimated total memory usage: {total_estimated_size:.2f} GB")
-        if total_estimated_size > 32:
-            print(f"Too much memory usage needed for the constraints. Will fail.")
-            return None
-
         # Créer les contraintes en utilisant estimated_size
         constraint_16 = self.create_constraint_16(
             s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_16"])

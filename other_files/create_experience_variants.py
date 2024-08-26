@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 import re
 from copy import deepcopy
-import time
 import argparse
 
 # Define empty assignment_parameters and scheduling_parameters structures
@@ -21,18 +20,33 @@ EMPTY_SCHEDULING_PARAMETERS = {
     "solver_name_scheduling": []
 }
 
+# Full parameter definitions to maintain the strict order
+FULL_ASSIGNMENT_METHODS = ["WorstFitAssigner",
+                           "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"]
+FULL_SORTING_CRITERIA = ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending",
+                         "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
+FULL_SOLVING_TIME_LIMIT_ASSIGNMENT = [300]
+FULL_SOLVER_NAME_ASSIGNMENT = ["gurobi"]
+
+FULL_SCHEDULING_ALGORITHMS = ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2",
+                              "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]
+FULL_NON_PREEMPTION_OPTIONS = [
+    "number_of_tasks", "wcet_of_tasks", "system_utilization"]
+FULL_SOLVING_TIME_LIMIT_SCHEDULING = [300]
+FULL_SOLVER_NAME_SCHEDULING = ["gurobi"]
+
 FULL_ASSIGNMENT_PARAMETERS = {
-    "assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner", "Citta", "Wmin"],
-    "sorting_criteria": ["wcet_ascending", "wcet_descending", "period_ascending", "period_descending", "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"],
-    "solving_time_limit_milp_assignment": [300],
-    "solver_name_assignment": ["gurobi"]
+    "assignment_methods": FULL_ASSIGNMENT_METHODS,
+    "sorting_criteria": FULL_SORTING_CRITERIA,
+    "solving_time_limit_milp_assignment": FULL_SOLVING_TIME_LIMIT_ASSIGNMENT,
+    "solver_name_assignment": FULL_SOLVER_NAME_ASSIGNMENT
 }
 
 FULL_SCHEDULING_PARAMETERS = {
-    "scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"],
-    "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-    "solving_time_limit_milp_scheduling": [300],
-    "solver_name_scheduling": ["gurobi"]
+    "scheduling_algorithms": FULL_SCHEDULING_ALGORITHMS,
+    "non_preemption_time_variant2_options": FULL_NON_PREEMPTION_OPTIONS,
+    "solving_time_limit_milp_scheduling": FULL_SOLVING_TIME_LIMIT_SCHEDULING,
+    "solver_name_scheduling": FULL_SOLVER_NAME_SCHEDULING
 }
 
 
@@ -40,23 +54,15 @@ def create_reduced_experience(full_config, name, taskset_params=None, assignment
     """Creates a reduced experience configuration."""
     new_config = {}
 
-    if taskset_params is None:
-        new_config["taskset_parameters"] = deepcopy(
-            full_config["taskset_parameters"])
-    else:
-        new_config["taskset_parameters"] = taskset_params
+    # Use deepcopy to avoid altering the original structures
+    new_config["taskset_parameters"] = deepcopy(
+        taskset_params if taskset_params is not None else full_config.get("taskset_parameters", {}))
 
-    if assignment_params is None:
-        new_config["assignment_parameters"] = deepcopy(
-            FULL_ASSIGNMENT_PARAMETERS)
-    else:
-        new_config["assignment_parameters"] = assignment_params
+    new_config["assignment_parameters"] = deepcopy(
+        assignment_params if assignment_params is not None else full_config.get("assignment_parameters", FULL_ASSIGNMENT_PARAMETERS))
 
-    if scheduling_params is None:
-        new_config["scheduling_parameters"] = deepcopy(
-            FULL_SCHEDULING_PARAMETERS)
-    else:
-        new_config["scheduling_parameters"] = scheduling_params
+    new_config["scheduling_parameters"] = deepcopy(
+        scheduling_params if scheduling_params is not None else full_config.get("scheduling_parameters", FULL_SCHEDULING_PARAMETERS))
 
     return {f"full_experience_{name}": {"config_parameters": new_config}}
 
@@ -76,6 +82,8 @@ def format_json_string(data):
 def split_taskset_experiences(full_config, prefix=""):
     """Creates experience configurations for taskset generation only."""
     taskset_experiences = []
+    taskset_params = full_config.get("taskset_parameters", {})
+    max_utilization_factors = taskset_params.get("max_utilization_factors", [])
 
     # 1. Only Taskset
     taskset_experiences.append(create_reduced_experience(
@@ -84,7 +92,7 @@ def split_taskset_experiences(full_config, prefix=""):
         scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
 
     # 2. Only Taskset with different max_utilization_factors
-    for i, util_factor in enumerate(full_config["taskset_parameters"]["max_utilization_factors"]):
+    for i, util_factor in enumerate(max_utilization_factors):
         taskset_config = deepcopy(full_config)
         taskset_config["taskset_parameters"]["max_utilization_factors"] = [
             util_factor]
@@ -98,163 +106,209 @@ def split_taskset_experiences(full_config, prefix=""):
 def split_assignment_experiences(full_config, prefix=""):
     """Creates experience configurations for assignment methods."""
     assignment_experiences = []
+    assignment_params = full_config.get("assignment_parameters", {})
 
-    # 3. Only Assignment
-    assignment_experiences.append(create_reduced_experience(
-        full_config, f"{prefix}only_assignment",
-        assignment_params=full_config["assignment_parameters"],
-        scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
+    # Check if assignment methods exist and create experiences accordingly
+    if "assignment_methods" in assignment_params:
+        available_methods = set(assignment_params["assignment_methods"])
 
-    # 4. Only Assignment with Simple Assigners
-    assignment_experiences.append(create_reduced_experience(full_config, f"{prefix}only_assignment_simple_assigner",
-                                                            assignment_params={"assignment_methods": ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner"],
-                                                                               "sorting_criteria": full_config["assignment_parameters"]["sorting_criteria"],
-                                                                               "solving_time_limit_milp_assignment": [],
-                                                                               "solver_name_assignment": []},
-                                                            scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
-    # 5. Only Assignment with Citta
-    assignment_experiences.append(create_reduced_experience(full_config, f"{prefix}only_assignment_citta",
-                                                            assignment_params={"assignment_methods": ["Citta"],
-                                                                               "sorting_criteria": full_config["assignment_parameters"]["sorting_criteria"],
-                                                                               "solving_time_limit_milp_assignment": [300],
-                                                                               "solver_name_assignment": ["gurobi"]},
-                                                            scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
+        # 3. Only Assignment
+        assignment_experiences.append(create_reduced_experience(
+            full_config, f"{prefix}only_assignment",
+            assignment_params=assignment_params,
+            scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
 
-    # 6. Only Assignment with Citta, split by sorting criteria
-    citta_sorting = {
-        "wcet": ["wcet_ascending", "wcet_descending"],
-        "period": ["period_ascending", "period_descending"],
-        "utilization": ["utilization_ascending", "utilization_descending"],
-        "execution_slack": ["execution_slack_ascending", "execution_slack_descending"],
-        "random": ["random_order"],
-    }
-    for name, sorting in citta_sorting.items():
-        assignment_experiences.append(create_reduced_experience(full_config, f"{prefix}only_assignment_citta_sorting_{name}",
-                                                                assignment_params={"assignment_methods": ["Citta"],
-                                                                                   "sorting_criteria": sorting,
-                                                                                   "solving_time_limit_milp_assignment": [300],
-                                                                                   "solver_name_assignment": ["gurobi"]},
-                                                                scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
+        # Simple Assigners
+        # ["WorstFitAssigner", "FirstFitAssigner", "BestFitAssigner"]
+        simple_assigners = set(FULL_ASSIGNMENT_METHODS[:3])
+        if simple_assigners & available_methods:
+            assignment_experiences.append(create_reduced_experience(
+                full_config, f"{prefix}only_assignment_simple_assigner",
+                assignment_params={
+                    "assignment_methods": [method for method in FULL_ASSIGNMENT_METHODS if method in simple_assigners & available_methods],
+                    "sorting_criteria": [criterion for criterion in FULL_SORTING_CRITERIA if criterion in assignment_params.get("sorting_criteria", [])],
+                    "solving_time_limit_milp_assignment": [],
+                    "solver_name_assignment": []
+                },
+                scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
 
-    # 7. Only Assignment with Wmin
-    assignment_experiences.append(create_reduced_experience(full_config, f"{prefix}only_assignment_wmin",
-                                                            assignment_params={"assignment_methods": ["Wmin"],
-                                                                               "sorting_criteria": [],
-                                                                               "solving_time_limit_milp_assignment": [300],
-                                                                               "solver_name_assignment": ["gurobi"]},
-                                                            scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
+        # Citta Assigners
+        if "Citta" in available_methods:
+            assignment_experiences.append(create_reduced_experience(
+                full_config, f"{prefix}only_assignment_citta",
+                assignment_params={
+                    "assignment_methods": ["Citta"],
+                    "sorting_criteria": [criterion for criterion in FULL_SORTING_CRITERIA if criterion in assignment_params.get("sorting_criteria", [])],
+                    "solving_time_limit_milp_assignment": [300],
+                    "solver_name_assignment": ["gurobi"]
+                },
+                scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
+
+            # Citta with different sorting criteria
+            citta_sorting_criteria = {
+                "wcet": ["wcet_ascending", "wcet_descending"],
+                "period": ["period_ascending", "period_descending"],
+                "utilization": ["utilization_ascending", "utilization_descending"],
+                "execution_slack": ["execution_slack_ascending", "execution_slack_descending"],
+                "random": ["random_order"],
+            }
+            for name, sorting in citta_sorting_criteria.items():
+                if set(sorting) & set(assignment_params.get("sorting_criteria", [])):
+                    assignment_experiences.append(create_reduced_experience(
+                        full_config, f"{prefix}only_assignment_citta_sorting_{name}",
+                        assignment_params={
+                            "assignment_methods": ["Citta"],
+                            "sorting_criteria": [criterion for criterion in sorting if criterion in assignment_params.get("sorting_criteria", [])],
+                            "solving_time_limit_milp_assignment": [300],
+                            "solver_name_assignment": ["gurobi"]
+                        },
+                        scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
+
+        # Wmin Assigners
+        if "Wmin" in available_methods:
+            assignment_experiences.append(create_reduced_experience(
+                full_config, f"{prefix}only_assignment_wmin",
+                assignment_params={
+                    "assignment_methods": ["Wmin"],
+                    "sorting_criteria": [],
+                    "solving_time_limit_milp_assignment": [300],
+                    "solver_name_assignment": ["gurobi"]
+                },
+                scheduling_params=EMPTY_SCHEDULING_PARAMETERS))
+
     return assignment_experiences
 
 
 def split_scheduling_experiences(full_config, prefix=""):
     """Creates experience configurations for scheduling algorithms."""
     scheduling_experiences = []
+    scheduling_params = full_config.get("scheduling_parameters", {})
 
-    # 8. Only Scheduling (all algorithms)
-    scheduling_experiences.append(create_reduced_experience(
-        full_config, f"{prefix}only_scheduling",
-        assignment_params=full_config["assignment_parameters"],
-        scheduling_params=full_config["scheduling_parameters"]))
+    # Check if scheduling algorithms exist and create experiences accordingly
+    if "scheduling_algorithms" in scheduling_params:
+        available_algorithms = set(scheduling_params["scheduling_algorithms"])
 
-    # 9. Only Scheduling without RHMA
-    scheduling_experiences.append(create_reduced_experience(
-        full_config, f"{prefix}only_scheduling_without_rhma",
-        assignment_params=full_config["assignment_parameters"],
-        scheduling_params={"scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1", "EarliestDeadlineFirstVariant2",
-                                                     "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler"],
-                           "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-                           "solving_time_limit_milp_scheduling": [300],
-                           "solver_name_scheduling": ["gurobi"]}))
-
-    # 10. Only Scheduling with Simple Scheduling algorithms
-    scheduling_experiences.append(create_reduced_experience(
-        full_config,
-        f"{prefix}only_scheduling_simple_scheduling",
-        assignment_params=full_config["assignment_parameters"],
-        scheduling_params={"scheduling_algorithms": ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1",
-                                                     "DeadlineMonotonic", "DeadlineMonotonicVariant1"],
-                           "non_preemption_time_variant2_options": [],
-                           "solving_time_limit_milp_scheduling": [],
-                           "solver_name_scheduling": []}))
-
-    # 11. Only Scheduling with individual Simple Scheduling algorithms
-    simple_schedulers = ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1",
-                         "DeadlineMonotonic", "DeadlineMonotonicVariant1"]
-    for scheduler in simple_schedulers:
+        # 8. Only Scheduling (all algorithms)
         scheduling_experiences.append(create_reduced_experience(
-            full_config,
-            f"{prefix}only_scheduling_simple_scheduling_{scheduler.lower()}",
-            assignment_params=full_config["assignment_parameters"],
-            scheduling_params={"scheduling_algorithms": [scheduler],
-                               "non_preemption_time_variant2_options": [],
-                               "solving_time_limit_milp_scheduling": [],
-                               "solver_name_scheduling": []}))
+            full_config, f"{prefix}only_scheduling",
+            assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+            scheduling_params=scheduling_params))
 
-    # 12. Only Scheduling with Variant 2 algorithms
-    scheduling_experiences.append(create_reduced_experience(
-        full_config,
-        f"{prefix}only_scheduling_variant_2",
-        assignment_params=full_config["assignment_parameters"],
-        scheduling_params={"scheduling_algorithms": ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2"],
-                           "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-                           "solving_time_limit_milp_scheduling": [],
-                           "solver_name_scheduling": []}))
+        # Scheduling without RHMA
+        if available_algorithms - {"Rhma"}:
+            scheduling_experiences.append(create_reduced_experience(
+                full_config, f"{prefix}only_scheduling_without_rhma",
+                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                scheduling_params={
+                    "scheduling_algorithms": [algorithm for algorithm in FULL_SCHEDULING_ALGORITHMS if algorithm != "Rhma" and algorithm in available_algorithms],
+                    "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
+                    "solving_time_limit_milp_scheduling": FULL_SOLVING_TIME_LIMIT_SCHEDULING,
+                    "solver_name_scheduling": FULL_SOLVER_NAME_SCHEDULING
+                }))
 
-    # 13. Only Scheduling with individual Variant 2 algorithms
-    variant2_schedulers = [
-        "EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2"]
-    for scheduler in variant2_schedulers:
-        scheduling_experiences.append(create_reduced_experience(
-            full_config,
-            f"{prefix}only_scheduling_variant_2_{scheduler.lower()}",
-            assignment_params=full_config["assignment_parameters"],
-            scheduling_params={"scheduling_algorithms": [scheduler],
-                               "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-                               "solving_time_limit_milp_scheduling": [],
-                               "solver_name_scheduling": []}))
+        # Simple Scheduling algorithms
+        simple_schedulers = {"EarliestDeadlineFirst", "DeadlineMonotonic",
+                             "EarliestDeadlineFirstVariant1", "DeadlineMonotonicVariant1"}
+        if simple_schedulers & available_algorithms:
+            # Use the original order from FULL_SCHEDULING_ALGORITHMS
+            scheduling_experiences.append(create_reduced_experience(
+                full_config, f"{prefix}only_scheduling_simple_scheduling",
+                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                scheduling_params={
+                    "scheduling_algorithms": [algorithm for algorithm in FULL_SCHEDULING_ALGORITHMS if algorithm in simple_schedulers & available_algorithms],
+                    "non_preemption_time_variant2_options": [],
+                    "solving_time_limit_milp_scheduling": [],
+                    "solver_name_scheduling": []
+                }))
 
-    # 14. Only Scheduling with CombinedScheduler
-    scheduling_experiences.append(create_reduced_experience(
-        full_config,
-        f"{prefix}only_scheduling_combined",
-        assignment_params=full_config["assignment_parameters"],
-        scheduling_params={"scheduling_algorithms": ["CombinedScheduler"],
-                           "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-                           "solving_time_limit_milp_scheduling": [],
-                           "solver_name_scheduling": []}))
+        # Individual Simple Scheduling algorithms in the original order
+        for scheduler in FULL_SCHEDULING_ALGORITHMS:
+            if scheduler in simple_schedulers and scheduler in available_algorithms:
+                scheduling_experiences.append(create_reduced_experience(
+                    full_config, f"{prefix}only_scheduling_simple_scheduling_{scheduler.lower()}",
+                    assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                    scheduling_params={
+                        "scheduling_algorithms": [scheduler],
+                        "non_preemption_time_variant2_options": [],
+                        "solving_time_limit_milp_scheduling": [],
+                        "solver_name_scheduling": []
+                    }))
 
-    # 15. Only Scheduling with CombinedScheduler, split by sorting criteria
-    for name in ["number_of_tasks", "wcet_of_tasks", "system_utilization"]:
-        scheduling_experiences.append(create_reduced_experience(
-            full_config,
-            f"{prefix}only_scheduling_combined_sorting_criterion_{name}",
-            assignment_params=full_config["assignment_parameters"],
-            scheduling_params={"scheduling_algorithms": ["CombinedScheduler"],
-                               "non_preemption_time_variant2_options": [name],
-                               "solving_time_limit_milp_scheduling": [],
-                               "solver_name_scheduling": []}))
+        # Variant 2 algorithms
+        variant2_schedulers = {
+            "EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2"}
+        if variant2_schedulers & available_algorithms:
+            scheduling_experiences.append(create_reduced_experience(
+                full_config, f"{prefix}only_scheduling_variant_2",
+                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                scheduling_params={
+                    "scheduling_algorithms": [algorithm for algorithm in FULL_SCHEDULING_ALGORITHMS if algorithm in variant2_schedulers & available_algorithms],
+                    "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
+                    "solving_time_limit_milp_scheduling": [],
+                    "solver_name_scheduling": []
+                }))
 
-    # 16. Only Scheduling with RHMA
-    scheduling_experiences.append(create_reduced_experience(
-        full_config,
-        f"{prefix}only_scheduling_rhma",
-        assignment_params=full_config["assignment_parameters"],
-        scheduling_params={"scheduling_algorithms": ["Rhma"],
-                           "non_preemption_time_variant2_options": ["number_of_tasks", "wcet_of_tasks", "system_utilization"],
-                           "solving_time_limit_milp_scheduling": [300],
-                           "solver_name_scheduling": ["gurobi"]}))
+        # Individual Variant 2 algorithms
+        for scheduler in FULL_SCHEDULING_ALGORITHMS:
+            if scheduler in variant2_schedulers and scheduler in available_algorithms:
+                scheduling_experiences.append(create_reduced_experience(
+                    full_config, f"{prefix}only_scheduling_variant_2_{scheduler.lower()}",
+                    assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                    scheduling_params={
+                        "scheduling_algorithms": [scheduler],
+                        "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
+                        "solving_time_limit_milp_scheduling": [],
+                        "solver_name_scheduling": []
+                    }))
 
-    # 17. Only Scheduling with RHMA, split by sorting criteria
-    for name in ["number_of_tasks", "wcet_of_tasks", "system_utilization"]:
-        scheduling_experiences.append(create_reduced_experience(
-            full_config,
-            f"{prefix}only_scheduling_rhma_sorting_criterion_{name}",
-            assignment_params=full_config["assignment_parameters"],
-            scheduling_params={"scheduling_algorithms": ["Rhma"],
-                               "non_preemption_time_variant2_options": [name],
-                               "solving_time_limit_milp_scheduling": [300],
-                               "solver_name_scheduling": ["gurobi"]})
-        )
+        # Combined Scheduler
+        if "CombinedScheduler" in available_algorithms:
+            scheduling_experiences.append(create_reduced_experience(
+                full_config, f"{prefix}only_scheduling_combined",
+                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                scheduling_params={
+                    "scheduling_algorithms": ["CombinedScheduler"],
+                    "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
+                    "solving_time_limit_milp_scheduling": [],
+                    "solver_name_scheduling": []
+                }))
+
+            # Split by sorting criteria
+            for name in scheduling_params.get("non_preemption_time_variant2_options", []):
+                scheduling_experiences.append(create_reduced_experience(
+                    full_config, f"{prefix}only_scheduling_combined_sorting_criterion_{name}",
+                    assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                    scheduling_params={
+                        "scheduling_algorithms": ["CombinedScheduler"],
+                        "non_preemption_time_variant2_options": [name],
+                        "solving_time_limit_milp_scheduling": [],
+                        "solver_name_scheduling": []
+                    }))
+
+        # RHMA algorithm
+        if "Rhma" in available_algorithms:
+            scheduling_experiences.append(create_reduced_experience(
+                full_config, f"{prefix}only_scheduling_rhma",
+                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                scheduling_params={
+                    "scheduling_algorithms": ["Rhma"],
+                    "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
+                    "solving_time_limit_milp_scheduling": [300],
+                    "solver_name_scheduling": ["gurobi"]
+                }))
+
+            # Split by sorting criteria for RHMA
+            for name in scheduling_params.get("non_preemption_time_variant2_options", []):
+                scheduling_experiences.append(create_reduced_experience(
+                    full_config, f"{prefix}only_scheduling_rhma_sorting_criterion_{name}",
+                    assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                    scheduling_params={
+                        "scheduling_algorithms": ["Rhma"],
+                        "non_preemption_time_variant2_options": [name],
+                        "solving_time_limit_milp_scheduling": [300],
+                        "solver_name_scheduling": ["gurobi"]
+                    }))
+
     return scheduling_experiences
 
 
@@ -271,7 +325,7 @@ def split_experience(experience_data, split_by_tpt):
 
     # 2. Split by tpt if enabled
     if split_by_tpt:
-        for tpt in full_config["taskset_parameters"]["tasks_per_taskset"]:
+        for tpt in full_config.get("taskset_parameters", {}).get("tasks_per_taskset", []):
             tpt_config = deepcopy(full_config)
             tpt_config["taskset_parameters"]["tasks_per_taskset"] = [tpt]
 

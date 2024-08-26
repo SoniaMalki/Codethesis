@@ -36,7 +36,7 @@ class SchedulingGenerator:
         self.scheduling_options = scheduling_options
         self.number_of_cores = self.assignment_set.number_of_cores
         self.threads = self.scheduling_options.get("threads", 1)
-        self.memory_threshold_theory = 4 * self.threads
+        self.memory_threshold_theory = 16 * self.threads
         self.memory_threshold_gb = 0.8 * self.memory_threshold_theory
         self.scheduling_algorithms = [
             "EarliestDeadlineFirst",

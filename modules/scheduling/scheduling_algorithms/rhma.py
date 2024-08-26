@@ -431,29 +431,24 @@ class Rhma:
         # Calculer estimated_size pour toutes les contraintes
         estimated_sizes = self.calculate_estimated_size(s_i_h_for_h, h)
 
-        # Créer les contraintes en utilisant estimated_size
-        constraint_16 = self.create_constraint_16(
-            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_16"])
-        constraint_17 = self.create_constraint_17(
-            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_17"])
-        constraint_18 = self.create_constraint_18(
-            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_18"])
-        constraint_19 = self.create_constraint_19(
-            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_19"])
-        constraint_20 = self.create_constraint_20(
-            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_20"])
-        constraint_21 = self.create_constraint_21(
-            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_21"])
-        constraint_22 = self.create_constraint_22(
-            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_22"])
-        constraint_23 = self.create_constraint_23(
-            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_23"])
-        constraint_24 = self.create_constraint_24(
-            s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_24"])
+        with ThreadPoolExecutor(max_workers=self.threads) as executor:
+            futures = {
+                executor.submit(self.create_constraint_16, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_16"]): "constraint_16",
+                executor.submit(self.create_constraint_17, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_17"]): "constraint_17",
+                executor.submit(self.create_constraint_18, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_18"]): "constraint_18",
+                executor.submit(self.create_constraint_19, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_19"]): "constraint_19",
+                executor.submit(self.create_constraint_20, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_20"]): "constraint_20",
+                executor.submit(self.create_constraint_21, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_21"]): "constraint_21",
+                executor.submit(self.create_constraint_22, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_22"]): "constraint_22",
+                executor.submit(self.create_constraint_23, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_23"]): "constraint_23",
+                executor.submit(self.create_constraint_24, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_24"]): "constraint_24",
+            }
 
-        return (constraint_16, constraint_17, constraint_18,
-                constraint_19, constraint_20, constraint_21,
-                constraint_22, constraint_23, constraint_24)
+            results = {key: future.result() for future, key in futures.items()}
+
+        return (results["constraint_16"], results["constraint_17"], results["constraint_18"],
+                results["constraint_19"], results["constraint_20"], results["constraint_21"],
+                results["constraint_22"], results["constraint_23"], results["constraint_24"])
 
     def add_constraints(self, prob, constraints_dict):
         for constraint_name, constraints in constraints_dict.items():
@@ -510,8 +505,6 @@ class Rhma:
             print("----Adding constraints to the model----")
             self.add_constraints(self.model, constraints_dict)
             print("----Finished adding the constraint to the model----")
-
-
 
             print("----Creating objective function----")
             # Objective function

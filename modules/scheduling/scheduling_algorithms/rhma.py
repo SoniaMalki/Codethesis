@@ -498,7 +498,9 @@ class Rhma:
             f"-------------\nSolving RHMA")
 
         schedule = BusyPeriod()
-        if self.busy_periods[0].success == 0:
+        if len(self.busy_periods) <= 1:
+            print(
+                "CombinedScheduler failed to divide the hyperperiod into busy periods. RHMA will not run.")
             return schedule
 
         for h, busy_period in enumerate(self.busy_periods):

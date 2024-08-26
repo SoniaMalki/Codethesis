@@ -52,6 +52,11 @@ class ResultAnalyzer:
             self.df["tasks_per_taskset"] / self.df["number_of_cores"]
         )  # Calcul du ratio tâches/cœurs
 
+        if 'max_utilization' in self.df.columns and 'number_of_cores' in self.df.columns:
+            print("Updating max_utilization by dividing by number of cores...")
+            self.df['max_utilization'] = self.df['max_utilization'] / \
+                self.df['number_of_cores']
+
         print("ResultAnalyzer initialized successfully.")
 
     def run_analysis(self):

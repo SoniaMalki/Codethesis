@@ -498,6 +498,8 @@ class Rhma:
             f"-------------\nSolving RHMA")
 
         schedule = BusyPeriod()
+        if self.busy_periods[0].success == 0:
+            return schedule
 
         for h, busy_period in enumerate(self.busy_periods):
             print(
@@ -601,13 +603,15 @@ class Rhma:
                         else:
                             print(
                                 f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
-                            schedule.add_period(scheduling=self.busy_periods[h])
+                            schedule.add_period(
+                                scheduling=self.busy_periods[h])
                             total_utilization = self.busy_periods[h].total_utilization
                         success = True
 
                     if type(self.actual_utilization) == float:
                         self.actual_utilization = [np.nan]
-                    self.actual_utilization[h] = total_utilization/self.hyperperiod
+                    self.actual_utilization[h] = total_utilization / \
+                        self.hyperperiod
 
                 except gp.GurobiError:
                     retries += 1
@@ -616,7 +620,8 @@ class Rhma:
 
             if retries >= max_retries:
                 # Raise the exception if the limit is reached
-                raise gp.GurobiError("Gurobi failed to solve after multiple attempts.")
+                raise gp.GurobiError(
+                    "Gurobi failed to solve after multiple attempts.")
 
         print("----- RHMA Scheduling Completed -----")
         return schedule

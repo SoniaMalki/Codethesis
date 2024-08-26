@@ -41,7 +41,7 @@ class SlurmGenerator:
             "assignment_milp": {"time": "05:00:00", "mem": "1G", "batch_size": 200},
             "scheduling_simple": {"time": "01:00:00", "mem": "1G", "batch_size": 400},
             "scheduling_combined": {"time": "02:00:00", "mem": "1G", "batch_size": 200},
-            "scheduling_rhma": {"time": "05:00:00", "mem": "16G", "batch_size": 100},
+            "scheduling_rhma": {"time": "05:00:00", "mem": "8G", "batch_size": 400},
         }
 
         self.master_dir = self.generation_path / "slurm" / "master"

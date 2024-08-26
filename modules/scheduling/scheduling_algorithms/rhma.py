@@ -455,6 +455,17 @@ class Rhma:
         # Calculer estimated_size pour toutes les contraintes
         estimated_sizes = self.calculate_estimated_size(s_i_h_for_h, h)
 
+        max_estimated_size = 0
+        for size in estimated_sizes.values():
+            if size > max_estimated_size:
+                max_estimated_size = size
+
+        max_estimated_size = (max_estimated_size * 8) / (1024 ** 3)
+        print(f"Estimated max memory usage: {max_estimated_size:.2f} GB")
+        if max_estimated_size > 8:
+            print(f"Too much memory usage needed for just one constraint. Will fail.")
+            return None
+
         # Créer les contraintes en utilisant estimated_size
         constraint_16 = self.create_constraint_16(
             s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_sizes["constraint_16"])
@@ -512,8 +523,10 @@ class Rhma:
                 self.model.setParam(*param)
 
             x, m, w = self.createLpVariables(h)
-            constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24 = self.createLpConstraints(
-                h, x, m, w)
+            constraints = self.createLpConstraints(h, x, m, w)
+            if constraints is None:
+                return schedule
+            constraint_16, constraint_17, constraint_18, constraint_19, constraint_20, constraint_21, constraint_22, constraint_23, constraint_24 = constraints
 
             # Exemple d'utilisation avec votre série de contraintes
             constraints_dict = {

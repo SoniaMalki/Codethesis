@@ -1,0 +1,30 @@
+{
+  "full_experience": {
+    "config_parameters": {
+      "taskset_parameters": {
+        "taskset_repetitions": [5],
+        "tasks_per_taskset": [4, 10, 20],
+        "interference_factors": [0.2, 0.8],
+        "probability_factors": [0.1, 0.4],
+        "max_utilization_factors": [0.2, 0.4, 0.6, 0.8, 1],
+        "deadline_options": ["eq_period"],
+        "prime_exponent_hyperperiod_combinations": [
+          [500, 11, 5]
+        ],
+        "number_of_cores_list": [2, 4, 8]
+      },
+      "assignment_parameters": {
+        "assignment_methods": ["BestFitAssigner", "Citta", "Wmin"],
+        "sorting_criteria": ["utilization_descending", "execution_slack_ascending"],
+        "solving_time_limit_milp_assignment": [300],
+        "solver_name_assignment": ["gurobi"] 
+      },
+      "scheduling_parameters": {
+        "scheduling_algorithms": ["EarliestDeadlineFirst", "CombinedScheduler", "Rhma"],
+        "non_preemption_time_variant2_options": ["system_utilization"],
+        "solving_time_limit_milp_scheduling": [300],
+        "solver_name_scheduling": ["gurobi"] 
+      }
+    }
+  }  
+}

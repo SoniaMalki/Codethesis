@@ -35,7 +35,8 @@ class SchedulingGenerator:
         self.scheduling_algorithm = scheduling_algorithm
         self.scheduling_options = scheduling_options
         self.number_of_cores = self.assignment_set.number_of_cores
-        self.memory_threshold_theory = 4
+        self.threads = self.scheduling_options.get("threads", 1)
+        self.memory_threshold_theory = 4 * self.threads
         self.memory_threshold_gb = 0.8 * self.memory_threshold_theory
         self.scheduling_algorithms = [
             "EarliestDeadlineFirst",
@@ -78,6 +79,17 @@ class SchedulingGenerator:
 
         # Placer le résultat dans la queue
         queue.put(schedule, success)
+
+    def run_scheduler_composite(self, scheduler, queue):
+        """Fonction pour exécuter le scheduler dans un processus séparé et retourner le résultat via une queue."""
+        try:
+            schedule = scheduler.schedule()
+        except MemoryError:
+            print("Mémoire insuffisante. Arrêt du scheduling.")
+            schedule = None
+
+        # Placer le résultat dans la queue
+        queue.put(schedule)
 
     def generate_scheduling_set(self):
         """Generates schedulings for each assignment within the TasksetSet."""
@@ -175,29 +187,54 @@ class SchedulingGenerator:
         print(
             f"Generating composite scheduling using {scheduler_class.__name__}")
         start_time_compute = perf_counter()
+
         scheduler = scheduler_class(
             taskset=taskset,
             assignment=assignment,
             number_of_cores=self.number_of_cores,
             scheduling_options=self.scheduling_options,
             start_time=start_time,
-            end_time=end_time
+            end_time=end_time,
         )
-        busy_periods = scheduler.schedule()
+
+        queue = multiprocessing.Queue()
+        scheduling_process = multiprocessing.Process(
+            target=self.run_scheduler_composite, args=(scheduler, queue))
+        scheduling_process.start()
+
+        memory_exceeded = False
+
+        try:
+            self.monitor_memory(scheduling_process)
+        except MemoryLimitExceededException:
+            print(
+                "Memory limit exceeded during composite scheduling. Stopping scheduling.")
+            memory_exceeded = True
+
+        scheduling_process.join()
+
+        if memory_exceeded:
+            if scheduling_process.is_alive():
+                scheduling_process.terminate()
+            queue.close()
+            busy_periods = None
+        else:
+            busy_periods = queue.get()
+
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute
 
         scheduling = CompositeScheduling(scheduler_name=str(scheduler))
-        for busy_period in busy_periods:
-            scheduling.add_schedule(schedule=busy_period)
 
-        if len(busy_periods) == 0:
-            scheduling.success = 0
+        if busy_periods is not None:
+            for busy_period in busy_periods:
+                scheduling.add_schedule(schedule=busy_period)
 
-        if not scheduling.success:
+        if busy_periods is None or len(busy_periods) == 0 or not scheduling.success:
             computation_time = numpy.nan
             actual_utilization = numpy.nan
             theoritical_utilization = numpy.nan
+            scheduling.success = 0
             print(
                 f"Composite scheduling failed for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
         else:

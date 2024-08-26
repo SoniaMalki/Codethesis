@@ -1,11 +1,12 @@
+import multiprocessing
+import sched
+import psutil
 from time import perf_counter
-
 import numpy
 
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.composite_scheduling import CompositeScheduling
 from modules.scheduling.scheduling_set import SchedulingSet
-
 from modules.scheduling.scheduling_algorithms.combined_scheduler import CombinedScheduler
 from modules.scheduling.scheduling_algorithms.rhma import Rhma
 
@@ -15,8 +16,12 @@ from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant2 i
 from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
 from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant1 import DeadlineMonotonicVariant1
 from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant2 import DeadlineMonotonicVariant2
-
 import time
+from modules.utils.busy_period import BusyPeriod
+
+
+class MemoryLimitExceededException(Exception):
+    pass
 
 
 class SchedulingGenerator:
@@ -30,6 +35,8 @@ class SchedulingGenerator:
         self.scheduling_algorithm = scheduling_algorithm
         self.scheduling_options = scheduling_options
         self.number_of_cores = self.assignment_set.number_of_cores
+        self.memory_threshold_theory = 4
+        self.memory_threshold_gb = 0.8 * self.memory_threshold_theory
         self.scheduling_algorithms = [
             "EarliestDeadlineFirst",
             "EarliestDeadlineFirstVariant1",
@@ -45,6 +52,32 @@ class SchedulingGenerator:
         ]
         print(
             f"SchedulingGenerator initialized with algorithm: {self.scheduling_algorithm}")
+
+    def monitor_memory(self, process):
+        """Moniteur qui vérifie l'utilisation de la mémoire. Si l'utilisation dépasse le seuil spécifié, interrompt le processus donné."""
+        psutil_process = psutil.Process(process.pid)
+        while process.is_alive():
+            memory_info = psutil_process.memory_info()
+            memory_usage = memory_info.rss / (1024 ** 3)
+            if memory_usage > self.memory_threshold_gb:
+                print(
+                    f"Utilisation excessive de la mémoire détectée ({memory_usage:.2f}GB/{self.memory_threshold_theory}GB). Interruption du processus de scheduling.")
+                process.terminate()
+                raise MemoryLimitExceededException("Memory limit exceeded")
+            time.sleep(0.5)
+
+    def run_scheduler(self, scheduler, queue):
+        """Fonction pour exécuter le scheduler dans un processus séparé et retourner le résultat via une queue."""
+        try:
+            schedule = scheduler.schedule()
+            success = True
+        except MemoryError:
+            print("Mémoire insuffisante. Arrêt du scheduling.")
+            schedule = None
+            success = False
+
+        # Placer le résultat dans la queue
+        queue.put(schedule, success)
 
     def generate_scheduling_set(self):
         """Generates schedulings for each assignment within the TasksetSet."""
@@ -71,6 +104,7 @@ class SchedulingGenerator:
                     f"Generating scheduling for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
                 scheduling = scheduling_function(
                     taskset=taskset, assignment=assignment, scheduler_class=scheduler_class, start_time=1, end_time=None)
+
                 scheduling_list.append(scheduling)
                 print(
                     f"Scheduling generated for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
@@ -91,10 +125,35 @@ class SchedulingGenerator:
             start_time=start_time,
             end_time=end_time,
         )
-        schedule, success = scheduler.schedule()
+
+        queue = multiprocessing.Queue()
+        scheduling_process = multiprocessing.Process(
+            target=self.run_scheduler, args=(scheduler, queue))
+        scheduling_process.start()
+
+        memory_exceeded = False
+
+        try:
+            self.monitor_memory(scheduling_process)
+        except MemoryLimitExceededException:
+            print("Memory limit exceeded during scheduling. Stopping scheduling.")
+            memory_exceeded = True
+
+        scheduling_process.join()
+
+        if memory_exceeded:
+            if scheduling_process.is_alive():
+                scheduling_process.terminate()
+            queue.close()
+            schedule = None
+            success = 0
+        else:
+            schedule, success = queue.get()
+
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute
-        if not success:
+
+        if not success or schedule is None:
             computation_time = numpy.nan
             actual_utilization = numpy.nan
             theoritical_utilization = numpy.nan

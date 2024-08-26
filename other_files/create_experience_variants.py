@@ -183,6 +183,7 @@ def split_scheduling_experiences(full_config, prefix=""):
     """Creates experience configurations for scheduling algorithms."""
     scheduling_experiences = []
     scheduling_params = full_config.get("scheduling_parameters", {})
+    assignment_params = full_config.get("assignment_parameters", {})
 
     # Check if scheduling algorithms exist and create experiences accordingly
     if "scheduling_algorithms" in scheduling_params:
@@ -191,14 +192,14 @@ def split_scheduling_experiences(full_config, prefix=""):
         # 8. Only Scheduling (all algorithms)
         scheduling_experiences.append(create_reduced_experience(
             full_config, f"{prefix}only_scheduling",
-            assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+            assignment_params=assignment_params,
             scheduling_params=scheduling_params))
 
         # Scheduling without RHMA
         if available_algorithms - {"Rhma"}:
             scheduling_experiences.append(create_reduced_experience(
                 full_config, f"{prefix}only_scheduling_without_rhma",
-                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                assignment_params=assignment_params,
                 scheduling_params={
                     "scheduling_algorithms": [algorithm for algorithm in FULL_SCHEDULING_ALGORITHMS if algorithm != "Rhma" and algorithm in available_algorithms],
                     "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
@@ -213,7 +214,7 @@ def split_scheduling_experiences(full_config, prefix=""):
             # Use the original order from FULL_SCHEDULING_ALGORITHMS
             scheduling_experiences.append(create_reduced_experience(
                 full_config, f"{prefix}only_scheduling_simple_scheduling",
-                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                assignment_params=assignment_params,
                 scheduling_params={
                     "scheduling_algorithms": [algorithm for algorithm in FULL_SCHEDULING_ALGORITHMS if algorithm in simple_schedulers & available_algorithms],
                     "non_preemption_time_variant2_options": [],
@@ -226,7 +227,7 @@ def split_scheduling_experiences(full_config, prefix=""):
             if scheduler in simple_schedulers and scheduler in available_algorithms:
                 scheduling_experiences.append(create_reduced_experience(
                     full_config, f"{prefix}only_scheduling_simple_scheduling_{scheduler.lower()}",
-                    assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                    assignment_params=assignment_params,
                     scheduling_params={
                         "scheduling_algorithms": [scheduler],
                         "non_preemption_time_variant2_options": [],
@@ -240,7 +241,7 @@ def split_scheduling_experiences(full_config, prefix=""):
         if variant2_schedulers & available_algorithms:
             scheduling_experiences.append(create_reduced_experience(
                 full_config, f"{prefix}only_scheduling_variant_2",
-                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                assignment_params=assignment_params,
                 scheduling_params={
                     "scheduling_algorithms": [algorithm for algorithm in FULL_SCHEDULING_ALGORITHMS if algorithm in variant2_schedulers & available_algorithms],
                     "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
@@ -253,7 +254,7 @@ def split_scheduling_experiences(full_config, prefix=""):
             if scheduler in variant2_schedulers and scheduler in available_algorithms:
                 scheduling_experiences.append(create_reduced_experience(
                     full_config, f"{prefix}only_scheduling_variant_2_{scheduler.lower()}",
-                    assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                    assignment_params=assignment_params,
                     scheduling_params={
                         "scheduling_algorithms": [scheduler],
                         "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
@@ -265,7 +266,7 @@ def split_scheduling_experiences(full_config, prefix=""):
         if "CombinedScheduler" in available_algorithms:
             scheduling_experiences.append(create_reduced_experience(
                 full_config, f"{prefix}only_scheduling_combined",
-                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                assignment_params=assignment_params,
                 scheduling_params={
                     "scheduling_algorithms": ["CombinedScheduler"],
                     "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
@@ -277,7 +278,7 @@ def split_scheduling_experiences(full_config, prefix=""):
             for name in scheduling_params.get("non_preemption_time_variant2_options", []):
                 scheduling_experiences.append(create_reduced_experience(
                     full_config, f"{prefix}only_scheduling_combined_sorting_criterion_{name}",
-                    assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                    assignment_params=assignment_params,
                     scheduling_params={
                         "scheduling_algorithms": ["CombinedScheduler"],
                         "non_preemption_time_variant2_options": [name],
@@ -289,7 +290,7 @@ def split_scheduling_experiences(full_config, prefix=""):
         if "Rhma" in available_algorithms:
             scheduling_experiences.append(create_reduced_experience(
                 full_config, f"{prefix}only_scheduling_rhma",
-                assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                assignment_params=assignment_params,
                 scheduling_params={
                     "scheduling_algorithms": ["Rhma"],
                     "non_preemption_time_variant2_options": [option for option in FULL_NON_PREEMPTION_OPTIONS if option in scheduling_params.get("non_preemption_time_variant2_options", [])],
@@ -301,7 +302,7 @@ def split_scheduling_experiences(full_config, prefix=""):
             for name in scheduling_params.get("non_preemption_time_variant2_options", []):
                 scheduling_experiences.append(create_reduced_experience(
                     full_config, f"{prefix}only_scheduling_rhma_sorting_criterion_{name}",
-                    assignment_params=FULL_ASSIGNMENT_PARAMETERS,
+                    assignment_params=assignment_params,
                     scheduling_params={
                         "scheduling_algorithms": ["Rhma"],
                         "non_preemption_time_variant2_options": [name],

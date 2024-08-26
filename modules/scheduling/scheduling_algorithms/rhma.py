@@ -555,50 +555,68 @@ class Rhma:
 
             print("----Added objective function to the model----")
 
-            print(
-                f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
-            # self.model.write(f"modele_rhma_gurobipy_{h}.lp")
-            # self.model.write(f"modele_rhma_gurobipy_{h}.mps")
-            self.model.optimize()
-            print(
-                f"-------------\nFinished BP solving-------------\n")
+            # Mécanisme de réessai pour résoudre le modèle
+            max_retries = 100
+            retries = 0
+            success = False
 
-            # Checking if a solution is found
-            if self.model.status == GRB.OPTIMAL:
-                total_utilization = 0
-                busy_period_schedule = [[]
-                                        for _ in range(self.number_of_cores)]
-
-                for t in self.T_h[h]:
-                    for i in range(len(self.taskset)):
-                        for a in self.S_i_h[i, h]:
-                            for j in range(self.number_of_cores):
-                                if x[i, a, j, t].X == 1:
-                                    busy_period_schedule[j].append(
-                                        (t, i, a))
-                                    total_utilization += 1
-
-                busy_period_schedule = Scheduling(
-                    schedule=busy_period_schedule, success=1, scheduler_name="RHMA")
-                busy_period_schedule.add_total_utilization(
-                    total_utilization=total_utilization)
-                schedule.add_period(scheduling=busy_period_schedule)
-                print(f"RHMA solution found for busy period {h}.")
-
-            else:
-                if self.busy_periods[h].success == 0:
+            while retries < max_retries and not success:
+                try:
                     print(
-                        f'RHMA failed to find a solution for busy period. Cannot use CombinedScheduler instead, because it did not find one as well.')
-                    return schedule
-                else:
+                        f"-------------\nSolving BP {h}/{len(self.busy_periods)} from {busy_period.start_time} to {busy_period.end_time}")
+                    # self.model.write(f"modele_rhma_gurobipy_{h}.lp")
+                    # self.model.write(f"modele_rhma_gurobipy_{h}.mps")
+                    self.model.optimize()
                     print(
-                        f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
-                    schedule.add_period(scheduling=self.busy_periods[h])
-                    total_utilization = self.busy_periods[h].total_utilization
+                        f"-------------\nFinished BP solving-------------\n")
 
-            if type(self.actual_utilization) == float:
-                self.actual_utilization = [np.nan]
-            self.actual_utilization[h] = total_utilization/self.hyperperiod
+                    # Checking if a solution is found
+                    if self.model.status == GRB.OPTIMAL:
+                        total_utilization = 0
+                        busy_period_schedule = [[]
+                                                for _ in range(self.number_of_cores)]
+
+                        for t in self.T_h[h]:
+                            for i in range(len(self.taskset)):
+                                for a in self.S_i_h[i, h]:
+                                    for j in range(self.number_of_cores):
+                                        if x[i, a, j, t].X == 1:
+                                            busy_period_schedule[j].append(
+                                                (t, i, a))
+                                            total_utilization += 1
+
+                        busy_period_schedule = Scheduling(
+                            schedule=busy_period_schedule, success=1, scheduler_name="RHMA")
+                        busy_period_schedule.add_total_utilization(
+                            total_utilization=total_utilization)
+                        schedule.add_period(scheduling=busy_period_schedule)
+                        print(f"RHMA solution found for busy period {h}.")
+                        success = True
+
+                    else:
+                        if self.busy_periods[h].success == 0:
+                            print(
+                                f'RHMA failed to find a solution for busy period. Cannot use CombinedScheduler instead, because it did not find one as well.')
+                            return schedule
+                        else:
+                            print(
+                                f"RHMA failed to find a solution for busy period {h}. Using CombinedScheduler instead.")
+                            schedule.add_period(scheduling=self.busy_periods[h])
+                            total_utilization = self.busy_periods[h].total_utilization
+                        success = True
+
+                    if type(self.actual_utilization) == float:
+                        self.actual_utilization = [np.nan]
+                    self.actual_utilization[h] = total_utilization/self.hyperperiod
+
+                except gp.GurobiError:
+                    retries += 1
+                    print(f"Gurobi error, retrying {retries}/{max_retries}")
+                    success = False
+
+            if retries >= max_retries:
+                # Raise the exception if the limit is reached
+                raise gp.GurobiError("Gurobi failed to solve after multiple attempts.")
 
         print("----- RHMA Scheduling Completed -----")
         return schedule

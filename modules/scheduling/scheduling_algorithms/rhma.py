@@ -277,7 +277,7 @@ class Rhma:
 
     def create_constraint_16(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 16 for busy period {h} -----")
-        self.assert_constraints_attributes()
+
         constraint_16 = np.empty((estimated_size,), dtype=object)
         index = 0
         for i, activations in s_i_h_for_h.items():
@@ -292,7 +292,7 @@ class Rhma:
 
     def create_constraint_17(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 17 for busy period {h} -----")
-        self.assert_constraints_attributes()
+
         constraint_17 = np.empty((estimated_size,), dtype=object)
         index = 0
         for i, activations in s_i_h_for_h.items():
@@ -308,7 +308,7 @@ class Rhma:
 
     def create_constraint_18(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 18 for busy period {h} -----")
-        self.assert_constraints_attributes()
+
         constraint_18 = np.empty((estimated_size,), dtype=object)
         index = 0
         for i, activations in s_i_h_for_h.items():
@@ -330,7 +330,7 @@ class Rhma:
 
     def create_constraint_19(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 19 for busy period {h} -----")
-        self.assert_constraints_attributes()
+
         constraint_19 = np.empty((estimated_size,), dtype=object)
         index = 0
         for i, activations in s_i_h_for_h.items():
@@ -352,7 +352,7 @@ class Rhma:
 
     def create_constraint_20(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 20 for busy period {h} -----")
-        self.assert_constraints_attributes()
+
         constraint_20 = np.empty((estimated_size,), dtype=object)
         index = 0
         for i, activations in s_i_h_for_h.items():
@@ -368,7 +368,7 @@ class Rhma:
 
     def create_constraint_21(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 21 for busy period {h} -----")
-        self.assert_constraints_attributes()
+
         constraint_21 = np.empty((estimated_size,), dtype=object)
         index = 0
         for j, t in product(range(self.number_of_cores), self.T_h[h]):
@@ -380,7 +380,7 @@ class Rhma:
 
     def create_constraint_22(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 22 for busy period {h} -----")
-        self.assert_constraints_attributes()
+
         constraint_22 = np.empty((estimated_size,), dtype=object)
         index = 0
         for i, activations in s_i_h_for_h.items():
@@ -396,7 +396,7 @@ class Rhma:
 
     def create_constraint_23(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 23 for busy period {h} -----")
-        self.assert_constraints_attributes()
+
         constraint_23 = np.empty((estimated_size,), dtype=object)
         index = 0
         for i, activations in s_i_h_for_h.items():
@@ -410,7 +410,7 @@ class Rhma:
 
     def create_constraint_24(self, s_i_h_for_h, r_i_a_h_for_h, h, x, m, w, estimated_size):
         print(f"----- Creating constraint 24 for busy period {h} -----")
-        self.assert_constraints_attributes()
+
         constraint_24 = np.empty((estimated_size,), dtype=object)
         index = 0
         for i, activations in s_i_h_for_h.items():
@@ -423,30 +423,6 @@ class Rhma:
         print(f"----- Constraint 24 created for busy period {h} -----")
         return constraint_24[:index]
 
-    def assert_constraints_attributes(self):
-        """
-        Function to assert that all necessary attributes for constraints are correctly initialized.
-        """
-        assert self.taskset is not None, "taskset should not be None"
-        assert self.assignment is not None, "assignment should not be None"
-        assert self.number_of_cores > 0, "number_of_cores should be greater than 0"
-        assert self.scheduling_options is not None, "scheduling_options should not be None"
-        assert self.o_i_j is not None, "o_i_j should not be None"
-        assert self.maxI is not None, "maxI should not be None"
-        assert self.combined_scheduler is not None, "combined_scheduler should not be None"
-        assert self.busy_periods is not None and len(
-            self.busy_periods) > 0, "busy_periods should not be None or empty"
-        assert self.actual_utilization is not None, "actual_utilization should not be None"
-        assert self.S_i_h is not None and len(
-            self.S_i_h) > 0, "S_i_h should not be None or empty"
-        assert self.R_i_a_h is not None and len(
-            self.R_i_a_h) > 0, "R_i_a_h should not be None or empty"
-        assert self.T_h is not None and len(
-            self.T_h) > 0, "T_h should not be None or empty"
-        assert self.d_i_a is not None, "d_i_a should not be None"
-        assert self.solver_name in [
-            "gurobi"], "solver_name should be 'gurobi'"
-        assert self.model is not None, "model should not be None"
 
     def createLpConstraints(self, h, x, m, w):
         s_i_h_for_h = self.extract_s_i_h_for_h(h)
@@ -455,15 +431,14 @@ class Rhma:
         # Calculer estimated_size pour toutes les contraintes
         estimated_sizes = self.calculate_estimated_size(s_i_h_for_h, h)
 
-        max_estimated_size = 0
+        total_estimated_size = 0
         for size in estimated_sizes.values():
-            if size > max_estimated_size:
-                max_estimated_size = size
+            total_estimated_size += size
 
-        max_estimated_size = (max_estimated_size * 8) / (1024 ** 3)
-        print(f"Estimated max memory usage: {max_estimated_size:.2f} GB")
-        if max_estimated_size > 8:
-            print(f"Too much memory usage needed for just one constraint. Will fail.")
+        total_estimated_size = (total_estimated_size * 8) / (1024 ** 3)
+        print(f"Estimated total memory usage: {total_estimated_size:.2f} GB")
+        if total_estimated_size > 32:
+            print(f"Too much memory usage needed for the constraints. Will fail.")
             return None
 
         # Créer les contraintes en utilisant estimated_size
@@ -546,7 +521,7 @@ class Rhma:
             self.add_constraints(self.model, constraints_dict)
             print("----Finished adding the constraint to the model----")
 
-            self.assert_constraints_attributes()
+
 
             print("----Creating objective function----")
             # Objective function

@@ -93,7 +93,7 @@ generate_and_submit() {
     output_file="generated_script.slurm"
 
     # Enregistrer le nom de l'expérience dans un fichier
-    echo "$exp_name" > $HOME/.current_experience
+    echo ${exp_name}_${index} > $HOME/.current_experience
 
     sbatch <<EOF
 #!/bin/bash
@@ -141,7 +141,7 @@ echo "--------SBATCH-OUTPUT-BEGIN------------------"
 tempfile=\$(mktemp)
 
 # Soumission du job et capture de la sortie et des erreurs
-sbatch "\$GENERATION_DIR/${exp_name}_${index}/slurm/master/full_pipeline_${exp_name}.slurm" >"\$tempfile" 2>&1
+sbatch "\$GENERATION_DIR/${exp_name}_${index}/slurm/master/full_pipeline_${exp_name}_${index}.slurm" >"\$tempfile" 2>&1
 output=\$(cat "\$tempfile")
 
 # Vérifier s'il y a une erreur dans la sortie
@@ -187,7 +187,7 @@ generate_file() {
     output_file="generated_script.slurm"
 
     # Enregistrer le nom de l'expérience dans un fichier
-    echo "$exp_name" > $HOME/.current_experience
+    echo ${exp_name}_${index} > $HOME/.current_experience
 
     cat <<EOF > $output_file
 #!/bin/bash
@@ -235,7 +235,7 @@ echo "--------SBATCH-OUTPUT-BEGIN------------------"
 tempfile=\$(mktemp)
 
 # Soumission du job et capture de la sortie et des erreurs
-sbatch "\$GENERATION_DIR/${exp_name}_${index}/slurm/master/full_pipeline_${exp_name}.slurm" >"\$tempfile" 2>&1
+sbatch "\$GENERATION_DIR/${exp_name}_${index}/slurm/master/full_pipeline_${exp_name}_${index}.slurm" >"\$tempfile" 2>&1
 output=\$(cat "\$tempfile")
 
 # Vérifier s'il y a une erreur dans la sortie

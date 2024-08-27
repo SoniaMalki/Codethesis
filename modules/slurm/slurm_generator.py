@@ -667,11 +667,11 @@ python3 -u {self.main_path}/main.py analyze_results {self.index} {self.experienc
 
         # Create the full_pipeline SLURM script in the master directory
         slurm_file = self.master_dir / \
-            f"full_pipeline_{self.experience_id}.slurm"
+            f"full_pipeline_{self.experience_id}_{self.index}.slurm"
         with open(slurm_file, "w") as f:
             f.write(f"""#!/bin/bash
-#SBATCH --job-name=full_pipeline_{self.experience_id}
-#SBATCH --output={self.output_dir / f"full_pipeline_{self.experience_id}.txt"}
+#SBATCH --job-name=full_pipeline_{self.experience_id}_{self.index}
+#SBATCH --output={self.output_dir / f"full_pipeline_{self.experience_id}_{self.index}.txt"}
 #SBATCH --ntasks=1
 #SBATCH --time={self.full_pipeline_time}
 #SBATCH --mem-per-cpu={self.full_pipeline_mem}

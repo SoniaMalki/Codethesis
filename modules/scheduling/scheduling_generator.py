@@ -36,8 +36,8 @@ class SchedulingGenerator:
         self.scheduling_options = scheduling_options
         self.number_of_cores = self.assignment_set.number_of_cores
         self.threads = self.scheduling_options.get("threads", 1)
-        self.memory_threshold_theory = 16 * self.threads
-        self.memory_threshold_gb = 0.8 * self.memory_threshold_theory
+        self.memory_threshold_theory = 8 * self.threads
+        self.memory_threshold_gb = 0.95 * self.memory_threshold_theory
         self.scheduling_algorithms = [
             "EarliestDeadlineFirst",
             "EarliestDeadlineFirstVariant1",
@@ -76,6 +76,7 @@ class SchedulingGenerator:
             actual_utilization = scheduler.actual_utilization
         except MemoryError:
             print("Mémoire insuffisante. Arrêt du scheduling.")
+            print("Traceback MemoryError")
             schedule = None
             success = 0
             actual_utilization = numpy.nan
@@ -92,6 +93,7 @@ class SchedulingGenerator:
 
         except MemoryError:
             print("Mémoire insuffisante. Arrêt du scheduling.")
+            print("Traceback MemoryError")
             schedule = None
             actual_utilization = [numpy.nan]
 
@@ -159,6 +161,7 @@ class SchedulingGenerator:
             self.monitor_memory(scheduling_process)
         except MemoryLimitExceededException:
             print("Memory limit exceeded during scheduling. Stopping scheduling.")
+            print("Traceback MemoryError")
             memory_exceeded = True
 
         scheduling_process.join()
@@ -222,6 +225,7 @@ class SchedulingGenerator:
         except MemoryLimitExceededException:
             print(
                 "Memory limit exceeded during composite scheduling. Stopping scheduling.")
+            print("Traceback MemoryError")
             memory_exceeded = True
 
         scheduling_process.join()

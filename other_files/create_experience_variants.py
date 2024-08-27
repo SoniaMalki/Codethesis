@@ -348,11 +348,14 @@ if __name__ == "__main__":
         description='Split experience configurations.')
     parser.add_argument('--split_by_tpt', action='store_true',
                         help='Enable splitting experiences by tasks_per_taskset')
+    parser.add_argument('index', type=int,
+                        help='An integer index argument')
     args = parser.parse_args()
+    index = args.index
 
     # Load the base experience JSON file
     json_path = Path(os.getenv('CODETHESIS'))
-    with open(json_path / "base_experience.json", "r") as f:
+    with open(json_path / f"base_experience_{index}.json", "r") as f:
         experience_data = json.load(f)
 
     # Split the experience configuration
@@ -364,5 +367,5 @@ if __name__ == "__main__":
         final_experience_data.update(experience)
 
     # Write the formatted JSON to a file
-    with open(json_path / "experience.json", "w") as f:
+    with open(json_path / f"experience_{index}.json", "w") as f:
         f.write(format_json_string(final_experience_data))

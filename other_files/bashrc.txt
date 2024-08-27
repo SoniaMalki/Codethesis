@@ -59,6 +59,7 @@ alias t20='tail_print 20'
 alias t100='tail_print 100'
 alias t500='tail_print 500'
 alias rebash='cp $HOME/.bashrc_empty $HOME/.bashrc && nano $HOME/.bashrc && source $HOME/.bashrc'
+alias lg='ls $GLOBALSCRATCH/generation'
 alias rmplots=rm_plots
 alias rmplot=rm_plots
 alias rmres=rm_res
@@ -140,7 +141,7 @@ echo "--------SBATCH-OUTPUT-BEGIN------------------"
 tempfile=\$(mktemp)
 
 # Soumission du job et capture de la sortie et des erreurs
-sbatch "\$GENERATION_DIR/$exp_name/slurm/master/full_pipeline_$exp_name.slurm" >"\$tempfile" 2>&1
+sbatch "\$GENERATION_DIR/${exp_name}_${index}/slurm/master/full_pipeline_${exp_name}.slurm" >"\$tempfile" 2>&1
 output=\$(cat "\$tempfile")
 
 # Vérifier s'il y a une erreur dans la sortie
@@ -234,7 +235,7 @@ echo "--------SBATCH-OUTPUT-BEGIN------------------"
 tempfile=\$(mktemp)
 
 # Soumission du job et capture de la sortie et des erreurs
-sbatch "\$GENERATION_DIR/$exp_name/slurm/master/full_pipeline_$exp_name.slurm" >"\$tempfile" 2>&1
+sbatch "\$GENERATION_DIR/${exp_name}_${index}/slurm/master/full_pipeline_${exp_name}.slurm" >"\$tempfile" 2>&1
 output=\$(cat "\$tempfile")
 
 # Vérifier s'il y a une erreur dans la sortie

@@ -8,10 +8,12 @@ from modules.utils.db_utils import DBUtils
 
 
 class SlurmGenerator:
-    def __init__(self, main_path, generation_path, db_path, experience_id, experience_data, batch_size=100):
+    def __init__(self, main_path, generation_path, db_path, index, experience_id, experience_data, batch_size=100):
         print("Initializing SlurmGenerator")
         self.main_path = Path(main_path)
-        self.generation_path = Path(generation_path) / experience_id
+        index_path = f"{experience_id}_{index}"
+        self.generation_path = Path(generation_path) / index_path
+        self.index = index
         self.db_path = db_path
         self.experience_id = experience_id
 
@@ -152,7 +154,7 @@ done
 #SBATCH --mem-per-cpu={slurm_memory}
 {self.modules}
 source $GLOBALSCRATCH/myenv/bin/activate
-python3 -u {self.main_path}/main.py run_experience {self.experience_id} {config_key}
+python3 -u {self.main_path}/main.py run_experience {self.index} {self.experience_id} {config_key}
 """
 
     def determine_optimal_resources(self, config_type, algorithm):
@@ -376,7 +378,7 @@ done
 
 # Exécuter le script d'analyse
 source $GLOBALSCRATCH/myenv/bin/activate
-python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
+python3 -u {self.main_path}/main.py analyze_results {self.index} {self.experience_id}
 """
             )
         print(f"SLURM file for analyzing results written at {slurm_file}")
@@ -569,13 +571,13 @@ python3 -u {self.main_path}/main.py analyze_results {self.experience_id}
             f"echo \"Starting full pipeline for {self.experience_id}\"\n"
             f"{self.modules}"
             f"source $GLOBALSCRATCH/myenv/bin/activate\n"
-            f"python3 -u {self.main_path}/main.py generate_configs {self.experience_id}\n"
+            f"python3 -u {self.main_path}/main.py generate_configs {self.index} {self.experience_id}\n"
             "if [ $? -ne 0 ]; then\n"
             "    echo \"Échec de la génération des configurations\"\n"
             "    exit 1\n"
             "fi\n\n"
             "echo \"Génération des configurations réussie\"\n"
-            f"python3 -u {self.main_path}/main.py generate_slurm_files {self.experience_id}\n"
+            f"python3 -u {self.main_path}/main.py generate_slurm_files {self.index} {self.experience_id}\n"
             "if [ $? -ne 0 ]; then\n"
             "    echo \"Échec de la génération des fichiers SLURM\"\n"
             "    exit 1\n"

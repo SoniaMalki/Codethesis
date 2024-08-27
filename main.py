@@ -105,6 +105,7 @@ def main(action, index, experience_id, experience_action=None):
             main_path=main_path,
             generation_path=generation_path,
             db_path=db_path,
+            index=index,
             experience_id=experience_id,
             experience_data=experience_data[experience_id],
         )
@@ -134,6 +135,7 @@ def main(action, index, experience_id, experience_action=None):
             main_path=main_path,
             generation_path=generation_path,
             db_path=db_path,
+            index=index,
             experience_id=experience_id,
             experience_data=experience_data[experience_id],
         )

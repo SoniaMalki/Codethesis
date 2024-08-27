@@ -60,6 +60,10 @@ alias t100='tail_print 100'
 alias t500='tail_print 500'
 alias rebash='cp $HOME/.bashrc_empty $HOME/.bashrc && nano $HOME/.bashrc && source $HOME/.bashrc'
 alias lg='ls $GLOBALSCRATCH/generation'
+alias cf='count_files'
+alias serror='search_traceback.sh "" $(expn) all && search_slurmstepd.sh "" $(expn) all'
+alias derror='delete_error_handling'
+
 alias rmplots=rm_plots
 alias rmplot=rm_plots
 alias rmres=rm_res
@@ -78,6 +82,11 @@ alias sqnr='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST
 # Alias pour squeue avec nom complet et PID des jobs running ou pending pour raison autre que Dependency
 alias sqna='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST_COL_SIZE't %.'$TIME_COL_SIZE'M %.'$NODES_COL_SIZE'D %.'$NODELIST_COL_SIZE'R" | awk '\''BEGIN { printf "%-'$NAME_COL_SIZE's %-'$PID_COL_SIZE's %-'$ST_COL_SIZE's %-'$TIME_COL_SIZE's %-'$NODES_COL_SIZE's %-'$NODELIST_COL_SIZE's\n", "NAME", "PID", "ST", "TIME", "NODES", "NODELIST" } $3 == "R" || ($3 == "PD" && $6 != "(Dependency)") { printf "%-'$NAME_COL_SIZE's %-'$PID_COL_SIZE's %-'$ST_COL_SIZE's %-'$TIME_COL_SIZE's %-'$NODES_COL_SIZE's %-'$NODELIST_COL_SIZE's\n", $1, $2, $3, $4, $5, $6 }'\'''
 
+
+#---------AutoCompletion-------------------------
+# Activer l'autocomplétion pour count_files et cf
+complete -F _count_files_autocomplete count_files
+complete -F _count_files_autocomplete cf
 
 #----------Fonctions-----------------------------
 
@@ -337,6 +346,43 @@ tail_print() {
     tail -n "$line_count" "$file_path"
 }
 
+count_files() {
+    local parent_dir="$CODETHESIS/error_handling/$1"
+    if [[ ! -d "$parent_dir" ]]; then
+        echo "Le dossier $parent_dir n'existe pas. Utilisez 'output_error' ou 'slurm_error'."
+        return 1
+    fi
+
+    for subdir in "$parent_dir"/*/; do
+        if [ -d "$subdir" ]; then
+            local count=$(find "$subdir" -type f | wc -l)
+            local subdirname=$(basename "$subdir")
+            echo "$subdirname: $count fichiers"
+        fi
+    done
+}
+
+_count_files_autocomplete() {
+    local cur prev options
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    options="output_error slurm_error"
+
+    if [[ ${prev} == "count_files" || ${prev} == "cf" ]]; then
+        COMPREPLY=( $(compgen -W "${options}" -- ${cur}) )
+    fi
+}
+
+delete_error_handling() {
+    echo "Êtes-vous sûr de vouloir supprimer le dossier $CODETHESIS/error_handling ? (y/n)"
+    read -r response
+    if [[ "$response" == "y" ]]; then
+        rm -rf "$CODETHESIS/error_handling"
+        echo "Dossier supprimé."
+    else
+        echo "Opération annulée."
+    fi
+}
 
 
 # Fonction pour gérer la suppression avec confirmation

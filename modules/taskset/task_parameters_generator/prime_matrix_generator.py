@@ -5,11 +5,12 @@ from modules.taskset.task_parameters_generator.prime_matrix_loader_saver import 
 
 
 class PrimeMatrixGenerator:
-    def __init__(self, main_path, max_hyperperiod, max_prime, gen_limit_exponent):
+    def __init__(self, main_path, result_path, max_hyperperiod, max_prime, gen_limit_exponent):
         print("Initializing PrimeMatrixGenerator")
         self.main_path = main_path
+        self.result_path = result_path
         self.number_of_matrices = 25
-        self.loader_saver = PrimeMatrixLoaderSaver(main_path)
+        self.loader_saver = PrimeMatrixLoaderSaver(main_path, result_path)
         self.max_hyperperiod = max_hyperperiod
         self.max_prime = max_prime
         self.generation_limit = max_hyperperiod**gen_limit_exponent

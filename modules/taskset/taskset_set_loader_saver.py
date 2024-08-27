@@ -6,8 +6,8 @@ from modules.utils.db_utils import DBUtils
 
 
 class TasksetSetLoaderSaver:
-    def __init__(self, main_path, db_path):
-        self.taskset_path = main_path / "results" / "tasksets"
+    def __init__(self, main_path, db_path, result_path):
+        self.taskset_path = result_path / "tasksets"
         self.db_utils = DBUtils(db_path)
 
     def load(self, taskset_id):

@@ -6,8 +6,8 @@ from modules.utils.db_utils import DBUtils
 
 
 class SchedulingLoaderSaver:
-    def __init__(self, main_path, db_path):
-        self.scheduling_path = main_path / "results" / "schedulings"
+    def __init__(self, main_path, db_path, result_path):
+        self.scheduling_path = result_path / "schedulings"
         self.expected_scheduling_path = main_path / \
             "tests" / "results_test" / "expected_schedulings"
 

@@ -5,8 +5,8 @@ from modules.utils.db_utils import DBUtils
 
 
 class AssignmentLoaderSaver:
-    def __init__(self, main_path, db_path):
-        self.assignment_path = main_path / "results" / "assignments"
+    def __init__(self, main_path, db_path, result_path):
+        self.assignment_path = result_path / "assignments"
         self.db_utils = DBUtils(db_path)
 
     def load(self, assignment_id):

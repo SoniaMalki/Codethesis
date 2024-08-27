@@ -96,7 +96,7 @@ def main(action, index, experience_id, experience_action=None):
         for combination in prime_matrix_combinations:
             max_hyperperiod, max_prime, gen_limit_exponent = combination
             prime_matrix_generator = PrimeMatrixGenerator(
-                main_path=generation_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
+                main_path=generation_path, result_path=result_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
             prime_matrix_generator.generate_matrix()
 
         # Génération des fichiers SLURM
@@ -112,12 +112,14 @@ def main(action, index, experience_id, experience_action=None):
 
     elif action == "run_experience":
         print(f"Running experience with action: {experience_action}")
-        experience_loader_db = ExperienceLoader(db_path, experience_id)
+        experience_loader_db = ExperienceLoader(
+            db_path, result_path, experience_id)
         run_experience(experience_action, experience_loader_db)
 
     elif action == "run_batch_experiences":
         print(f"Running batch experiences with action: {experience_action}")
-        experience_loader_db = ExperienceLoader(db_path, experience_id)
+        experience_loader_db = ExperienceLoader(
+            db_path, result_path, experience_id)
         run_batch_experiences(experience_loader_db, experience_action)
 
     elif action == "generate_configs":

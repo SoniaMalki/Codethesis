@@ -4,10 +4,11 @@ from modules.utils.db_utils import DBUtils
 
 
 class ExperienceLoader:
-    def __init__(self, db_path, experience_id=None):
+    def __init__(self, db_path, result_path, experience_id=None):
         print(
             f"Initializing ExperienceLoader for experience ID: {experience_id}")
         self.db_utils = DBUtils(db_path)
+        self.result_path = result_path
         self.experience_id = experience_id
         print("ExperienceLoader initialized successfully")
 
@@ -120,7 +121,8 @@ class ExperienceLoader:
             assignment_parameters=assignment_params,
             scheduling_parameters=scheduling_params,
             main_path=Path(self.db_utils.db_path).parent,
-            db_path=self.db_utils.db_path
+            db_path=self.db_utils.db_path,
+            result_path=self.result_path
         )
 
     def get_experience_ids(self):

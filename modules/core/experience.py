@@ -15,7 +15,7 @@ from modules.utils.db_utils import DBUtils
 
 
 class Experience:
-    def __init__(self, taskset_parameters, assignment_parameters, scheduling_parameters, main_path, db_path):
+    def __init__(self, taskset_parameters, assignment_parameters, scheduling_parameters, main_path, db_path, result_path):
         """
         Initializes an Experience object.
 
@@ -32,6 +32,7 @@ class Experience:
 
         self.main_path = main_path
         self.db_path = db_path
+        self.result_path = result_path
 
         self.taskset_set_obj = None
         self.assignment_set_obj = None
@@ -77,7 +78,7 @@ class Experience:
 
         elif self.taskset_parameters["action"] == 'open' or self.taskset_parameters["action"] == 'generate':
             taskset_loader_saver = TasksetSetLoaderSaver(
-                self.main_path, self.db_path)
+                self.main_path, self.db_path, self.result_path)
 
             # Vérifier si un chemin de résultat est enregistré dans la base de données
             result_file_path = self.db_utils.get_result_file_path(
@@ -96,6 +97,7 @@ class Experience:
                 print("Generating taskset")
                 taskset_generator = TasksetSetGenerator(
                     self.main_path,
+                    self.result_path,
                     self.taskset_parameters["taskset_id"], **self.taskset_parameters["parameters"]
                 )
                 self.taskset_set_obj = taskset_generator.generate_taskset_set()
@@ -135,7 +137,7 @@ class Experience:
 
         elif self.assignment_parameters["action"] == 'open' or self.assignment_parameters["action"] == 'generate':
             assignment_loader_saver = AssignmentLoaderSaver(
-                self.main_path, self.db_path)
+                self.main_path, self.db_path, self.result_path)
 
             # Vérifier si un chemin de résultat est enregistré dans la base de données
             result_file_path = self.db_utils.get_result_file_path(
@@ -183,7 +185,7 @@ class Experience:
 
         elif self.scheduling_parameters["action"] == 'open' or self.scheduling_parameters["action"] == 'generate':
             scheduling_loader_saver = SchedulingLoaderSaver(
-                self.main_path, self.db_path)
+                self.main_path, self.db_path, self.result_path)
 
             # Vérifier si un chemin de résultat est enregistré dans la base de données
             result_file_path = self.db_utils.get_result_file_path(

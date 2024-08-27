@@ -4,8 +4,8 @@ from pathlib import Path
 
 
 class PrimeMatrixLoaderSaver:
-    def __init__(self, main_path):
-        self.matrix_path = main_path / "results" / "prime_matrices"
+    def __init__(self, main_path, result_path):
+        self.matrix_path = result_path / "prime_matrices"
 
     def get_matrix_filename(self, max_hyperperiod, max_prime, gen_limit_exponent, index=0):
         return f"prime_matrix_{max_hyperperiod}_{max_prime}_{gen_limit_exponent}_{index}.pkl"

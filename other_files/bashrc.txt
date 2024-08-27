@@ -37,6 +37,7 @@ export PATH=$PATH:$CODETHESIS/other_files
 export EMPTY_DIR="$HOME/empty_dir"
 export WALLTIME="2-00:00:00"
 export ENV="source $GLOBALSCRATCH/myenv/bin/activate"
+export DENV="deactivate"
 
 # Définition des variables pour les tailles de colonnes
 export PID_COL_SIZE=8
@@ -48,6 +49,7 @@ export NODELIST_COL_SIZE=20
 
 #----------Alias---------------------------------
 alias env=$ENV
+alias denv=$DENV
 alias gen='generate_and_submit'
 alias genf='generate_file'
 # Alias pour afficher le nom de l'expérience courante
@@ -79,10 +81,18 @@ alias sqna='squeue -u $USER -h -o "%.'$NAME_COL_SIZE'j %.'$PID_COL_SIZE'i %.'$ST
 #----------Fonctions-----------------------------
 
 generate_and_submit() {
-    output_file="generated_script.sh"
+    if [ -z "$1" ] || ! [[ "$1" =~ ^[0-9]+$ ]]; then
+        echo "Erreur: L'argument 'index' est obligatoire et doit être un chiffre."
+        echo "Utilisation: generate_and_submit <index>"
+        return 1
+    fi
+
+    index="$1"
+    exp_name="$2"
+    output_file="generated_script.slurm"
 
     # Enregistrer le nom de l'expérience dans un fichier
-    echo $1 > $HOME/.current_experience
+    echo "$exp_name" > $HOME/.current_experience
 
     sbatch <<EOF
 #!/bin/bash
@@ -118,7 +128,7 @@ source $GLOBALSCRATCH/myenv/bin/activate
 # Exécute le script Python pour générer les scripts SLURM
 echo "Launching python generate_slurm_scripts"
 echo "--------PYTHON-OUTPUT-BEGIN------------------"
-python3 -u \$HOME/Codethesis/main.py generate_slurm_scripts $1
+python3 -u \$HOME/Codethesis/main.py generate_slurm_scripts $index $exp_name
 echo "--------PYTHON-OUTPUT-END--------------------"
 echo "Python generate slurm script finish."
 
@@ -130,7 +140,7 @@ echo "--------SBATCH-OUTPUT-BEGIN------------------"
 tempfile=\$(mktemp)
 
 # Soumission du job et capture de la sortie et des erreurs
-sbatch "\$GENERATION_DIR/$1/slurm/master/full_pipeline_$1.slurm" >"\$tempfile" 2>&1
+sbatch "\$GENERATION_DIR/$exp_name/slurm/master/full_pipeline_$exp_name.slurm" >"\$tempfile" 2>&1
 output=\$(cat "\$tempfile")
 
 # Vérifier s'il y a une erreur dans la sortie
@@ -165,10 +175,18 @@ EOF
 }
 
 generate_file() {
-    output_file="generated_script.sh"
+    if [ -z "$1" ] || ! [[ "$1" =~ ^[0-9]+$ ]]; then
+        echo "Erreur: L'argument 'index' est obligatoire et doit être un chiffre."
+        echo "Utilisation: generate_file <index>"
+        return 1
+    fi
+
+    index="$1"
+    exp_name="$2"
+    output_file="generated_script.slurm"
 
     # Enregistrer le nom de l'expérience dans un fichier
-    echo $1 > $HOME/.current_experience
+    echo "$exp_name" > $HOME/.current_experience
 
     cat <<EOF > $output_file
 #!/bin/bash
@@ -204,7 +222,7 @@ source $GLOBALSCRATCH/myenv/bin/activate
 # Exécute le script Python pour générer les scripts SLURM
 echo "Launching python generate_slurm_scripts"
 echo "--------PYTHON-OUTPUT-BEGIN------------------"
-python3 -u \$HOME/Codethesis/main.py generate_slurm_scripts $1
+python3 -u \$HOME/Codethesis/main.py generate_slurm_scripts $index $exp_name
 echo "--------PYTHON-OUTPUT-END--------------------"
 echo "Python generate slurm script finish."
 
@@ -216,7 +234,7 @@ echo "--------SBATCH-OUTPUT-BEGIN------------------"
 tempfile=\$(mktemp)
 
 # Soumission du job et capture de la sortie et des erreurs
-sbatch "\$GENERATION_DIR/$1/slurm/master/full_pipeline_$1.slurm" >"\$tempfile" 2>&1
+sbatch "\$GENERATION_DIR/$exp_name/slurm/master/full_pipeline_$exp_name.slurm" >"\$tempfile" 2>&1
 output=\$(cat "\$tempfile")
 
 # Vérifier s'il y a une erreur dans la sortie
@@ -329,8 +347,9 @@ rm_res() {
 
     # Rechercher les fichiers à supprimer dans le dossier GENERATION
     files_to_delete_gen=$(find "$GENERATION_DIR" -mindepth 1 \
-        ! -name "results" ! -path "$GENERATION_DIR/results/*" \
-        ! -name "plots" ! -path "$GENERATION_DIR/plots/*" \
+        ! -name "results*" ! -path "$GENERATION_DIR/results_*/*" \
+        ! -name "experience*.db" \
+        ! -name "plots*" ! -path "$GENERATION_DIR/plots_*/*" \
         ! -name "experience.db" -print)
     
     if [ -z "$files_to_delete_gen" ]; then
@@ -348,11 +367,11 @@ rm_res() {
     # Si l'utilisateur confirme, procéder à la suppression
     if [ "$answer" = "y" ]; then
         rsync -a --delete-before \
-            --exclude="results" \
-            --exclude="results/*" \
-            --exclude="plots" \
-            --exclude="plots/*" \
-            --exclude="experience.db" \
+            --exclude="results*" \
+            --exclude="results*/*" \
+            --exclude="plots*" \
+            --exclude="plots*/*" \
+            --exclude="experience*.db" \
             "$EMPTY_DIR/" "$GENERATION_DIR/"
         echo "Deletion completed."
     else
@@ -360,10 +379,16 @@ rm_res() {
     fi
 }
 
-
 # Fonction pour supprimer le dossier plots
 rm_plots() {
-    PLOTS_DIR="$GENERATION_DIR/plots"
+    if [ -z "$1" ] || ! [[ "$1" =~ ^[0-9]+$ ]]; then
+        echo "Erreur: L'argument 'index' est obligatoire et doit être un chiffre."
+        echo "Utilisation: rm_plots <index>"
+        return 1
+    fi
+
+    index="$1"
+    PLOTS_DIR="$GENERATION_DIR/plots_$index"
 
     # Create the empty directory if it doesn't exist
     if [ ! -d "$EMPTY_DIR" ]; then
@@ -371,7 +396,7 @@ rm_plots() {
     fi
 
     if [ -d "$PLOTS_DIR" ]; then
-        echo "Le dossier 'plots' va être supprimé. Confirmer? (y/n)"
+        echo "Le dossier '$PLOTS_DIR' va être supprimé. Confirmer? (y/n)"
         read -r answer
         if [ "$answer" = "y" ]; then
             rsync -a --delete-before "$EMPTY_DIR/" "$PLOTS_DIR/"
@@ -381,26 +406,33 @@ rm_plots() {
             echo "Suppression annulée."
         fi
     else
-        echo "Le dossier 'plots' n'existe pas."
+        echo "Le dossier '$PLOTS_DIR' n'existe pas."
     fi
 }
 
 
 # Fonction pour supprimer le fichier experience.db
 rm_db() {
-    DB_FILE="$GENERATION_DIR/experience.db"
+    if [ -z "$1" ] || ! [[ "$1" =~ ^[0-9]+$ ]]; then
+        echo "Erreur: L'argument 'index' est obligatoire et doit être un chiffre."
+        echo "Utilisation: rm_db <index>"
+        return 1
+    fi
+
+    index="$1"
+    DB_FILE="$GENERATION_DIR/experience_$index.db"
 
     if [ -f "$DB_FILE" ];then
-        echo "Le fichier 'experience.db' va être supprimé. Confirmer? (y/n)"
+        echo "Le fichier '$DB_FILE' va être supprimé. Confirmer? (y/n)"
         read -r answer
         if [ "$answer" = "y" ];then
             rm -f "$DB_FILE"
-            echo "Le fichier 'experience.db' a été supprimé."
+            echo "Le fichier '$DB_FILE' a été supprimé."
         else
             echo "Suppression annulée."
         fi
     else
-        echo "Le fichier 'experience.db' n'existe pas."
+        echo "Le fichier '$DB_FILE' n'existe pas."
     fi
 }
 

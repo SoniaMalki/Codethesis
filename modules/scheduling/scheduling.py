@@ -81,9 +81,12 @@ class Scheduling:
     def __eq__(self, other):
         if not isinstance(other, Scheduling):
             return NotImplemented
-        return (self.schedule == other.schedule and
-                self.success == other.success and
-                self.scheduler_name == other.scheduler_name)
+        same_schedule = self.schedule == other.schedule
+        same_success = self.success == other.success
+        same_scheduler_name = self.scheduler_name == other.scheduler_name
+        return (same_schedule and
+                same_success and
+                same_scheduler_name)
 
     def add_performances(self, computation_time, actual_utilization, theoritical_utilization):
         self.computation_time = computation_time

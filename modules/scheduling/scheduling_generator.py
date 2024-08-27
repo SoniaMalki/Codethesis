@@ -70,26 +70,36 @@ class SchedulingGenerator:
     def run_scheduler(self, scheduler, queue):
         """Fonction pour exécuter le scheduler dans un processus séparé et retourner le résultat via une queue."""
         try:
-            schedule = scheduler.schedule()
-            success = True
+            schedule_tuple = scheduler.schedule()
+            schedule = schedule_tuple[0]
+            success = schedule_tuple[1]
+            actual_utilization = scheduler.actual_utilization
         except MemoryError:
             print("Mémoire insuffisante. Arrêt du scheduling.")
             schedule = None
-            success = False
+            success = 0
+            actual_utilization = numpy.nan
 
-        # Placer le résultat dans la queue
-        queue.put(schedule, success)
+        return_queue = {"schedule": schedule, "success": success,
+                        "actual_utilization": actual_utilization}
+        queue.put(return_queue)
 
     def run_scheduler_composite(self, scheduler, queue):
         """Fonction pour exécuter le scheduler dans un processus séparé et retourner le résultat via une queue."""
         try:
             schedule = scheduler.schedule()
+            actual_utilization = scheduler.actual_utilization
+
         except MemoryError:
             print("Mémoire insuffisante. Arrêt du scheduling.")
             schedule = None
+            actual_utilization = [numpy.nan]
 
         # Placer le résultat dans la queue
-        queue.put(schedule)
+        return_queue = {}
+        return_queue["busy_periods"] = schedule
+        return_queue["actual_utilization"] = actual_utilization
+        queue.put(return_queue)
 
     def generate_scheduling_set(self):
         """Generates schedulings for each assignment within the TasksetSet."""
@@ -159,8 +169,12 @@ class SchedulingGenerator:
             queue.close()
             schedule = None
             success = 0
+            actual_utilization = numpy.nan
         else:
-            schedule, success = queue.get()
+            return_queue = queue.get()
+            schedule = return_queue["schedule"]
+            success = return_queue["success"]
+            actual_utilization = return_queue["actual_utilization"]
 
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute
@@ -172,7 +186,6 @@ class SchedulingGenerator:
             print(
                 f"Scheduling failed for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
         else:
-            actual_utilization = scheduler.actual_utilization
             theoritical_utilization = sum(taskset.utilization)
             print(
                 f"Scheduling succeeded for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
@@ -219,7 +232,9 @@ class SchedulingGenerator:
             queue.close()
             busy_periods = None
         else:
-            busy_periods = queue.get()
+            return_queue = queue.get()
+            busy_periods = return_queue["busy_periods"]
+            actual_utilization = return_queue["actual_utilization"]
 
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute
@@ -238,7 +253,7 @@ class SchedulingGenerator:
             print(
                 f"Composite scheduling failed for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
         else:
-            actual_utilization = sum(scheduler.actual_utilization)
+            actual_utilization = sum(actual_utilization)
             theoritical_utilization = sum(taskset.utilization)
             print(
                 f"Composite scheduling succeeded for taskset: {self.taskset_id} and assignment: {self.assignment_id}")

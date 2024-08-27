@@ -12,8 +12,10 @@ random.seed(42)
 @pytest.fixture(scope="function", autouse=True)
 def use_temporary_prime_matrix_path():
     global prime_path
+    global result_path
     with tempfile.TemporaryDirectory() as temp_dir:
         prime_path = Path(temp_dir)
+        result_path = prime_path / "results"
         yield
 
 
@@ -84,9 +86,10 @@ def create_taskset(data):
     max_prime = data["taskset_options"]["max_prime"]
     gen_limit_exponent = data["taskset_options"]["gen_limit_exponent"]
     PrimeMatrixGenerator(
-        main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
+        main_path=prime_path, result_path=result_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
     generator = TasksetSetGenerator(
         main_path=prime_path,
+        result_path=result_path,
         taskset_id=data['taskset_id'],
         taskset_repetition=data['taskset_repetition'],
         probability_factor=data['probability_factor'],

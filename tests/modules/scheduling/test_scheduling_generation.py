@@ -25,8 +25,10 @@ random.seed(seed)
 @pytest.fixture(scope="function", autouse=True)
 def use_temporary_prime_matrix_path():
     global prime_path
+    global result_path
     with tempfile.TemporaryDirectory() as temp_dir:
         prime_path = Path(temp_dir)
+        result_path = prime_path / "results"
         yield
 
 
@@ -243,9 +245,9 @@ def create_taskset_generate(taskset_id, taskset_parameters):
     max_prime = taskset_parameters["taskset_options"]["max_prime"]
     gen_limit_exponent = taskset_parameters["taskset_options"]["gen_limit_exponent"]
     PrimeMatrixGenerator(
-        main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
+        main_path=prime_path, result_path=result_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
     generator = TasksetSetGenerator(
-        prime_path, taskset_id, **taskset_parameters)
+        prime_path, result_path, taskset_id, **taskset_parameters)
     return generator.generate_taskset_set()
 
 
@@ -324,7 +326,7 @@ def test_scheduling(scheduling_algorithm, experience, non_preemption_time_varian
         experience, scheduling_algorithm, non_preemption_time_variant2)
     taskset_action, taskset_id, taskset_parameters, assignment_parameters, scheduling_parameters = input_data
     scheduling_loader_saver = SchedulingLoaderSaver(
-        Path(os.getcwd()), db_path="")
+        Path(os.getcwd()), db_path="", result_path=result_path)
 
     if taskset_action == "manual":
         taskset = create_taskset_manual(taskset_id, taskset_parameters)

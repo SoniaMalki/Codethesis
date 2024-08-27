@@ -16,8 +16,10 @@ import tempfile
 @pytest.fixture(scope="function", autouse=True)
 def use_temporary_prime_matrix_path():
     global prime_path
+    global result_path
     with tempfile.TemporaryDirectory() as temp_dir:
         prime_path = Path(temp_dir)
+        result_path = prime_path / "results"
         yield
 
 
@@ -203,9 +205,9 @@ def create_taskset_generate(taskset_id, taskset_parameters):
     max_prime = taskset_parameters["taskset_options"]["max_prime"]
     gen_limit_exponent = taskset_parameters["taskset_options"]["gen_limit_exponent"]
     PrimeMatrixGenerator(
-        main_path=prime_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
+        main_path=prime_path, result_path=result_path, max_hyperperiod=max_hyperperiod, max_prime=max_prime, gen_limit_exponent=gen_limit_exponent)
     generator = TasksetSetGenerator(
-        prime_path, taskset_id, **taskset_parameters)
+        prime_path, result_path, taskset_id, **taskset_parameters)
     return generator.generate_taskset_set()
 
 

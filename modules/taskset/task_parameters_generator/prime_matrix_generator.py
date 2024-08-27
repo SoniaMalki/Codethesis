@@ -1,7 +1,6 @@
-from sympy import primerange
 import random
+from sympy import primerange
 from pathlib import Path
-
 from modules.taskset.task_parameters_generator.prime_matrix_loader_saver import PrimeMatrixLoaderSaver
 
 
@@ -9,6 +8,7 @@ class PrimeMatrixGenerator:
     def __init__(self, main_path, max_hyperperiod, max_prime, gen_limit_exponent):
         print("Initializing PrimeMatrixGenerator")
         self.main_path = main_path
+        self.number_of_matrices = 25
         self.loader_saver = PrimeMatrixLoaderSaver(main_path)
         self.max_hyperperiod = max_hyperperiod
         self.max_prime = max_prime
@@ -20,17 +20,25 @@ class PrimeMatrixGenerator:
     def load_or_generate_matrix(self):
         print("Loading or generating prime matrix")
         try:
+            index = random.choice(range(self.number_of_matrices))
             prime_matrix = self.loader_saver.load(
-                self.max_hyperperiod, self.max_prime, self.generation_limit)
+                self.max_hyperperiod, self.max_prime, self.generation_limit, index)
             print("Prime matrix loaded from file")
-            return prime_matrix
         except FileNotFoundError:
             print("Prime matrix file not found, generating new matrix")
-            prime_matrix = self.generate_matrix()
-            self.loader_saver.save(
-                prime_matrix, self.max_hyperperiod, self.max_prime, self.generation_limit)
+            matrices = []
+            for index in range(self.number_of_matrices):
+                prime_matrix = self.generate_matrix()
+                matrices.append(prime_matrix)
+                print(f"Generated matrix {index + 1}:")
+                self.display_matrix_details("Matrix details:", prime_matrix)
+                self.loader_saver.save(
+                    prime_matrix, self.max_hyperperiod, self.max_prime, self.generation_limit, index)
             print("Prime matrix generated and saved to file")
-            return prime_matrix
+            index = random.choice(range(self.number_of_matrices))
+            prime_matrix = matrices[index]
+        self.display_matrix_details("Matrix details:", prime_matrix)
+        return prime_matrix
 
     def calculate_hyperperiod(self, matrix=None):
         if matrix is None:
@@ -60,7 +68,7 @@ class PrimeMatrixGenerator:
             prime_matrix.append(row)
 
             for j in range(len(prime_matrix)):
-                exponent = len(prime_matrix[j])
+                exponent = len(prime_matrix[j]) + random.randint(0, 2)
                 prime_matrix[j].append(primes[j] ** exponent)
                 if self.calculate_hyperperiod(prime_matrix) > self.generation_limit:
                     print("Initial matrix generated")
@@ -86,11 +94,11 @@ class PrimeMatrixGenerator:
         print("Matrix pruned")
         return self.prime_matrix
 
-    def display_matrix_details(self, header_message):
+    def display_matrix_details(self, header_message, prime_matrix):
         print(header_message)
-        for row in self.prime_matrix:
+        for row in prime_matrix:
             print(row, " | Len row: ", len(row))
-        print("Hyperperiod:", self.calculate_hyperperiod_value)
+        print("Hyperperiod:", self.calculate_hyperperiod(prime_matrix))
 
     def add_duplicates_to_matrix(self, max_length, max_duplicates):
         print("Adding duplicates to matrix")

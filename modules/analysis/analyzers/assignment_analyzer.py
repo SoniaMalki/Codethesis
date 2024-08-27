@@ -36,6 +36,12 @@ class AssignmentAnalyzer:
         self.min_computation_time = np.nanmin(
             self.df["mean_computation_time_assignment"])
 
+        # Mise à jour des méthodes d'assignation disponibles dans les données
+        self.available_methods = self.df['assignment_method'].unique()
+
+        # Mise à jour des critères de tri disponibles dans les données
+        self.available_sorting_criteria = self.df['sorting_criterion'].unique()
+
     def analyze(self):
         self.plot_global_success_rate()
         self.plot_global_computation_time()
@@ -51,8 +57,11 @@ class AssignmentAnalyzer:
 
     def plot_global_success_rate(self):
         plt.figure(figsize=(10, 6))
+        # Filtrer les méthodes d'assignation disponibles
+        available_methods = [
+            method for method in self.assignment_methods if method in self.available_methods]
         ax = sns.barplot(x="assignment_method", y="mean_success_assignment",
-                         data=self.df, order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors, hue="assignment_method", legend=False)
+                         data=self.df, order=available_methods, errorbar=None, palette=self.algorithm_colors, hue="assignment_method", legend=False)
         ax.set_ylim(-0.01, 1.1)
         plt.title("Global Success Rate by Assignment Method")
         plt.xlabel("Assignment Method")
@@ -63,8 +72,11 @@ class AssignmentAnalyzer:
 
     def plot_global_computation_time(self):
         plt.figure(figsize=(10, 6))
+        # Filtrer les méthodes d'assignation disponibles
+        available_methods = [
+            method for method in self.assignment_methods if method in self.available_methods]
         ax = sns.boxplot(x="assignment_method", y="mean_computation_time_assignment", data=self.df,
-                         order=self.assignment_methods, showfliers=False, palette=self.algorithm_colors, hue="assignment_method", legend=False)
+                         order=available_methods, showfliers=False, palette=self.algorithm_colors, hue="assignment_method", legend=False)
         plt.title("Global Computation Time by Assignment Method")
         plt.xlabel("Assignment Method")
         plt.ylabel("Computation Time (s)")
@@ -74,10 +86,13 @@ class AssignmentAnalyzer:
 
     def plot_success_rate_by_sorting_criteria(self, df_subset):
         plt.figure(figsize=(12, 8))
-        hue_order = [
-            assignment_method for assignment_method in self.assignment_methods if assignment_method != "Wmin"]
+        # Filtrer les méthodes d'assignation disponibles
+        hue_order = [assignment_method for assignment_method in self.assignment_methods if assignment_method in self.available_methods and assignment_method != "Wmin"]
+        # Filtrer les critères de tri disponibles
+        available_sorting_criteria = [
+            criterion for criterion in self.sorting_criteria if criterion in self.available_sorting_criteria]
         ax = sns.barplot(x="sorting_criterion", y="mean_success_assignment", hue="assignment_method", data=df_subset,
-                         order=self.sorting_criteria, hue_order=hue_order, errorbar=None, palette=self.algorithm_colors)
+                         order=available_sorting_criteria, hue_order=hue_order, errorbar=None, palette=self.algorithm_colors)
         ax.set_ylim(-0.01, 1.1)
         plt.title("Success Rate by Sorting Criterion")
         plt.xlabel("Sorting Criterion")
@@ -92,9 +107,12 @@ class AssignmentAnalyzer:
 
     def plot_computation_time_by_sorting_criteria(self, df_subset):
         plt.figure(figsize=(12, 8))
-        hue_order = [
-            assignment_method for assignment_method in self.assignment_methods if assignment_method != "Wmin"]
-        ax = sns.boxplot(x="sorting_criterion", y="mean_computation_time_assignment", hue="assignment_method", data=df_subset, order=self.sorting_criteria,
+        # Filtrer les méthodes d'assignation disponibles
+        hue_order = [assignment_method for assignment_method in self.assignment_methods if assignment_method in self.available_methods and assignment_method != "Wmin"]
+        # Filtrer les critères de tri disponibles
+        available_sorting_criteria = [
+            criterion for criterion in self.sorting_criteria if criterion in self.available_sorting_criteria]
+        ax = sns.boxplot(x="sorting_criterion", y="mean_computation_time_assignment", hue="assignment_method", data=df_subset, order=available_sorting_criteria,
                          hue_order=hue_order, showfliers=False, palette=self.algorithm_colors)
         plt.title("Computation Time by Sorting Criterion")
         plt.xlabel("Sorting Criterion")
@@ -116,8 +134,11 @@ class AssignmentAnalyzer:
 
     def plot_success_rate_lineplot(self, parameter):
         plt.figure(figsize=(10, 6))
+        # Filtrer les méthodes d'assignation disponibles
+        hue_order = [
+            assignment_method for assignment_method in self.assignment_methods if assignment_method in self.available_methods]
         ax = sns.lineplot(x=parameter, y="mean_success_assignment",
-                          hue="assignment_method", data=self.df.dropna(subset=["mean_success_assignment"]), marker="o", hue_order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors)
+                          hue="assignment_method", data=self.df.dropna(subset=["mean_success_assignment"]), marker="o", hue_order=hue_order, errorbar=None, palette=self.algorithm_colors)
         ax.set_ylim(-0.01, 1.1)
         plt.title(
             f"Success Rate by {parameter.replace('_', ' ').capitalize()}")
@@ -131,6 +152,8 @@ class AssignmentAnalyzer:
 
     def plot_success_rate_heatmap_interference(self, parameter):
         for assignment_method in self.assignment_methods:
+            if assignment_method not in self.available_methods:
+                continue
             df_subset = self.df[(self.df["assignment_method"] == assignment_method) & (
                 self.df[parameter].notna())].dropna(subset=["mean_success_assignment"])
             if df_subset.empty:
@@ -155,8 +178,11 @@ class AssignmentAnalyzer:
 
     def plot_computation_time_lineplot(self, parameter):
         plt.figure(figsize=(10, 6))
+        # Filtrer les méthodes d'assignation disponibles
+        hue_order = [
+            assignment_method for assignment_method in self.assignment_methods if assignment_method in self.available_methods]
         ax = sns.lineplot(x=parameter, y="mean_computation_time_assignment",
-                          hue="assignment_method", data=self.df.dropna(subset=["mean_computation_time_assignment"]), marker="o", hue_order=self.assignment_methods, errorbar=None, palette=self.algorithm_colors)
+                          hue="assignment_method", data=self.df.dropna(subset=["mean_computation_time_assignment"]), marker="o", hue_order=hue_order, errorbar=None, palette=self.algorithm_colors)
         plt.title(
             f"Computation Time by {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
@@ -170,6 +196,8 @@ class AssignmentAnalyzer:
 
     def plot_computation_time_heatmap_interference(self, parameter):
         for assignment_method in self.assignment_methods:
+            if assignment_method not in self.available_methods:
+                continue
             df_subset = self.df[(self.df["assignment_method"] == assignment_method) & (
                 self.df[parameter].notna())].dropna(subset=["mean_computation_time_assignment"])
             if df_subset.empty:

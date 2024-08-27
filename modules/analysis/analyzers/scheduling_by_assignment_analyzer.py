@@ -81,6 +81,10 @@ class SchedulingByAssignmentAnalyzer:
         self.min_computation_time = np.nanmin(
             self.df["mean_computation_time_scheduling"])
 
+        # Vérifier la disponibilité des combinaisons dans les données
+        self.available_combinations = self.df['assignment_scheduling_combination'].unique(
+        )
+
     def analyze(self):
         self.plot_global_success_rate()
         self.plot_global_computation_time()
@@ -107,10 +111,14 @@ class SchedulingByAssignmentAnalyzer:
             self.plot_overutilization_by_taskset_parameter(parameter)
 
     def plot_global_success_rate(self):
+        available_combinations = [
+            combo for combo in self.df["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.barplot(x="assignment_scheduling_combination", y="mean_success_scheduling",
-                         data=self.df, order=[
-                             f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods], errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         data=self.df, order=available_combinations, errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         ax.set_ylim(-0.01, 1.1)
         plt.title("Global Success Rate")
         plt.xlabel("Scheduling/Assignment Combination")
@@ -122,10 +130,14 @@ class SchedulingByAssignmentAnalyzer:
         plt.close()
 
     def plot_global_computation_time(self):
+        available_combinations = [
+            combo for combo in self.df["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.boxplot(x="assignment_scheduling_combination", y="mean_computation_time_scheduling", data=self.df,
-                         order=[
-                             f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         order=available_combinations, showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         plt.title("Global Computation Time")
         plt.xlabel("Scheduling/Assignment Combination")
         plt.ylabel("Computation Time (s)")
@@ -136,10 +148,14 @@ class SchedulingByAssignmentAnalyzer:
         plt.close()
 
     def plot_global_overutilization(self):
+        available_combinations = [
+            combo for combo in self.df["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.boxplot(x="assignment_scheduling_combination", y="mean_overutilization", data=self.df,
-                         order=[
-                             f"{s}_{a}" for s in self.scheduling_algorithms for a in self.assignment_methods], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         order=available_combinations, showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         plt.title("Global Overutilization")
         plt.xlabel("Scheduling/Assignment Combination")
         plt.ylabel("Overutilization (%)")
@@ -149,6 +165,11 @@ class SchedulingByAssignmentAnalyzer:
         plt.close()
 
     def plot_success_rate_by_non_preemptive_option(self, df_subset):
+        available_combinations = [
+            combo for combo in df_subset["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(12, 8))
         ax = sns.barplot(x="non_preemption_option", y="mean_success_scheduling", hue="assignment_scheduling_combination", data=df_subset,
                          order=self.non_preemptive_options, errorbar=None, palette=self.algorithm_colors)
@@ -166,6 +187,11 @@ class SchedulingByAssignmentAnalyzer:
         plt.close()
 
     def plot_computation_time_by_non_preemptive_option(self, df_subset):
+        available_combinations = [
+            combo for combo in df_subset["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(12, 8))
         ax = sns.boxplot(x="non_preemption_option", y="mean_computation_time_scheduling", hue="assignment_scheduling_combination", data=df_subset, order=self.non_preemptive_options,
                          showfliers=False, palette=self.algorithm_colors)
@@ -182,6 +208,11 @@ class SchedulingByAssignmentAnalyzer:
         plt.close()
 
     def plot_overutilization_by_non_preemptive_option(self, df_subset):
+        available_combinations = [
+            combo for combo in df_subset["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(12, 8))
         ax = sns.boxplot(x="non_preemption_option", y="mean_overutilization", hue="assignment_scheduling_combination", data=df_subset, order=self.non_preemptive_options,
                          showfliers=False, palette=self.algorithm_colors)
@@ -203,6 +234,11 @@ class SchedulingByAssignmentAnalyzer:
             self.plot_success_rate_lineplot(parameter)
 
     def plot_success_rate_lineplot(self, parameter):
+        available_combinations = [
+            combo for combo in self.df["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.lineplot(x=parameter, y="mean_success_scheduling",
                           hue="assignment_scheduling_combination", data=self.df.dropna(subset=["mean_success_scheduling"]), marker="o", errorbar=None, palette=self.algorithm_colors)
@@ -236,6 +272,11 @@ class SchedulingByAssignmentAnalyzer:
             self.plot_computation_time_lineplot(parameter)
 
     def plot_computation_time_lineplot(self, parameter):
+        available_combinations = [
+            combo for combo in self.df["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.lineplot(x=parameter, y="mean_computation_time_scheduling",
                           hue="assignment_scheduling_combination", data=self.df.dropna(subset=["mean_computation_time_scheduling"]), marker="o", errorbar=None, palette=self.algorithm_colors)
@@ -271,6 +312,11 @@ class SchedulingByAssignmentAnalyzer:
             self.plot_overutilization_lineplot(parameter)
 
     def plot_overutilization_lineplot(self, parameter):
+        available_combinations = [
+            combo for combo in self.df["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.lineplot(x=parameter, y="mean_overutilization", hue="assignment_scheduling_combination",
                           data=self.df.dropna(subset=["mean_overutilization"]), marker="o", errorbar=None, palette=self.algorithm_colors)
@@ -300,11 +346,16 @@ class SchedulingByAssignmentAnalyzer:
         plt.close()
 
     def plot_success_rate_by_sorting_criteria(self, df_subset, sorting_criterion):
+        available_combinations = [
+            combo for combo in df_subset["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(12, 8))
         assignment_without_wmin = [
             assignment for assignment in self.assignment_methods if assignment != "Wmin"]
         ax = sns.barplot(x="assignment_scheduling_combination", y="mean_success_scheduling", data=df_subset, order=[
-                         f"{s}_{a}" for s in self.scheduling_algorithms for a in assignment_without_wmin], errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)  # scheduling en premier
+                         f"{s}_{a}" for s in self.scheduling_algorithms for a in assignment_without_wmin if f"{s}_{a}" in available_combinations], errorbar=None, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         ax.set_ylim(-0.01, 1.1)
         plt.title(
             f"Success Rate by Scheduling/Assignment, Sorting Criterion: {sorting_criterion.replace('_',' ').capitalize()}")
@@ -318,11 +369,16 @@ class SchedulingByAssignmentAnalyzer:
         plt.close()
 
     def plot_computation_time_by_sorting_criteria(self, df_subset, sorting_criterion):
+        available_combinations = [
+            combo for combo in df_subset["assignment_scheduling_combination"].unique() if combo in self.available_combinations]
+        if not available_combinations:
+            return
+
         plt.figure(figsize=(12, 8))
         assignment_without_wmin = [
             assignment for assignment in self.assignment_methods if assignment != "Wmin"]
         ax = sns.boxplot(x="assignment_scheduling_combination", y="mean_computation_time_scheduling", data=df_subset, order=[
-                         f"{s}_{a}" for s in self.scheduling_algorithms for a in assignment_without_wmin], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
+                         f"{s}_{a}" for s in self.scheduling_algorithms for a in assignment_without_wmin if f"{s}_{a}" in available_combinations], showfliers=False, palette=self.algorithm_colors, hue="assignment_scheduling_combination", legend=False)
         plt.title(
             f"Computation Time by Scheduling/Assignment, Sorting Criterion: {sorting_criterion.replace('_',' ').capitalize()}")
         plt.xlabel("Scheduling/Assignment Combination")

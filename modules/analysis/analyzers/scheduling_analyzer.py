@@ -42,6 +42,9 @@ class SchedulingAnalyzer:
         self.min_computation_time = np.nanmin(
             self.df["mean_computation_time_scheduling"])
 
+        # Vérifier la disponibilité des algorithmes de planification dans les données
+        self.available_algorithms = self.df['scheduling_algorithm'].unique()
+
     def analyze(self):
         self.plot_global_success_rate()
         self.plot_global_computation_time()
@@ -60,9 +63,14 @@ class SchedulingAnalyzer:
             self.plot_overutilization_by_taskset_parameter(parameter)
 
     def plot_global_success_rate(self):
+        available_algorithms = [
+            algo for algo in self.scheduling_algorithms if algo in self.available_algorithms]
+        if not available_algorithms:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.barplot(x="scheduling_algorithm", y="mean_success_scheduling",
-                         data=self.df, order=self.scheduling_algorithms, errorbar=None, palette=self.algorithm_colors, hue="scheduling_algorithm", legend=False)
+                         data=self.df, order=available_algorithms, errorbar=None, palette=self.algorithm_colors, hue="scheduling_algorithm", legend=False)
         ax.set_ylim(-0.01, 1.1)
         plt.title("Global Success Rate by Scheduling Algorithm")
         plt.xlabel("Scheduling Algorithm")
@@ -74,9 +82,14 @@ class SchedulingAnalyzer:
         plt.close()
 
     def plot_global_computation_time(self):
+        available_algorithms = [
+            algo for algo in self.scheduling_algorithms if algo in self.available_algorithms]
+        if not available_algorithms:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.boxplot(x="scheduling_algorithm", y="mean_computation_time_scheduling", data=self.df,
-                         order=self.scheduling_algorithms, showfliers=False, palette=self.algorithm_colors, hue="scheduling_algorithm", legend=False)
+                         order=available_algorithms, showfliers=False, palette=self.algorithm_colors, hue="scheduling_algorithm", legend=False)
         plt.title("Global Computation Time by Scheduling Algorithm")
         plt.xlabel("Scheduling Algorithm")
         plt.ylabel("Computation Time (s)")
@@ -87,9 +100,14 @@ class SchedulingAnalyzer:
         plt.close()
 
     def plot_global_overutilization(self):
+        available_algorithms = [
+            algo for algo in self.scheduling_algorithms if algo in self.available_algorithms]
+        if not available_algorithms:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.boxplot(x="scheduling_algorithm", y="mean_overutilization", data=self.df,
-                         order=self.scheduling_algorithms, showfliers=False, palette=self.algorithm_colors, hue="scheduling_algorithm", legend=False)
+                         order=available_algorithms, showfliers=False, palette=self.algorithm_colors, hue="scheduling_algorithm", legend=False)
         plt.title("Global Overutilization by Scheduling Algorithm")
         plt.xlabel("Scheduling Algorithm")
         plt.ylabel("Overutilization (%)")
@@ -99,9 +117,14 @@ class SchedulingAnalyzer:
         plt.close()
 
     def plot_success_rate_by_non_preemptive_option(self, df_subset):
+        available_algorithms = [
+            algo for algo in ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"] if algo in self.available_algorithms]
+        if not available_algorithms:
+            return
+
         plt.figure(figsize=(12, 8))
         hue_order = [
-            scheduling_algorithm for scheduling_algorithm in self.scheduling_algorithms if scheduling_algorithm in ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]]
+            scheduling_algorithm for scheduling_algorithm in available_algorithms]
         ax = sns.barplot(x="non_preemption_option", y="mean_success_scheduling", hue="scheduling_algorithm", data=df_subset,
                          order=self.non_preemptive_options, hue_order=hue_order, errorbar=None, palette=self.algorithm_colors)
         ax.set_ylim(-0.01, 1.1)
@@ -118,9 +141,14 @@ class SchedulingAnalyzer:
         plt.close()
 
     def plot_computation_time_by_non_preemptive_option(self, df_subset):
+        available_algorithms = [
+            algo for algo in ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"] if algo in self.available_algorithms]
+        if not available_algorithms:
+            return
+
         plt.figure(figsize=(12, 8))
         hue_order = [
-            scheduling_algorithm for scheduling_algorithm in self.scheduling_algorithms if scheduling_algorithm in ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]]
+            scheduling_algorithm for scheduling_algorithm in available_algorithms]
         ax = sns.boxplot(x="non_preemption_option", y="mean_computation_time_scheduling", hue="scheduling_algorithm", data=df_subset, order=self.non_preemptive_options,
                          hue_order=hue_order, showfliers=False, palette=self.algorithm_colors)
         plt.title("Computation Time by Non-Preemption Option")
@@ -136,9 +164,14 @@ class SchedulingAnalyzer:
         plt.close()
 
     def plot_overutilization_by_non_preemptive_option(self, df_subset):
+        available_algorithms = [
+            algo for algo in ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"] if algo in self.available_algorithms]
+        if not available_algorithms:
+            return
+
         plt.figure(figsize=(12, 8))
         hue_order = [
-            scheduling_algorithm for scheduling_algorithm in self.scheduling_algorithms if scheduling_algorithm in ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]]
+            scheduling_algorithm for scheduling_algorithm in available_algorithms]
         ax = sns.boxplot(x="non_preemption_option", y="mean_overutilization", hue="scheduling_algorithm", data=df_subset, order=self.non_preemptive_options,
                          hue_order=hue_order, showfliers=False, palette=self.algorithm_colors)
         plt.title("Overutilization by Non-Preemption Option")
@@ -159,9 +192,14 @@ class SchedulingAnalyzer:
             self.plot_success_rate_lineplot(parameter)
 
     def plot_success_rate_lineplot(self, parameter):
+        available_algorithms = [
+            algo for algo in self.scheduling_algorithms if algo in self.available_algorithms]
+        if not available_algorithms:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.lineplot(x=parameter, y="mean_success_scheduling",
-                          hue="scheduling_algorithm", data=self.df.dropna(subset=["mean_success_scheduling"]), marker="o", hue_order=self.scheduling_algorithms, errorbar=None, palette=self.algorithm_colors)
+                          hue="scheduling_algorithm", data=self.df.dropna(subset=["mean_success_scheduling"]), marker="o", hue_order=available_algorithms, errorbar=None, palette=self.algorithm_colors)
         plt.title(
             f"Success Rate by {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
@@ -176,6 +214,9 @@ class SchedulingAnalyzer:
 
     def plot_success_rate_heatmap_interference(self, parameter):
         for scheduling_algorithm in self.scheduling_algorithms:
+            if scheduling_algorithm not in self.available_algorithms:
+                continue
+
             df_subset = self.df[(self.df["scheduling_algorithm"] == scheduling_algorithm) & (
                 self.df[parameter].notna())].dropna(subset=["mean_success_scheduling"])
             if df_subset.empty:
@@ -200,9 +241,14 @@ class SchedulingAnalyzer:
             self.plot_computation_time_lineplot(parameter)
 
     def plot_computation_time_lineplot(self, parameter):
+        available_algorithms = [
+            algo for algo in self.scheduling_algorithms if algo in self.available_algorithms]
+        if not available_algorithms:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.lineplot(x=parameter, y="mean_computation_time_scheduling",
-                          hue="scheduling_algorithm", data=self.df.dropna(subset=["mean_computation_time_scheduling"]), marker="o", hue_order=self.scheduling_algorithms, errorbar=None, palette=self.algorithm_colors)
+                          hue="scheduling_algorithm", data=self.df.dropna(subset=["mean_computation_time_scheduling"]), marker="o", hue_order=available_algorithms, errorbar=None, palette=self.algorithm_colors)
         plt.title(
             f"Computation Time by {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
@@ -217,6 +263,9 @@ class SchedulingAnalyzer:
 
     def plot_computation_time_heatmap_interference(self, parameter):
         for scheduling_algorithm in self.scheduling_algorithms:
+            if scheduling_algorithm not in self.available_algorithms:
+                continue
+
             df_subset = self.df[(self.df["scheduling_algorithm"] == scheduling_algorithm) & (
                 self.df[parameter].notna())].dropna(subset=["mean_computation_time_scheduling"])
             if df_subset.empty:
@@ -242,9 +291,14 @@ class SchedulingAnalyzer:
             self.plot_overutilization_lineplot(parameter)
 
     def plot_overutilization_lineplot(self, parameter):
+        available_algorithms = [
+            algo for algo in self.scheduling_algorithms if algo in self.available_algorithms]
+        if not available_algorithms:
+            return
+
         plt.figure(figsize=(10, 6))
         ax = sns.lineplot(x=parameter, y="mean_overutilization", hue="scheduling_algorithm",
-                          data=self.df.dropna(subset=["mean_overutilization"]), marker="o", hue_order=self.scheduling_algorithms, errorbar=None, palette=self.algorithm_colors)
+                          data=self.df.dropna(subset=["mean_overutilization"]), marker="o", hue_order=available_algorithms, errorbar=None, palette=self.algorithm_colors)
         plt.title(
             f"Overutilization by {parameter.replace('_', ' ').capitalize()}")
         plt.xlabel(parameter.replace("_", " ").capitalize())
@@ -259,6 +313,9 @@ class SchedulingAnalyzer:
 
     def plot_overutilization_heatmap_interference(self, parameter):
         for scheduling_algorithm in self.scheduling_algorithms:
+            if scheduling_algorithm not in self.available_algorithms:
+                continue
+
             df_subset = self.df[(self.df["scheduling_algorithm"] == scheduling_algorithm) & (
                 self.df[parameter].notna())].dropna(subset=["mean_overutilization"])
             if df_subset.empty:

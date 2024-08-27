@@ -18,10 +18,18 @@ class CittaAcceptanceRateAnalyzer:
         self.plots_dir = self.current_path / "citta_acceptance_rate"
         os.makedirs(self.plots_dir, exist_ok=True)
 
+        # Vérifier si "Citta" est une méthode d'assignation présente dans le DataFrame
+        self.is_citta_available = 'Citta' in self.df['assignment_method'].unique(
+        )
+
     def analyze(self):
         """
         Calculates and visualizes the acceptance rate by Citta.
         """
+        if not self.is_citta_available:
+            print("Citta method is not available in the data. Skipping analysis.")
+            return
+
         self.calculate_acceptance_rate()
         self.calculate_schedulability_leakage()
         self.plot_acceptance_rate()
@@ -31,6 +39,9 @@ class CittaAcceptanceRateAnalyzer:
         """
         Calculates the acceptance rate for Citta and adds it to the DataFrame.
         """
+        if not self.is_citta_available:
+            return 0
+
         # Filter the DataFrame for Citta results only
         citta_df = self.df[self.df['assignment_method'] == 'Citta']
 
@@ -56,6 +67,10 @@ class CittaAcceptanceRateAnalyzer:
         """
         Calculates the schedulability leakage to quantify the pessimism of Citta.
         """
+        if not self.is_citta_available:
+            self.leakage_rate = 0
+            return
+
         # Filter for task sets declared non-schedulable by Citta
         citta_non_schedulable_ids = self.df[(self.df['assignment_method'] == 'Citta') &
                                             (self.df['mean_success_assignment'] == 0)]['assignment_id']
@@ -81,6 +96,9 @@ class CittaAcceptanceRateAnalyzer:
         """
         Plots the acceptance rate for Citta.
         """
+        if not self.is_citta_available:
+            return
+
         plt.figure(figsize=(8, 6))
         ax = sns.barplot(x='assignment_method', y='acceptance_rate',
                          data=self.df[self.df['assignment_method'] == 'Citta'])
@@ -94,6 +112,9 @@ class CittaAcceptanceRateAnalyzer:
         """
         Plots the schedulability leakage rate for Citta.
         """
+        if not self.is_citta_available:
+            return
+
         plt.figure(figsize=(8, 6))
         sns.barplot(x=['Schedulability Leakage'], y=[self.leakage_rate])
         plt.title('Schedulability Leakage Rate for Citta')

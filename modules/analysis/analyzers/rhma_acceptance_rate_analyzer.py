@@ -18,10 +18,20 @@ class RhmaAcceptanceRateAnalyzer:
         self.plots_dir = self.current_path / "rhma_acceptance_rate"
         os.makedirs(self.plots_dir, exist_ok=True)
 
+        # Vérifier la disponibilité de "Citta" et "Rhma" dans les données
+        self.is_citta_available = 'Citta' in self.df['assignment_method'].unique(
+        )
+        self.is_rhma_available = 'Rhma' in self.df['scheduling_algorithm'].unique(
+        )
+
     def analyze(self):
         """
         Calculates and visualizes the observed acceptance rate by Rhma.
         """
+        if not self.is_citta_available or not self.is_rhma_available:
+            print("Citta or Rhma data not available in the dataset. Skipping analysis.")
+            return
+
         self.calculate_acceptance_rate()
         self.plot_acceptance_rate()
 
@@ -29,6 +39,9 @@ class RhmaAcceptanceRateAnalyzer:
         """
         Calculates the observed acceptance rate for Rhma and adds it to the DataFrame.
         """
+        if not self.is_citta_available or not self.is_rhma_available:
+            return 0
+
         # Filter for task sets declared schedulable by CITTA
         citta_schedulable_ids = self.df[(self.df['assignment_method'] == 'Citta') &
                                         (self.df['mean_success_assignment'] == 1)]['assignment_id']
@@ -60,6 +73,9 @@ class RhmaAcceptanceRateAnalyzer:
         """
         Plots the observed acceptance rate by Rhma.
         """
+        if not self.is_rhma_available:
+            return
+
         plt.figure(figsize=(8, 6))
         ax = sns.barplot(x='scheduling_algorithm', y='observed_acceptance_rate',
                          data=self.df[self.df['scheduling_algorithm'] == 'Rhma'])

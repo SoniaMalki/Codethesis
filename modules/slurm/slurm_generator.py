@@ -40,7 +40,7 @@ class SlurmGenerator:
         self.slurm_parameters = {
             "taskset": {"time": "00:10:00", "mem": "200M", "batch_size": 400},
             "assignment_simple": {"time": "00:10:00", "mem": "1G", "batch_size": 400},
-            "assignment_milp": {"time": "00:10:00", "mem": "1G", "batch_size": 400},
+            "assignment_milp": {"time": "01:00:00", "mem": "1G", "batch_size": 400},
             "scheduling_simple": {"time": "00:10:00", "mem": "1G", "batch_size": 400},
             "scheduling_combined": {"time": "00:10:00", "mem": "1G", "batch_size": 400},
             "scheduling_rhma": {"time": "00:10:00", "mem": "1G", "batch_size": 400},

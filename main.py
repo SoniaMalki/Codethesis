@@ -46,12 +46,13 @@ def run_batch_experiences(experience_loader, config_type):
         run_experience(config_id, experience_loader)
 
 
-def main(action, experience_id, experience_action=None):
+def main(action, index, experience_id, experience_action=None):
     """
     Fonction principale pour exécuter une expérience ou analyser les résultats.
 
     Args:
         action (str): L'action à effectuer.
+        index (str): index de experience.json
         experience_id (str, optional): ID de l'expérience. Si None, l'utilisateur devra choisir parmi les disponibles.
         experience_action (str, optional): Le type d'action pour run_batch_experiences.
     """
@@ -59,8 +60,12 @@ def main(action, experience_id, experience_action=None):
         f"Main function started with action: {action}, experience_id: {experience_id}, experience_action: {experience_action}")
     main_path = Path(__file__).parent
     generation_path = global_scratch / "generation"
-    db_path = generation_path / "experience.db"
-    experience_json_path = Path(__file__).parent / "experience.json"
+    db_path = generation_path / f"experience_{index}.db"
+    experience_json_path = Path(__file__).parent / f"experience_{index}.json"
+    result_path = generation_path / f"results_{index}"
+    plots_path = generation_path / f"plots_{index}"
+    result_path.mkdir(parents=True, exist_ok=True)
+    plots_path.mkdir(parents=True, exist_ok=True)
 
     # Charger experience.json
     print("Loading experience.json")
@@ -78,14 +83,13 @@ def main(action, experience_id, experience_action=None):
 
     if action == "analyze_results":
         print(f"Analyzing results for experience ID: {experience_id}")
-        analyzer = ResultAnalyzer(db_path, experience_id)
+        analyzer = ResultAnalyzer(
+            db_path, experience_id, plots_path, result_path)
         analyzer.run_analysis()
 
     elif action == "generate_slurm_files":
         # Génération de la prime matrix
         print(f"Generating prime matrix for experience ID: {experience_id}")
-        prime_matrix_path = generation_path / "results"
-        prime_matrix_path.mkdir(parents=True, exist_ok=True)
 
         prime_matrix_combinations = experience_data[experience_id]["config_parameters"][
             "taskset_parameters"]["prime_exponent_hyperperiod_combinations"]
@@ -164,16 +168,17 @@ def main(action, experience_id, experience_action=None):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 4:
         print(
-            "Utilisation : python main.py <action> <experience_id> [experience_action]")
+            "Utilisation : python main.py <action> <index> <experience_id> [experience_action]")
         sys.exit(1)
 
     action = sys.argv[1]
-    experience_id = sys.argv[2]
-    experience_action = sys.argv[3] if len(sys.argv) > 3 else None
+    index = sys.argv[2]
+    experience_id = sys.argv[3]
+    experience_action = sys.argv[4] if len(sys.argv) > 4 else None
 
     print(
-        f"Script started with action: {action}, experience_id: {experience_id}, experience_action: {experience_action}")
-    main(action, experience_id, experience_action)
+        f"Script started with action: {action}, index: {index}, experience_id: {experience_id}, experience_action: {experience_action}")
+    main(action, index, experience_id, experience_action)
     print("Script execution completed")

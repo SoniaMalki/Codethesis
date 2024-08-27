@@ -3,6 +3,7 @@ from pathlib import Path
 import pickle
 import json
 import time
+from unittest import result
 
 from modules.scheduling.composite_scheduling import CompositeScheduling
 from modules.scheduling.scheduling import Scheduling
@@ -10,10 +11,11 @@ from modules.utils.db_utils import DBUtils
 
 
 class ResultLoader:
-    def __init__(self, db_path, experience_id):
+    def __init__(self, db_path, experience_id, result_path):
         print(f"Initializing ResultLoader for experience ID: {experience_id}")
         self.db_utils = DBUtils(db_path)
         self.experience_id = experience_id
+        self.result_path = result_path
         print("ResultLoader initialized successfully")
 
     def load_data(self, file_path):
@@ -29,13 +31,11 @@ class ResultLoader:
         assignment_sets = []
         scheduling_sets = []
 
-        result_directory = Path(self.db_utils.db_path).parent / "results"
-
         for config_type in ["taskset", "assignment", "scheduling"]:
             config_ids = self.db_utils.get_config_ids_for_experience(
                 self.experience_id, config_type)
             for config_id in config_ids:
-                file_path = result_directory / \
+                file_path = self.result_path / \
                     (config_type + "s") / f"{config_id}.pkl"
                 if file_path.exists():
                     # print(

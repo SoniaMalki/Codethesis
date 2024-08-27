@@ -10,15 +10,15 @@ from modules.analysis.analyzers.scheduling_by_assignment_analyzer import Schedul
 
 
 class ResultAnalyzer:
-    def __init__(self, db_path, experience_id):
+    def __init__(self, db_path, experience_id, plots_path, result_path):
         print(
             f"Initializing ResultAnalyzer for experience ID: {experience_id}")
         self.db_path = db_path
-        self.current_path = self.db_path.parent / "plots" / experience_id
+        self.current_path = plots_path / experience_id
         os.makedirs(self.current_path, exist_ok=True)
         self.experience_id = experience_id
         self.loader = ResultLoader(
-            db_path=db_path, experience_id=experience_id)
+            db_path=db_path, experience_id=experience_id, result_path=result_path)
 
         self.taskset_sets, self.assignment_sets, self.scheduling_sets = self.loader.load_results()
 

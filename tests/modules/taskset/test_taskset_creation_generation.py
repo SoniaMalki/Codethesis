@@ -39,12 +39,11 @@ def expected_taskset_set_structure():
     """Prepare and return expected TasksetSet structure for the test."""
     return {
         'taskset_id': "taskset_generate_test",
-        'wcet': np.array([[10, 1]]),
-        'deadline': np.array([[43, 17]]),
-        'period': np.array([[55, 55]]),
-        'interference': np.array([[[0, 0],
-                                   [0, 0],
-                                   ]]),
+        'wcet': np.array([[263.,  53.]]),
+        'deadline': np.array([[681, 6551]]),
+        'period': np.array([[1350, 10800]]),
+        'interference': np.array([[[0., 0.],
+                                   [0., 0.]]]),
         'utilization': np.array([[0.19507143, 0.00492857]])
     }
 
@@ -53,17 +52,16 @@ def expected_taskset_structure():
     """Prepare and return expected Taskset structure for the test."""
     return [{
         'taskset_number': 0,
-        'wcet': np.array([10, 1]),
-        'deadline': np.array([43, 17]),
-        'period': np.array([55, 55]),
-        'interference': np.array([[0, 0],
-                                  [0, 0],
-                                  ]),
+        'wcet': np.array([263.,  53.]),
+        'deadline': np.array([681, 6551]),
+        'period': np.array([1350, 10800]),
+        'interference': np.array([[0., 0.],
+                                  [0., 0.]]),
         'utilization': np.array([0.19507143, 0.00492857]),
-        'hyperperiod': 55,
-        'N': np.array([1, 1]),
-        'activation': [np.array([1]), np.array([1])],
-        'absolute_deadline': [{1: 44}, {1: 18}],
+        'hyperperiod': np.int64(10800),
+        'N': np.array([8., 1.]),
+        'activation': [[1, 2, 3, 4, 5, 6, 7, 8], [1]],
+        'absolute_deadline': [{1: np.int64(682), 2: np.int64(2032), 3: np.int64(3382), 4: np.int64(4732), 5: np.int64(6082), 6: np.int64(7432), 7: np.int64(8782), 8: np.int64(10132)}, {1: np.int64(6552)}],
 
     }]
 
@@ -71,10 +69,10 @@ def expected_taskset_structure():
 def expected_task_structure():
     """Prepare and return expected Task structures for the test."""
     return [
-        {'task_number': 0, 'wcet': 10, 'deadline': 43, 'period': 55, 'interference': [
-            0, 0], 'utilization': 0.19507143, 'absolute_deadline': {1: 44}},
-        {'task_number': 1, 'wcet': 1, 'deadline': 17, 'period': 55,
-            'interference': [0, 0], 'utilization': 0.00492857, 'absolute_deadline': {1: 18}}
+        {'task_number': 0, 'wcet': np.float64(263.0), 'deadline': np.int64(681), 'period': np.int64(
+            1350), 'interference': np.array([0., 0.]), 'utilization': np.float64(0.1950714306409916), 'absolute_deadline': {1: np.int64(682), 2: np.int64(2032), 3: np.int64(3382), 4: np.int64(4732), 5: np.int64(6082), 6: np.int64(7432), 7: np.int64(8782), 8: np.int64(10132)}},
+        {'task_number': 1, 'wcet': np.float64(53.0), 'deadline': np.int64(6551), 'period': np.int64(10800),
+            'interference': np.array([0., 0.]), 'utilization': np.float64(0.004928569359008384), 'absolute_deadline': {1: np.int64(6552)}}
     ]
 
 # Test creation

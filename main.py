@@ -155,9 +155,8 @@ def main(action, index, experience_id, experience_action=None):
 
     elif action == "concatenate_databases":
         db_paths = {
-            '4': generation_path / 'db_4.db',
-            '10': generation_path / 'db_10.db',
-            '20': generation_path / 'db_20.db'
+            '2': generation_path / 'db_2.db',
+            '3': generation_path / 'db_3.db'
         }
 
         structure_db_path = generation_path / 'big.db'

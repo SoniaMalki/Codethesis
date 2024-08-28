@@ -41,9 +41,9 @@ class SlurmGenerator:
             "taskset": {"time": "00:10:00", "mem": "200M", "batch_size": 400},
             "assignment_simple": {"time": "00:10:00", "mem": "1G", "batch_size": 400},
             "assignment_milp": {"time": "01:00:00", "mem": "1G", "batch_size": 400},
-            "scheduling_simple": {"time": "00:10:00", "mem": "1G", "batch_size": 400},
-            "scheduling_combined": {"time": "00:10:00", "mem": "1G", "batch_size": 400},
-            "scheduling_rhma": {"time": "00:10:00", "mem": "1G", "batch_size": 400},
+            "scheduling_simple": {"time": "2-00:00:00", "mem": "200M", "batch_size": 400},
+            "scheduling_combined": {"time": "2-00:00:00", "mem": "200M", "batch_size": 400},
+            "scheduling_rhma": {"time": "2-00:00:00", "mem": "8G", "batch_size": 400},
         }
 
         self.master_dir = self.generation_path / "slurm" / "master"
@@ -83,10 +83,10 @@ export GLOBALSCRATCH=$HOME
         }
 
         self.cluster_cores = {
-            "lm": 10,
-            "nic": 10,
-            "her": 10,
-            "drg2": 10,
+            "lm": 1,
+            "nic": 1,
+            "her": 1,
+            "drg2": 1,
             "sonia": 3
         }
 

@@ -389,6 +389,112 @@ class ConfigGenerator:
             f"Taskset config generation for experience {experience_id} completed"
         )
 
+    def generate_tasksets_2(self, experience_id):
+        print(f"Generating taskset config for experience {experience_id}")
+
+        # Assurez-vous que les listes sont de la même longueur
+        if len(self.taskset_repetitions) != len(self.prime_exponent_hyperperiod_combinations):
+            raise ValueError(
+                "Les listes 'taskset_repetitions' et 'prime_exponent_hyperperiod_combinations' doivent avoir la même longueur.")
+
+        # Utiliser zip pour itérer sur les répétitions et les combinaisons en parallèle
+        for (
+            repetition,
+            (hyperperiod, prime, exponent)
+        ) in zip(
+            self.taskset_repetitions,
+            self.prime_exponent_hyperperiod_combinations
+        ):
+            for (
+                tasks,
+                interference,
+                probability,
+                util_factor,
+                deadline
+            ) in itertools.product(
+                self.tasks_per_taskset,
+                self.interference_factors,
+                self.probability_factors,
+                self.max_utilization_factors,
+                self.deadline_options
+            ):
+                for cores in self.number_of_cores_list:
+                    # Vérifier si le taskset existe déjà
+                    existing_taskset_id = self.get_taskset_id(
+                        repetition,
+                        tasks,
+                        interference,
+                        probability,
+                        util_factor * cores,
+                        deadline,
+                        hyperperiod,
+                        prime,
+                        exponent,
+                        cores,
+                    )
+
+                    if existing_taskset_id:
+                        # Lier le taskset existant à l'expérience
+                        taskset_id = existing_taskset_id
+                        self.db_utils._execute_with_retry(
+                            """
+                            INSERT OR IGNORE INTO ExperienceTasksets (experience_id, taskset_id) 
+                            VALUES (?, ?)
+                            """,
+                            (experience_id, taskset_id),
+                        )
+                    else:
+                        # Tenter d'insérer le taskset.
+                        self.db_utils._execute_with_retry(
+                            """
+                            INSERT OR IGNORE INTO Tasksets (
+                                taskset_id, action, taskset_repetition, tasks_per_taskset, interference_factor,
+                                probability_factor, max_utilization, deadline_option, max_hyperperiod,
+                                max_prime, gen_limit_exponent, number_of_cores, result_file_path, cluster, threads, slurm_time, slurm_memory
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            """,
+                            (
+                                f"taskset_{self.taskset_index}",
+                                "generate",
+                                repetition,
+                                tasks,
+                                interference,
+                                probability,
+                                util_factor * cores,
+                                deadline,
+                                hyperperiod,
+                                prime,
+                                exponent,
+                                cores,
+                                None,
+                                None,
+                                1,
+                                None,
+                                None
+                            ),
+                        )
+                        # Récupérer l'ID du taskset inséré (s'il a été inséré)
+                        taskset_id = self.db_utils.cursor.lastrowid
+                        if taskset_id:
+                            # Incrémenter l'index uniquement si un nouveau taskset a été inséré
+                            self.taskset_index += 1
+                            print(
+                                f"New taskset generated with id: {taskset_id}")
+
+                            # Lier le nouveau taskset à l'expérience
+                            self.db_utils._execute_with_retry(
+                                """
+                                INSERT OR IGNORE INTO ExperienceTasksets (experience_id, taskset_id) 
+                                VALUES (?, ?)
+                                """,
+                                (experience_id,
+                                 f"taskset_{self.taskset_index - 1}"),
+                            )
+        self.db_utils._commit_with_retry()
+        print(
+            f"Taskset config generation for experience {experience_id} completed"
+        )
+
     def get_assignment_id(self, taskset_id, sorting, method, cores, solving_time, solver_name):
         """Récupère l'ID d'un assignment existant en fonction de ses paramètres."""
         result = self.db_utils._execute_with_retry(

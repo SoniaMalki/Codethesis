@@ -83,10 +83,10 @@ export GLOBALSCRATCH=$HOME
         }
 
         self.cluster_cores = {
-            "lm": 1,
-            "nic": 1,
-            "her": 1,
-            "drg2": 1,
+            "lm": 8,
+            "nic": 8,
+            "her": 8,
+            "drg2": 8,
             "sonia": 3
         }
 

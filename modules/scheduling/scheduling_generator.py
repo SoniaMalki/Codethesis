@@ -1,8 +1,8 @@
 import multiprocessing
-import sched
 import psutil
 from time import perf_counter
 import numpy
+import time
 
 from modules.scheduling.scheduling import Scheduling
 from modules.scheduling.composite_scheduling import CompositeScheduling
@@ -16,7 +16,6 @@ from modules.scheduling.scheduling_algorithms.earliest_deadline_first_variant2 i
 from modules.scheduling.scheduling_algorithms.deadline_monotonic import DeadlineMonotonic
 from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant1 import DeadlineMonotonicVariant1
 from modules.scheduling.scheduling_algorithms.deadline_monotonic_variant2 import DeadlineMonotonicVariant2
-import time
 from modules.utils.busy_period import BusyPeriod
 
 
@@ -67,8 +66,8 @@ class SchedulingGenerator:
                 raise MemoryLimitExceededException("Memory limit exceeded")
             time.sleep(0.5)
 
-    def run_scheduler(self, scheduler, queue):
-        """Fonction pour exécuter le scheduler dans un processus séparé et retourner le résultat via une queue."""
+    def run_scheduler(self, scheduler, return_dict):
+        """Fonction pour exécuter le scheduler dans un processus séparé et retourner le résultat via un dictionnaire géré par Manager."""
         try:
             schedule_tuple = scheduler.schedule()
             schedule = schedule_tuple[0]
@@ -81,12 +80,12 @@ class SchedulingGenerator:
             success = 0
             actual_utilization = numpy.nan
 
-        return_queue = {"schedule": schedule, "success": success,
-                        "actual_utilization": actual_utilization}
-        queue.put(return_queue)
+        return_dict["schedule"] = schedule
+        return_dict["success"] = success
+        return_dict["actual_utilization"] = actual_utilization
 
-    def run_scheduler_composite(self, scheduler, queue):
-        """Fonction pour exécuter le scheduler dans un processus séparé et retourner le résultat via une queue."""
+    def run_scheduler_composite(self, scheduler, return_dict):
+        """Fonction pour exécuter le scheduler dans un processus séparé et retourner le résultat via un dictionnaire géré par Manager."""
         try:
             schedule = scheduler.schedule()
             actual_utilization = scheduler.actual_utilization
@@ -97,11 +96,8 @@ class SchedulingGenerator:
             schedule = None
             actual_utilization = [numpy.nan]
 
-        # Placer le résultat dans la queue
-        return_queue = {}
-        return_queue["busy_periods"] = schedule
-        return_queue["actual_utilization"] = actual_utilization
-        queue.put(return_queue)
+        return_dict["busy_periods"] = schedule
+        return_dict["actual_utilization"] = actual_utilization
 
     def generate_scheduling_set(self):
         """Generates schedulings for each assignment within the TasksetSet."""
@@ -150,9 +146,10 @@ class SchedulingGenerator:
             end_time=end_time,
         )
 
-        queue = multiprocessing.Queue()
+        manager = multiprocessing.Manager()
+        return_dict = manager.dict()
         scheduling_process = multiprocessing.Process(
-            target=self.run_scheduler, args=(scheduler, queue))
+            target=self.run_scheduler, args=(scheduler, return_dict))
         scheduling_process.start()
 
         memory_exceeded = False
@@ -169,15 +166,13 @@ class SchedulingGenerator:
         if memory_exceeded:
             if scheduling_process.is_alive():
                 scheduling_process.terminate()
-            queue.close()
             schedule = None
             success = 0
             actual_utilization = numpy.nan
         else:
-            return_queue = queue.get()
-            schedule = return_queue["schedule"]
-            success = return_queue["success"]
-            actual_utilization = return_queue["actual_utilization"]
+            schedule = return_dict["schedule"]
+            success = return_dict["success"]
+            actual_utilization = return_dict["actual_utilization"]
 
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute
@@ -213,9 +208,10 @@ class SchedulingGenerator:
             end_time=end_time,
         )
 
-        queue = multiprocessing.Queue()
+        manager = multiprocessing.Manager()
+        return_dict = manager.dict()
         scheduling_process = multiprocessing.Process(
-            target=self.run_scheduler_composite, args=(scheduler, queue))
+            target=self.run_scheduler_composite, args=(scheduler, return_dict))
         scheduling_process.start()
 
         memory_exceeded = False
@@ -233,12 +229,10 @@ class SchedulingGenerator:
         if memory_exceeded:
             if scheduling_process.is_alive():
                 scheduling_process.terminate()
-            queue.close()
             busy_periods = None
         else:
-            return_queue = queue.get()
-            busy_periods = return_queue["busy_periods"]
-            actual_utilization = return_queue["actual_utilization"]
+            busy_periods = return_dict["busy_periods"]
+            actual_utilization = return_dict["actual_utilization"]
 
         end_time_compute = perf_counter()
         computation_time = end_time_compute - start_time_compute

@@ -45,6 +45,10 @@ process_file() {
     error_type="EOFError"
   elif grep -q "DatabaseError" "$file_path"; then
     error_type="DatabaseError"
+  elif grep -q "KeyError" "$file_path"; then
+    error_type="KeyError"
+  elif grep -q "MemoryError" "$file_path"; then
+    error_type="MemoryError"
   else
     error_type="UnknownError"
   fi

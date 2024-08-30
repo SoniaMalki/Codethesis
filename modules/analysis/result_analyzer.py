@@ -65,12 +65,12 @@ class ResultAnalyzer:
 
     def run_analysis(self):
         print("Running analysis...")
-        self.generate_global_performance_csv()
-        self.analyze_assignment()
+        # self.generate_global_performance_csv()
+        # self.analyze_assignment()
         if not self.df_schedulings.empty:
-            self.analyze_scheduling()
-            self.analyze_scheduling_by_assignment()
-            self.analyze_citta_acceptance_rate()
+            # self.analyze_scheduling()
+            # self.analyze_scheduling_by_assignment()
+            # self.analyze_citta_acceptance_rate()
             self.analyze_rhma_acceptance_rate()
         print("Analysis completed.")
 

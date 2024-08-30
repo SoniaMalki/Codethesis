@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 from matplotlib.colors import LogNorm
 
@@ -16,6 +17,7 @@ class SchedulingAnalyzer:
                                    "max_utilization", "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
         self.current_path = current_path
         self.plots_dir = self.current_path / "scheduling"
+        self.csv_dir = self.current_path / "csv_results"
         os.makedirs(self.plots_dir, exist_ok=True)
 
         self.df["non_preemption_option"] = self.df["scheduling_options"].apply(
@@ -46,6 +48,9 @@ class SchedulingAnalyzer:
         self.available_algorithms = self.df['scheduling_algorithm'].unique()
 
     def analyze(self):
+        self.generate_scheduling_performance_csv()
+        self.generate_scheduling_by_parameter_csv()
+        self.generate_non_preemption_analysis_csv()
         self.plot_global_success_rate()
         self.plot_global_computation_time()
         self.plot_global_overutilization()
@@ -61,6 +66,47 @@ class SchedulingAnalyzer:
             self.plot_success_rate_by_taskset_parameter(parameter)
             self.plot_computation_time_by_taskset_parameter(parameter)
             self.plot_overutilization_by_taskset_parameter(parameter)
+
+    def generate_scheduling_performance_csv(self):
+        performance = self.df.groupby('scheduling_algorithm').agg({
+            'mean_success_scheduling': 'mean',
+            'mean_computation_time_scheduling': 'mean',
+            'mean_overutilization': 'mean'
+        }).reset_index()
+        performance.columns = ['Algorithm', 'Success_Rate',
+                               'Avg_Computation_Time', 'Avg_Increased_Utilization']
+        performance.to_csv(
+            self.csv_dir / 'scheduling_performance.csv', index=False)
+
+    def generate_scheduling_by_parameter_csv(self):
+        parameters = ["interference_factor", "max_utilization",
+                      "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
+        results = []
+        for param in parameters:
+            param_data = self.df.groupby(['scheduling_algorithm', param]).agg({
+                'mean_success_scheduling': 'mean',
+                'mean_computation_time_scheduling': 'mean',
+                'mean_overutilization': 'mean'
+            }).reset_index()
+            param_data['Parameter'] = param
+            param_data.columns = ['Algorithm', 'Value', 'Success_Rate',
+                                  'Avg_Computation_Time', 'Avg_Increased_Utilization', 'Parameter']
+            results.append(param_data)
+        pd.concat(results).to_csv(self.csv_dir /
+                                  'scheduling_by_parameter.csv', index=False)
+
+    def generate_non_preemption_analysis_csv(self):
+        non_preemption = self.df[self.df['scheduling_algorithm'].isin(
+            ['EarliestDeadlineFirstVariant2', 'DeadlineMonotonicVariant2', 'CombinedScheduler', 'Rhma'])]
+        analysis = non_preemption.groupby(['scheduling_algorithm', 'non_preemption_option']).agg({
+            'mean_success_scheduling': 'mean',
+            'mean_computation_time_scheduling': 'mean',
+            'mean_overutilization': 'mean'
+        }).reset_index()
+        analysis.columns = ['Algorithm', 'Non_Preemption_Criterion',
+                            'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
+        analysis.to_csv(
+            self.csv_dir / 'non_preemption_analysis.csv', index=False)
 
     def plot_global_success_rate(self):
         available_algorithms = [

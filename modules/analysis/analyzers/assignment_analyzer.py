@@ -79,8 +79,9 @@ class AssignmentAnalyzer:
                 'mean_computation_time_assignment': 'mean'
             }).reset_index()
             param_data['Parameter'] = param
+            param_data = param_data[['assignment_method', 'Parameter', param, 'mean_success_assignment', 'mean_computation_time_assignment']]
             param_data.columns = [
-                'Algorithm', 'Value', 'Success_Rate', 'Avg_Computation_Time', 'Parameter']
+                'Algorithm', 'Parameter', 'Value', 'Success_Rate', 'Avg_Computation_Time']
             results.append(param_data)
         pd.concat(results).to_csv(self.csv_dir /
                                   'assignment_by_parameter.csv', index=False)

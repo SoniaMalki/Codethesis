@@ -89,11 +89,15 @@ class SchedulingAnalyzer:
                 'mean_overutilization': 'mean'
             }).reset_index()
             param_data['Parameter'] = param
-            param_data.columns = ['Algorithm', 'Value', 'Success_Rate',
-                                  'Avg_Computation_Time', 'Avg_Increased_Utilization', 'Parameter']
+            param_data = param_data[['scheduling_algorithm', 'Parameter', param,
+                                    'mean_success_scheduling', 'mean_computation_time_scheduling', 'mean_overutilization']]
+            param_data.columns = ['Algorithm', 'Parameter', 'Value',
+                                  'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
             results.append(param_data)
-        pd.concat(results).to_csv(self.csv_dir /
-                                  'scheduling_by_parameter.csv', index=False)
+
+        final_df = pd.concat(results)
+        final_df.to_csv(
+            self.csv_dir / 'scheduling_by_parameter.csv', index=False)
 
     def generate_non_preemption_analysis_csv(self):
         non_preemption = self.df[self.df['scheduling_algorithm'].isin(
@@ -106,7 +110,7 @@ class SchedulingAnalyzer:
         analysis.columns = ['Algorithm', 'Non_Preemption_Criterion',
                             'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
         analysis.to_csv(
-            self.csv_dir / 'non_preemption_analysis.csv', index=False)
+            self.csv_dir / 'scheduling_non_preemption_analysis.csv', index=False)
 
     def plot_global_success_rate(self):
         available_algorithms = [

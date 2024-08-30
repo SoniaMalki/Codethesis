@@ -1,3 +1,4 @@
+import pandas as pd
 import matplotlib
 import seaborn as sns
 import numpy as np
@@ -8,7 +9,7 @@ matplotlib.use('Agg')
 
 
 class AssignmentAnalyzer:
-    def __init__(self, df, current_path):
+    def __init__(self, df, current_path, csv_dir):
         self.df = df
         self.assignment_methods = [
             "FirstFitAssigner", "BestFitAssigner", "WorstFitAssigner", "Wmin", "Citta"]
@@ -18,6 +19,7 @@ class AssignmentAnalyzer:
                                    "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
         self.current_path = current_path
         self.plots_dir = self.current_path / "assignment"
+        self.csv_dir = csv_dir
         os.makedirs(self.plots_dir, exist_ok=True)
 
         self.df["task_core_ratio"] = self.df["tasks_per_taskset"] / \
@@ -43,6 +45,8 @@ class AssignmentAnalyzer:
         self.available_sorting_criteria = self.df['sorting_criterion'].unique()
 
     def analyze(self):
+        self.generate_assignment_performance_csv()
+        self.generate_assignment_by_parameter_csv()
         self.plot_global_success_rate()
         self.plot_global_computation_time()
 
@@ -54,6 +58,32 @@ class AssignmentAnalyzer:
         for parameter in self.taskset_parameters:
             self.plot_success_rate_by_taskset_parameter(parameter)
             self.plot_computation_time_by_taskset_parameter(parameter)
+
+    def generate_assignment_performance_csv(self):
+        performance = self.df.groupby(['assignment_method', 'sorting_criterion']).agg({
+            'mean_success_assignment': 'mean',
+            'mean_computation_time_assignment': 'mean'
+        }).reset_index()
+        performance.columns = [
+            'Algorithm', 'Sorting_Criterion', 'Success_Rate', 'Avg_Computation_Time']
+        performance.to_csv(
+            self.csv_dir / 'assignment_performance.csv', index=False)
+
+    def generate_assignment_by_parameter_csv(self):
+        parameters = ["interference_factor", "max_utilization",
+                      "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
+        results = []
+        for param in parameters:
+            param_data = self.df.groupby(['assignment_method', param]).agg({
+                'mean_success_assignment': 'mean',
+                'mean_computation_time_assignment': 'mean'
+            }).reset_index()
+            param_data['Parameter'] = param
+            param_data.columns = [
+                'Algorithm', 'Value', 'Success_Rate', 'Avg_Computation_Time', 'Parameter']
+            results.append(param_data)
+        pd.concat(results).to_csv(self.csv_dir /
+                                  'assignment_by_parameter.csv', index=False)
 
     def plot_global_success_rate(self):
         plt.figure(figsize=(10, 6))

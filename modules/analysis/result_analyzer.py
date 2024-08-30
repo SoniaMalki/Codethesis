@@ -67,16 +67,16 @@ class ResultAnalyzer:
         print("Running analysis...")
         self.generate_global_performance_csv()
         self.analyze_assignment()
-        if not self.df_schedulings.empty:
-            self.analyze_scheduling()
-            self.analyze_scheduling_by_assignment()
-            self.analyze_citta_acceptance_rate()
-            self.analyze_rhma_acceptance_rate()
+        # if not self.df_schedulings.empty:
+        #     self.analyze_scheduling()
+        #     self.analyze_scheduling_by_assignment()
+        #     self.analyze_citta_acceptance_rate()
+        #     self.analyze_rhma_acceptance_rate()
         print("Analysis completed.")
 
     def analyze_assignment(self):
         print("Analyzing assignments...")
-        analyzer = AssignmentAnalyzer(self.df, self.current_path)
+        analyzer = AssignmentAnalyzer(self.df, self.current_path, self.csv_dir)
         analyzer.analyze()
         print("Assignment analysis completed.")
 

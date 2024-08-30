@@ -38,6 +38,8 @@ class RhmaAcceptanceRateAnalyzer:
 
         self.analyze_citta_filtering_efficiency()
         self.analyze_citta_errors()
+        self.calculate_schedulability_leakage()
+        self.plot_schedulability_leakage()
 
     def calculate_acceptance_rate(self):
         """
@@ -172,4 +174,55 @@ class RhmaAcceptanceRateAnalyzer:
         plt.ylabel('Rate (%)')
         plt.ylim(0, 110)
         plt.savefig(self.plots_dir / 'citta_error_rates.png')
+        plt.close()
+
+    def calculate_schedulability_leakage(self):
+        """
+        Calculates the schedulability leakage to quantify the pessimism of Citta.
+        """
+        if not self.is_citta_available or not self.is_rhma_available:
+            self.leakage_rate = 0
+            return
+
+        # Filter for task sets declared non-schedulable by Citta
+        citta_non_schedulable_ids = self.df[(self.df['assignment_method'] == 'Citta') &
+                                            (self.df['mean_success_assignment'] == 0)]['assignment_id']
+
+        # Filter for those non-schedulable by Citta but scheduled by RHMA
+        leakage_cases = self.df[(self.df['scheduling_algorithm'] == 'Rhma') &
+                                (self.df['mean_success_scheduling'] == 1) &
+                                (self.df['assignment_id'].isin(citta_non_schedulable_ids))]
+
+        # Calculate total number of task sets tested
+        total_tasks = len(self.df['assignment_id'].unique())
+
+        # Calculate leakage rate
+        if total_tasks > 0:
+            leakage_rate = (len(leakage_cases) / total_tasks) * \
+                100  # as percentage
+        else:
+            leakage_rate = 0
+
+        self.leakage_rate = leakage_rate
+
+        # Create DataFrame for CSV
+        leakage_df = pd.DataFrame(
+            {'Schedulability Leakage (%)': [self.leakage_rate]})
+        leakage_df.to_csv(
+            self.csv_dir / 'citta_schedulability_leakage.csv', index=False)
+
+    def plot_schedulability_leakage(self):
+        """
+        Plots the schedulability leakage rate for Citta.
+        """
+        if not self.is_citta_available or not self.is_rhma_available:
+            return
+
+        plt.figure(figsize=(8, 6))
+        sns.barplot(x=['Schedulability Leakage'], y=[self.leakage_rate])
+        plt.title('Schedulability Leakage Rate for Citta')
+        plt.ylabel('Leakage Rate (%)')
+        # Ensure the y-axis always shows up to 100% or beyond
+        plt.ylim(0, max(100, self.leakage_rate + 10))
+        plt.savefig(self.plots_dir / 'citta_schedulability_leakage.png')
         plt.close()

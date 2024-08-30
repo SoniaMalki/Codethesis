@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from modules.analysis.analyzers.citta_acceptance_rate_analyzer import CittaAcceptanceRateAnalyzer
 from modules.analysis.analyzers.rhma_acceptance_rate_analyzer import RhmaAcceptanceRateAnalyzer
@@ -15,7 +17,9 @@ class ResultAnalyzer:
             f"Initializing ResultAnalyzer for experience ID: {experience_id}")
         self.db_path = db_path
         self.current_path = plots_path / experience_id
+        self.csv_dir = self.current_path / "csv_results"
         os.makedirs(self.current_path, exist_ok=True)
+        os.makedirs(self.csv_dir, exist_ok=True)
         self.experience_id = experience_id
         self.loader = ResultLoader(
             db_path=db_path, experience_id=experience_id, result_path=result_path)
@@ -61,6 +65,7 @@ class ResultAnalyzer:
 
     def run_analysis(self):
         print("Running analysis...")
+        self.generate_global_performance_csv()
         self.analyze_assignment()
         if not self.df_schedulings.empty:
             self.analyze_scheduling()
@@ -98,3 +103,14 @@ class ResultAnalyzer:
         analyzer = RhmaAcceptanceRateAnalyzer(self.df, self.current_path)
         analyzer.analyze()
         print("Rhma acceptance rate analysis completed.")
+
+    def generate_global_performance_csv(self):
+        global_performance = self.df.groupby('scheduling_algorithm').agg({
+            'mean_success_scheduling': 'mean',
+            'mean_computation_time_scheduling': 'mean',
+            'mean_overutilization': 'mean'
+        }).reset_index()
+        global_performance.columns = [
+            'Algorithm', 'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
+        global_performance.to_csv(
+            self.csv_dir / 'global_performance.csv', index=False)

@@ -41,8 +41,6 @@ class RhmaAcceptanceRateAnalyzer:
 
         self.analyze_citta_filtering_efficiency()
         self.analyze_citta_errors()
-        self.calculate_schedulability_leakage()
-        self.plot_schedulability_leakage()
 
     def calculate_acceptance_rate(self):
         citta_schedulable = 0
@@ -153,34 +151,4 @@ class RhmaAcceptanceRateAnalyzer:
         plt.ylabel('Rate (%)')
         plt.ylim(0, 110)
         plt.savefig(self.plots_dir / 'citta_error_rates.png')
-        plt.close()
-
-    def calculate_schedulability_leakage(self):
-        leakage_cases = 0
-        total_tasks = 0
-
-        for assignment_set, scheduling_set in zip(self.assignment_sets, self.scheduling_sets):
-            if assignment_set.assignment_method == 'Citta' and scheduling_set.scheduling_algorithm == 'Rhma':
-                for assignment, scheduling in zip(assignment_set.assignment_list, scheduling_set.scheduling_list):
-                    total_tasks += 1
-                    if not assignment.success and scheduling.success:
-                        leakage_cases += 1
-
-        self.leakage_rate = (leakage_cases / total_tasks *
-                             100) if total_tasks > 0 else 0
-
-        # Create DataFrame for CSV
-        leakage_df = pd.DataFrame(
-            {'Schedulability Leakage (%)': [self.leakage_rate]})
-        leakage_df.to_csv(
-            self.csv_dir / 'citta_schedulability_leakage.csv', index=False)
-
-    def plot_schedulability_leakage(self):
-        plt.figure(figsize=(8, 6))
-        sns.barplot(x=['Schedulability Leakage'], y=[self.leakage_rate])
-        plt.title('Schedulability Leakage Rate for Citta')
-        plt.ylabel('Leakage Rate (%)')
-        # Ensure the y-axis always shows up to 100% or beyond
-        plt.ylim(0, max(100, self.leakage_rate + 10))
-        plt.savefig(self.plots_dir / 'citta_schedulability_leakage.png')
         plt.close()

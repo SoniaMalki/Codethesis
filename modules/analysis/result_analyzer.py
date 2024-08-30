@@ -3,7 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from modules.analysis.analyzers.citta_acceptance_rate_analyzer import CittaAcceptanceRateAnalyzer
 from modules.analysis.analyzers.rhma_acceptance_rate_analyzer import RhmaAcceptanceRateAnalyzer
 from modules.analysis.result_loader import ResultLoader
 from modules.analysis.analyzers.assignment_analyzer import AssignmentAnalyzer
@@ -70,7 +69,6 @@ class ResultAnalyzer:
         if not self.df_schedulings.empty:
             self.analyze_scheduling()
             self.analyze_scheduling_by_assignment()
-            self.analyze_citta_acceptance_rate()
             self.analyze_rhma_acceptance_rate()
         print("Analysis completed.")
 
@@ -92,13 +90,6 @@ class ResultAnalyzer:
             self.df, self.current_path, self.csv_dir)
         analyzer.analyze()
         print("Scheduling by assignment analysis completed.")
-
-    def analyze_citta_acceptance_rate(self):
-        print("Analyzing citta acceptance rate...")
-        analyzer = CittaAcceptanceRateAnalyzer(
-            self.df, self.current_path, self.csv_dir)
-        analyzer.analyze()
-        print("Citta acceptance rate analysis completed.")
 
     def analyze_rhma_acceptance_rate(self):
         print("Analyzing Rhma acceptance rate...")

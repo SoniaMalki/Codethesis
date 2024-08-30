@@ -69,9 +69,9 @@ class ResultAnalyzer:
         self.analyze_assignment()
         if not self.df_schedulings.empty:
             self.analyze_scheduling()
-        #     self.analyze_scheduling_by_assignment()
-        #     self.analyze_citta_acceptance_rate()
-        #     self.analyze_rhma_acceptance_rate()
+            self.analyze_scheduling_by_assignment()
+            self.analyze_citta_acceptance_rate()
+            self.analyze_rhma_acceptance_rate()
         print("Analysis completed.")
 
     def analyze_assignment(self):
@@ -82,25 +82,28 @@ class ResultAnalyzer:
 
     def analyze_scheduling(self):
         print("Analyzing scheduling...")
-        analyzer = SchedulingAnalyzer(self.df, self.current_path)
+        analyzer = SchedulingAnalyzer(self.df, self.current_path, self.csv_dir)
         analyzer.analyze()
         print("Scheduling analysis completed.")
 
     def analyze_scheduling_by_assignment(self):
         print("Analyzing scheduling by assignment...")
-        analyzer = SchedulingByAssignmentAnalyzer(self.df, self.current_path)
+        analyzer = SchedulingByAssignmentAnalyzer(
+            self.df, self.current_path, self.csv_dir)
         analyzer.analyze()
         print("Scheduling by assignment analysis completed.")
 
     def analyze_citta_acceptance_rate(self):
         print("Analyzing citta acceptance rate...")
-        analyzer = CittaAcceptanceRateAnalyzer(self.df, self.current_path)
+        analyzer = CittaAcceptanceRateAnalyzer(
+            self.df, self.current_path, self.csv_dir)
         analyzer.analyze()
         print("Citta acceptance rate analysis completed.")
 
     def analyze_rhma_acceptance_rate(self):
         print("Analyzing Rhma acceptance rate...")
-        analyzer = RhmaAcceptanceRateAnalyzer(self.df, self.current_path)
+        analyzer = RhmaAcceptanceRateAnalyzer(
+            self.df, self.current_path, self.csv_dir)
         analyzer.analyze()
         print("Rhma acceptance rate analysis completed.")
 

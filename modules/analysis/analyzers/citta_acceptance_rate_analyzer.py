@@ -5,7 +5,7 @@ import seaborn as sns
 
 
 class CittaAcceptanceRateAnalyzer:
-    def __init__(self, df, current_path):
+    def __init__(self, df, current_path, csv_dir):
         """
         Initializes the acceptance rate analyzer for Citta.
 
@@ -16,6 +16,7 @@ class CittaAcceptanceRateAnalyzer:
         self.df = df
         self.current_path = current_path
         self.plots_dir = self.current_path / "citta_acceptance_rate"
+        self.csv_dir = csv_dir
         os.makedirs(self.plots_dir, exist_ok=True)
 
         # Vérifier si "Citta" est une méthode d'assignation présente dans le DataFrame

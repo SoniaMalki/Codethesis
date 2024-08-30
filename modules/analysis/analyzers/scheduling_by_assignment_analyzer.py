@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
@@ -6,7 +7,7 @@ from matplotlib.colors import LogNorm
 
 
 class SchedulingByAssignmentAnalyzer:
-    def __init__(self, df, current_path):
+    def __init__(self, df, current_path, csv_dir):
         self.df = df
         self.scheduling_algorithms = ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1",
                                       "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]
@@ -20,6 +21,7 @@ class SchedulingByAssignmentAnalyzer:
                                  "utilization_ascending", "utilization_descending", "execution_slack_ascending", "execution_slack_descending", "random_order"]
         self.current_path = current_path
         self.plots_dir = self.current_path / "scheduling_by_assignment"
+        self.csv_dir = csv_dir
         os.makedirs(self.plots_dir, exist_ok=True)
 
         self.df["non_preemption_option"] = self.df["scheduling_options"].apply(

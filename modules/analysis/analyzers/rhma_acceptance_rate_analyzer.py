@@ -5,7 +5,7 @@ import seaborn as sns
 
 
 class RhmaAcceptanceRateAnalyzer:
-    def __init__(self, df, current_path):
+    def __init__(self, df, current_path, csv_dir):
         """
         Initializes the observed acceptance rate analyzer for Rhma.
 
@@ -16,6 +16,7 @@ class RhmaAcceptanceRateAnalyzer:
         self.df = df
         self.current_path = current_path
         self.plots_dir = self.current_path / "rhma_acceptance_rate"
+        self.csv_dir = csv_dir
         os.makedirs(self.plots_dir, exist_ok=True)
 
         # Vérifier la disponibilité de "Citta" et "Rhma" dans les données

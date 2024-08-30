@@ -7,7 +7,7 @@ from matplotlib.colors import LogNorm
 
 
 class SchedulingAnalyzer:
-    def __init__(self, df, current_path):
+    def __init__(self, df, current_path, csv_dir):
         self.df = df
         self.scheduling_algorithms = ["EarliestDeadlineFirst", "EarliestDeadlineFirstVariant1",
                                       "EarliestDeadlineFirstVariant2", "DeadlineMonotonic", "DeadlineMonotonicVariant1", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"]
@@ -17,7 +17,7 @@ class SchedulingAnalyzer:
                                    "max_utilization", "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
         self.current_path = current_path
         self.plots_dir = self.current_path / "scheduling"
-        self.csv_dir = self.current_path / "csv_results"
+        self.csv_dir = csv_dir
         os.makedirs(self.plots_dir, exist_ok=True)
 
         self.df["non_preemption_option"] = self.df["scheduling_options"].apply(

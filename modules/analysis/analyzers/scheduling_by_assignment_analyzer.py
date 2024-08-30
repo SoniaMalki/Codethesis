@@ -88,7 +88,9 @@ class SchedulingByAssignmentAnalyzer:
         )
 
     def analyze(self):
-        self.generate_scheduling_by_assignment_csv()
+        self.generate_performance_by_assignment_and_scheduling_csv()
+        self.generate_performance_by_sorting_criteria_and_assignment_scheduling_csv()
+        self.generate_performance_by_taskset_parameter_and_assignment_scheduling_csv()
         self.plot_global_success_rate()
         self.plot_global_computation_time()
         self.plot_global_overutilization()
@@ -113,16 +115,55 @@ class SchedulingByAssignmentAnalyzer:
             self.plot_computation_time_by_taskset_parameter(parameter)
             self.plot_overutilization_by_taskset_parameter(parameter)
 
-    def generate_scheduling_by_assignment_csv(self):
+    def generate_performance_by_assignment_and_scheduling_csv(self):
+        """
+        Generate a CSV file containing the average performance metrics for each combination of assignment method and scheduling algorithm.
+        """
         performance = self.df.groupby(['assignment_method', 'scheduling_algorithm']).agg({
             'mean_success_scheduling': 'mean',
             'mean_computation_time_scheduling': 'mean',
             'mean_overutilization': 'mean'
         }).reset_index()
-        performance.columns = ['Assignment_Algorithm', 'Scheduling_Algorithm',
-                               'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
+        performance.columns = ['Assignment_Method', 'Scheduling_Algorithm', 'Success_Rate',
+                               'Avg_Computation_Time', 'Avg_Increased_Utilization']
         performance.to_csv(
-            self.csv_dir / 'scheduling_by_assignment.csv', index=False)
+            self.csv_dir / 'performance_by_assignment_and_scheduling.csv', index=False)
+
+    def generate_performance_by_sorting_criteria_and_assignment_scheduling_csv(self):
+        """
+        Generate a CSV file containing the average performance metrics for each sorting criterion, assignment method, and scheduling algorithm.
+        """
+        performance = self.df.groupby(['sorting_criterion', 'assignment_method', 'scheduling_algorithm']).agg({
+            'mean_success_scheduling': 'mean',
+            'mean_computation_time_scheduling': 'mean',
+            'mean_overutilization': 'mean'
+        }).reset_index()
+        performance.columns = ['Sorting_Criterion', 'Assignment_Method', 'Scheduling_Algorithm', 'Success_Rate',
+                               'Avg_Computation_Time', 'Avg_Increased_Utilization']
+        performance.to_csv(
+            self.csv_dir / 'performance_by_sorting_criteria_and_assignment_scheduling.csv', index=False)
+
+    def generate_performance_by_taskset_parameter_and_assignment_scheduling_csv(self):
+        """
+        Generate a CSV file containing the average performance metrics for each taskset parameter, assignment method, and scheduling algorithm.
+        """
+        results = []
+        for param in self.taskset_parameters:
+            param_data = self.df.groupby(['assignment_method', 'scheduling_algorithm', param]).agg({
+                'mean_success_scheduling': 'mean',
+                'mean_computation_time_scheduling': 'mean',
+                'mean_overutilization': 'mean'
+            }).reset_index()
+            param_data['Parameter'] = param
+            param_data = param_data[['assignment_method', 'scheduling_algorithm', 'Parameter', param,
+                                    'mean_success_scheduling', 'mean_computation_time_scheduling', 'mean_overutilization']]
+            param_data.columns = ['Assignment_Method', 'Scheduling_Algorithm', 'Parameter', 'Value',
+                                  'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
+            results.append(param_data)
+
+        final_df = pd.concat(results)
+        final_df.to_csv(
+            self.csv_dir / 'performance_by_taskset_parameter_and_assignment_scheduling.csv', index=False)
 
     def plot_global_success_rate(self):
         available_combinations = [

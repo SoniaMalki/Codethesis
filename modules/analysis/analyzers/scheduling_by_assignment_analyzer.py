@@ -88,6 +88,7 @@ class SchedulingByAssignmentAnalyzer:
         )
 
     def analyze(self):
+        self.generate_scheduling_by_assignment_csv()
         self.plot_global_success_rate()
         self.plot_global_computation_time()
         self.plot_global_overutilization()
@@ -111,6 +112,17 @@ class SchedulingByAssignmentAnalyzer:
             self.plot_success_rate_by_taskset_parameter(parameter)
             self.plot_computation_time_by_taskset_parameter(parameter)
             self.plot_overutilization_by_taskset_parameter(parameter)
+
+    def generate_scheduling_by_assignment_csv(self):
+        performance = self.df.groupby(['assignment_method', 'scheduling_algorithm']).agg({
+            'mean_success_scheduling': 'mean',
+            'mean_computation_time_scheduling': 'mean',
+            'mean_overutilization': 'mean'
+        }).reset_index()
+        performance.columns = ['Assignment_Algorithm', 'Scheduling_Algorithm',
+                               'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
+        performance.to_csv(
+            self.csv_dir / 'scheduling_by_assignment.csv', index=False)
 
     def plot_global_success_rate(self):
         available_combinations = [

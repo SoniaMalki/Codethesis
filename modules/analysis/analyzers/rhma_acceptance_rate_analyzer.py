@@ -47,14 +47,22 @@ class RhmaAcceptanceRateAnalyzer:
         rhma_schedulable = 0
         total_tasksets = 0
 
-        for assignment_set, scheduling_set in zip(self.assignment_sets, self.scheduling_sets):
-            if assignment_set.assignment_method == 'Citta':
-                for assignment, scheduling in zip(assignment_set.assignment_list, scheduling_set.scheduling_list):
-                    total_tasksets += 1
-                    if assignment.success:
-                        citta_schedulable += 1
-                        if scheduling.success and scheduling_set.scheduling_algorithm == 'Rhma':
-                            rhma_schedulable += 1
+        for taskset_set in self.taskset_sets:
+            for taskset in taskset_set.taskset_list:
+                total_tasksets += 1
+                citta_assignment = self.find_assignment(
+                    taskset_set.taskset_id, 'Citta')
+                if citta_assignment:
+                    for assignment in citta_assignment.assignment_list:
+                        if assignment.success:
+                            citta_schedulable += 1
+                            rhma_scheduling = self.find_scheduling(
+                                taskset_set.taskset_id, citta_assignment.assignment_id, 'Rhma')
+                            if rhma_scheduling:
+                                for scheduling in rhma_scheduling.scheduling_list:
+                                    if scheduling.success:
+                                        rhma_schedulable += 1
+                                        break
 
         self.acceptance_rate = (
             rhma_schedulable / citta_schedulable * 100) if citta_schedulable > 0 else 0
@@ -82,13 +90,22 @@ class RhmaAcceptanceRateAnalyzer:
         true_negatives = 0
         total_tasks = 0
 
-        for assignment_set, scheduling_set in zip(self.assignment_sets, self.scheduling_sets):
-            if assignment_set.assignment_method == 'Citta' and scheduling_set.scheduling_algorithm == 'Rhma':
-                for assignment, scheduling in zip(assignment_set.assignment_list, scheduling_set.scheduling_list):
-                    total_tasks += 1
-                    if assignment.success and scheduling.success:
+        for taskset_set in self.taskset_sets:
+            for taskset in taskset_set.taskset_list:
+                total_tasks += 1
+                citta_assignment = self.find_assignment(
+                    taskset_set.taskset_id, 'Citta')
+                if citta_assignment:
+                    citta_success = any(
+                        assignment.success for assignment in citta_assignment.assignment_list)
+                    rhma_scheduling = self.find_scheduling(
+                        taskset_set.taskset_id, citta_assignment.assignment_id, 'Rhma')
+                    rhma_success = rhma_scheduling and any(
+                        scheduling.success for scheduling in rhma_scheduling.scheduling_list)
+
+                    if citta_success and rhma_success:
                         true_positives += 1
-                    elif not assignment.success and not scheduling.success:
+                    elif not citta_success and not rhma_success:
                         true_negatives += 1
 
         true_positive_rate = (
@@ -121,14 +138,30 @@ class RhmaAcceptanceRateAnalyzer:
         false_negatives = 0
         total_tasks = 0
 
-        for assignment_set, scheduling_set in zip(self.assignment_sets, self.scheduling_sets):
-            if assignment_set.assignment_method == 'Citta' and scheduling_set.scheduling_algorithm == 'Rhma':
-                for assignment, scheduling in zip(assignment_set.assignment_list, scheduling_set.scheduling_list):
-                    total_tasks += 1
-                    if assignment.success and not scheduling.success:
+        for taskset_set in self.taskset_sets:
+            for taskset in taskset_set.taskset_list:
+                total_tasks += 1
+                citta_assignment = self.find_assignment(
+                    taskset_set.taskset_id, 'Citta')
+                if citta_assignment:
+                    citta_success = any(
+                        assignment.success for assignment in citta_assignment.assignment_list)
+                    rhma_scheduling = self.find_scheduling(
+                        taskset_set.taskset_id, citta_assignment.assignment_id, 'Rhma')
+                    rhma_success = rhma_scheduling and any(
+                        scheduling.success for scheduling in rhma_scheduling.scheduling_list)
+
+                    if citta_success and not rhma_success:
                         false_positives += 1
-                    elif not assignment.success and scheduling.success:
-                        false_negatives += 1
+                    elif not citta_success:
+                        other_assignments = self.find_other_assignments(
+                            taskset_set.taskset_id, 'Citta')
+                        for other_assignment in other_assignments:
+                            other_rhma_scheduling = self.find_scheduling(
+                                taskset_set.taskset_id, other_assignment.assignment_id, 'Rhma')
+                            if other_rhma_scheduling and any(scheduling.success for scheduling in other_rhma_scheduling.scheduling_list):
+                                false_negatives += 1
+                                break
 
         # Calculate rates
         false_positive_rate = (
@@ -152,3 +185,19 @@ class RhmaAcceptanceRateAnalyzer:
         plt.ylim(0, 110)
         plt.savefig(self.plots_dir / 'citta_error_rates.png')
         plt.close()
+
+    def find_assignment(self, taskset_id, assignment_method):
+        for assignment_set in self.assignment_sets:
+            if assignment_set.taskset_id == taskset_id and assignment_set.assignment_method == assignment_method:
+                return assignment_set
+        return None
+
+    def find_scheduling(self, taskset_id, assignment_id, scheduling_algorithm):
+        for scheduling_set in self.scheduling_sets:
+            if scheduling_set.taskset_id == taskset_id and scheduling_set.assignment_id == assignment_id and scheduling_set.scheduling_algorithm == scheduling_algorithm:
+                return scheduling_set
+        return None
+
+    def find_other_assignments(self, taskset_id, exclude_method):
+        return [assignment_set for assignment_set in self.assignment_sets
+                if assignment_set.taskset_id == taskset_id and assignment_set.assignment_method != exclude_method]

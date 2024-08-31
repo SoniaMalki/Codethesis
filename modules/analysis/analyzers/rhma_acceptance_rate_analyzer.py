@@ -38,9 +38,7 @@ class RhmaAcceptanceRateAnalyzer:
 
         self.calculate_acceptance_rate()
         self.plot_acceptance_rate()
-
-        self.analyze_citta_filtering_efficiency()
-        self.analyze_citta_errors()
+        self.analyze_citta_performance()
 
     def calculate_acceptance_rate(self):
         citta_schedulable = 0
@@ -48,21 +46,18 @@ class RhmaAcceptanceRateAnalyzer:
         total_tasksets = 0
 
         for taskset_set in self.taskset_sets:
-            for taskset in taskset_set.taskset_list:
-                total_tasksets += 1
-                citta_assignment = self.find_assignment(
-                    taskset_set.taskset_id, 'Citta')
-                if citta_assignment:
-                    for assignment in citta_assignment.assignment_list:
+            citta_assignment = self.find_assignment(
+                taskset_set.taskset_id, 'Citta')
+            if citta_assignment:
+                rhma_scheduling = self.find_scheduling(
+                    taskset_set.taskset_id, citta_assignment.assignment_id, 'Rhma')
+                if rhma_scheduling:
+                    for taskset, assignment, scheduling in zip(taskset_set.taskset_list, citta_assignment.assignment_list, rhma_scheduling.scheduling_list):
+                        total_tasksets += 1
                         if assignment.success:
                             citta_schedulable += 1
-                            rhma_scheduling = self.find_scheduling(
-                                taskset_set.taskset_id, citta_assignment.assignment_id, 'Rhma')
-                            if rhma_scheduling:
-                                for scheduling in rhma_scheduling.scheduling_list:
-                                    if scheduling.success:
-                                        rhma_schedulable += 1
-                                        break
+                            if scheduling.success:
+                                rhma_schedulable += 1
 
         self.acceptance_rate = (
             rhma_schedulable / citta_schedulable * 100) if citta_schedulable > 0 else 0
@@ -85,105 +80,78 @@ class RhmaAcceptanceRateAnalyzer:
         plt.savefig(self.plots_dir / 'rhma_observed_acceptance_rate.png')
         plt.close()
 
-    def analyze_citta_filtering_efficiency(self):
+    def analyze_citta_performance(self):
         true_positives = 0
         true_negatives = 0
-        total_tasks = 0
-
-        for taskset_set in self.taskset_sets:
-            for taskset in taskset_set.taskset_list:
-                total_tasks += 1
-                citta_assignment = self.find_assignment(
-                    taskset_set.taskset_id, 'Citta')
-                if citta_assignment:
-                    citta_success = any(
-                        assignment.success for assignment in citta_assignment.assignment_list)
-                    rhma_scheduling = self.find_scheduling(
-                        taskset_set.taskset_id, citta_assignment.assignment_id, 'Rhma')
-                    rhma_success = rhma_scheduling and any(
-                        scheduling.success for scheduling in rhma_scheduling.scheduling_list)
-
-                    if citta_success and rhma_success:
-                        true_positives += 1
-                    elif not citta_success and not rhma_success:
-                        true_negatives += 1
-
-        true_positive_rate = (
-            true_positives / total_tasks * 100) if total_tasks > 0 else 0
-        true_negative_rate = (
-            true_negatives / total_tasks * 100) if total_tasks > 0 else 0
-        overall_accuracy = ((true_positives + true_negatives) /
-                            total_tasks * 100) if total_tasks > 0 else 0
-
-        # Create DataFrame for CSV
-        filtering_efficiency_df = pd.DataFrame({
-            'True Positive Rate (%)': [true_positive_rate],
-            'True Negative Rate (%)': [true_negative_rate],
-            'Overall Accuracy (%)': [overall_accuracy]
-        })
-        filtering_efficiency_df.to_csv(
-            self.csv_dir / 'citta_filtering_efficiency.csv', index=False)
-
-        # Create bar plot
-        plt.figure(figsize=(8, 6))
-        sns.barplot(data=filtering_efficiency_df)
-        plt.title('CITTA Filtering Efficiency for RHMA')
-        plt.ylabel('Rate (%)')
-        plt.ylim(0, 110)  # Set y-axis limit for better visualization
-        plt.savefig(self.plots_dir / 'citta_filtering_efficiency.png')
-        plt.close()
-
-    def analyze_citta_errors(self):
         false_positives = 0
         false_negatives = 0
         total_tasks = 0
 
         for taskset_set in self.taskset_sets:
-            for taskset in taskset_set.taskset_list:
-                total_tasks += 1
-                citta_assignment = self.find_assignment(
-                    taskset_set.taskset_id, 'Citta')
-                if citta_assignment:
-                    citta_success = any(
-                        assignment.success for assignment in citta_assignment.assignment_list)
-                    rhma_scheduling = self.find_scheduling(
-                        taskset_set.taskset_id, citta_assignment.assignment_id, 'Rhma')
-                    rhma_success = rhma_scheduling and any(
-                        scheduling.success for scheduling in rhma_scheduling.scheduling_list)
+            citta_assignment = self.find_assignment(
+                taskset_set.taskset_id, 'Citta')
+            if citta_assignment:
+                rhma_scheduling_citta = self.find_scheduling(
+                    taskset_set.taskset_id, citta_assignment.assignment_id, 'Rhma')
+                if rhma_scheduling_citta:
+                    for taskset, citta_assignment_item, rhma_scheduling_citta_item in zip(taskset_set.taskset_list, citta_assignment.assignment_list, rhma_scheduling_citta.scheduling_list):
+                        total_tasks += 1
 
-                    if citta_success and not rhma_success:
-                        false_positives += 1
-                    elif not citta_success:
-                        other_assignments = self.find_other_assignments(
-                            taskset_set.taskset_id, 'Citta')
-                        for other_assignment in other_assignments:
-                            other_rhma_scheduling = self.find_scheduling(
-                                taskset_set.taskset_id, other_assignment.assignment_id, 'Rhma')
-                            if other_rhma_scheduling and any(scheduling.success for scheduling in other_rhma_scheduling.scheduling_list):
+                        # Check if RHMA is possible for any assignment
+                        rhma_possible = False
+                        for assignment_set in self.assignment_sets:
+                            if assignment_set.taskset_id == taskset_set.taskset_id:
+                                rhma_scheduling = self.find_scheduling(
+                                    taskset_set.taskset_id, assignment_set.assignment_id, 'Rhma')
+                                if rhma_scheduling:
+                                    assignment_item = assignment_set.assignment_list[taskset_set.taskset_list.index(
+                                        taskset)]
+                                    scheduling_item = rhma_scheduling.scheduling_list[taskset_set.taskset_list.index(
+                                        taskset)]
+                                    if assignment_item.success and scheduling_item.success:
+                                        rhma_possible = True
+                                        break
+
+                        if citta_assignment_item.success:
+                            if rhma_scheduling_citta_item.success:
+                                true_positives += 1
+                            else:
+                                false_positives += 1
+                        else:
+                            if rhma_possible:
                                 false_negatives += 1
-                                break
+                            else:
+                                true_negatives += 1
 
-        # Calculate rates
+        true_positive_rate = (
+            true_positives / total_tasks * 100) if total_tasks > 0 else 0
+        true_negative_rate = (
+            true_negatives / total_tasks * 100) if total_tasks > 0 else 0
         false_positive_rate = (
             false_positives / total_tasks * 100) if total_tasks > 0 else 0
         false_negative_rate = (
             false_negatives / total_tasks * 100) if total_tasks > 0 else 0
+        overall_accuracy = ((true_positives + true_negatives) /
+                            total_tasks * 100) if total_tasks > 0 else 0
 
-        # Create DataFrame for CSV
-        error_rates_df = pd.DataFrame({
+        performance_df = pd.DataFrame({
+            'True Positive Rate (%)': [true_positive_rate],
+            'True Negative Rate (%)': [true_negative_rate],
             'False Positive Rate (%)': [false_positive_rate],
-            'False Negative Rate (%)': [false_negative_rate]
+            'False Negative Rate (%)': [false_negative_rate],
+            'Overall Accuracy (%)': [overall_accuracy]
         })
-        error_rates_df.to_csv(
-            self.csv_dir / 'citta_error_rates.csv', index=False)
+        performance_df.to_csv(
+            self.csv_dir / 'citta_performance.csv', index=False)
 
-        # Create bar plot
-        plt.figure(figsize=(8, 6))
-        sns.barplot(data=error_rates_df)
-        plt.title('CITTA Error Rates for RHMA')
+        plt.figure(figsize=(10, 6))
+        sns.barplot(data=performance_df)
+        plt.title('CITTA Performance Metrics')
         plt.ylabel('Rate (%)')
-        plt.ylim(0, 110)
-        plt.savefig(self.plots_dir / 'citta_error_rates.png')
+        plt.ylim(0, 100)
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
+        plt.savefig(self.plots_dir / 'citta_performance.png')
         plt.close()
 
     def find_assignment(self, taskset_id, assignment_method):

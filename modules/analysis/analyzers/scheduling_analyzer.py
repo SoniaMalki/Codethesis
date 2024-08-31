@@ -60,7 +60,7 @@ class SchedulingAnalyzer:
             ["EarliestDeadlineFirstVariant2", "DeadlineMonotonicVariant2", "CombinedScheduler", "Rhma"])]
         self.plot_success_rate_by_non_preemptive_option(df_subset)
         self.plot_computation_time_by_non_preemptive_option(df_subset)
-        self.plot_overutilization_by_non_preemptive_option(df_subset)
+        # self.plot_overutilization_by_non_preemptive_option(df_subset)
 
         for parameter in self.taskset_parameters:
             self.plot_success_rate_by_taskset_parameter(parameter)

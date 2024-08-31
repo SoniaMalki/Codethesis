@@ -114,8 +114,10 @@ class SchedulingGenerator:
 
         if self.scheduling_algorithm in self.scheduling_algorithms:
             scheduling_function = self.generate_scheduling
+            empty_scheduling_function = self.create_empty_scheduling
         else:
             scheduling_function = self.generate_composite_scheduling
+            empty_scheduling_function = self.create_empty_composite_scheduling
 
         # Apply the selected scheduling function to all taskset assignments
         for taskset, assignment in zip(self.taskset_set, self.assignment_set):
@@ -124,10 +126,14 @@ class SchedulingGenerator:
                     f"Generating scheduling for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
                 scheduling = scheduling_function(
                     taskset=taskset, assignment=assignment, scheduler_class=scheduler_class, start_time=1, end_time=None)
-
-                scheduling_list.append(scheduling)
+            else:
                 print(
-                    f"Scheduling generated for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
+                    f"Assignment did not succeed for this repetition, scheduler will not run.")
+                scheduling = empty_scheduling_function(
+                    scheduler=self.scheduling_algorithm)
+            scheduling_list.append(scheduling)
+            print(
+                f"Scheduling generated for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
 
         scheduling = SchedulingSet(scheduling_id=self.scheduling_id, taskset_id=self.taskset_id, assignment_id=self.assignment_id,
                                    scheduling_algorithm=self.scheduling_algorithm, scheduling_options=self.scheduling_options, scheduling_list=scheduling_list)
@@ -180,18 +186,18 @@ class SchedulingGenerator:
         if not success or schedule is None:
             computation_time = numpy.nan
             actual_utilization = numpy.nan
-            theoritical_utilization = numpy.nan
+            theoretical_utilization = numpy.nan
             print(
                 f"Scheduling failed for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
         else:
-            theoritical_utilization = sum(taskset.utilization)
+            theoretical_utilization = sum(taskset.utilization)
             print(
                 f"Scheduling succeeded for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
 
         scheduling = Scheduling(
             schedule=schedule, success=success, scheduler_name=str(scheduler))
         scheduling.add_performances(
-            computation_time=computation_time, actual_utilization=actual_utilization, theoritical_utilization=theoritical_utilization)
+            computation_time=computation_time, actual_utilization=actual_utilization, theoretical_utilization=theoretical_utilization)
         return scheduling
 
     def generate_composite_scheduling(self, taskset, assignment, scheduler_class, start_time=1, end_time=None):
@@ -246,16 +252,26 @@ class SchedulingGenerator:
         if busy_periods is None or len(busy_periods) == 0 or not scheduling.success:
             computation_time = numpy.nan
             actual_utilization = numpy.nan
-            theoritical_utilization = numpy.nan
+            theoretical_utilization = numpy.nan
             scheduling.success = 0
             print(
                 f"Composite scheduling failed for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
         else:
             actual_utilization = sum(actual_utilization)
-            theoritical_utilization = sum(taskset.utilization)
+            theoretical_utilization = sum(taskset.utilization)
             print(
                 f"Composite scheduling succeeded for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
 
         scheduling.add_performances(
-            computation_time=computation_time, actual_utilization=actual_utilization, theoritical_utilization=theoritical_utilization)
+            computation_time=computation_time, actual_utilization=actual_utilization, theoretical_utilization=theoretical_utilization)
+        return scheduling
+
+    def create_empty_scheduling(self, scheduler):
+        scheduling = Scheduling(
+            schedule=[], success=0, scheduler_name=str(scheduler))
+        return scheduling
+
+    def create_empty_composite_scheduling(self, scheduler):
+        scheduling = CompositeScheduling(scheduler_name=str(scheduler))
+        scheduling.success = 0
         return scheduling

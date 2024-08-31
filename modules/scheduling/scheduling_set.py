@@ -13,7 +13,7 @@ class SchedulingSet:
 
         self.mean_success = self.calculate_mean_success()
         self.mean_computation_time = self.calculate_mean_computation_time()
-        self.mean_theoritical_utilization = self.calculate_mean_theoritical_utilization()
+        self.mean_theoretical_utilization = self.calculate_mean_theoretical_utilization()
         self.mean_actual_utilization = self.calculate_mean_actual_utilization()
         self.mean_overutilization = self.calculate_mean_overutilization()
 
@@ -62,14 +62,14 @@ class SchedulingSet:
     def calculate_mean_actual_utilization(self):
         return np.mean([scheduling.actual_utilization for scheduling in self.scheduling_list])
 
-    def calculate_mean_theoritical_utilization(self):
-        return np.mean([scheduling.theoritical_utilization for scheduling in self.scheduling_list])
+    def calculate_mean_theoretical_utilization(self):
+        return np.mean([scheduling.theoretical_utilization for scheduling in self.scheduling_list])
 
     def calculate_mean_overutilization(self):
         return (
             (
                 self.mean_actual_utilization
-                - self.mean_theoritical_utilization
+                - self.mean_theoretical_utilization
             )
-            / self.mean_theoritical_utilization
+            / self.mean_theoretical_utilization
         ) * 100

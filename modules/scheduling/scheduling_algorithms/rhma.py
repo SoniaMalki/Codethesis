@@ -29,14 +29,21 @@ class Rhma:
 
         self.start_time = start_time
         self.end_time = end_time
-        # Parameters generated after assignment
-        self.o_i_j = self.generate_o_i_j()
-        self.maxI = self.generate_max_I()
         self.combined_scheduler = CombinedScheduler(taskset=self.taskset, assignment=self.assignment,
                                                     number_of_cores=self.number_of_cores, scheduling_options=self.scheduling_options,
                                                     start_time=self.start_time,
                                                     end_time=self.end_time)
         self.busy_periods = self.combined_scheduler.schedule()
+        if len(self.busy_periods) <= 1:
+            print(
+                "CombinedScheduler failed to divide the hyperperiod into busy periods. RHMA will not run.")
+            self.actual_utilization = np.nan
+            return
+
+        # Parameters generated after assignment
+        self.o_i_j = self.generate_o_i_j()
+        self.maxI = self.generate_max_I()
+
         self.actual_utilization = self.combined_scheduler.actual_utilization
 
         # Parameters generated after busy period generation

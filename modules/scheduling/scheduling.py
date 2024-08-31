@@ -1,18 +1,25 @@
+import numpy
+
+
 class Scheduling:
     def __init__(self, schedule, success, scheduler_name):
         self.schedule = schedule
         self.success = success
         self.scheduler_name = scheduler_name
-        if self.schedule:
+
+        if self.schedule and len(self.schedule) != 0:
             self.start_time = min(
                 time for core_schedule in self.schedule for time, *_ in core_schedule)
             self.end_time = max(
                 time for core_schedule in self.schedule for time, *_ in core_schedule)
+        else:
+            self.start_time = None
+            self.end_time = None
 
-        self.computation_time = None
-        self.actual_utilization = None
-        self.theoritical_utilization = None
-        self.total_utilization = None
+        self.computation_time = numpy.nan
+        self.actual_utilization = numpy.nan
+        self.theoretical_utilization = numpy.nan
+        self.total_utilization = numpy.nan
 
     def __repr__(self):
         return f"Scheduling(schedule={self.schedule}, success={self.success}, scheduler_name={self.scheduler_name}, start_time={self.start_time}, end_time={self.end_time})"
@@ -20,6 +27,9 @@ class Scheduling:
     def __str__(self, end_time=None):
         # Trouver les variables les plus grandes pour le temps (lignes) et core (colonnes)
         num_cores = len(self.schedule)
+
+        if not self.schedule or self.start_time is None or self.end_time is None:
+            return "Empty Schedule"
 
         # Limiter end_time au maximum disponible dans le schedule si end_time est spécifié
         if end_time is not None:
@@ -67,7 +77,9 @@ class Scheduling:
         return output
 
     def __len__(self):
-        return (self.end_time-self.start_time)
+        if self.start_time is None or self.end_time is None:
+            return 0
+        return self.end_time - self.start_time
 
     def __iter__(self):
         return iter(self.schedule)
@@ -88,10 +100,10 @@ class Scheduling:
                 same_success and
                 same_scheduler_name)
 
-    def add_performances(self, computation_time, actual_utilization, theoritical_utilization):
+    def add_performances(self, computation_time, actual_utilization, theoretical_utilization):
         self.computation_time = computation_time
         self.actual_utilization = actual_utilization
-        self.theoritical_utilization = theoritical_utilization
+        self.theoretical_utilization = theoretical_utilization
 
     def add_total_utilization(self, total_utilization):
         self.total_utilization = total_utilization

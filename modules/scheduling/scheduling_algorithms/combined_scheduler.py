@@ -118,12 +118,8 @@ class CombinedScheduler:
             schedule=schedule, success=success, scheduler_name=str(scheduler))
 
     def create_empty_return(self):
-        scheduling = [[] for _ in range(self.number_of_cores)]
-        for core in scheduling:
-            core.append((1, None, None))
-            core.append((self.end_time, None, None))
         empty_scheduling = Scheduling(
-            schedule=scheduling, success=0, scheduler_name="N/A")
+            schedule=[], success=0, scheduler_name="N/A")
 
         empty_busy_period = BusyPeriod()
         empty_busy_period.add_period(empty_scheduling)

@@ -1,3 +1,4 @@
+import numpy
 from modules.scheduling.scheduling import Scheduling
 
 
@@ -7,9 +8,9 @@ class CompositeScheduling:
         self.success = True
         self.schedules = []
 
-        self.computation_time = None
-        self.actual_utilization = None
-        self.theoritical_utilization = None
+        self.computation_time = numpy.nan
+        self.actual_utilization = numpy.nan
+        self.theoretical_utilization = numpy.nan
 
     def add_schedule(self, schedule):
         if isinstance(schedule, Scheduling):
@@ -46,7 +47,7 @@ class CompositeScheduling:
                 success_same and
                 schedule_same)
 
-    def add_performances(self, computation_time, actual_utilization, theoritical_utilization):
+    def add_performances(self, computation_time, actual_utilization, theoretical_utilization):
         self.computation_time = computation_time
         self.actual_utilization = actual_utilization
-        self.theoritical_utilization = theoritical_utilization
+        self.theoritical_utilization = theoretical_utilization

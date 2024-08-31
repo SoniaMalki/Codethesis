@@ -64,7 +64,8 @@ class ResultAnalyzer:
 
     def run_analysis(self):
         print("Running analysis...")
-        self.generate_global_performance_csv()
+        self.generate_global_assignment_performance_csv()
+        self.generate_global_scheduling_performance_csv()
         self.analyze_assignment()
         if not self.df_schedulings.empty:
             self.analyze_scheduling()
@@ -99,7 +100,17 @@ class ResultAnalyzer:
         analyzer.analyze()
         print("Rhma acceptance rate analysis completed.")
 
-    def generate_global_performance_csv(self):
+    def generate_global_assignment_performance_csv(self):
+        global_assignment_performance = self.df.groupby('assignment_method').agg({
+            'mean_success_assignment': 'mean',
+            'mean_computation_time_assignment': 'mean'
+        }).reset_index()
+        global_assignment_performance.columns = [
+            'Algorithm', 'Success_Rate', 'Avg_Computation_Time']
+        global_assignment_performance.to_csv(
+            self.csv_dir / 'global_assignment_performance.csv', index=False)
+
+    def generate_global_scheduling_performance_csv(self):
         global_performance = self.df.groupby('scheduling_algorithm').agg({
             'mean_success_scheduling': 'mean',
             'mean_computation_time_scheduling': 'mean',
@@ -108,4 +119,4 @@ class ResultAnalyzer:
         global_performance.columns = [
             'Algorithm', 'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
         global_performance.to_csv(
-            self.csv_dir / 'global_performance.csv', index=False)
+            self.csv_dir / 'global_scheduling_performance.csv', index=False)

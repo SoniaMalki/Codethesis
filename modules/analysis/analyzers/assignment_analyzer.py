@@ -70,21 +70,42 @@ class AssignmentAnalyzer:
             self.csv_dir / 'assignment_performance.csv', index=False)
 
     def generate_assignment_by_parameter_csv(self):
-        parameters = ["interference_factor", "max_utilization",
+        parameters = ["interference_probability", "max_utilization",
                       "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
         results = []
-        for param in parameters:
+
+        # Traitement spécial pour interference_factor et probability_factor
+        if_pf_data = self.df.groupby(['assignment_method', 'interference_factor', 'probability_factor']).agg({
+            'mean_success_assignment': 'mean',
+            'mean_computation_time_assignment': 'mean'
+        }).reset_index()
+        if_pf_data['Parameter'] = 'interference_probability'
+        if_pf_data['Value'] = if_pf_data.apply(
+            lambda row: f"({row['interference_factor']}, {row['probability_factor']})", axis=1)
+        if_pf_data = if_pf_data.drop(
+            ['interference_factor', 'probability_factor'], axis=1)
+        results.append(if_pf_data)
+
+        # Exclure 'interference_probability' car déjà traité
+        for param in parameters[1:]:
             param_data = self.df.groupby(['assignment_method', param]).agg({
                 'mean_success_assignment': 'mean',
                 'mean_computation_time_assignment': 'mean'
             }).reset_index()
             param_data['Parameter'] = param
-            param_data = param_data[['assignment_method', 'Parameter', param, 'mean_success_assignment', 'mean_computation_time_assignment']]
-            param_data.columns = [
-                'Algorithm', 'Parameter', 'Value', 'Success_Rate', 'Avg_Computation_Time']
+            param_data = param_data.rename(columns={param: 'Value'})
             results.append(param_data)
-        pd.concat(results).to_csv(self.csv_dir /
-                                  'assignment_by_parameter.csv', index=False)
+
+        final_df = pd.concat(results)
+        final_df = final_df.rename(columns={
+            'assignment_method': 'Algorithm',
+            'mean_success_assignment': 'Success_Rate',
+            'mean_computation_time_assignment': 'Avg_Computation_Time'
+        })
+        final_df = final_df[['Algorithm', 'Parameter',
+                             'Value', 'Success_Rate', 'Avg_Computation_Time']]
+        final_df.to_csv(
+            self.csv_dir / 'assignment_by_parameter.csv', index=False)
 
     def plot_global_success_rate(self):
         plt.figure(figsize=(10, 6))

@@ -79,23 +79,41 @@ class SchedulingAnalyzer:
             self.csv_dir / 'scheduling_performance.csv', index=False)
 
     def generate_scheduling_by_parameter_csv(self):
-        parameters = ["interference_factor", "max_utilization",
+        parameters = ["interference_probability", "max_utilization",
                       "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
         results = []
-        for param in parameters:
+
+        if_pf_data = self.df.groupby(['scheduling_algorithm', 'interference_factor', 'probability_factor']).agg({
+            'mean_success_scheduling': 'mean',
+            'mean_computation_time_scheduling': 'mean',
+            'mean_overutilization': 'mean'
+        }).reset_index()
+        if_pf_data['Parameter'] = 'interference_probability'
+        if_pf_data['Value'] = if_pf_data.apply(
+            lambda row: f"({row['interference_factor']}, {row['probability_factor']})", axis=1)
+        if_pf_data = if_pf_data.drop(
+            ['interference_factor', 'probability_factor'], axis=1)
+        results.append(if_pf_data)
+
+        for param in parameters[1:]:
             param_data = self.df.groupby(['scheduling_algorithm', param]).agg({
                 'mean_success_scheduling': 'mean',
                 'mean_computation_time_scheduling': 'mean',
                 'mean_overutilization': 'mean'
             }).reset_index()
             param_data['Parameter'] = param
-            param_data = param_data[['scheduling_algorithm', 'Parameter', param,
-                                    'mean_success_scheduling', 'mean_computation_time_scheduling', 'mean_overutilization']]
-            param_data.columns = ['Algorithm', 'Parameter', 'Value',
-                                  'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
+            param_data = param_data.rename(columns={param: 'Value'})
             results.append(param_data)
 
         final_df = pd.concat(results)
+        final_df = final_df.rename(columns={
+            'scheduling_algorithm': 'Algorithm',
+            'mean_success_scheduling': 'Success_Rate',
+            'mean_computation_time_scheduling': 'Avg_Computation_Time',
+            'mean_overutilization': 'Avg_Increased_Utilization'
+        })
+        final_df = final_df[['Algorithm', 'Parameter', 'Value',
+                             'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']]
         final_df.to_csv(
             self.csv_dir / 'scheduling_by_parameter.csv', index=False)
 

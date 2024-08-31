@@ -144,24 +144,44 @@ class SchedulingByAssignmentAnalyzer:
             self.csv_dir / 'performance_by_sorting_criteria_and_assignment_scheduling.csv', index=False)
 
     def generate_performance_by_taskset_parameter_and_assignment_scheduling_csv(self):
-        """
-        Generate a CSV file containing the average performance metrics for each taskset parameter, assignment method, and scheduling algorithm.
-        """
+        parameters = ["interference_probability", "max_utilization",
+                      "task_core_ratio", "tasks_per_taskset", "number_of_cores"]
         results = []
-        for param in self.taskset_parameters:
+
+        # Traitement spécial pour interference_factor et probability_factor
+        if_pf_data = self.df.groupby(['assignment_method', 'scheduling_algorithm', 'interference_factor', 'probability_factor']).agg({
+            'mean_success_scheduling': 'mean',
+            'mean_computation_time_scheduling': 'mean',
+            'mean_overutilization': 'mean'
+        }).reset_index()
+        if_pf_data['Parameter'] = 'interference_probability'
+        if_pf_data['Value'] = if_pf_data.apply(
+            lambda row: f"({row['interference_factor']}, {row['probability_factor']})", axis=1)
+        if_pf_data = if_pf_data.drop(
+            ['interference_factor', 'probability_factor'], axis=1)
+        results.append(if_pf_data)
+
+        # Exclure 'interference_probability' car déjà traité
+        for param in parameters[1:]:
             param_data = self.df.groupby(['assignment_method', 'scheduling_algorithm', param]).agg({
                 'mean_success_scheduling': 'mean',
                 'mean_computation_time_scheduling': 'mean',
                 'mean_overutilization': 'mean'
             }).reset_index()
             param_data['Parameter'] = param
-            param_data = param_data[['assignment_method', 'scheduling_algorithm', 'Parameter', param,
-                                    'mean_success_scheduling', 'mean_computation_time_scheduling', 'mean_overutilization']]
-            param_data.columns = ['Assignment_Method', 'Scheduling_Algorithm', 'Parameter', 'Value',
-                                  'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']
+            param_data = param_data.rename(columns={param: 'Value'})
             results.append(param_data)
 
         final_df = pd.concat(results)
+        final_df = final_df.rename(columns={
+            'assignment_method': 'Assignment_Method',
+            'scheduling_algorithm': 'Scheduling_Algorithm',
+            'mean_success_scheduling': 'Success_Rate',
+            'mean_computation_time_scheduling': 'Avg_Computation_Time',
+            'mean_overutilization': 'Avg_Increased_Utilization'
+        })
+        final_df = final_df[['Assignment_Method', 'Scheduling_Algorithm', 'Parameter',
+                             'Value', 'Success_Rate', 'Avg_Computation_Time', 'Avg_Increased_Utilization']]
         final_df.to_csv(
             self.csv_dir / 'performance_by_taskset_parameter_and_assignment_scheduling.csv', index=False)
 

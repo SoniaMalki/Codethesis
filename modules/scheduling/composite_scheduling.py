@@ -50,4 +50,11 @@ class CompositeScheduling:
     def add_performances(self, computation_time, actual_utilization, theoretical_utilization):
         self.computation_time = computation_time
         self.actual_utilization = actual_utilization
-        self.theoritical_utilization = theoretical_utilization
+        self.theoretical_utilization = theoretical_utilization
+        self.overutilization = (
+            (
+                self.actual_utilization
+                - self.theoretical_utilization
+            )
+            / self.theoretical_utilization
+        ) * 100

@@ -29,6 +29,8 @@ files=$(grep -rl "$search_text" "$CODETHESIS" \
   --exclude=*.zip \
   --exclude=*.wasm \
   --exclude=*.png \
+  --exclude=*.pklr \
+  --exclude=*.pkl \ 
   --exclude=*.git | grep -Ev "$exclude_dirs")
 
 # If no files found, exit

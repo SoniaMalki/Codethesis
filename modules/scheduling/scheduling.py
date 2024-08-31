@@ -20,6 +20,7 @@ class Scheduling:
         self.actual_utilization = numpy.nan
         self.theoretical_utilization = numpy.nan
         self.total_utilization = numpy.nan
+        self.overutilization = numpy.nan
 
     def __repr__(self):
         return f"Scheduling(schedule={self.schedule}, success={self.success}, scheduler_name={self.scheduler_name}, start_time={self.start_time}, end_time={self.end_time})"
@@ -104,6 +105,13 @@ class Scheduling:
         self.computation_time = computation_time
         self.actual_utilization = actual_utilization
         self.theoretical_utilization = theoretical_utilization
+        self.overutilization = (
+            (
+                self.actual_utilization
+                - self.theoretical_utilization
+            )
+            / self.theoretical_utilization
+        ) * 100
 
     def add_total_utilization(self, total_utilization):
         self.total_utilization = total_utilization

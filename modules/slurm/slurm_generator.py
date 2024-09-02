@@ -383,6 +383,27 @@ python3 -u {self.main_path}/main.py analyze_results {self.index} {self.experienc
             )
         print(f"SLURM file for analyzing results written at {slurm_file}")
 
+    def generate_notification_slurm(self):
+        """Generate a SLURM file for sending an email notification."""
+        print("Generating the SLURM file for sending notification")
+        slurm_file = self.master_dir / "notification_job.slurm"
+        with open(slurm_file, "w") as f:
+            f.write(
+                f"""#!/bin/bash
+#SBATCH --job-name=notification_job
+#SBATCH --output={self.output_dir / "notification_job.txt"}
+#SBATCH --ntasks=1
+#SBATCH --time=00:01:00
+#SBATCH --mem=100M
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=sousana@live.be
+
+# Command to run
+echo "Notification job completed successfully."
+"""
+            )
+        print(f"SLURM file for notification job written at {slurm_file}")
+
     def generate_all_slurm(self):
         """Generate all the SLURM files for a given experience."""
         print(
@@ -563,10 +584,11 @@ python3 -u {self.main_path}/main.py analyze_results {self.index} {self.experienc
                 f"Warning: No batch number found in {filename}. Defaulting to 0.")
             return 0
 
-    def generate_full_pipeline_slurm(self):
-        """Generate the full pipeline SLURM script."""
+    def generate_full_pipeline_slurm(self, include_analyze=False):
+        """Generate the full pipeline SLURM script with optional analyze step and email notification."""
         print("Generating full pipeline SLURM script")
 
+        # Initialize commands for job submission
         command = (
             f"echo \"Starting full pipeline for {self.experience_id}\"\n"
             f"{self.modules}"
@@ -584,8 +606,10 @@ python3 -u {self.main_path}/main.py analyze_results {self.index} {self.experienc
             "fi\n\n"
             "echo \"Génération des fichiers SLURM réussie\"\n"
             "echo \"Starting master job\"\n"
+        )
 
-            # Taskset Submission
+        # Taskset Submission
+        command += (
             "tempfile=$(mktemp)\n"
             "if [ -f \"$MASTER_DIR/all_tasksets_master.slurm\" ]; then\n"
             "  echo \"Submitting all_tasksets_master.slurm\"\n"
@@ -600,8 +624,10 @@ python3 -u {self.main_path}/main.py analyze_results {self.index} {self.experienc
             "  fi\n"
             "fi\n"
             "rm -f \"$tempfile\"\n"
+        )
 
-            # Assignment Submission (dependent on taskset)
+        # Assignment Submission (dependent on taskset)
+        command += (
             "tempfile=$(mktemp)\n"
             "if [ -f \"$MASTER_DIR/all_assignments_master.slurm\" ]; then\n"
             "  echo \"Submitting all_assignments_master.slurm\"\n"
@@ -620,8 +646,10 @@ python3 -u {self.main_path}/main.py analyze_results {self.index} {self.experienc
             "  fi\n"
             "fi\n"
             "rm -f \"$tempfile\"\n"
+        )
 
-            # Scheduling Submission (dependent on assignment OR taskset if assignment failed)
+        # Scheduling Submission (dependent on assignment OR taskset if assignment failed)
+        command += (
             "tempfile=$(mktemp)\n"
             "if [ -f \"$MASTER_DIR/all_schedulings_master.slurm\" ]; then\n"
             "  echo \"Submitting all_schedulings_master.slurm\"\n"
@@ -642,26 +670,58 @@ python3 -u {self.main_path}/main.py analyze_results {self.index} {self.experienc
             "  fi\n"
             "fi\n"
             "rm -f \"$tempfile\"\n"
+        )
 
-            # Analyze Submission (Conditional)
-            "if [[ -n \"$scheduling_id\" ]] || [[ -n \"$assignment_id\" ]]; then\n"
-            "  tempfile=$(mktemp)\n"
-            "  if [[ -n \"$scheduling_id\" ]]; then\n"
-            "    sbatch --dependency=afterok:$scheduling_id \"$MASTER_DIR/analyze_results.slurm\" >\"$tempfile\" 2>&1\n"
-            "  elif [[ -n \"$assignment_id\" ]]; then\n"
-            "    sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/analyze_results.slurm\" >\"$tempfile\" 2>&1\n"
-            "  fi\n"
-            "  output=$(cat \"$tempfile\")\n"
-            "  if echo \"$output\" | grep -q \"error\"; then\n"
-            "    echo \"Job not launched. Output: echo $output\"\n"
-            "  else\n"
-            "    analyze_id=$(echo \"$output\" | awk '{print $4}')\n"
-            "    job_name=$(scontrol show job $analyze_id | grep \"JobName=\" | awk -F= '{print $3}')\n"
-            "    echo \"$output | Job Name: $job_name | Job ID : $analyze_id\"\n"
-            "  fi\n"
-            "  rm -f \"$tempfile\"\n"
-            "fi\n"
+        # Determine the last job ID for dependency
+        last_job_id_var = ""
 
+        if include_analyze:
+            # Analyze Submission (conditional)
+            command += (
+                "# Analyze Submission (Conditional)\n"
+                "if [[ -n \"$scheduling_id\" ]] || [[ -n \"$assignment_id\" ]]; then\n"
+                "  tempfile=$(mktemp)\n"
+                "  if [[ -n \"$scheduling_id\" ]]; then\n"
+                "    sbatch --dependency=afterok:$scheduling_id \"$MASTER_DIR/analyze_results.slurm\" >\"$tempfile\" 2>&1\n"
+                "    last_job_id_var=\"$scheduling_id\"\n"
+                "  elif [[ -n \"$assignment_id\" ]]; then\n"
+                "    sbatch --dependency=afterok:$assignment_id \"$MASTER_DIR/analyze_results.slurm\" >\"$tempfile\" 2>&1\n"
+                "    last_job_id_var=\"$assignment_id\"\n"
+                "  fi\n"
+                "  output=$(cat \"$tempfile\")\n"
+                "  if echo \"$output\" | grep -q \"error\"; then\n"
+                "    echo \"Job not launched. Output: echo $output\"\n"
+                "  else\n"
+                "    analyze_id=$(echo \"$output\" | awk '{print $4}')\n"
+                "    job_name=$(scontrol show job $analyze_id | grep \"JobName=\" | awk -F= '{print $3}')\n"
+                "    echo \"$output | Job Name: $job_name | Job ID : $analyze_id\"\n"
+                "    last_job_id_var=\"$analyze_id\"\n"
+                "  fi\n"
+                "  rm -f \"$tempfile\"\n"
+                "fi\n"
+            )
+        else:
+            # Determine the last job for attaching the notification job
+            command += (
+                "if [[ -n \"$scheduling_id\" ]]; then\n"
+                "  last_job_id_var=\"$scheduling_id\"\n"
+                "elif [[ -n \"$assignment_id\" ]]; then\n"
+                "  last_job_id_var=\"$assignment_id\"\n"
+                "elif [[ -n \"$taskset_id\" ]]; then\n"
+                "  last_job_id_var=\"$taskset_id\"\n"
+                "fi\n"
+            )
+
+        # Generate notification job SLURM script
+        self.generate_notification_slurm()
+
+        # Submit the notification job with a dependency on the last job
+        command += (
+            "echo \"Submitting notification job\"\n"
+            "sbatch --dependency=afterok:$last_job_id_var \"$MASTER_DIR/notification_job.slurm\"\n"
+        )
+
+        command += (
             f"echo \"Full pipeline completed for {self.experience_id}\"\n"
         )
 

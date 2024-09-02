@@ -64,8 +64,6 @@ def main(action, index, experience_id, experience_action=None):
     experience_json_path = Path(__file__).parent / f"experience_{index}.json"
     result_path = generation_path / f"results_{index}"
     plots_path = generation_path / f"plots_{index}"
-    result_path.mkdir(parents=True, exist_ok=True)
-    plots_path.mkdir(parents=True, exist_ok=True)
 
     # Charger experience.json
     print("Loading experience.json")
@@ -83,6 +81,8 @@ def main(action, index, experience_id, experience_action=None):
 
     if action == "analyze_results":
         print(f"Analyzing results for experience ID: {experience_id}")
+        result_path.mkdir(parents=True, exist_ok=True)
+        plots_path.mkdir(parents=True, exist_ok=True)
         analyzer = ResultAnalyzer(
             db_path, experience_id, plots_path, result_path)
         analyzer.run_analysis()
@@ -90,6 +90,7 @@ def main(action, index, experience_id, experience_action=None):
     elif action == "generate_slurm_files":
         # Génération de la prime matrix
         print(f"Generating prime matrix for experience ID: {experience_id}")
+        result_path.mkdir(parents=True, exist_ok=True)
 
         prime_matrix_combinations = experience_data[experience_id]["config_parameters"][
             "taskset_parameters"]["prime_exponent_hyperperiod_combinations"]
@@ -113,12 +114,14 @@ def main(action, index, experience_id, experience_action=None):
 
     elif action == "run_experience":
         print(f"Running experience with action: {experience_action}")
+        result_path.mkdir(parents=True, exist_ok=True)
         experience_loader_db = ExperienceLoader(
             db_path, result_path, experience_id)
         run_experience(experience_action, experience_loader_db)
 
     elif action == "run_batch_experiences":
         print(f"Running batch experiences with action: {experience_action}")
+        result_path.mkdir(parents=True, exist_ok=True)
         experience_loader_db = ExperienceLoader(
             db_path, result_path, experience_id)
         run_batch_experiences(experience_loader_db, experience_action)
@@ -139,7 +142,7 @@ def main(action, index, experience_id, experience_action=None):
             experience_id=experience_id,
             experience_data=experience_data[experience_id],
         )
-        slurm_generator.generate_full_pipeline_slurm()
+        slurm_generator.generate_full_pipeline_slurm(include_analyze=False)
         print(f"SLURM scripts generated for experience ID: {experience_id}")
 
     elif action == "merge_databases":

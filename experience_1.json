@@ -8,7 +8,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -35,7 +35,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -62,7 +62,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -89,7 +89,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.4 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -116,7 +116,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.6 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -143,7 +143,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.8 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -170,7 +170,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -197,7 +197,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -224,7 +224,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -251,7 +251,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -278,7 +278,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -305,7 +305,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -332,7 +332,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -359,7 +359,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -386,7 +386,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -413,7 +413,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -440,7 +440,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -467,7 +467,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -494,7 +494,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -521,7 +521,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -548,7 +548,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -575,7 +575,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -602,7 +602,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -629,7 +629,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -656,7 +656,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -683,7 +683,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -710,7 +710,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -737,7 +737,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -764,7 +764,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -791,7 +791,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -818,7 +818,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -845,7 +845,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -872,7 +872,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -899,7 +899,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -926,7 +926,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -953,7 +953,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -980,7 +980,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.4 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1007,7 +1007,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.6 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1034,7 +1034,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.8 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1061,7 +1061,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1088,7 +1088,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1115,7 +1115,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1142,7 +1142,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1169,7 +1169,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1196,7 +1196,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1223,7 +1223,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1250,7 +1250,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1277,7 +1277,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1304,7 +1304,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1331,7 +1331,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1358,7 +1358,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1385,7 +1385,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1412,7 +1412,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1439,7 +1439,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1466,7 +1466,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1493,7 +1493,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1520,7 +1520,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1547,7 +1547,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1574,7 +1574,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1601,7 +1601,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1628,7 +1628,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1655,7 +1655,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1682,7 +1682,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1709,7 +1709,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1736,7 +1736,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1763,7 +1763,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1790,7 +1790,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1817,7 +1817,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1844,7 +1844,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1871,7 +1871,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.4 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1898,7 +1898,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.6 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1925,7 +1925,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.8 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1952,7 +1952,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -1979,7 +1979,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2006,7 +2006,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2033,7 +2033,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2060,7 +2060,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2087,7 +2087,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2114,7 +2114,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2141,7 +2141,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2168,7 +2168,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2195,7 +2195,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2222,7 +2222,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2249,7 +2249,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2276,7 +2276,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2303,7 +2303,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2330,7 +2330,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2357,7 +2357,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2384,7 +2384,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2411,7 +2411,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2438,7 +2438,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2465,7 +2465,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2492,7 +2492,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2519,7 +2519,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2546,7 +2546,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2573,7 +2573,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2600,7 +2600,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2627,7 +2627,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2654,7 +2654,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2681,7 +2681,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2708,7 +2708,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2735,7 +2735,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2762,7 +2762,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.4 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2789,7 +2789,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.6 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2816,7 +2816,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.8 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2843,7 +2843,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2870,7 +2870,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2897,7 +2897,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2924,7 +2924,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2951,7 +2951,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -2978,7 +2978,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3005,7 +3005,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3032,7 +3032,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3059,7 +3059,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3086,7 +3086,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3113,7 +3113,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3140,7 +3140,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3167,7 +3167,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3194,7 +3194,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3221,7 +3221,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3248,7 +3248,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3275,7 +3275,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3302,7 +3302,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3329,7 +3329,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3356,7 +3356,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3383,7 +3383,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3410,7 +3410,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3437,7 +3437,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3464,7 +3464,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3491,7 +3491,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3518,7 +3518,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3545,7 +3545,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },
@@ -3572,7 +3572,7 @@
         "probability_factors": [ 0.1, 0.4 ],
         "max_utilization_factors": [ 0.2, 0.4, 0.6, 0.8, 1 ],
         "deadline_options": [ "eq_period" ],
-        "prime_exponent_hyperperiod_combinations": [ [ 500, 11, 5 ]
+        "prime_exponent_hyperperiod_combinations": [ [ 1500, 23, 5 ]
         ],
         "number_of_cores_list": [ 2, 4, 8 ]
       },

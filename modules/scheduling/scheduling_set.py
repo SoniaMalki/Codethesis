@@ -66,10 +66,4 @@ class SchedulingSet:
         return np.mean([scheduling.theoretical_utilization for scheduling in self.scheduling_list])
 
     def calculate_mean_overutilization(self):
-        return (
-            (
-                self.mean_actual_utilization
-                - self.mean_theoretical_utilization
-            )
-            / self.mean_theoretical_utilization
-        ) * 100
+        return np.mean([scheduling.overutilization for scheduling in self.scheduling_list])

@@ -51,10 +51,15 @@ class CompositeScheduling:
         self.computation_time = computation_time
         self.actual_utilization = actual_utilization
         self.theoretical_utilization = theoretical_utilization
-        self.overutilization = (
-            (
-                self.actual_utilization
-                - self.theoretical_utilization
-            )
-            / self.theoretical_utilization
-        ) * 100
+        epsilon = 1e-5
+
+        difference = abs(self.actual_utilization -
+                         self.theoretical_utilization)
+
+        if difference < epsilon:
+            self.overutilization = 0
+        else:
+            self.overutilization = (
+                (self.actual_utilization - self.theoretical_utilization)
+                / self.theoretical_utilization
+            ) * 100

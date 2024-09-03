@@ -1,3 +1,4 @@
+import numpy as np
 from modules.taskset.taskset_set import TasksetSet
 from modules.taskset.taskset import Taskset
 from modules.taskset.taskset_set_generator import TasksetSetGenerator
@@ -6,12 +7,15 @@ from modules.taskset.taskset_set_generator import TasksetSetGenerator
 class TasksetSetManual:
     def __init__(self, taskset_id, wcet_list, deadline_list, period_list, interference_list, utilization_list):
         self.taskset_id = taskset_id
-        self.wcet_list = wcet_list
-        self.deadline_list = deadline_list
-        self.period_list = period_list
-        self.interference_list = interference_list
-        self.single_interference = [max(row) for row in self.interference_list]
-        self.utilization_list = utilization_list
+        self.wcet_list = np.array(wcet_list)
+        self.deadline_list = np.array(deadline_list)
+        self.period_list = np.array(period_list)
+        self.interference_list = np.array(
+            interference_list)
+        self.single_interference = np.array(
+            [max(row) for row in self.interference_list])
+        self.utilization_list = np.array(
+            utilization_list)
 
     def create_taskset_set(self):
         """Crée un TasksetSet à partir des paramètres donnés."""

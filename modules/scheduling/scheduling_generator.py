@@ -190,7 +190,8 @@ class SchedulingGenerator:
             print(
                 f"Scheduling failed for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
         else:
-            theoretical_utilization = sum(taskset.utilization)
+            theoretical_utilization = sum(
+                taskset.wcet/taskset.period)
             print(
                 f"Scheduling succeeded for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
 
@@ -258,7 +259,8 @@ class SchedulingGenerator:
                 f"Composite scheduling failed for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
         else:
             actual_utilization = sum(actual_utilization)
-            theoretical_utilization = sum(taskset.utilization)
+            theoretical_utilization = sum(
+                taskset.wcet/taskset.period)
             print(
                 f"Composite scheduling succeeded for taskset: {self.taskset_id} and assignment: {self.assignment_id}")
 

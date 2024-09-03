@@ -1,3 +1,4 @@
+import sched
 import socket
 from pathlib import Path
 import re
@@ -8,7 +9,7 @@ from modules.utils.db_utils import DBUtils
 
 
 class SlurmGenerator:
-    def __init__(self, main_path, generation_path, db_path, index, experience_id, experience_data, batch_size=100):
+    def __init__(self, main_path, generation_path, db_path, index, experience_id, experience_data, quick_version=True, batch_size=100):
         print("Initializing SlurmGenerator")
         self.main_path = Path(main_path)
         index_path = f"{experience_id}_{index}"
@@ -36,6 +37,27 @@ class SlurmGenerator:
         self.full_pipeline_mem = "500M"
         self.default_batch_size = batch_size
 
+        if quick_version:
+            scheduling_rhma = {"time": "00:05:00",
+                               "mem": "200M", "batch_size": 400}
+            self.cluster_cores = {
+                "lm": 1,
+                "nic": 1,
+                "her": 1,
+                "drg2": 1,
+                "sonia": 1
+            }
+        else:
+            scheduling_rhma = {"time": "2-00:00:00",
+                               "mem": "8G", "batch_size": 400}
+            self.cluster_cores = {
+                "lm": 8,
+                "nic": 8,
+                "her": 8,
+                "drg2": 8,
+                "sonia": 3
+            }
+
         # Dictionnaire des paramètres SLURM par défaut
         self.slurm_parameters = {
             "taskset": {"time": "00:10:00", "mem": "200M", "batch_size": 400},
@@ -43,7 +65,7 @@ class SlurmGenerator:
             "assignment_milp": {"time": "01:00:00", "mem": "1G", "batch_size": 400},
             "scheduling_simple": {"time": "2-00:00:00", "mem": "200M", "batch_size": 400},
             "scheduling_combined": {"time": "2-00:00:00", "mem": "200M", "batch_size": 400},
-            "scheduling_rhma": {"time": "2-00:00:00", "mem": "8G", "batch_size": 400},
+            "scheduling_rhma": scheduling_rhma,
         }
 
         self.master_dir = self.generation_path / "slurm" / "master"
@@ -80,14 +102,6 @@ module load Gurobi/10.0.3-GCCcore-12.2.0
 module load Python/3.11.3-GCCcore-12.3.0
 export GLOBALSCRATCH=$HOME
 """,
-        }
-
-        self.cluster_cores = {
-            "lm": 8,
-            "nic": 8,
-            "her": 8,
-            "drg2": 8,
-            "sonia": 3
         }
 
         hostname = socket.gethostname()

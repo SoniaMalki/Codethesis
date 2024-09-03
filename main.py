@@ -109,6 +109,7 @@ def main(action, index, experience_id, experience_action=None):
             index=index,
             experience_id=experience_id,
             experience_data=experience_data[experience_id],
+            quick_version=True
         )
         slurm_generator.generate_all_slurm()
 
